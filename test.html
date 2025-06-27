@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>XmasMM</title>
+  <title>XmasMM - Test</title>
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
 </head>
 <body>
   <div id="game-container"></div>
+  
   <!-- Load utility classes first -->
   <script src="js/utils/GameUtils.js"></script>
   
@@ -23,5 +24,16 @@
   
   <!-- Load main configuration last -->
   <script src="js/main.js"></script>
+
+  <!-- Simple test script -->
+  <script>
+    console.log('All scripts loaded');
+    console.log('GameUtils available:', typeof GameUtils !== 'undefined');
+    console.log('ScoreManager available:', typeof ScoreManager !== 'undefined');
+    console.log('HistoryManager available:', typeof HistoryManager !== 'undefined');
+    console.log('MainMenu available:', typeof MainMenu !== 'undefined');
+    console.log('DifficultySelection available:', typeof DifficultySelection !== 'undefined');
+    console.log('GameScene available:', typeof GameScene !== 'undefined');
+  </script>
 </body>
 </html>
