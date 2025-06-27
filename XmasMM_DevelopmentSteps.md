@@ -273,3 +273,4 @@ This document outlines incremental tasks to develop *XmasMM*, a web-based, singl
 - **Incremental Commits:** Commit after each task to track progress and enable rollback if needed.
 - **Testing:** Test on iPhone emulators or devices to ensure touch input and responsiveness.
 - **Modular Structure:** The codebase has been refactored into a modular structure for easier maintenance and future development.
+- **📝 Documentation Updates:** This Development Steps document will be updated after each task completion to reflect actual accomplishments, changes made, and lessons learned. Each completed task will be marked with ✅ and include detailed deliverables and success criteria met.
