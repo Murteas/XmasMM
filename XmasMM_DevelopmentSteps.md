@@ -89,7 +89,65 @@ This document outlines incremental tasks to develop *XmasMM*, a web-based, singl
 
 ---
 
-## Task 4: Add Christmas-Themed Visuals and UI
+## Task 4: Implement Inline Guessing UX
+**Objective:** Redesign the guessing interface to use inline editing where each new guess starts pre-filled with the previous guess, making the game more intuitive and mobile-friendly.
+
+**Steps:**
+1. **Restructure Guess Input System:**
+   - Remove the separate guess input area at the top of the screen
+   - Modify `HistoryManager.js` to support an "active" editable row within the history display
+   - Update `GameScene.js` to handle guess input directly in the history area
+2. **Visual Design for Active Row:**
+   - Implement a different background color for the currently editable row
+   - Add a subtle glow effect around the active row to clearly distinguish it from completed guesses
+   - Ensure high contrast and accessibility on iPhone displays
+   - Use visual hierarchy to make the active row obviously interactive
+3. **Submit Button Repositioning:**
+   - Move submit button to be positioned near the active row (not fixed at top)
+   - Consider floating the button adjacent to the active row or integrating it into the row design
+   - Maintain touch-friendly button size (minimum 44px) and positioning
+   - Ensure button remains accessible during scrolling scenarios
+4. **Inline Editing Logic:**
+   - First guess: Start with empty slots (requires all slots to be filled before submission)
+   - Subsequent guesses: Pre-fill with previous guess, allow editing of individual slots
+   - Maintain existing tap-to-cycle-elements functionality within the active row
+   - Update guess submission to convert active row to completed history row
+5. **Scrolling and Navigation:**
+   - Ensure active row remains visible or auto-scrolls into view
+   - Handle edge cases where active row might be off-screen
+   - Maintain smooth touch scrolling for viewing completed guess history
+   - Update visual indicators for scroll position relative to active row
+6. **Integration with Existing Systems:**
+   - Ensure Santa's Hint feature works with inline editing
+   - Maintain compatibility with feedback display system
+   - Preserve guess validation and error handling
+   - Keep existing touch sensitivity and interaction patterns
+
+**Deliverables:**
+- Updated `HistoryManager.js` with inline editing capabilities
+- Modified `GameScene.js` with repositioned submit button and new input flow
+- Enhanced visual styling for active vs completed rows
+- Touch-optimized interface for iPhone displays
+
+**Success Criteria:**
+- Players can edit guesses directly in the history area
+- Active row is clearly distinguishable with background color and glow effect
+- Submit button is conveniently positioned near the active row
+- First guess starts with empty slots, subsequent guesses pre-fill with previous attempt
+- Scrolling works smoothly while maintaining active row visibility
+- All existing game logic (scoring, hints, feedback) remains functional
+- Interface feels more intuitive and mobile-friendly than separate input area
+- Touch interactions work reliably on iPhone Safari and Chrome
+
+**Future Ideas:**
+- "Clear row" button for starting fresh on a guess
+- Double-tap gesture to reset current guess
+- Drag-and-drop reordering of elements within a guess
+- Undo/redo functionality for guess modifications
+
+---
+
+## Task 5: Add Christmas-Themed Visuals and UI
 **Objective:** Enhance the `Game` scene with Christmas-themed sprites and polished UI for elements, feedback, and score display, with optimized iPhone display.
 
 **Steps:**
@@ -137,7 +195,7 @@ This document outlines incremental tasks to develop *XmasMM*, a web-based, singl
 
 ---
 
-## Task 5: Integrate Sound Effects and Music with Toggles
+## Task 6: Integrate Sound Effects and Music with Toggles
 **Objective:** Add Christmas-themed audio (jingle bells, "ho ho ho", Santa laugh, lo-fi music) with functional sound toggles.
 
 **Steps:**
@@ -166,7 +224,7 @@ This document outlines incremental tasks to develop *XmasMM*, a web-based, singl
 
 ---
 
-## Task 6: Develop "Round Over" Screen with Guess History
+## Task 7: Develop "Round Over" Screen with Guess History
 **Objective:** Create a `RoundOver` scene showing score, all guesses, correct code, and a "Play Again" button, with scoring method validation.
 
 **Steps:**
@@ -202,7 +260,7 @@ This document outlines incremental tasks to develop *XmasMM*, a web-based, singl
 
 ---
 
-## Task 7: Finalize Testing and Deployment
+## Task 8: Finalize Testing and Deployment
 **Objective:** Test the game for functionality, performance, and usability, then finalize deployment with documentation.
 
 **Steps:**
@@ -259,7 +317,8 @@ This document outlines incremental tasks to develop *XmasMM*, a web-based, singl
 - ✅ Modular code architecture for maintainability
 - ✅ Enhanced UI with proper contrast and visual indicators
 
-**Remaining (Tasks 4-7):**
+**Remaining (Tasks 4-8):**
+- Inline guessing UX with active row editing
 - Christmas-themed sprites and visual polish
 - Sound effects and music integration
 - Round Over screen with final scoring
