@@ -107,8 +107,8 @@ class GameScene extends Phaser.Scene {
     const { width } = this.cameras.main;
     
     if (this.submitBtn) {
-      // Position button to the right of the active row
-      this.submitBtn.setPosition(width - 70, activeRowY);
+      // Position button to the right of the active row, slightly offset
+      this.submitBtn.setPosition(width - 60, activeRowY);
     }
   }
   
@@ -121,7 +121,7 @@ class GameScene extends Phaser.Scene {
       fill: '#fff',
       backgroundColor: '#27ae60',
       padding: { left: 12, right: 12, top: 6, bottom: 6 }
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(GameUtils.getDepthLayers().UI + 1);
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(GameUtils.getDepthLayers().UI + 10);
     
     this.submitBtn.on('pointerdown', () => {
       this.submitGuess();
@@ -292,7 +292,11 @@ class GameScene extends Phaser.Scene {
     // Disable interactions
     this.submitBtn.disableInteractive();
     this.hintBtn.disableInteractive();
-    this.currentGuessSlots.forEach(slot => slot.slot.disableInteractive());
+    
+    // Disable active row interactions
+    if (this.historyManager.hasActiveRow) {
+      this.historyManager.removeActiveRow();
+    }
     
     // Add restart button
     this.time.delayedCall(2000, () => {
