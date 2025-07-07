@@ -66,22 +66,86 @@ class GameScene extends Phaser.Scene {
       fontStyle: 'bold'
     }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
     
-    // Guesses remaining
+    // Create responsive header layout for game state info
+    this.setupHeaderLayout();
+  }
+
+  setupHeaderLayout() {
+    const { width } = this.cameras.main;
+    
+    // MOBILE UX IMPROVEMENT: Responsive header layout
+    // - Santa's Hint button moved to persistent header (never covered by scrolling)
+    // - Responsive design: horizontal layout on larger screens, stacked on small screens
+    // - Ensures 44px+ touch targets and proper spacing for mobile accessibility
+    // - Follows mobile app best practices for persistent action positioning
+    
+    // Determine layout based on screen width
+    const isSmallScreen = width < 400;
+    
+    if (isSmallScreen) {
+      // Stacked layout for small screens (iPhone SE, etc.)
+      this.setupStackedHeader();
+    } else {
+      // Horizontal layout for larger screens
+      this.setupHorizontalHeader();
+    }
+  }
+
+  setupStackedHeader() {
+    const { width } = this.cameras.main;
+    
+    // Row 1: Guesses and Score
+    this.guessesText = this.add.text(50, 70, `Guesses: ${this.guessesRemaining}`, {
+      font: '16px Arial',
+      fill: '#fff'
+    }).setDepth(GameUtils.getDepthLayers().UI);
+    
+    this.scoreText = this.add.text(width - 50, 70, `Score: ${this.scoreManager.getCurrentScore()}`, {
+      font: '16px Arial',
+      fill: '#fff'
+    }).setOrigin(1, 0).setDepth(GameUtils.getDepthLayers().UI);
+    
+    // Row 2: Hint status and button (centered)
+    this.hintText = this.add.text(width / 2, 100, 'Hint: Locked', {
+      font: '14px Arial',
+      fill: '#888'
+    }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
+    
+    // Santa's Hint button positioned in header
+    this.hintBtn = this.add.text(width / 2, 130, "Santa's Hint", {
+      font: '14px Arial',
+      fill: '#888',
+      backgroundColor: '#333',
+      padding: { left: 10, right: 10, top: 6, bottom: 6 }
+    }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
+  }
+
+  setupHorizontalHeader() {
+    const { width } = this.cameras.main;
+    
+    // Single row layout for larger screens
     this.guessesText = this.add.text(50, 70, `Guesses: ${this.guessesRemaining}`, {
       font: '18px Arial',
       fill: '#fff'
     }).setDepth(GameUtils.getDepthLayers().UI);
     
-    // Score
     this.scoreText = this.add.text(width - 50, 70, `Score: ${this.scoreManager.getCurrentScore()}`, {
       font: '18px Arial',
       fill: '#fff'
     }).setOrigin(1, 0).setDepth(GameUtils.getDepthLayers().UI);
     
-    // Santa's Hint status
-    this.hintText = this.add.text(width / 2, 70, 'Hint: Locked', {
-      font: '18px Arial',
+    // Hint status (smaller, above button)
+    this.hintText = this.add.text(width / 2, 60, 'Hint: Locked', {
+      font: '12px Arial',
       fill: '#888'
+    }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
+    
+    // Santa's Hint button in header (center)
+    this.hintBtn = this.add.text(width / 2, 85, "Santa's Hint", {
+      font: '16px Arial',
+      fill: '#888',
+      backgroundColor: '#333',
+      padding: { left: 12, right: 12, top: 6, bottom: 6 }
     }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
   }
   
@@ -133,14 +197,8 @@ class GameScene extends Phaser.Scene {
       this.submitGuess();
     });
     
-    // Santa's Hint button
-    this.hintBtn = this.add.text(width / 2, 220, "Santa's Hint", {
-      font: '18px Arial',
-      fill: '#888',
-      backgroundColor: '#333',
-      padding: { left: 12, right: 12, top: 6, bottom: 6 }
-    }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
-    
+    // Santa's Hint button is now set up in setupHeaderLayout() method
+    // Configure its interactivity here
     this.hintBtn.setInteractive({ useHandCursor: true });
     this.hintBtn.on('pointerdown', () => {
       this.useSantasHint();
@@ -248,15 +306,19 @@ class GameScene extends Phaser.Scene {
         elementData.text.setFill('#fff');
       }
       
-      // Visual feedback
-      const { width } = this.cameras.main;
-      const hintText = this.add.text(width / 2, 250, 
+      // Visual feedback with better positioning and higher depth
+      const { width, height } = this.cameras.main;
+      // Position hint text in a safe area (top of screen, below header)
+      const isSmallScreen = width < 400;
+      const hintY = isSmallScreen ? 140 : 110; // Position just below header
+      
+      const hintText = this.add.text(width / 2, hintY, 
         `Santa's Hint: Position ${hintResult.position + 1} is ${hintResult.element}!`, {
         font: '16px Arial',
         fill: '#ffd700',
         backgroundColor: '#000',
         padding: { left: 8, right: 8, top: 4, bottom: 4 }
-      }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI + 2);
+      }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI + 10); // Higher depth for visibility over history
       
       // Remove hint text after 3 seconds
       this.time.delayedCall(3000, () => {

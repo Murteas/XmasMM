@@ -50,7 +50,8 @@ class GameUtils {
       CURRENT_GUESS: 2,
       HISTORY: 3,
       TOUCH_AREA: 5,
-      GAME_OVER: 10
+      GAME_OVER: 10,
+      MODAL: 15
     };
   }
 }

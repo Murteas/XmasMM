@@ -16,12 +16,20 @@ class HistoryManager {
     this.activeRowBackground = null;
     this.activeRowGuess = [];
     
+    // Element picker properties (mobile-friendly UX)
+    this.elementPicker = null;
+    this.pickerBackdrop = null;
+    
     this.setupHistoryScroll();
   }
 
   setupHistoryScroll() {
     const { width, height } = this.scene.cameras.main;
-    const historyStartY = 280;
+    
+    // Adjust history start position to account for new header layout
+    // Responsive spacing based on screen size
+    const isSmallScreen = width < 400;
+    const historyStartY = isSmallScreen ? 160 : 120; // More space for stacked header on small screens
     const historyEndY = height - 100;
     
     // Create invisible touch area for history scrolling
@@ -69,8 +77,12 @@ class HistoryManager {
   scrollHistory(delta) {
     if (this.guessHistory.length === 0 && !this.hasActiveRow) return;
     
+    const { width } = this.scene.cameras.main;
+    const isSmallScreen = width < 400;
+    const historyStartY = isSmallScreen ? 160 : 120;
+    
     const rowHeight = 60; // Updated to match active row height
-    const maxVisibleRows = Math.floor((this.scene.cameras.main.height - 280 - 100) / rowHeight);
+    const maxVisibleRows = Math.floor((this.scene.cameras.main.height - historyStartY - 100) / rowHeight);
     const totalRows = this.guessHistory.length + (this.hasActiveRow ? 1 : 0);
     const maxScrollOffset = Math.max(0, (totalRows * rowHeight) - (maxVisibleRows * rowHeight));
     
@@ -87,9 +99,13 @@ class HistoryManager {
     this.guessHistory.push([...guess]);
     this.feedbackHistory.push(feedback);
     
+    const { width } = this.scene.cameras.main;
+    const isSmallScreen = width < 400;
+    const historyStartY = isSmallScreen ? 160 : 120;
+    
     // Auto-scroll to show the newest guess
     const rowHeight = 60; // Updated to match active row height
-    const maxVisibleRows = Math.floor((this.scene.cameras.main.height - 280 - 100) / rowHeight);
+    const maxVisibleRows = Math.floor((this.scene.cameras.main.height - historyStartY - 100) / rowHeight);
     const totalRows = this.guessHistory.length + (this.hasActiveRow ? 1 : 0);
     const maxScrollRange = (totalRows * rowHeight) - (maxVisibleRows * rowHeight);
     
@@ -123,7 +139,9 @@ class HistoryManager {
     
     this.historyGroup = this.scene.add.group();
     
-    const startY = 280;
+    const { width } = this.scene.cameras.main;
+    const isSmallScreen = width < 400;
+    const startY = isSmallScreen ? 160 : 120;
     const rowHeight = 60; // Updated to match active row height
     const maxVisibleRows = Math.floor((this.scene.cameras.main.height - startY - 100) / rowHeight);
     
@@ -295,7 +313,8 @@ class HistoryManager {
     const elements = this.scene.elements;
     
     // Calculate position for active row (always at the bottom of history)
-    const historyStartY = 280;
+    const isSmallScreen = width < 400;
+    const historyStartY = isSmallScreen ? 160 : 120;
     const rowHeight = 60;
     const activeRowY = historyStartY + (this.guessHistory.length * rowHeight) - this.historyScrollOffset;
     
@@ -331,21 +350,31 @@ class HistoryManager {
     for (let i = 0; i < codeLength; i++) {
       const x = startX + i * 50;
       
-      // Slot background
+      // Slot background with tap indicator
       const slot = this.scene.add.rectangle(x, activeRowY, 40, 40, 0x666666)
         .setStrokeStyle(2, 0xffffff)
         .setInteractive({ useHandCursor: true })
         .setDepth(GameUtils.getDepthLayers().TOUCH_AREA + 1); // Above touch area
       
-      // Element text
-      const elementText = this.activeRowGuess[i] || '?';
+      // Element text with tap hint
+      const elementText = this.activeRowGuess[i] || 'TAP';
       const text = this.scene.add.text(x, activeRowY, elementText, {
-        font: '14px Arial',
+        font: this.activeRowGuess[i] ? '14px Arial' : '10px Arial',
         fill: this.activeRowGuess[i] ? '#fff' : '#aaa'
       }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().TOUCH_AREA + 1.1); // Above touch area
       
-      // Click handler to cycle through elements
+      // Click handler to open element picker (mobile-friendly UX)
       slot.on('pointerdown', () => {
+        // Add subtle tap feedback for empty slots
+        if (!this.activeRowGuess[i]) {
+          slot.setScale(0.95);
+          this.scene.tweens.add({
+            targets: slot,
+            scale: 1,
+            duration: 100,
+            ease: 'Power2'
+          });
+        }
         this.cycleActiveRowElement(i);
       });
       
@@ -377,21 +406,181 @@ class HistoryManager {
   }
 
   cycleActiveRowElement(index) {
-    const elements = this.scene.elements;
-    const currentElement = this.activeRowGuess[index];
-    let nextIndex = 0;
-    
-    if (currentElement) {
-      const currentIndex = elements.indexOf(currentElement);
-      nextIndex = (currentIndex + 1) % elements.length;
+    // Show element picker modal instead of cycling
+    this.showElementPicker(index);
+  }
+
+  showElementPicker(slotIndex) {
+    if (this.elementPicker) {
+      return; // Picker already open
     }
+
+    const elements = this.scene.elements;
+    const gameWidth = this.scene.game.config.width;
+    const gameHeight = this.scene.game.config.height;
+
+    // Create modal backdrop
+    this.pickerBackdrop = this.scene.add.rectangle(
+      gameWidth / 2, 
+      gameHeight / 2, 
+      gameWidth, 
+      gameHeight, 
+      0x000000, 
+      0.7
+    ).setDepth(GameUtils.getDepthLayers().MODAL).setInteractive();
+
+    // Create picker container
+    const pickerWidth = Math.min(300, gameWidth - 40);
+    const pickerHeight = Math.min(250, gameHeight - 100);
     
-    this.activeRowGuess[index] = elements[nextIndex];
+    this.elementPicker = this.scene.add.container(gameWidth / 2, gameHeight / 2);
+    this.elementPicker.setDepth(GameUtils.getDepthLayers().MODAL + 1);
+
+    // Picker background with rounded corners effect
+    const pickerBg = this.scene.add.rectangle(0, 0, pickerWidth, pickerHeight, 0x2c3e50);
+    pickerBg.setStrokeStyle(2, 0x34495e);
+    this.elementPicker.add(pickerBg);
+
+    // Title
+    const title = this.scene.add.text(0, -pickerHeight/2 + 30, 'Choose Element', {
+      font: 'bold 18px Arial',
+      fill: '#fff',
+      align: 'center'
+    }).setOrigin(0.5);
+    this.elementPicker.add(title);
+
+    // Element grid (2x3 layout for 6 elements)
+    const cols = 3;
+    const rows = 2;
+    const elementSize = Math.max(64, 44); // Ensure minimum 44px touch target
+    const spacing = 15;
+    const startX = -(cols - 1) * (elementSize + spacing) / 2;
+    const startY = -20;
+
+    elements.forEach((element, i) => {
+      const col = i % cols;
+      const row = Math.floor(i / cols);
+      const x = startX + col * (elementSize + spacing);
+      const y = startY + row * (elementSize + spacing);
+
+      // Element button background
+      const elementBg = this.scene.add.rectangle(x, y, elementSize, elementSize, 0x3498db);
+      elementBg.setStrokeStyle(2, 0x2980b9);
+      elementBg.setInteractive({ useHandCursor: true });
+      
+      // Element text with responsive sizing
+      const fontSize = elementSize < 50 ? '10px' : '12px';
+      const elementText = this.scene.add.text(x, y, element, {
+        font: `bold ${fontSize} Arial`,
+        fill: '#fff',
+        align: 'center',
+        wordWrap: { width: elementSize - 8 }
+      }).setOrigin(0.5);
+
+      // Highlight if currently selected
+      const currentElement = this.activeRowGuess[slotIndex];
+      if (element === currentElement) {
+        elementBg.setFillStyle(0xe74c3c);
+        elementBg.setStrokeStyle(3, 0xc0392b);
+      }
+
+      // Click handler with selection feedback
+      elementBg.on('pointerdown', () => {
+        // Brief visual feedback
+        elementBg.setScale(0.95);
+        this.scene.tweens.add({
+          targets: elementBg,
+          scale: 1,
+          duration: 100,
+          ease: 'Power2'
+        });
+        
+        // Select element and close picker
+        this.selectElement(slotIndex, element);
+        this.scene.time.delayedCall(150, () => {
+          this.closeElementPicker();
+        });
+      });
+
+      // Touch feedback
+      elementBg.on('pointerover', () => {
+        if (element !== currentElement) {
+          elementBg.setFillStyle(0x5dade2);
+        }
+      });
+
+      elementBg.on('pointerout', () => {
+        if (element !== currentElement) {
+          elementBg.setFillStyle(0x3498db);
+        }
+      });
+
+      this.elementPicker.add([elementBg, elementText]);
+    });
+
+    // Close button with proper touch target size
+    const closeBtnHeight = Math.max(36, 44); // Ensure minimum touch target
+    const closeBtn = this.scene.add.text(0, pickerHeight/2 - 35, 'Cancel', {
+      font: 'bold 14px Arial',
+      fill: '#fff',
+      backgroundColor: '#95a5a6',
+      padding: { left: 15, right: 15, top: 8, bottom: 8 }
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+
+    closeBtn.on('pointerdown', () => {
+      this.closeElementPicker();
+    });
+
+    this.elementPicker.add(closeBtn);
+
+    // Close on backdrop click
+    this.pickerBackdrop.on('pointerdown', () => {
+      this.closeElementPicker();
+    });
+
+    // Smooth entrance animation
+    this.elementPicker.setScale(0.8);
+    this.elementPicker.setAlpha(0);
+    this.scene.tweens.add({
+      targets: this.elementPicker,
+      scale: 1,
+      alpha: 1,
+      duration: 200,
+      ease: 'Back.easeOut'
+    });
+  }
+
+  selectElement(slotIndex, element) {
+    this.activeRowGuess[slotIndex] = element;
     
     // Update visual
-    const elementData = this.activeRowElements[index];
-    elementData.text.setText(elements[nextIndex]);
+    const elementData = this.activeRowElements[slotIndex];
+    elementData.text.setText(element);
     elementData.text.setFill('#fff');
+    elementData.text.setFontSize('14px'); // Restore normal font size when element is selected
+  }
+
+  closeElementPicker() {
+    if (!this.elementPicker) {
+      return;
+    }
+
+    // Smooth exit animation
+    this.scene.tweens.add({
+      targets: this.elementPicker,
+      scale: 0.8,
+      alpha: 0,
+      duration: 150,
+      ease: 'Back.easeIn',
+      onComplete: () => {
+        this.elementPicker.destroy();
+        this.elementPicker = null;
+        if (this.pickerBackdrop) {
+          this.pickerBackdrop.destroy();
+          this.pickerBackdrop = null;
+        }
+      }
+    });
   }
 
   removeActiveRow() {
@@ -420,6 +609,9 @@ class HistoryManager {
       this.activeRowSubmitBtn.destroy();
       this.activeRowSubmitBtn = null;
     }
+
+    // Clean up element picker if open
+    this.closeElementPicker();
     
     this.hasActiveRow = false;
     this.activeRowGuess = [];
@@ -443,8 +635,10 @@ class HistoryManager {
   scrollToActiveRow() {
     if (!this.hasActiveRow) return;
     
-    const { height } = this.scene.cameras.main;
-    const historyStartY = 280;
+    const { width, height } = this.scene.cameras.main;
+    // Use responsive positioning
+    const isSmallScreen = width < 400;
+    const historyStartY = isSmallScreen ? 160 : 120;
     const historyEndY = height - 100;
     const rowHeight = 60;
     const activeRowY = historyStartY + (this.guessHistory.length * rowHeight);
@@ -462,7 +656,9 @@ class HistoryManager {
     if (!this.hasActiveRow) return;
     
     const { width } = this.scene.cameras.main;
-    const historyStartY = 280;
+    // Use responsive positioning instead of hardcoded value
+    const isSmallScreen = width < 400;
+    const historyStartY = isSmallScreen ? 160 : 120;
     const rowHeight = 60;
     const activeRowY = historyStartY + (this.guessHistory.length * rowHeight) - this.historyScrollOffset;
     
@@ -512,7 +708,10 @@ class HistoryManager {
   getActiveRowY() {
     if (!this.hasActiveRow) return null;
     
-    const historyStartY = 280;
+    const { width } = this.scene.cameras.main;
+    // Use responsive positioning
+    const isSmallScreen = width < 400;
+    const historyStartY = isSmallScreen ? 160 : 120;
     const rowHeight = 60;
     return historyStartY + (this.guessHistory.length * rowHeight) - this.historyScrollOffset;
   }
