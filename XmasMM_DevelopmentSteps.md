@@ -147,7 +147,129 @@ This document outlines incremental tasks to develop *XmasMM*, a web-based, singl
 
 ---
 
-## Task 5: Add Christmas-Themed Visuals and UI
+## ✅ Task 4: Implement Inline Guessing UX **[COMPLETED]**
+**Objective:** Redesign the guessing interface to use inline editing where each new guess starts pre-filled with the previous guess, making the game more intuitive and mobile-friendly.
+
+**Completed Deliverables:**
+- ✅ Restructured guess input system to use inline editing within history display
+- ✅ Modified `HistoryManager.js` to support active editable row with golden glow effect
+- ✅ Updated `GameScene.js` with integrated submit button approach
+- ✅ Implemented visual distinction for active row (golden border, glow effect)
+- ✅ Added pre-filling logic: first guess starts empty, subsequent guesses pre-fill with previous attempt
+- ✅ Maintained existing tap-to-cycle-elements functionality within active row
+- ✅ Ensured active row remains visible with auto-scrolling
+- ✅ Fixed scroll indicator interactivity and depth issues
+- ✅ Integrated submit button within active row for consistent positioning
+
+**Success Criteria Met:**
+- ✅ Players can edit guesses directly in the history area
+- ✅ Active row clearly distinguishable with golden background and glow effect
+- ✅ Submit button positioned consistently within active row
+- ✅ Pre-filling logic works correctly for first and subsequent guesses
+- ✅ Scrolling functionality maintained with working scroll indicators
+- ✅ All existing game logic (scoring, hints, feedback) remains functional
+- ✅ Touch interactions work reliably for inline editing
+
+**Issues Identified for Follow-up:**
+- Submit button positioning needs mobile optimization
+- Scroll down button functionality requires debugging
+- Santa's Hint button being covered during scrolling
+- Overall UI layout not optimized for iPhone portrait orientation
+
+---
+
+## Task 5: Optimize UI Layout for Mobile Portrait Orientation
+**Objective:** Redesign the entire UI layout to be optimized for iPhone portrait screens, addressing button positioning conflicts and ensuring all interactive elements are accessible during gameplay.
+
+**Priority Issues to Address:**
+1. **Button Positioning Conflicts:**
+   - Santa's Hint button being covered during history scrolling
+   - Scroll down button not functioning properly
+   - Submit button positioning inconsistencies in various screen states
+   - Touch target accessibility during different game states
+
+2. **Mobile Portrait Optimization:**
+   - Redesign layout specifically for iPhone portrait orientation (375px-428px width)
+   - Ensure all UI elements fit within typical iPhone screen heights (667px-926px)
+   - Optimize touch target sizes (minimum 44px) and spacing
+   - Account for iPhone browser chrome and safe areas
+
+3. **Dynamic Layout Management:**
+   - Implement responsive positioning that adapts to content height
+   - Ensure critical buttons remain accessible during scrolling scenarios
+   - Create proper visual hierarchy for different UI elements
+   - Handle edge cases where history content exceeds available space
+
+**Specific Areas to Redesign:**
+1. **Header Area:**
+   - Title, score, guesses remaining, and hint status positioning
+   - Ensure fixed positioning doesn't interfere with scrollable content
+   - Optimize spacing for mobile screens
+
+2. **Santa's Hint Button:**
+   - Reposition to avoid conflicts with scrollable history area
+   - Consider fixed positioning in sidebar, header, or footer area
+   - Ensure always accessible regardless of scroll state
+
+3. **Submit Button:**
+   - Finalize positioning approach (integrated vs. fixed vs. floating)
+   - Ensure consistent behavior across all game states
+   - Optimize for thumb reach on mobile devices
+
+4. **Scroll Controls:**
+   - Fix scroll down button functionality
+   - Improve positioning to avoid UI conflicts
+   - Consider alternative scroll interaction patterns for mobile
+
+5. **History Display Area:**
+   - Optimize height calculations for mobile screens
+   - Ensure proper spacing between elements
+   - Account for virtual keyboard scenarios if applicable
+
+**Implementation Steps:**
+1. **Audit Current Layout:**
+   - Document all current button positions and their conflicts
+   - Test on various iPhone screen sizes and orientations
+   - Identify specific failure scenarios and edge cases
+
+2. **Design Mobile-First Layout:**
+   - Create new positioning system optimized for portrait iPhone screens
+   - Define safe zones for critical UI elements
+   - Establish consistent spacing and sizing guidelines
+
+3. **Implement Responsive Positioning:**
+   - Update positioning calculations throughout codebase
+   - Use viewport-relative units and responsive design patterns
+   - Implement dynamic positioning that adapts to content
+
+4. **Test and Iterate:**
+   - Test on multiple iPhone models and screen sizes
+   - Verify touch accessibility and visual clarity
+   - Ensure smooth scrolling and interaction performance
+
+**Deliverables:**
+- Comprehensive UI layout redesign optimized for iPhone portrait orientation
+- Fixed Santa's Hint button positioning to avoid scroll conflicts
+- Functional scroll down button with proper event handling
+- Consistent submit button positioning across all game states
+- Updated positioning calculations throughout `GameScene.js` and `HistoryManager.js`
+- Responsive design that works on iPhone screen sizes from SE to Pro Max
+- Touch-optimized spacing and sizing for all interactive elements
+
+**Success Criteria:**
+- All buttons remain accessible and functional during gameplay
+- Santa's Hint button never gets covered by scrolling content
+- Scroll up and scroll down buttons both work reliably
+- Submit button positioning is consistent and accessible
+- UI layout looks polished on iPhone portrait screens (375px-428px width)
+- Touch targets are appropriately sized (44px minimum) and well-spaced
+- Game feels designed for mobile rather than adapted from desktop
+- All interactive elements are reachable with thumb navigation
+- Layout handles edge cases gracefully (long history, small screens, etc.)
+
+---
+
+## Task 6: Add Christmas-Themed Visuals and UI
 **Objective:** Enhance the `Game` scene with Christmas-themed sprites and polished UI for elements, feedback, and score display, with optimized iPhone display.
 
 **Steps:**
@@ -195,7 +317,55 @@ This document outlines incremental tasks to develop *XmasMM*, a web-based, singl
 
 ---
 
-## Task 6: Integrate Sound Effects and Music with Toggles
+## Task 6: Add Christmas-Themed Visuals and UI
+**Objective:** Enhance the `Game` scene with Christmas-themed sprites and polished UI for elements, feedback, and score display, with optimized iPhone display.
+
+**Steps:**
+1. Source or create free sprite sheets (e.g., from OpenGameArt.org) for 6 elements (Santa, Present, Mistletoe, Star, Christmas Tree, Snowflake) and feedback pegs (mini ornaments), saving in `assets/`.
+2. **Enhanced Christmas Feedback System:**
+   - Replace traditional black/white pegs with intuitive Christmas-themed feedback:
+     - **Correct Element + Position**: Gold Star ⭐ or Wrapped Present 🎁 ("Perfect placement!")
+     - **Correct Element, Wrong Position**: Silver Bell 🔔 or Small Tree 🎄 ("Right ornament, wrong branch!")
+     - **Wrong Element**: Red X with Snowflake ❌ or Coal lump 🪨 ("Try again!")
+   - Add brief text labels or tooltips explaining feedback meaning for new players
+   - Use consistent color coding: Gold/Green for perfect, Silver/Yellow for close, Red for wrong
+3. In the `Game` scene:
+   - Replace placeholder grid with sprite-based slots (e.g., tap a slot to cycle through element sprites).
+   - Implement new Christmas-themed feedback system with clear visual hierarchy.
+   - Add a Scandinavian Christmas background (reuse or new image).
+   - Display guesses remaining, current score, and "Santa's Hint" status (e.g., "Hint: Locked").
+   - Include a small legend/guide showing what each feedback symbol means.
+4. **iPhone Display Optimization:**
+   - Test and optimize layout for iPhone screen sizes (375x667, 390x844, 428x926).
+   - Ensure all UI elements are touch-friendly (minimum 44px touch targets).
+   - Verify text readability and button sizes on iPhone Safari and Chrome.
+   - Optimize sprite sizes for iPhone screen densities (1x, 2x, 3x).
+   - Test landscape and portrait orientations.
+5. Ensure 60 FPS animations for guess submission (e.g., feedback symbols fade in with Christmas sparkle effects) using Phaser's tween system.
+6. Update `styles.css` for responsive layout on iPhone screens with media queries.
+7. Commit and redeploy to `https://github.com/Murteas/XmasMM`.
+
+**Deliverables:**
+- Sprite sheets in `assets/` for elements and Christmas-themed feedback symbols.
+- Updated `Game` scene with festive visuals and intuitive feedback system.
+- Responsive CSS in `styles.css` optimized for iPhone displays.
+- iPhone-specific layout testing and optimization.
+- **Feedback legend/guide for new players.**
+
+**Success Criteria:**
+- Elements display as Christmas-themed sprites (e.g., Santa, Present).
+- **Feedback system uses intuitive Christmas symbols (Gold Stars, Silver Bells, etc.) instead of traditional pegs.**
+- **New players can understand feedback meaning without prior Mastermind experience.**
+- **Feedback includes brief explanatory text or tooltips for clarity.**
+- UI shows guesses, score, and hint status clearly.
+- Animations run smoothly at 60 FPS on iPhones.
+- **All UI elements are properly sized and positioned on iPhone screens (375px-428px width).**
+- **Touch targets are minimum 44px and easily tappable on mobile devices.**
+- **Text is readable and buttons are appropriately sized for iPhone displays.**
+
+---
+
+## Task 7: Integrate Sound Effects and Music with Toggles
 **Objective:** Add Christmas-themed audio (jingle bells, "ho ho ho", Santa laugh, lo-fi music) with functional sound toggles.
 
 **Steps:**
@@ -224,7 +394,36 @@ This document outlines incremental tasks to develop *XmasMM*, a web-based, singl
 
 ---
 
-## Task 7: Develop "Round Over" Screen with Guess History
+## Task 7: Integrate Sound Effects and Music with Toggles
+**Objective:** Add Christmas-themed audio (jingle bells, "ho ho ho", Santa laugh, lo-fi music) with functional sound toggles.
+
+**Steps:**
+1. Source free audio files (<1MB total, e.g., from FreeSound.org):
+   - Jingle bells for guesses.
+   - "Ho ho ho" for correct solutions.
+   - Santa laugh for hint use.
+   - Lo-fi "Winter Wonderland" track for background music.
+2. In the modular structure:
+   - Preload audio in the `MainMenu` scene.
+   - Play sounds on events (e.g., jingle bells on guess submission).
+   - Loop music in `Game` scene, starting after difficulty selection.
+   - Use registry state from `MainMenu` toggles to enable/disable sounds and music.
+3. Ensure sound-independent play (visual cues like peg animations remain clear).
+4. Commit and redeploy to `https://github.com/Murteas/XmasMM`.
+
+**Deliverables:**
+- Audio files in `assets/`.
+- Updated scenes with sound integration and toggle logic.
+
+**Success Criteria:**
+- Sounds play correctly (e.g., jingle bells on guess, Santa laugh on hint).
+- Music loops in `Game` scene and respects toggle state.
+- Toggles in `MainMenu` enable/disable sounds and music.
+- Game is playable without audio (visual feedback intact).
+
+---
+
+## Task 8: Develop "Round Over" Screen with Guess History
 **Objective:** Create a `RoundOver` scene showing score, all guesses, correct code, and a "Play Again" button, with scoring method validation.
 
 **Steps:**
@@ -260,7 +459,157 @@ This document outlines incremental tasks to develop *XmasMM*, a web-based, singl
 
 ---
 
-## Task 8: Finalize Testing and Deployment
+## Task 8: Develop "Round Over" Screen with Guess History
+**Objective:** Create a `RoundOver` scene showing score, all guesses, correct code, and a "Play Again" button, with scoring method validation.
+
+**Steps:**
+1. **Scoring Method Evaluation:**
+   - Review current scoring formula: (Max guesses - Used guesses + 1) × Difficulty multiplier (100 for 4 elements, 150 for 5, 200 for 6).
+   - Test scoring across different scenarios (quick wins, close calls, hint usage).
+   - Validate that scoring encourages efficient play and rewards difficulty progression.
+   - Consider adjustments for Santa's Hint usage (e.g., point deduction or bonus preservation).
+   - Ensure scoring range provides meaningful differentiation between performance levels.
+2. Create a `RoundOver` scene in the modular structure:
+   - Display final score (e.g., "Your Score: 750 points!") in large, clear text.
+   - Show all guesses with feedback pegs (e.g., grid of guess rows).
+   - Display correct code as sprites (e.g., [Santa, Present, Star, Tree]).
+   - Add a "Play Again" button to return to `DifficultySelection`.
+   - Include scoring breakdown (base score, difficulty bonus, hint usage impact).
+3. Use festive background and high-contrast text.
+4. Ensure touch input works for "Play Again" button.
+5. Commit and redeploy to `https://github.com/Murteas/XmasMM`.
+
+**Deliverables:**
+- `RoundOver` scene in the modular structure.
+- Updated logic for score calculation and guess history display.
+- **Validated and potentially refined scoring method with documentation.**
+- **Scoring breakdown display showing calculation components.**
+
+**Success Criteria:**
+- "Round Over" screen shows score, all guesses, feedback, and correct code.
+- Score calculates correctly per PRD formula.
+- **Scoring method provides meaningful differentiation and encourages efficient play.**
+- **Scoring impact of hints and difficulty is clearly communicated to players.**
+- "Play Again" button restarts at difficulty selection.
+- UI is responsive and festive on iPhones.
+
+---
+
+## Task 8: Develop "Round Over" Screen with Guess History
+**Objective:** Create a `RoundOver` scene showing score, all guesses, correct code, and a "Play Again" button, with scoring method validation.
+
+**Steps:**
+1. **Scoring Method Evaluation:**
+   - Review current scoring formula: (Max guesses - Used guesses + 1) × Difficulty multiplier (100 for 4 elements, 150 for 5, 200 for 6).
+   - Test scoring across different scenarios (quick wins, close calls, hint usage).
+   - Validate that scoring encourages efficient play and rewards difficulty progression.
+   - Consider adjustments for Santa's Hint usage (e.g., point deduction or bonus preservation).
+   - Ensure scoring range provides meaningful differentiation between performance levels.
+2. Create a `RoundOver` scene in the modular structure:
+   - Display final score (e.g., "Your Score: 750 points!") in large, clear text.
+   - Show all guesses with feedback pegs (e.g., grid of guess rows).
+   - Display correct code as sprites (e.g., [Santa, Present, Star, Tree]).
+   - Add a "Play Again" button to return to `DifficultySelection`.
+   - Include scoring breakdown (base score, difficulty bonus, hint usage impact).
+3. Use festive background and high-contrast text.
+4. Ensure touch input works for "Play Again" button.
+5. Commit and redeploy to `https://github.com/Murteas/XmasMM`.
+
+**Deliverables:**
+- `RoundOver` scene in the modular structure.
+- Updated logic for score calculation and guess history display.
+- **Validated and potentially refined scoring method with documentation.**
+- **Scoring breakdown display showing calculation components.**
+
+**Success Criteria:**
+- "Round Over" screen shows score, all guesses, feedback, and correct code.
+- Score calculates correctly per PRD formula.
+- **Scoring method provides meaningful differentiation and encourages efficient play.**
+- **Scoring impact of hints and difficulty is clearly communicated to players.**
+- "Play Again" button restarts at difficulty selection.
+- UI is responsive and festive on iPhones.
+
+---
+
+## Task 9: Enhanced Guess Review with Visual Quality Indicators
+**Objective:** Create an enhanced guess review system that visually highlights the quality of each guess with different glow effects, making it easier to analyze gameplay performance at round completion.
+
+**Visual Quality System:**
+1. **Glow Effect Categories:**
+   - **Gold Glow**: Excellent guesses (high number of correct positions - black pegs)
+   - **Silver Glow**: Good guesses (mix of correct and misplaced elements)
+   - **Bronze/Amber Glow**: Fair guesses (some correct elements but mostly wrong positions)
+   - **Red Glow**: Poor guesses (few or no correct elements)
+   - **Green Glow**: Perfect guess (winning guess with all correct)
+
+2. **Quality Calculation Logic:**
+   - **Perfect (Green)**: All elements correct (black pegs = code length)
+   - **Excellent (Gold)**: 75%+ correct positions (e.g., 3+ black pegs in 4-element code)
+   - **Good (Silver)**: 50%+ total correct elements (black + white pegs combined)
+   - **Fair (Bronze)**: 25-49% total correct elements
+   - **Poor (Red)**: <25% total correct elements
+
+**Implementation Features:**
+1. **Enhanced Round Over Display:**
+   - Show all guesses in a scrollable summary with quality glow effects
+   - Display guess number, elements, feedback, and quality rating
+   - Add quality labels: "Perfect!", "Excellent", "Good", "Fair", "Poor"
+   - Include percentage indicators for each guess quality
+
+2. **Interactive Review:**
+   - Allow players to scroll through their guess history
+   - Tap on individual guesses to see detailed breakdown
+   - Show progression from poor to better guesses visually
+   - Highlight improvement patterns throughout the game
+
+3. **Performance Analytics:**
+   - Show overall performance summary: "X excellent guesses, Y good guesses"
+   - Display improvement metrics: "Got better each guess" or "Consistent performance"
+   - Calculate and show average guess quality
+   - Provide gameplay insights: "Strong pattern recognition" or "Consider systematic approach"
+
+4. **Visual Design:**
+   - Use Christmas-themed glow effects (gold star sparkles, silver bell shimmer, etc.)
+   - Ensure glows are clearly distinguishable on mobile screens
+   - Add subtle animations to draw attention to higher quality guesses
+   - Include mini celebration effects for excellent/perfect guesses
+
+**Mobile Optimization:**
+- Ensure glow effects are visible and performant on iPhone screens
+- Optimize touch scrolling through guess review
+- Size elements appropriately for mobile viewing
+- Consider collapsible/expandable sections for detailed analysis
+
+**Integration Points:**
+- Extend the Round Over scene with enhanced review functionality
+- Integrate with existing feedback calculation system
+- Maintain compatibility with current scoring system
+- Add to post-game flow before "Play Again" option
+
+**Educational Value:**
+- Help players understand what constitutes a good guess
+- Encourage strategic thinking for future games
+- Provide visual feedback for learning mastermind strategies
+- Make the game more engaging through progress visualization
+
+**Deliverables:**
+- Enhanced guess quality calculation system
+- Visual glow effects and quality indicators
+- Interactive guess review interface
+- Performance analytics and insights display
+- Mobile-optimized review interface
+
+**Success Criteria:**
+- Players can easily identify their best and worst guesses visually
+- Glow effects clearly distinguish between quality levels
+- Review interface is intuitive and touch-friendly on mobile
+- Performance insights provide meaningful feedback
+- Visual effects enhance rather than distract from gameplay analysis
+- Integration seamlessly extends existing Round Over functionality
+
+---
+
+## Task 10: Finalize Testing and Deployment
 **Objective:** Test the game for functionality, performance, and usability, then finalize deployment with documentation.
 
 **Steps:**
@@ -317,11 +666,12 @@ This document outlines incremental tasks to develop *XmasMM*, a web-based, singl
 - ✅ Modular code architecture for maintainability
 - ✅ Enhanced UI with proper contrast and visual indicators
 
-**Remaining (Tasks 4-8):**
-- Inline guessing UX with active row editing
+**Remaining (Tasks 5-10):**
+- Optimize UI layout for mobile portrait orientation with button repositioning
 - Christmas-themed sprites and visual polish
 - Sound effects and music integration
 - Round Over screen with final scoring
+- Enhanced guess review with visual quality indicators
 - Testing, documentation, and final deployment
 
 ---

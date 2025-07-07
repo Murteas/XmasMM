@@ -202,7 +202,7 @@ class HistoryManager {
 
   renderScrollIndicators(totalRows, maxVisibleRows, startIndex, endIndex, startY, rowHeight, baseDepth) {
     if (totalRows > maxVisibleRows) {
-      const { width } = this.scene.cameras.main;
+      const { width, height } = this.scene.cameras.main;
       const scrollInfo = `${startIndex + 1}-${endIndex} of ${totalRows}`;
       
       if (startIndex > 0) {
@@ -211,19 +211,31 @@ class HistoryManager {
           fill: '#fff',
           backgroundColor: '#444',
           padding: { left: 4, right: 4, top: 2, bottom: 2 }
-        }).setOrigin(1, 0.5).setDepth(baseDepth);
+        }).setOrigin(1, 0.5).setDepth(GameUtils.getDepthLayers().UI) // Higher depth for visibility
+          .setInteractive({ useHandCursor: true }); // Make it clickable
+        
+        upIndicator.on('pointerdown', () => {
+          this.scrollHistory(-30); // Scroll up
+        });
         
         this.historyGroup.add(upIndicator);
         this.historyElements.push(upIndicator);
       }
       
       if (endIndex < totalRows) {
-        const downIndicator = this.scene.add.text(width - 50, startY + maxVisibleRows * rowHeight + 10, '↓ Scroll down', {
+        // Position scroll down button at a safe location that's always visible
+        const downButtonY = Math.min(startY + maxVisibleRows * rowHeight + 10, height - 80);
+        const downIndicator = this.scene.add.text(width - 50, downButtonY, '↓ Scroll down', {
           font: '10px Arial',
           fill: '#fff',
           backgroundColor: '#444',
           padding: { left: 4, right: 4, top: 2, bottom: 2 }
-        }).setOrigin(1, 0.5).setDepth(baseDepth);
+        }).setOrigin(1, 0.5).setDepth(GameUtils.getDepthLayers().UI) // Higher depth for visibility
+          .setInteractive({ useHandCursor: true }); // Make it clickable
+        
+        downIndicator.on('pointerdown', () => {
+          this.scrollHistory(30); // Scroll down
+        });
         
         this.historyGroup.add(downIndicator);
         this.historyElements.push(downIndicator);
@@ -232,7 +244,7 @@ class HistoryManager {
       const positionIndicator = this.scene.add.text(width - 50, startY - 40, scrollInfo, {
         font: '10px Arial',
         fill: '#ccc'
-      }).setOrigin(1, 0.5).setDepth(baseDepth);
+      }).setOrigin(1, 0.5).setDepth(GameUtils.getDepthLayers().UI);
       
       this.historyGroup.add(positionIndicator);
       this.historyElements.push(positionIndicator);
@@ -291,7 +303,7 @@ class HistoryManager {
     const glowEffect = this.scene.add.rectangle(
       width / 2, 
       activeRowY, 
-      width - 34, 
+      width - 20, // Wider to accommodate submit button inside
       56, 
       0xffd700, 
       0.3
@@ -301,7 +313,7 @@ class HistoryManager {
     this.activeRowBackground = this.scene.add.rectangle(
       width / 2, 
       activeRowY, 
-      width - 40, 
+      width - 20, // Wider to accommodate submit button inside
       50, 
       0x4a4a4a, 
       0.8
@@ -314,7 +326,7 @@ class HistoryManager {
     
     // Create interactive slots
     this.activeRowElements = [];
-    const startX = width / 2 - (codeLength * 25);
+    const startX = width / 2 - (codeLength * 25) - 30; // Shifted left to make room for submit button
     
     for (let i = 0; i < codeLength; i++) {
       const x = startX + i * 50;
@@ -323,14 +335,14 @@ class HistoryManager {
       const slot = this.scene.add.rectangle(x, activeRowY, 40, 40, 0x666666)
         .setStrokeStyle(2, 0xffffff)
         .setInteractive({ useHandCursor: true })
-        .setDepth(GameUtils.getDepthLayers().HISTORY + 0.2);
+        .setDepth(GameUtils.getDepthLayers().TOUCH_AREA + 1); // Above touch area
       
       // Element text
       const elementText = this.activeRowGuess[i] || '?';
       const text = this.scene.add.text(x, activeRowY, elementText, {
         font: '14px Arial',
         fill: this.activeRowGuess[i] ? '#fff' : '#aaa'
-      }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().HISTORY + 0.3);
+      }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().TOUCH_AREA + 1.1); // Above touch area
       
       // Click handler to cycle through elements
       slot.on('pointerdown', () => {
@@ -339,6 +351,19 @@ class HistoryManager {
       
       this.activeRowElements.push({ slot, text });
     }
+    
+    // Create integrated submit button within the active row
+    const submitButtonX = startX + (codeLength * 50) + 25;
+    this.activeRowSubmitBtn = this.scene.add.text(submitButtonX, activeRowY, 'Submit', {
+      font: '12px Arial',
+      fill: '#fff',
+      backgroundColor: '#27ae60',
+      padding: { left: 8, right: 8, top: 4, bottom: 4 }
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(GameUtils.getDepthLayers().TOUCH_AREA + 1.2);
+    
+    this.activeRowSubmitBtn.on('pointerdown', () => {
+      this.scene.submitGuess();
+    });
     
     // Store the glow effect reference for cleanup
     this.activeRowGlowEffect = glowEffect;
@@ -389,6 +414,11 @@ class HistoryManager {
         element.text.destroy();
       });
       this.activeRowElements = null;
+    }
+    
+    if (this.activeRowSubmitBtn) {
+      this.activeRowSubmitBtn.destroy();
+      this.activeRowSubmitBtn = null;
     }
     
     this.hasActiveRow = false;
@@ -449,7 +479,7 @@ class HistoryManager {
     // Update element positions
     if (this.activeRowElements) {
       const codeLength = this.scene.codeLength;
-      const startX = width / 2 - (codeLength * 25);
+      const startX = width / 2 - (codeLength * 25) - 30; // Shifted left to make room for submit button
       
       this.activeRowElements.forEach((element, i) => {
         const x = startX + i * 50;
@@ -458,9 +488,12 @@ class HistoryManager {
       });
     }
     
-    // Update submit button position
-    if (this.scene.submitBtn) {
-      this.scene.positionSubmitButton(activeRowY);
+    // Update integrated submit button position
+    if (this.activeRowSubmitBtn) {
+      const codeLength = this.scene.codeLength;
+      const startX = width / 2 - (codeLength * 25) - 30;
+      const submitButtonX = startX + (codeLength * 50) + 25;
+      this.activeRowSubmitBtn.setPosition(submitButtonX, activeRowY);
     }
   }
 
@@ -474,5 +507,13 @@ class HistoryManager {
 
   isActiveRowComplete() {
     return this.hasActiveRow && !this.activeRowGuess.includes(null);
+  }
+
+  getActiveRowY() {
+    if (!this.hasActiveRow) return null;
+    
+    const historyStartY = 280;
+    const rowHeight = 60;
+    return historyStartY + (this.guessHistory.length * rowHeight) - this.historyScrollOffset;
   }
 }

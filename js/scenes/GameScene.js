@@ -107,21 +107,27 @@ class GameScene extends Phaser.Scene {
     const { width } = this.cameras.main;
     
     if (this.submitBtn) {
-      // Position button to the right of the active row, slightly offset
-      this.submitBtn.setPosition(width - 60, activeRowY);
+      // Fixed position approach - always position the button in the same location
+      // Place it in the bottom right area, consistently positioned
+      const buttonX = width - 80;
+      const buttonY = 250; // Fixed Y position below the hint button
+      this.submitBtn.setPosition(buttonX, buttonY);
     }
   }
   
   setupButtons() {
     const { width, height } = this.cameras.main;
     
-    // Submit button (will be repositioned by positionSubmitButton)
+    // Submit button (hidden since we're using integrated button in active row)
     this.submitBtn = this.add.text(width - 70, 300, 'Submit', {
       font: '16px Arial',
       fill: '#fff',
       backgroundColor: '#27ae60',
       padding: { left: 12, right: 12, top: 6, bottom: 6 }
     }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(GameUtils.getDepthLayers().UI + 10);
+    
+    // Hide the external submit button since we're using integrated approach
+    this.submitBtn.setVisible(false);
     
     this.submitBtn.on('pointerdown', () => {
       this.submitGuess();
