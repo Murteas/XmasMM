@@ -312,6 +312,83 @@ This document outlines incremental tasks to develop *XmasMM*, a web-based, singl
 
 ---
 
+## Task 5.3: Continue UI Layout Optimization
+**Objective:** Address remaining mobile optimization issues identified during testing, focusing on modal picker layout and history display positioning for iPhone portrait screens.
+
+**Priority Issues to Fix:**
+1. **Element Picker Modal Layout:**
+   - Cancel button overlaps with element grid on mobile screens
+   - Modal sizing and spacing needs adjustment for smaller screens
+   - Element grid positioning conflicts with cancel button placement
+   
+2. **History Display Horizontal Positioning:**
+   - First few elements of previous guesses are cut off/invisible on left side of screen
+   - Issue is particularly pronounced when 6 elements are chosen (longer rows)
+   - History row positioning needs to account for mobile screen width constraints
+   - Element positioning calculation doesn't properly center rows on narrow screens
+
+3. **Additional Mobile Refinements:**
+   - Review all UI element spacing and positioning on iPhone portrait screens
+   - Ensure no other UI elements are cut off or overlapping
+   - Optimize touch targets and visual hierarchy for mobile use
+
+**Specific Fixes Needed:**
+
+### Modal Picker Improvements:
+- Adjust modal height calculation to accommodate cancel button without overlap
+- Increase spacing between element grid and cancel button
+- Consider repositioning cancel button outside the main grid area
+- Test modal sizing on various iPhone screen heights (667px-926px)
+
+### History Display Fixes:
+- Recalculate history row starting X position to ensure all elements are visible
+- Implement responsive row centering based on code length and screen width
+- Add horizontal padding/margins to prevent element cutoff
+- Test with all code lengths (4, 5, 6 elements) on narrowest iPhone screens (375px)
+
+### Testing Requirements:
+- Test modal picker on iPhone SE (375x667) - smallest common screen
+- Verify 6-element history rows are fully visible on all iPhone models
+- Ensure cancel button is easily tappable without accidentally selecting elements
+- Validate that all UI improvements maintain touch accessibility standards
+
+**Implementation Steps:**
+1. **Fix Modal Picker Layout:**
+   - Adjust picker height calculation in `showElementPicker()` method
+   - Increase spacing between element grid and cancel button
+   - Test modal on various screen sizes to ensure no overlap
+
+2. **Fix History Display Positioning:**
+   - Update `renderGuessRow()` method to properly center rows on mobile
+   - Adjust starting X position calculation for different screen widths
+   - Add responsive margins based on screen width and code length
+
+3. **Test Across iPhone Models:**
+   - Verify fixes on iPhone SE (375px width) - critical test case
+   - Test with maximum code length (6 elements) scenarios
+   - Ensure all elements remain visible and interactive
+
+4. **Validate Touch Accessibility:**
+   - Confirm all buttons meet 44px minimum touch target size
+   - Verify adequate spacing between interactive elements
+   - Test that no UI elements are accidentally triggered due to proximity
+
+**Deliverables:**
+- Fixed modal picker layout with proper cancel button positioning
+- Corrected history display positioning to show all elements on mobile
+- Responsive UI that works across all iPhone screen sizes (375px-428px width)
+- Comprehensive testing report for mobile layout fixes
+
+**Success Criteria:**
+- Cancel button on element picker does not overlap with element grid
+- All elements in history rows are visible on iPhone portrait screens
+- 6-element code rows display properly on iPhone SE (375px width)
+- Modal picker functions correctly without accidental element selection
+- Touch interactions remain smooth and accurate after positioning fixes
+- Game maintains visual polish while fixing layout issues
+
+---
+
 ## Task 6: Add Christmas-Themed Visuals and UI
 **Objective:** Enhance the `Game` scene with Christmas-themed sprites and polished UI for elements, feedback, and score display, with optimized iPhone display.
 
@@ -577,3 +654,393 @@ This document outlines incremental tasks to develop *XmasMM*, a web-based, singl
 - **Testing:** Test on iPhone emulators or devices to ensure touch input and responsiveness.
 - **Modular Structure:** The codebase has been refactored into a modular structure for easier maintenance and future development.
 - **📝 Documentation Updates:** This Development Steps document will be updated after each task completion to reflect actual accomplishments, changes made, and lessons learned. Each completed task will be marked with ✅ and include detailed deliverables and success criteria met.
+
+---
+
+## ✅ Task 5.2: Implement Christmas Element Images **[COMPLETED]**
+**Objective:** Replace text-based element display with actual Christmas-themed sprite images to enhance visual appeal and usability in the modal picker, active row, and history display.
+
+**Completed Deliverables:**
+- ✅ Integrated 6 Christmas element images (Santa, Present, Mistletoe, Star, Tree, Snowflake)
+- ✅ Added responsive image loading (1x, 2x, 3x resolution support for different device pixel ratios)
+- ✅ Updated modal element picker to display images instead of text
+- ✅ Modified active row slots to show images with proper scaling
+- ✅ Enhanced history display to use images for completed guesses
+- ✅ Implemented device pixel ratio detection for optimal image quality
+- ✅ Added proper image scaling to fit within UI constraints
+
+**Technical Implementation:**
+- ✅ Added comprehensive image preloading in GameScene.preload()
+- ✅ Created getElementImageKey() helper method for responsive image selection
+- ✅ Updated modal picker with image grid layout (2x3 Christmas elements)
+- ✅ Modified active row creation to handle both empty slots ("TAP" text) and image display
+- ✅ Enhanced selectElement() method to replace text with images dynamically
+- ✅ Updated history display renderGuessRow() to show images instead of element names
+- ✅ Proper cleanup of display elements in removeActiveRow()
+
+**Visual Improvements:**
+- ✅ Modal picker now shows visual grid of Christmas elements for instant recognition
+- ✅ Active row displays actual Christmas images making selection more intuitive  
+- ✅ History shows visual representation of past guesses using element images
+- ✅ Responsive image scaling maintains aspect ratio and fits UI containers
+- ✅ Support for multiple device pixel ratios ensures crisp images on all screens
+
+**User Experience Enhancements:**
+- Visual element recognition eliminates need to read text labels
+- Faster element identification through familiar Christmas imagery
+- More engaging and festive game appearance
+- Better accessibility for users who prefer visual over textual interfaces
+- Maintains minimal design while adding meaningful visual information
+
+**Mobile Optimization:**
+- Images scale appropriately for different touch target sizes
+- Optimal image resolution selected based on device capabilities
+- Visual elements remain clear and recognizable at small sizes
+- Touch interactions unchanged - maintains existing modal picker UX
+
+---
+
+## Task 5.3: Continue UI Layout Optimization
+**Objective:** Address remaining mobile optimization issues identified during testing, focusing on modal picker layout and history display positioning for iPhone portrait screens.
+
+**Priority Issues to Fix:**
+1. **Element Picker Modal Layout:**
+   - Cancel button overlaps with element grid on mobile screens
+   - Modal sizing and spacing needs adjustment for smaller screens
+   - Element grid positioning conflicts with cancel button placement
+   
+2. **History Display Horizontal Positioning:**
+   - First few elements of previous guesses are cut off/invisible on left side of screen
+   - Issue is particularly pronounced when 6 elements are chosen (longer rows)
+   - History row positioning needs to account for mobile screen width constraints
+   - Element positioning calculation doesn't properly center rows on narrow screens
+
+3. **Additional Mobile Refinements:**
+   - Review all UI element spacing and positioning on iPhone portrait screens
+   - Ensure no other UI elements are cut off or overlapping
+   - Optimize touch targets and visual hierarchy for mobile use
+
+**Specific Fixes Needed:**
+
+### Modal Picker Improvements:
+- Adjust modal height calculation to accommodate cancel button without overlap
+- Increase spacing between element grid and cancel button
+- Consider repositioning cancel button outside the main grid area
+- Test modal sizing on various iPhone screen heights (667px-926px)
+
+### History Display Fixes:
+- Recalculate history row starting X position to ensure all elements are visible
+- Implement responsive row centering based on code length and screen width
+- Add horizontal padding/margins to prevent element cutoff
+- Test with all code lengths (4, 5, 6 elements) on narrowest iPhone screens (375px)
+
+### Testing Requirements:
+- Test modal picker on iPhone SE (375x667) - smallest common screen
+- Verify 6-element history rows are fully visible on all iPhone models
+- Ensure cancel button is easily tappable without accidentally selecting elements
+- Validate that all UI improvements maintain touch accessibility standards
+
+**Implementation Steps:**
+1. **Fix Modal Picker Layout:**
+   - Adjust picker height calculation in `showElementPicker()` method
+   - Increase spacing between element grid and cancel button
+   - Test modal on various screen sizes to ensure no overlap
+
+2. **Fix History Display Positioning:**
+   - Update `renderGuessRow()` method to properly center rows on mobile
+   - Adjust starting X position calculation for different screen widths
+   - Add responsive margins based on screen width and code length
+
+3. **Test Across iPhone Models:**
+   - Verify fixes on iPhone SE (375px width) - critical test case
+   - Test with maximum code length (6 elements) scenarios
+   - Ensure all elements remain visible and interactive
+
+4. **Validate Touch Accessibility:**
+   - Confirm all buttons meet 44px minimum touch target size
+   - Verify adequate spacing between interactive elements
+   - Test that no UI elements are accidentally triggered due to proximity
+
+**Deliverables:**
+- Fixed modal picker layout with proper cancel button positioning
+- Corrected history display positioning to show all elements on mobile
+- Responsive UI that works across all iPhone screen sizes (375px-428px width)
+- Comprehensive testing report for mobile layout fixes
+
+**Success Criteria:**
+- Cancel button on element picker does not overlap with element grid
+- All elements in history rows are visible on iPhone portrait screens
+- 6-element code rows display properly on iPhone SE (375px width)
+- Modal picker functions correctly without accidental element selection
+- Touch interactions remain smooth and accurate after positioning fixes
+- Game maintains visual polish while fixing layout issues
+
+---
+
+## Task 6: Add Christmas-Themed Visuals and UI
+**Objective:** Enhance the `Game` scene with Christmas-themed sprites and polished UI for elements, feedback, and score display, with optimized iPhone display.
+
+**Steps:**
+1. Source or create free sprite sheets (e.g., from OpenGameArt.org) for 6 elements (Santa, Present, Mistletoe, Star, Christmas Tree, Snowflake) and feedback pegs (mini ornaments), saving in `assets/`.
+2. **Enhanced Christmas Feedback System:**
+   - Replace traditional black/white pegs with intuitive Christmas-themed feedback:
+     - **Correct Element + Position**: Gold Star ⭐ or Wrapped Present 🎁 ("Perfect placement!")
+     - **Correct Element, Wrong Position**: Silver Bell 🔔 or Small Tree 🎄 ("Right ornament, wrong branch!")
+     - **Wrong Element**: Red X with Snowflake ❌ or Coal lump 🪨 ("Try again!")
+   - Add brief text labels or tooltips explaining feedback meaning for new players
+   - Use consistent color coding: Gold/Green for perfect, Silver/Yellow for close, Red for wrong
+3. In the `Game` scene:
+   - Replace placeholder grid with sprite-based slots (e.g., tap a slot to cycle through element sprites).
+   - Implement new Christmas-themed feedback system with clear visual hierarchy.
+   - Add a Scandinavian Christmas background (reuse or new image).
+   - Display guesses remaining, current score, and "Santa's Hint" status (e.g., "Hint: Locked").
+   - Include a small legend/guide showing what each feedback symbol means.
+4. **iPhone Display Optimization:**
+   - Test and optimize layout for iPhone screen sizes (375x667, 390x844, 428x926).
+   - Ensure all UI elements are touch-friendly (minimum 44px touch targets).
+   - Verify text readability and button sizes on iPhone Safari and Chrome.
+   - Optimize sprite sizes for iPhone screen densities (1x, 2x, 3x).
+   - Test landscape and portrait orientations.
+5. Ensure 60 FPS animations for guess submission (e.g., feedback symbols fade in with Christmas sparkle effects) using Phaser's tween system.
+6. Update `styles.css` for responsive layout on iPhone screens with media queries.
+7. Commit and redeploy to `https://github.com/Murteas/XmasMM`.
+
+**Deliverables:**
+- Sprite sheets in `assets/` for elements and Christmas-themed feedback symbols.
+- Updated `Game` scene with festive visuals and intuitive feedback system.
+- Responsive CSS in `styles.css` optimized for iPhone displays.
+- iPhone-specific layout testing and optimization.
+- **Feedback legend/guide for new players.**
+
+**Success Criteria:**
+- Elements display as Christmas-themed sprites (e.g., Santa, Present).
+- **Feedback system uses intuitive Christmas symbols (Gold Stars, Silver Bells, etc.) instead of traditional pegs.**
+- **New players can understand feedback meaning without prior Mastermind experience.**
+- **Feedback includes brief explanatory text or tooltips for clarity.**
+- UI shows guesses, score, and hint status clearly.
+- Animations run smoothly at 60 FPS on iPhones.
+- **All UI elements are properly sized and positioned on iPhone screens (375px-428px width).**
+- **Touch targets are minimum 44px and easily tappable on mobile devices.**
+- **Text is readable and buttons are appropriately sized for iPhone displays.**
+
+---
+
+## Task 7: Integrate Sound Effects and Music with Toggles
+**Objective:** Add Christmas-themed audio (jingle bells, "ho ho ho", Santa laugh, lo-fi music) with functional sound toggles.
+
+**Steps:**
+1. Source free audio files (<1MB total, e.g., from FreeSound.org):
+   - Jingle bells for guesses.
+   - "Ho ho ho" for correct solutions.
+   - Santa laugh for hint use.
+   - Lo-fi "Winter Wonderland" track for background music.
+2. In the modular structure:
+   - Preload audio in the `MainMenu` scene.
+   - Play sounds on events (e.g., jingle bells on guess submission).
+   - Loop music in `Game` scene, starting after difficulty selection.
+   - Use registry state from `MainMenu` toggles to enable/disable sounds and music.
+3. Ensure sound-independent play (visual cues like peg animations remain clear).
+4. Commit and redeploy to `https://github.com/Murteas/XmasMM`.
+
+**Deliverables:**
+- Audio files in `assets/`.
+- Updated scenes with sound integration and toggle logic.
+
+**Success Criteria:**
+- Sounds play correctly (e.g., jingle bells on guess, Santa laugh on hint).
+- Music loops in `Game` scene and respects toggle state.
+- Toggles in `MainMenu` enable/disable sounds and music.
+- Game is playable without audio (visual feedback intact).
+
+---
+
+## Task 8: Develop "Round Over" Screen with Guess History
+**Objective:** Create a `RoundOver` scene showing score, all guesses, correct code, and a "Play Again" button, with scoring method validation.
+
+**Steps:**
+1. **Scoring Method Evaluation:**
+   - Review current scoring formula: (Max guesses - Used guesses + 1) × Difficulty multiplier (100 for 4 elements, 150 for 5, 200 for 6).
+   - Test scoring across different scenarios (quick wins, close calls, hint usage).
+   - Validate that scoring encourages efficient play and rewards difficulty progression.
+   - Consider adjustments for Santa's Hint usage (e.g., point deduction or bonus preservation).
+   - Ensure scoring range provides meaningful differentiation between performance levels.
+2. Create a `RoundOver` scene in the modular structure:
+   - Display final score (e.g., "Your Score: 750 points!") in large, clear text.
+   - Show all guesses with feedback pegs (e.g., grid of guess rows).
+   - Display correct code as sprites (e.g., [Santa, Present, Star, Tree]).
+   - Add a "Play Again" button to return to `DifficultySelection`.
+   - Include scoring breakdown (base score, difficulty bonus, hint usage impact).
+3. Use festive background and high-contrast text.
+4. Ensure touch input works for "Play Again" button.
+5. Commit and redeploy to `https://github.com/Murteas/XmasMM`.
+
+**Deliverables:**
+- `RoundOver` scene in the modular structure.
+- Updated logic for score calculation and guess history display.
+- **Validated and potentially refined scoring method with documentation.**
+- **Scoring breakdown display showing calculation components.**
+
+**Success Criteria:**
+- "Round Over" screen shows score, all guesses, feedback, and correct code.
+- Score calculates correctly per PRD formula.
+- **Scoring method provides meaningful differentiation and encourages efficient play.**
+- **Scoring impact of hints and difficulty is clearly communicated to players.**
+- "Play Again" button restarts at difficulty selection.
+- UI is responsive and festive on iPhones.
+
+---
+
+## Task 9: Enhanced Guess Review with Visual Quality Indicators
+**Objective:** Create an enhanced guess review system that visually highlights the quality of each guess with different glow effects, making it easier to analyze gameplay performance at round completion.
+
+**Visual Quality System:**
+1. **Glow Effect Categories:**
+   - **Gold Glow**: Excellent guesses (high number of correct positions - black pegs)
+   - **Silver Glow**: Good guesses (mix of correct and misplaced elements)
+   - **Bronze/Amber Glow**: Fair guesses (some correct elements but mostly wrong positions)
+   - **Red Glow**: Poor guesses (few or no correct elements)
+   - **Green Glow**: Perfect guess (winning guess with all correct)
+
+2. **Quality Calculation Logic:**
+   - **Perfect (Green)**: All elements correct (black pegs = code length)
+   - **Excellent (Gold)**: 75%+ correct positions (e.g., 3+ black pegs in 4-element code)
+   - **Good (Silver)**: 50%+ total correct elements (black + white pegs combined)
+   - **Fair (Bronze)**: 25-49% total correct elements
+   - **Poor (Red)**: <25% total correct elements
+
+**Implementation Features:**
+1. **Enhanced Round Over Display:**
+   - Show all guesses in a scrollable summary with quality glow effects
+   - Display guess number, elements, feedback, and quality rating
+   - Add quality labels: "Perfect!", "Excellent", "Good", "Fair", "Poor"
+   - Include percentage indicators for each guess quality
+
+2. **Interactive Review:**
+   - Allow players to scroll through their guess history
+   - Tap on individual guesses to see detailed breakdown
+   - Show progression from poor to better guesses visually
+   - Highlight improvement patterns throughout the game
+
+3. **Performance Analytics:**
+   - Show overall performance summary: "X excellent guesses, Y good guesses"
+   - Display improvement metrics: "Got better each guess" or "Consistent performance"
+   - Calculate and show average guess quality
+   - Provide gameplay insights: "Strong pattern recognition" or "Consider systematic approach"
+
+4. **Visual Design:**
+   - Use Christmas-themed glow effects (gold star sparkles, silver bell shimmer, etc.)
+   - Ensure glows are clearly distinguishable on mobile screens
+   - Add subtle animations to draw attention to higher quality guesses
+   - Include mini celebration effects for excellent/perfect guesses
+
+**Mobile Optimization:**
+- Ensure glow effects are visible and performant on iPhone screens
+- Optimize touch scrolling through guess review
+- Size elements appropriately for mobile viewing
+- Consider collapsible/expandable sections for detailed analysis
+
+**Integration Points:**
+- Extend the Round Over scene with enhanced review functionality
+- Integrate with existing feedback calculation system
+- Maintain compatibility with current scoring system
+- Add to post-game flow before "Play Again" option
+
+**Educational Value:**
+- Help players understand what constitutes a good guess
+- Encourage strategic thinking for future games
+- Provide visual feedback for learning mastermind strategies
+- Make the game more engaging through progress visualization
+
+**Deliverables:**
+- Enhanced guess quality calculation system
+- Visual glow effects and quality indicators
+- Interactive guess review interface
+- Performance analytics and insights display
+- Mobile-optimized review interface
+
+**Success Criteria:**
+- Players can easily identify their best and worst guesses visually
+- Glow effects clearly distinguish between quality levels
+- Review interface is intuitive and touch-friendly on mobile
+- Performance insights provide meaningful feedback
+- Visual effects enhance rather than distract from gameplay analysis
+- Integration seamlessly extends existing Round Over functionality
+
+---
+
+## Task 10: Finalize Testing and Deployment
+**Objective:** Test the game for functionality, performance, and usability, then finalize deployment with documentation.
+
+**Steps:**
+1. Test on iPhone browsers (Safari, Chrome):
+   - Verify load time <5 seconds on 4G/Wi-Fi.
+   - Confirm 60 FPS animations and touch input responsiveness.
+   - Check all features: difficulty selection, game logic, visuals, audio, "Round Over" screen.
+   - Ensure high contrast and sound-independent play.
+   - Test edge cases (e.g., incomplete guesses, hint usage, max/min difficulty).
+   - **Comprehensive iPhone Testing:**
+     - Test on multiple iPhone models (iPhone 12, 13, 14, 15, 16 if available).
+     - Verify layout on different screen sizes (iPhone SE, standard, Plus/Pro Max).
+     - Test both portrait and landscape orientations.
+     - Verify touch targets are appropriately sized (44px minimum).
+     - Test scrolling performance and touch responsiveness.
+     - Validate text readability and button accessibility.
+2. **Scoring Method Final Validation:**
+   - Play through multiple games with different strategies.
+   - Verify scoring creates appropriate challenge and reward balance.
+   - Document final scoring formula and rationale.
+3. Fix any bugs (e.g., robust asset loading, prompt for incomplete guesses).
+4. Create documentation in `https://github.com/Murteas/XmasMM`:
+   - `README.md`: Player guide (access URL, play game, share scores verbally).
+   - `organizer.md`: Instructions for managing verbal score sharing.
+5. Commit final code and redeploy to GitHub Pages.
+6. Verify final URL (e.g., `https://Murteas.github.io/XmasMM`) works on multiple iPhones.
+
+**Deliverables:**
+- Fully tested game deployed on GitHub Pages via `https://github.com/Murteas/XmasMM`.
+- `README.md` and `organizer.md` in repository.
+
+**Success Criteria:**
+- Game meets all PRD requirements (difficulty, scoring, theming, etc.).
+- No crashes or major bugs on iPhones.
+- Load time <5 seconds, animations at 60 FPS.
+- **All UI elements display properly on iPhone screen sizes (375px-428px width).**
+- **Touch interactions work reliably on iPhone Safari and Chrome.**
+- **Scoring method is balanced and provides meaningful player feedback.**
+- Documentation is clear for players and organizer.
+- GitHub Pages URL is stable and accessible.
+
+---
+
+## Progress Summary
+
+**Completed (Tasks 1-3):**
+- ✅ Basic project structure with Phaser.js and GitHub Pages deployment
+- ✅ Main menu with Christmas background and sound toggles
+- ✅ Difficulty selection scene
+- ✅ Complete Mastermind game logic with Christmas theming
+- ✅ Touch-based guess input and feedback system
+- ✅ Scrollable guess history with touch controls
+- ✅ Santa's Hint feature unlocked at 500 points
+- ✅ Modular code architecture for maintainability
+- ✅ Enhanced UI with proper contrast and visual indicators
+
+**Remaining (Tasks 5-10):**
+- Optimize UI layout for mobile portrait orientation with button repositioning
+- Christmas-themed sprites and visual polish
+- Sound effects and music integration
+- Round Over screen with final scoring
+- Enhanced guess review with visual quality indicators
+- Testing, documentation, and final deployment
+
+---
+
+## Notes
+- **Phaser.js Preference:** Use Phaser.js unless a simpler alternative (e.g., p5.js, vanilla JavaScript) significantly reduces complexity while meeting requirements. Justify any deviation in commit messages.
+- **Asset Sourcing:** Use free, licensed assets (e.g., OpenGameArt.org, FreeSound.org) to ensure zero cost.
+- **Incremental Commits:** Commit after each task to track progress and enable rollback if needed.
+- **Testing:** Test on iPhone emulators or devices to ensure touch input and responsiveness.
+- **Modular Structure:** The codebase has been refactored into a modular structure for easier maintenance and future development.
+- **📝 Documentation Updates:** This Development Steps document will be updated after each task completion to reflect actual accomplishments, changes made, and lessons learned. Each completed task will be marked with ✅ and include detailed deliverables and success criteria met.
+
+---

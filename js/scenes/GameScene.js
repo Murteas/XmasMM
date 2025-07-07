@@ -10,6 +10,31 @@ class GameScene extends Phaser.Scene {
     if (!this.textures.exists('bg')) {
       this.load.image('bg', 'assets/bg.jpg');
     }
+    
+    // Load Christmas element images (responsive sizing for different screen densities)
+    // Base resolution (1x) images
+    this.load.image('santa_1x', 'assets/santa_1x.png');
+    this.load.image('present_1x', 'assets/Present_1x.png');
+    this.load.image('mistletoe_1x', 'assets/mistletoe_1x.png');
+    this.load.image('star_1x', 'assets/Star_1x.png');
+    this.load.image('tree_1x', 'assets/Tree_1x.png');
+    this.load.image('snowflake_1x', 'assets/snowflake_1x.png');
+    
+    // Retina (2x) images
+    this.load.image('santa_2x', 'assets/Santa_2x.png');
+    this.load.image('present_2x', 'assets/Present_2x.png');
+    this.load.image('mistletoe_2x', 'assets/mistletoe_2x.png');
+    this.load.image('star_2x', 'assets/Star_2x.png');
+    this.load.image('tree_2x', 'assets/Tree_2x.png');
+    this.load.image('snowflake_2x', 'assets/snowflake_2x.png');
+    
+    // Super Retina (3x) images  
+    this.load.image('santa_3x', 'assets/Santa_3x.png');
+    this.load.image('present_3x', 'assets/Present_3x.png');
+    this.load.image('mistletoe_3x', 'assets/mistletoe_3x.png');
+    this.load.image('star_3x', 'assets/Star_3x.png');
+    this.load.image('tree_3x', 'assets/Tree_3x.png');
+    this.load.image('snowflake_3x', 'assets/snowflake_3x.png');
   }
   
   create() {
@@ -379,5 +404,19 @@ class GameScene extends Phaser.Scene {
         this.scene.start('DifficultySelection');
       });
     });
+  }
+  
+  // Helper method to get appropriate image key based on device pixel ratio
+  getElementImageKey(elementName) {
+    const pixelRatio = window.devicePixelRatio || 1;
+    const normalizedName = elementName.toLowerCase();
+    
+    if (pixelRatio >= 3) {
+      return `${normalizedName}_3x`;
+    } else if (pixelRatio >= 2) {
+      return `${normalizedName}_2x`;
+    } else {
+      return `${normalizedName}_1x`;
+    }
   }
 }

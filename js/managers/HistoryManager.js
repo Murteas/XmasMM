@@ -174,21 +174,25 @@ class HistoryManager {
   renderGuessRow(guess, feedback, rowIndex, y, depth) {
     const codeLength = guess.length;
     
-    // Display guess elements
+    // Display guess elements with images
     guess.forEach((element, colIndex) => {
       const x = 100 + colIndex * 60;
       const slot = this.scene.add.rectangle(x, y, 40, 30, 0x666666)
         .setStrokeStyle(1, 0xffffff)
         .setDepth(depth);
       
-      const text = this.scene.add.text(x, y, element, {
-        font: '10px Arial',
-        fill: '#fff'
-      }).setOrigin(0.5).setDepth(depth + 0.01);
+      // Display element image instead of text
+      const imageKey = this.scene.getElementImageKey(element);
+      const elementImage = this.scene.add.image(x, y, imageKey);
+      
+      // Scale image to fit in history slot (smaller than active row)
+      const imageScale = Math.min(24 / elementImage.width, 24 / elementImage.height);
+      elementImage.setScale(imageScale);
+      elementImage.setOrigin(0.5).setDepth(depth + 0.01);
       
       this.historyGroup.add(slot);
-      this.historyGroup.add(text);
-      this.historyElements.push(slot, text);
+      this.historyGroup.add(elementImage);
+      this.historyElements.push(slot, elementImage);
     });
     
     // Display feedback
@@ -356,12 +360,23 @@ class HistoryManager {
         .setInteractive({ useHandCursor: true })
         .setDepth(GameUtils.getDepthLayers().TOUCH_AREA + 1); // Above touch area
       
-      // Element text with tap hint
-      const elementText = this.activeRowGuess[i] || 'TAP';
-      const text = this.scene.add.text(x, activeRowY, elementText, {
-        font: this.activeRowGuess[i] ? '14px Arial' : '10px Arial',
-        fill: this.activeRowGuess[i] ? '#fff' : '#aaa'
-      }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().TOUCH_AREA + 1.1); // Above touch area
+      // Element display (image or tap hint)
+      let displayElement;
+      if (this.activeRowGuess[i]) {
+        // Show element image
+        const imageKey = this.scene.getElementImageKey(this.activeRowGuess[i]);
+        displayElement = this.scene.add.image(x, activeRowY, imageKey);
+        // Scale to fit in slot
+        const imageScale = Math.min(32 / displayElement.width, 32 / displayElement.height);
+        displayElement.setScale(imageScale);
+      } else {
+        // Show "TAP" hint text
+        displayElement = this.scene.add.text(x, activeRowY, 'TAP', {
+          font: '10px Arial',
+          fill: '#aaa'
+        });
+      }
+      displayElement.setOrigin(0.5).setDepth(GameUtils.getDepthLayers().TOUCH_AREA + 1.1); // Above touch area
       
       // Click handler to open element picker (mobile-friendly UX)
       slot.on('pointerdown', () => {
@@ -378,7 +393,7 @@ class HistoryManager {
         this.cycleActiveRowElement(i);
       });
       
-      this.activeRowElements.push({ slot, text });
+      this.activeRowElements.push({ slot, displayElement });
     }
     
     // Create integrated submit button within the active row
@@ -468,14 +483,14 @@ class HistoryManager {
       elementBg.setStrokeStyle(2, 0x2980b9);
       elementBg.setInteractive({ useHandCursor: true });
       
-      // Element text with responsive sizing
-      const fontSize = elementSize < 50 ? '10px' : '12px';
-      const elementText = this.scene.add.text(x, y, element, {
-        font: `bold ${fontSize} Arial`,
-        fill: '#fff',
-        align: 'center',
-        wordWrap: { width: elementSize - 8 }
-      }).setOrigin(0.5);
+      // Element image instead of text
+      const imageKey = this.scene.getElementImageKey(element);
+      const elementImage = this.scene.add.image(x, y, imageKey);
+      
+      // Scale image to fit within button while maintaining aspect ratio
+      const imageScale = Math.min((elementSize - 8) / elementImage.width, (elementSize - 8) / elementImage.height);
+      elementImage.setScale(imageScale);
+      elementImage.setOrigin(0.5);
 
       // Highlight if currently selected
       const currentElement = this.activeRowGuess[slotIndex];
@@ -515,7 +530,7 @@ class HistoryManager {
         }
       });
 
-      this.elementPicker.add([elementBg, elementText]);
+      this.elementPicker.add([elementBg, elementImage]);
     });
 
     // Close button with proper touch target size
@@ -553,11 +568,24 @@ class HistoryManager {
   selectElement(slotIndex, element) {
     this.activeRowGuess[slotIndex] = element;
     
-    // Update visual
+    // Update visual - replace display element with image
     const elementData = this.activeRowElements[slotIndex];
-    elementData.text.setText(element);
-    elementData.text.setFill('#fff');
-    elementData.text.setFontSize('14px'); // Restore normal font size when element is selected
+    const oldElement = elementData.displayElement;
+    const x = oldElement.x;
+    const y = oldElement.y;
+    
+    // Remove old element
+    oldElement.destroy();
+    
+    // Create new image element
+    const imageKey = this.scene.getElementImageKey(element);
+    const newImage = this.scene.add.image(x, y, imageKey);
+    const imageScale = Math.min(32 / newImage.width, 32 / newImage.height);
+    newImage.setScale(imageScale);
+    newImage.setOrigin(0.5).setDepth(GameUtils.getDepthLayers().TOUCH_AREA + 1.1);
+    
+    // Update reference
+    elementData.displayElement = newImage;
   }
 
   closeElementPicker() {
@@ -600,7 +628,7 @@ class HistoryManager {
     if (this.activeRowElements) {
       this.activeRowElements.forEach(element => {
         element.slot.destroy();
-        element.text.destroy();
+        element.displayElement.destroy();
       });
       this.activeRowElements = null;
     }
