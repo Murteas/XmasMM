@@ -18,9 +18,8 @@ class GameScene extends Phaser.Scene {
     this.setupGameState();
     this.setupManagers();
     this.setupUI();
-    this.setupCurrentGuessRow();
+    this.setupInlineGuessing();
     this.setupButtons();
-    this.initializeCurrentGuess();
   }
 
   initializeGame() {
@@ -45,7 +44,6 @@ class GameScene extends Phaser.Scene {
     this.elements = GameUtils.getGameElements();
     this.codeLength = this.registry.get('codeLength') || 4;
     this.maxGuesses = this.registry.get('maxGuesses') || 10;
-    this.currentGuess = [];
     this.guessesRemaining = this.maxGuesses;
     
     // Generate random code
@@ -87,42 +85,43 @@ class GameScene extends Phaser.Scene {
     }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
   }
   
-  setupCurrentGuessRow() {
-    const { width } = this.cameras.main;
-    const startX = width / 2 - (this.codeLength * 30);
-    const y = 120;
+  setupInlineGuessing() {
+    // Create the first active row for inline editing
+    this.createNewActiveRow();
+  }
+
+  createNewActiveRow() {
+    // Determine if we should pre-fill with previous guess
+    const lastGuess = this.historyManager.getGuessHistory().length > 0 
+      ? this.historyManager.getGuessHistory().slice(-1)[0] 
+      : null;
     
-    this.currentGuessSlots = [];
-    for (let i = 0; i < this.codeLength; i++) {
-      const x = startX + i * 60;
-      const slot = this.add.rectangle(x, y, 50, 50, 0x444444)
-        .setStrokeStyle(2, 0xffffff)
-        .setInteractive({ useHandCursor: true })
-        .setDepth(GameUtils.getDepthLayers().CURRENT_GUESS);
-      
-      const text = this.add.text(x, y, this.elements[0], {
-        font: '12px Arial',
-        fill: '#fff'
-      }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().CURRENT_GUESS + 0.1);
-      
-      slot.on('pointerdown', () => {
-        this.cycleElement(i);
-      });
-      
-      this.currentGuessSlots.push({ slot, text, index: i });
+    // Create the active row in the history area
+    const activeRowY = this.historyManager.createActiveRow(lastGuess);
+    
+    // Position submit button near the active row
+    this.positionSubmitButton(activeRowY);
+  }
+
+  positionSubmitButton(activeRowY) {
+    const { width } = this.cameras.main;
+    
+    if (this.submitBtn) {
+      // Position button to the right of the active row
+      this.submitBtn.setPosition(width - 70, activeRowY);
     }
   }
   
   setupButtons() {
     const { width, height } = this.cameras.main;
     
-    // Submit button
-    this.submitBtn = this.add.text(width / 2, 180, 'Submit Guess', {
-      font: '20px Arial',
+    // Submit button (will be repositioned by positionSubmitButton)
+    this.submitBtn = this.add.text(width - 70, 300, 'Submit', {
+      font: '16px Arial',
       fill: '#fff',
       backgroundColor: '#27ae60',
-      padding: { left: 16, right: 16, top: 8, bottom: 8 }
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(GameUtils.getDepthLayers().UI);
+      padding: { left: 12, right: 12, top: 6, bottom: 6 }
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(GameUtils.getDepthLayers().UI + 1);
     
     this.submitBtn.on('pointerdown', () => {
       this.submitGuess();
@@ -153,33 +152,20 @@ class GameScene extends Phaser.Scene {
       this.scene.start('DifficultySelection');
     });
   }
-
-  initializeCurrentGuess() {
-    for (let i = 0; i < this.codeLength; i++) {
-      this.currentGuess.push(this.elements[0]); // Default to Santa
-    }
-    this.updateCurrentGuessDisplay();
-  }
-  
-  cycleElement(slotIndex) {
-    const currentElement = this.currentGuess[slotIndex];
-    const currentIndex = this.elements.indexOf(currentElement);
-    const nextIndex = (currentIndex + 1) % this.elements.length;
-    this.currentGuess[slotIndex] = this.elements[nextIndex];
-    this.updateCurrentGuessDisplay();
-  }
-  
-  updateCurrentGuessDisplay() {
-    this.currentGuessSlots.forEach((slot, index) => {
-      slot.text.setText(this.currentGuess[index]);
-    });
-  }
   
   submitGuess() {
-    const feedback = GameUtils.calculateFeedback(this.currentGuess, this.secretCode);
+    // Get the current guess from the active row
+    const currentGuess = this.historyManager.submitActiveRowGuess();
+    
+    if (!currentGuess) {
+      // The guess was incomplete or invalid
+      return;
+    }
+    
+    const feedback = GameUtils.calculateFeedback(currentGuess, this.secretCode);
     
     // Add to history
-    this.historyManager.addGuess(this.currentGuess, feedback);
+    this.historyManager.addGuess(currentGuess, feedback);
     
     // Update guesses remaining
     this.guessesRemaining--;
@@ -202,6 +188,27 @@ class GameScene extends Phaser.Scene {
     
     // Check if Santa's Hint should be enabled
     this.scoreManager.checkHintAvailability(this.hintBtn, this.hintText);
+    
+    // Create new active row for next guess
+    this.createNewActiveRow();
+  }
+
+  showIncompleteGuessError() {
+    // Create a temporary error message
+    const { width } = this.cameras.main;
+    const errorText = this.add.text(width / 2, 240, 'Please fill all slots!', {
+      font: '16px Arial',
+      fill: '#e74c3c',
+      backgroundColor: '#000',
+      padding: { left: 8, right: 8, top: 4, bottom: 4 }
+    }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI + 2);
+    
+    // Remove the error message after 2 seconds
+    this.time.delayedCall(2000, () => {
+      if (errorText) {
+        errorText.destroy();
+      }
+    });
   }
   
   updateScore() {
@@ -210,22 +217,47 @@ class GameScene extends Phaser.Scene {
   }
   
   useSantasHint() {
+    // Get current guess from active row
+    const currentGuess = this.historyManager.getActiveRowGuess();
+    
+    if (!currentGuess) {
+      return;
+    }
+    
     const hintResult = this.scoreManager.useSantasHint(
       this.secretCode, 
-      this.currentGuess, 
+      currentGuess, 
       this.hintBtn, 
       this.hintText
     );
     
     if (hintResult) {
-      this.updateCurrentGuessDisplay();
+      // Apply the hint to the active row
+      this.historyManager.activeRowGuess[hintResult.position] = hintResult.element;
+      
+      // Update the visual display of the active row
+      if (this.historyManager.activeRowElements && this.historyManager.activeRowElements[hintResult.position]) {
+        const elementData = this.historyManager.activeRowElements[hintResult.position];
+        elementData.text.setText(hintResult.element);
+        elementData.text.setFill('#fff');
+      }
       
       // Visual feedback
-      this.add.text(this.cameras.main.width / 2, 250, 
-        `Position ${hintResult.position + 1}: ${hintResult.element}`, {
+      const { width } = this.cameras.main;
+      const hintText = this.add.text(width / 2, 250, 
+        `Santa's Hint: Position ${hintResult.position + 1} is ${hintResult.element}!`, {
         font: '16px Arial',
-        fill: '#e74c3c'
-      }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
+        fill: '#ffd700',
+        backgroundColor: '#000',
+        padding: { left: 8, right: 8, top: 4, bottom: 4 }
+      }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI + 2);
+      
+      // Remove hint text after 3 seconds
+      this.time.delayedCall(3000, () => {
+        if (hintText) {
+          hintText.destroy();
+        }
+      });
     }
   }
   

@@ -10,6 +10,12 @@ class HistoryManager {
     this.historyGroup = null;
     this.historyTouchArea = null;
     
+    // Inline editing properties
+    this.hasActiveRow = false;
+    this.activeRowElements = null;
+    this.activeRowBackground = null;
+    this.activeRowGuess = [];
+    
     this.setupHistoryScroll();
   }
 
@@ -61,15 +67,20 @@ class HistoryManager {
   }
 
   scrollHistory(delta) {
-    if (this.guessHistory.length === 0) return;
+    if (this.guessHistory.length === 0 && !this.hasActiveRow) return;
     
-    const rowHeight = 40;
+    const rowHeight = 60; // Updated to match active row height
     const maxVisibleRows = Math.floor((this.scene.cameras.main.height - 280 - 100) / rowHeight);
-    const totalRows = this.guessHistory.length;
-    const maxScrollOffset = Math.max(0, totalRows - maxVisibleRows);
+    const totalRows = this.guessHistory.length + (this.hasActiveRow ? 1 : 0);
+    const maxScrollOffset = Math.max(0, (totalRows * rowHeight) - (maxVisibleRows * rowHeight));
     
     this.historyScrollOffset = Math.max(0, Math.min(maxScrollOffset, this.historyScrollOffset + delta));
     this.displayGuessHistory();
+    
+    // Update active row position if it exists
+    if (this.hasActiveRow) {
+      this.updateActiveRowPosition();
+    }
   }
 
   addGuess(guess, feedback) {
@@ -77,14 +88,21 @@ class HistoryManager {
     this.feedbackHistory.push(feedback);
     
     // Auto-scroll to show the newest guess
-    const rowHeight = 40;
+    const rowHeight = 60; // Updated to match active row height
     const maxVisibleRows = Math.floor((this.scene.cameras.main.height - 280 - 100) / rowHeight);
-    const totalRows = this.guessHistory.length;
-    if (totalRows > maxVisibleRows) {
-      this.historyScrollOffset = totalRows - maxVisibleRows;
+    const totalRows = this.guessHistory.length + (this.hasActiveRow ? 1 : 0);
+    const maxScrollRange = (totalRows * rowHeight) - (maxVisibleRows * rowHeight);
+    
+    if (maxScrollRange > 0) {
+      this.historyScrollOffset = Math.max(0, maxScrollRange);
     }
     
     this.displayGuessHistory();
+    
+    // Update active row position if it exists
+    if (this.hasActiveRow) {
+      this.updateActiveRowPosition();
+    }
   }
 
   displayGuessHistory() {
@@ -106,11 +124,11 @@ class HistoryManager {
     this.historyGroup = this.scene.add.group();
     
     const startY = 280;
-    const rowHeight = 40;
+    const rowHeight = 60; // Updated to match active row height
     const maxVisibleRows = Math.floor((this.scene.cameras.main.height - startY - 100) / rowHeight);
     
     const totalRows = this.guessHistory.length;
-    const maxScrollOffset = Math.max(0, totalRows - maxVisibleRows);
+    const maxScrollOffset = Math.max(0, (totalRows * rowHeight) - (maxVisibleRows * rowHeight));
     
     this.historyScrollOffset = Math.max(0, Math.min(maxScrollOffset, this.historyScrollOffset));
     
@@ -118,14 +136,14 @@ class HistoryManager {
       this.historyScrollOffset = 0;
     }
     
-    const startIndex = this.historyScrollOffset;
-    const endIndex = Math.min(totalRows, startIndex + maxVisibleRows);
+    const startIndex = Math.floor(this.historyScrollOffset / rowHeight);
+    const endIndex = Math.min(totalRows, startIndex + maxVisibleRows + 1);
     
     const baseDepth = GameUtils.getDepthLayers().HISTORY;
     
     this.guessHistory.slice(startIndex, endIndex).forEach((guess, displayIndex) => {
       const rowIndex = startIndex + displayIndex;
-      const y = startY + displayIndex * rowHeight;
+      const y = startY + (rowIndex * rowHeight) - this.historyScrollOffset;
       const feedback = this.feedbackHistory[rowIndex];
       const currentDepth = baseDepth + displayIndex * 0.1;
       
@@ -252,5 +270,209 @@ class HistoryManager {
 
   getFeedbackHistory() {
     return [...this.feedbackHistory];
+  }
+
+  // Inline editing methods
+  createActiveRow(prefillGuess = null) {
+    if (this.hasActiveRow) {
+      this.removeActiveRow();
+    }
+
+    const { width } = this.scene.cameras.main;
+    const codeLength = this.scene.codeLength;
+    const elements = this.scene.elements;
+    
+    // Calculate position for active row (always at the bottom of history)
+    const historyStartY = 280;
+    const rowHeight = 60;
+    const activeRowY = historyStartY + (this.guessHistory.length * rowHeight) - this.historyScrollOffset;
+    
+    // Add subtle glow effect first (behind everything)
+    const glowEffect = this.scene.add.rectangle(
+      width / 2, 
+      activeRowY, 
+      width - 34, 
+      56, 
+      0xffd700, 
+      0.3
+    ).setDepth(GameUtils.getDepthLayers().HISTORY);
+    
+    // Create active row background with golden glow
+    this.activeRowBackground = this.scene.add.rectangle(
+      width / 2, 
+      activeRowY, 
+      width - 40, 
+      50, 
+      0x4a4a4a, 
+      0.8
+    )
+      .setStrokeStyle(3, 0xffd700) // Golden border
+      .setDepth(GameUtils.getDepthLayers().HISTORY + 0.1);
+
+    // Initialize active guess
+    this.activeRowGuess = prefillGuess ? [...prefillGuess] : new Array(codeLength).fill(null);
+    
+    // Create interactive slots
+    this.activeRowElements = [];
+    const startX = width / 2 - (codeLength * 25);
+    
+    for (let i = 0; i < codeLength; i++) {
+      const x = startX + i * 50;
+      
+      // Slot background
+      const slot = this.scene.add.rectangle(x, activeRowY, 40, 40, 0x666666)
+        .setStrokeStyle(2, 0xffffff)
+        .setInteractive({ useHandCursor: true })
+        .setDepth(GameUtils.getDepthLayers().HISTORY + 0.2);
+      
+      // Element text
+      const elementText = this.activeRowGuess[i] || '?';
+      const text = this.scene.add.text(x, activeRowY, elementText, {
+        font: '14px Arial',
+        fill: this.activeRowGuess[i] ? '#fff' : '#aaa'
+      }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().HISTORY + 0.3);
+      
+      // Click handler to cycle through elements
+      slot.on('pointerdown', () => {
+        this.cycleActiveRowElement(i);
+      });
+      
+      this.activeRowElements.push({ slot, text });
+    }
+    
+    // Store the glow effect reference for cleanup
+    this.activeRowGlowEffect = glowEffect;
+    
+    this.hasActiveRow = true;
+    
+    // Ensure active row is visible
+    this.scrollToActiveRow();
+    
+    return activeRowY;
+  }
+
+  cycleActiveRowElement(index) {
+    const elements = this.scene.elements;
+    const currentElement = this.activeRowGuess[index];
+    let nextIndex = 0;
+    
+    if (currentElement) {
+      const currentIndex = elements.indexOf(currentElement);
+      nextIndex = (currentIndex + 1) % elements.length;
+    }
+    
+    this.activeRowGuess[index] = elements[nextIndex];
+    
+    // Update visual
+    const elementData = this.activeRowElements[index];
+    elementData.text.setText(elements[nextIndex]);
+    elementData.text.setFill('#fff');
+  }
+
+  removeActiveRow() {
+    if (!this.hasActiveRow) return;
+    
+    // Clean up active row elements
+    if (this.activeRowBackground) {
+      this.activeRowBackground.destroy();
+      this.activeRowBackground = null;
+    }
+    
+    if (this.activeRowGlowEffect) {
+      this.activeRowGlowEffect.destroy();
+      this.activeRowGlowEffect = null;
+    }
+    
+    if (this.activeRowElements) {
+      this.activeRowElements.forEach(element => {
+        element.slot.destroy();
+        element.text.destroy();
+      });
+      this.activeRowElements = null;
+    }
+    
+    this.hasActiveRow = false;
+    this.activeRowGuess = [];
+  }
+
+  submitActiveRowGuess() {
+    if (!this.hasActiveRow) return null;
+    
+    // Check if all slots are filled
+    if (this.activeRowGuess.includes(null)) {
+      // Show error or highlight empty slots
+      this.scene.showIncompleteGuessError();
+      return null;
+    }
+    
+    const guess = [...this.activeRowGuess];
+    this.removeActiveRow();
+    return guess;
+  }
+
+  scrollToActiveRow() {
+    if (!this.hasActiveRow) return;
+    
+    const { height } = this.scene.cameras.main;
+    const historyStartY = 280;
+    const historyEndY = height - 100;
+    const rowHeight = 60;
+    const activeRowY = historyStartY + (this.guessHistory.length * rowHeight);
+    
+    // Check if active row is below visible area
+    if (activeRowY > historyEndY - 50) {
+      const targetScroll = activeRowY - historyEndY + 100;
+      this.historyScrollOffset = Math.max(0, targetScroll);
+      this.updateHistoryDisplay();
+      this.updateActiveRowPosition();
+    }
+  }
+
+  updateActiveRowPosition() {
+    if (!this.hasActiveRow) return;
+    
+    const { width } = this.scene.cameras.main;
+    const historyStartY = 280;
+    const rowHeight = 60;
+    const activeRowY = historyStartY + (this.guessHistory.length * rowHeight) - this.historyScrollOffset;
+    
+    // Update background position
+    if (this.activeRowBackground) {
+      this.activeRowBackground.setY(activeRowY);
+    }
+    
+    // Update glow effect position
+    if (this.activeRowGlowEffect) {
+      this.activeRowGlowEffect.setY(activeRowY);
+    }
+    
+    // Update element positions
+    if (this.activeRowElements) {
+      const codeLength = this.scene.codeLength;
+      const startX = width / 2 - (codeLength * 25);
+      
+      this.activeRowElements.forEach((element, i) => {
+        const x = startX + i * 50;
+        element.slot.setPosition(x, activeRowY);
+        element.text.setPosition(x, activeRowY);
+      });
+    }
+    
+    // Update submit button position
+    if (this.scene.submitBtn) {
+      this.scene.positionSubmitButton(activeRowY);
+    }
+  }
+
+  updateHistoryDisplay() {
+    this.displayGuessHistory();
+  }
+
+  getActiveRowGuess() {
+    return this.hasActiveRow ? [...this.activeRowGuess] : null;
+  }
+
+  isActiveRowComplete() {
+    return this.hasActiveRow && !this.activeRowGuess.includes(null);
   }
 }
