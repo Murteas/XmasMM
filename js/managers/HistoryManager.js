@@ -431,8 +431,9 @@ class HistoryManager {
     }
 
     const elements = this.scene.elements;
-    const gameWidth = this.scene.game.config.width;
-    const gameHeight = this.scene.game.config.height;
+    // Use camera dimensions instead of config for responsive canvas
+    const gameWidth = this.scene.cameras.main.width;
+    const gameHeight = this.scene.cameras.main.height;
 
     // Create modal backdrop
     this.pickerBackdrop = this.scene.add.rectangle(
