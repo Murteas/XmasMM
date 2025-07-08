@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XmasMM - Element Selection Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f0f0f0;
+    }
+    .test-info {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    #game-frame {
+      border: 2px solid #333;
+      border-radius: 8px;
+      overflow: hidden;
+      width: 100%;
+      height: 600px;
+    }
+    .steps {
+      background: #e8f4fd;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-info">
+    <h1>🎯 Element Selection Test</h1>
+    <p><strong>Issue:</strong> Element selection not working after responsive canvas implementation</p>
+    <p><strong>Fixes Applied:</strong></p>
+    <ul>
+      <li>✅ Fixed element picker dimensions to use camera.width/height instead of config</li>
+      <li>✅ Fixed image filename capitalization inconsistencies</li>
+      <li>✅ Responsive canvas sizing working correctly</li>
+    </ul>
+  </div>
+  
+  <div class="steps">
+    <h3>🧪 Test Steps:</h3>
+    <ol>
+      <li>Navigate to Main Menu (should see Christmas background)</li>
+      <li>Click "Start Game"</li>
+      <li>Select difficulty (try 4 elements, 10 guesses)</li>
+      <li>Click "Confirm" to start game</li>
+      <li>Look for golden "active row" with "TAP" indicators</li>
+      <li>Click on a "TAP" slot to open element picker modal</li>
+      <li>Verify modal shows 6 Christmas elements in 2x3 grid</li>
+      <li>Click an element to select it</li>
+      <li>Verify element appears in the guess slot</li>
+      <li>Fill all slots and test Submit button</li>
+    </ol>
+  </div>
+  
+  <iframe id="game-frame" src="/"></iframe>
+  
+  <div class="test-info">
+    <h3>🔍 Expected Behavior:</h3>
+    <ul>
+      <li><strong>Element Picker Modal:</strong> Should appear centered with proper dimensions</li>
+      <li><strong>Christmas Images:</strong> Should display correctly in picker and slots</li>
+      <li><strong>Touch Interaction:</strong> Should respond to clicks/taps on mobile</li>
+      <li><strong>Visual Feedback:</strong> Should show selection animations</li>
+    </ul>
+    
+    <h3>❌ If Still Not Working:</h3>
+    <ul>
+      <li>Check browser console for JavaScript errors</li>
+      <li>Verify image loading in <a href="/test_images.html">image test page</a></li>
+      <li>Test on different screen sizes using DevTools</li>
+    </ul>
+  </div>
+</body>
+</html>

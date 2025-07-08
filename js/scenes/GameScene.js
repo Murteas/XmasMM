@@ -410,42 +410,15 @@ class GameScene extends Phaser.Scene {
   getElementImageKey(elementName) {
     const pixelRatio = window.devicePixelRatio || 1;
     
-    // Handle the specific capitalization of our asset files
-    let baseFileName;
-    switch(elementName.toLowerCase()) {
-      case 'santa':
-        // santa_1x.png, Santa_2x.png, Santa_3x.png
-        if (pixelRatio >= 2) {
-          baseFileName = 'Santa';
-        } else {
-          baseFileName = 'santa';
-        }
-        break;
-      case 'present':
-        baseFileName = 'Present'; // Capital P to match file
-        break;
-      case 'mistletoe':
-        baseFileName = 'mistletoe';
-        break;
-      case 'star':
-        baseFileName = 'Star'; // Capital S to match file
-        break;
-      case 'tree':
-        baseFileName = 'Tree'; // Capital T to match file
-        break;
-      case 'snowflake':
-        baseFileName = 'snowflake';
-        break;
-      default:
-        baseFileName = elementName.toLowerCase();
-    }
+    // Map element names to the exact asset keys loaded in preload()
+    const normalizedName = elementName.toLowerCase();
     
     if (pixelRatio >= 3) {
-      return `${baseFileName}_3x`;
+      return `${normalizedName}_3x`;
     } else if (pixelRatio >= 2) {
-      return `${baseFileName}_2x`;
+      return `${normalizedName}_2x`;
     } else {
-      return `${baseFileName}_1x`;
+      return `${normalizedName}_1x`;
     }
   }
 }

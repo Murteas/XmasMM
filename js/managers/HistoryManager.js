@@ -445,9 +445,15 @@ class HistoryManager {
       0.7
     ).setDepth(GameUtils.getDepthLayers().MODAL).setInteractive();
 
-    // Create picker container
+    // Close picker when clicking backdrop
+    this.pickerBackdrop.on('pointerdown', () => {
+      this.closeElementPicker();
+    });
+
+    // Create picker container with proper height for cancel button
     const pickerWidth = Math.min(300, gameWidth - 40);
-    const pickerHeight = Math.min(250, gameHeight - 100);
+    const baseHeight = 280; // Increased to accommodate cancel button
+    const pickerHeight = Math.min(baseHeight, gameHeight - 100);
     
     this.elementPicker = this.scene.add.container(gameWidth / 2, gameHeight / 2);
     this.elementPicker.setDepth(GameUtils.getDepthLayers().MODAL + 1);
@@ -465,13 +471,15 @@ class HistoryManager {
     }).setOrigin(0.5);
     this.elementPicker.add(title);
 
-    // Element grid (2x3 layout for 6 elements)
+    // Element grid (2x3 layout for 6 elements) - responsive sizing
     const cols = 3;
     const rows = 2;
-    const elementSize = Math.max(64, 44); // Ensure minimum 44px touch target
-    const spacing = 15;
+    // Increase minimum touch target for mobile and scale with screen size
+    const minTouchTarget = 48; // iOS/Android recommended minimum
+    const elementSize = Math.max(minTouchTarget, Math.min(80, pickerWidth / 5)); // Scale with picker width
+    const spacing = Math.max(10, elementSize * 0.2); // Proportional spacing
     const startX = -(cols - 1) * (elementSize + spacing) / 2;
-    const startY = -20;
+    const startY = -40; // Move elements up to make room for cancel button
 
     elements.forEach((element, i) => {
       const col = i % cols;
@@ -534,9 +542,15 @@ class HistoryManager {
       this.elementPicker.add([elementBg, elementImage]);
     });
 
-    // Close button with proper touch target size
+    // Close button with proper touch target size - positioned below elements
     const closeBtnHeight = Math.max(36, 44); // Ensure minimum touch target
-    const closeBtn = this.scene.add.text(0, pickerHeight/2 - 35, 'Cancel', {
+    const cancelButtonY = pickerHeight/2 - 25; // Closer to bottom edge
+    
+    // Add subtle divider line before cancel button
+    const dividerY = cancelButtonY - 35;
+    const divider = this.scene.add.rectangle(0, dividerY, pickerWidth - 40, 1, 0x7f8c8d);
+    this.elementPicker.add(divider);
+    const closeBtn = this.scene.add.text(0, cancelButtonY, 'Cancel', {
       font: 'bold 14px Arial',
       fill: '#fff',
       backgroundColor: '#95a5a6',
@@ -594,19 +608,27 @@ class HistoryManager {
       return;
     }
 
+    // Store reference to avoid race conditions
+    const pickerToDestroy = this.elementPicker;
+    const backdropToDestroy = this.pickerBackdrop;
+    
+    // Clear references immediately to prevent multiple calls
+    this.elementPicker = null;
+    this.pickerBackdrop = null;
+
     // Smooth exit animation
     this.scene.tweens.add({
-      targets: this.elementPicker,
+      targets: pickerToDestroy,
       scale: 0.8,
       alpha: 0,
       duration: 150,
       ease: 'Back.easeIn',
       onComplete: () => {
-        this.elementPicker.destroy();
-        this.elementPicker = null;
-        if (this.pickerBackdrop) {
-          this.pickerBackdrop.destroy();
-          this.pickerBackdrop = null;
+        if (pickerToDestroy) {
+          pickerToDestroy.destroy();
+        }
+        if (backdropToDestroy) {
+          backdropToDestroy.destroy();
         }
       }
     });
@@ -628,8 +650,8 @@ class HistoryManager {
     
     if (this.activeRowElements) {
       this.activeRowElements.forEach(element => {
-        element.slot.destroy();
-        element.displayElement.destroy();
+        if (element.slot) element.slot.destroy();
+        if (element.displayElement) element.displayElement.destroy();
       });
       this.activeRowElements = null;
     }
@@ -709,7 +731,7 @@ class HistoryManager {
       this.activeRowElements.forEach((element, i) => {
         const x = startX + i * 50;
         element.slot.setPosition(x, activeRowY);
-        element.text.setPosition(x, activeRowY);
+        element.displayElement.setPosition(x, activeRowY);
       });
     }
     

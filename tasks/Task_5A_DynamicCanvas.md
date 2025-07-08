@@ -106,6 +106,16 @@ const calculateCanvasSize = () => {
 
 **Result**: The game now adapts seamlessly to all iPhone models while maintaining optimal gameplay experience across different screen sizes.
 
+### **Additional Fixes Applied During Testing:**
+During Task 5A validation, several mobile UX issues were discovered and fixed (these belong to Task 5C):
+- ✅ **Element Picker Errors**: Fixed `setPosition` undefined errors in HistoryManager
+- ✅ **Image Loading**: Simplified `getElementImageKey()` for consistent asset loading  
+- ✅ **Touch Targets**: Improved minimum touch target sizes (48px for mobile)
+- ✅ **Modal Layout**: Fixed cancel button overlap (completed Task 5C.1 early)
+- ✅ **Race Conditions**: Added null safety for picker destroy operations
+
+*Note: Modal picker fixes were completed early and properly documented in Task 5C.*
+
 ## 💡 Java Developer Notes
 - **Phaser Scale Modes**: Similar to Java Swing layout managers
 - **Device Pixel Ratio**: Like Java's screen DPI scaling

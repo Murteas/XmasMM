@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XmasMM - Image Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f0f0f0;
+    }
+    .test-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      max-width: 600px;
+    }
+    .element-card {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .element-card img {
+      width: 64px;
+      height: 64px;
+      object-fit: contain;
+      margin: 10px 0;
+    }
+    .error {
+      color: red;
+      font-size: 12px;
+    }
+    .success {
+      color: green;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎄 XmasMM Element Image Test</h1>
+  <p>Testing all Christmas element images for proper loading:</p>
+  
+  <div class="test-grid" id="imageGrid"></div>
+  
+  <script>
+    const elements = ['Santa', 'Present', 'Mistletoe', 'Star', 'Tree', 'Snowflake'];
+    const pixelRatio = window.devicePixelRatio || 1;
+    const grid = document.getElementById('imageGrid');
+    
+    function getElementImageKey(elementName) {
+      let baseFileName;
+      switch(elementName.toLowerCase()) {
+        case 'santa':
+          if (pixelRatio >= 2) {
+            baseFileName = 'Santa';
+          } else {
+            baseFileName = 'santa';
+          }
+          break;
+        case 'present':
+          baseFileName = 'Present';
+          break;
+        case 'mistletoe':
+          baseFileName = 'mistletoe';
+          break;
+        case 'star':
+          baseFileName = 'Star';
+          break;
+        case 'tree':
+          baseFileName = 'Tree';
+          break;
+        case 'snowflake':
+          baseFileName = 'snowflake';
+          break;
+        default:
+          baseFileName = elementName.toLowerCase();
+      }
+      
+      if (pixelRatio >= 3) {
+        return `${baseFileName}_3x.png`;
+      } else if (pixelRatio >= 2) {
+        return `${baseFileName}_2x.png`;
+      } else {
+        return `${baseFileName}_1x.png`;
+      }
+    }
+    
+    elements.forEach(element => {
+      const card = document.createElement('div');
+      card.className = 'element-card';
+      
+      const title = document.createElement('h3');
+      title.textContent = element;
+      
+      const img = document.createElement('img');
+      const filename = getElementImageKey(element);
+      img.src = `assets/${filename}`;
+      
+      const status = document.createElement('div');
+      status.textContent = `Loading: ${filename}`;
+      
+      img.onload = () => {
+        status.textContent = `✅ Loaded: ${filename}`;
+        status.className = 'success';
+      };
+      
+      img.onerror = () => {
+        status.textContent = `❌ Failed: ${filename}`;
+        status.className = 'error';
+      };
+      
+      card.appendChild(title);
+      card.appendChild(img);
+      card.appendChild(status);
+      grid.appendChild(card);
+    });
+    
+    // Display device info
+    const info = document.createElement('div');
+    info.innerHTML = `
+      <h3>Device Info:</h3>
+      <p>Device Pixel Ratio: ${pixelRatio}</p>
+      <p>Viewport: ${window.innerWidth} x ${window.innerHeight}</p>
+    `;
+    document.body.appendChild(info);
+  </script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>XmasMM - Mobile Touch Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 10px;
+      background: #f0f0f0;
+      overflow-x: hidden;
+    }
+    .test-info {
+      background: white;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      font-size: 14px;
+    }
+    #game-container {
+      width: 100%;
+      height: calc(100vh - 120px);
+      border: 2px solid #333;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #000;
+    }
+    .debug-info {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 5px;
+      border-radius: 4px;
+      font-size: 10px;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-info">
+    <h3>🔧 Mobile Touch Debug</h3>
+    <div id="viewport-info"></div>
+    <p><strong>Test:</strong> Start game → Try element selection</p>
+  </div>
+  
+  <div class="debug-info" id="touch-debug">
+    Touch events will appear here
+  </div>
+  
+  <div id="game-container"></div>
+  
+  <!-- Load game scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+  <script src="js/utils/GameUtils.js"></script>
+  <script src="js/managers/ScoreManager.js"></script>
+  <script src="js/managers/HistoryManager.js"></script>
+  <script src="js/scenes/MainMenu.js"></script>
+  <script src="js/scenes/DifficultySelection.js"></script>
+  <script src="js/scenes/GameScene.js"></script>
+  <script src="js/main.js"></script>
+  
+  <script>
+    // Debug touch events
+    let touchCount = 0;
+    function logTouch(event) {
+      touchCount++;
+      const debug = document.getElementById('touch-debug');
+      
+      let x, y;
+      if (event.touches && event.touches.length > 0) {
+        x = event.touches[0].clientX;
+        y = event.touches[0].clientY;
+      } else if (event.clientX !== undefined) {
+        x = event.clientX;
+        y = event.clientY;
+      } else {
+        x = 'N/A';
+        y = 'N/A';
+      }
+      
+      debug.innerHTML = `Touch #${touchCount}: ${event.type} at ${x}, ${y}`;
+    }
+    
+    document.addEventListener('touchstart', logTouch);
+    document.addEventListener('touchend', logTouch);
+    document.addEventListener('click', logTouch);
+    
+    function updateInfo() {
+      const viewport = document.getElementById('viewport-info');
+      viewport.innerHTML = `
+        <strong>Screen:</strong> ${window.innerWidth} x ${window.innerHeight}px<br>
+        <strong>DPR:</strong> ${window.devicePixelRatio || 1}<br>
+        <strong>Game Container:</strong> ${document.getElementById('game-container').offsetWidth} x ${document.getElementById('game-container').offsetHeight}px
+      `;
+    }
+    
+    updateInfo();
+    window.addEventListener('resize', updateInfo);
+    window.addEventListener('orientationchange', () => {
+      setTimeout(updateInfo, 100);
+    });
+  </script>
+</body>
+</html>
