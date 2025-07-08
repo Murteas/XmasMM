@@ -3,7 +3,7 @@
 > **📋 For AI Agents**: This document has been restructured for optimal AI consumption. Each task is now in a separate file in the `tasks/` folder for focused implementation.
 
 ## Quick Navigation
-- **🎯 Current Priority**: [Task 5A - Dynamic Canvas Sizing](tasks/Task_5A_DynamicCanvas.md)
+- **🎯 Current Priority**: [Task 5B - Family UX Improvements](tasks/Task_5B_FamilyUX.md)
 - **📊 Process Overview**: [README_DevProcess.md](README_DevProcess.md)
 - **📁 All Tasks**: [tasks/](tasks/) folder
 - **⚡ Quick Reference**: [QUICK_REFERENCE.md](QUICK_REFERENCE.md)
@@ -23,8 +23,8 @@
 ### 🎯 Mobile Foundation Priority (Tasks 5A-5C)
 | Task | File | Status | Critical For |
 |------|------|--------|--------------|
-| 5A | [Dynamic Canvas](tasks/Task_5A_DynamicCanvas.md) | 🎯 **CURRENT** | iPhone compatibility |
-| 5B | [Family UX](tasks/Task_5B_FamilyUX.md) | 📋 Queued | User guidance |
+| 5A | [Dynamic Canvas](tasks/Task_5A_DynamicCanvas.md) | ✅ **COMPLETED** | iPhone compatibility |
+| 5B | [Family UX](tasks/Task_5B_FamilyUX.md) | 🎯 **CURRENT** | User guidance |
 | 5C | [Mobile Layout](tasks/Task_5C_MobileLayout.md) | 📋 Queued | Bug fixes |
 
 ### 📋 Feature Completion (Tasks 6-10)
@@ -54,9 +54,9 @@ All foundation work is complete through Task 5.2. The game has:
 - Mobile-optimized UI with inline guessing
 
 ### 🎯 Next Actions
-1. **Start with**: [Task_5A_DynamicCanvas.md](tasks/Task_5A_DynamicCanvas.md)
-2. **Focus**: Make canvas responsive for all iPhone models
-3. **Priority**: Mobile foundation before feature additions
+1. **Start with**: [Task_5B_FamilyUX.md](tasks/Task_5B_FamilyUX.md)
+2. **Focus**: Add family-friendly UX improvements (loading states, validation, help)
+3. **Priority**: Complete mobile foundation before feature additions
 
 ### 📁 File Organization Benefits
 - **Focused Work**: Each task file contains only relevant information
