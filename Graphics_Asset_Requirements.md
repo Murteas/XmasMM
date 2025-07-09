@@ -4,6 +4,7 @@
 **Project**: XmasMM - Web-based Christmas Mastermind Game  
 **Platform**: iPhone browsers (Safari/Chrome) via GitHub Pages  
 **Date**: Updated July 9, 2025 - Mobile Optimization Complete  
+**Recent Fix**: July 9, 2025 - Corrected inconsistent filename casing (all assets now lowercase)  
 
 ---
 
@@ -27,15 +28,18 @@
 - ✅ Simple, recognizable Santa face or full figure
 - ✅ Red hat with white trim, white beard
 - ✅ Friendly, approachable style
-- **Files Available**: `Santa.png`, `santa_1x.png`, `Santa_2x.png`, `Santa_3x.png`
+- **Files Available**: `santa.png`, `santa_1x.png`, `santa_2x.png`, `santa_3x.png`
 - **Status**: ✅ Complete - All resolution variants available
-- **Prompt**: "A cartoon style, clean, modern Scandinavian-style Santa Claus face for a game, friendly and approachable, red hat (#8B0000) with white trim (#F5F5DC), white beard, festive but minimalistic, transparent background, PNG format, optimized for 64x64px, 128x128px, and 192x192px, high contrast for iPhone screens."
+- **Prompt**: 
+```
+Create cartoon Christmas Santa for mobile game: 64x64, 128x128, 192x192 pixels, PNG transparent background, Scandinavian style, clean modern, friendly Santa face, red hat (#8B0000), white trim (#F5F5DC), white beard, minimalistic, high contrast iPhone screens
+```
 
 ### 2. Christmas Present ✅
 - ✅ Wrapped gift box with ribbon and bow
 - ✅ Bright, festive wrapping (red, green, or gold)
 - ✅ Clear bow on top
-- **Files Available**: `Present.png`, `Present_1x.png`, `Present_2x.png`, `Present_3x.png`
+- **Files Available**: `present.png`, `present_1x.png`, `present_2x.png`, `present_3x.png`
 - **Status**: ✅ Complete - All resolution variants available
 
 ### 3. Mistletoe ✅
@@ -49,13 +53,13 @@
 - ✅ 5 or 6-pointed star
 - ✅ Gold or bright yellow color
 - ✅ Slight shine/glow effect
-- **Files Available**: `Star.png`, `Star_1x.png`, `Star_2x.png`, `Star_3x.png`
+- **Files Available**: `star.png`, `star_1x.png`, `star_2x.png`, `star_3x.png`
 - **Status**: ✅ Complete - All resolution variants available
 ### 5. Christmas Tree ✅
 - ✅ Traditional evergreen tree shape
 - ✅ Green with slight decorations (optional small ornaments)
 - ✅ Brown trunk base
-- **Files Available**: `Tree.png`, `Tree_1x.png`, `Tree_2x.png`, `Tree_3x.png`
+- **Files Available**: `tree.png`, `tree_1x.png`, `tree_2x.png`, `tree_3x.png`
 - **Status**: ✅ Complete - All resolution variants available
 
 ### 6. Snowflake ✅
@@ -80,7 +84,10 @@
 - Slightly different from game piece star (more ornate)
 - **Sizes**: 32x32, 64x64, 96x96px
 - **File naming**: `feedback_perfect_star_1x.png`, `feedback_perfect_star_2x.png`, `feedback_perfect_star_3x.png`
-- **Prompt**: "A cartoon style, ornate Scandinavian-style gold star (#FFD700) for game feedback, bright with a sparkle effect, distinct from a simpler star, transparent background, PNG format, optimized for 32x32px, 64x64px, and 96x96px, high contrast for iPhone visibility."
+- **Prompt**: 
+```
+Create ornate gold star for game feedback: 32x32, 64x64, 96x96 pixels, PNG transparent, cartoon Scandinavian style, bright gold (#FFD700), sparkle effect, distinct from simple star, high contrast iPhone visibility
+```
 
 #### 8. Wrapped Present Feedback *(Alternative option)*
 - Small gift box, different style from main present
@@ -96,7 +103,10 @@
 - Small ribbon or holly accent
 - **Sizes**: 32x32, 64x64, 96x96px
 - **File naming**: `feedback_close_bell_1x.png`, `feedback_close_bell_2x.png`, `feedback_close_bell_3x.png`
-- **Prompt**: "A cartoon style, Scandinavian-style silver Christmas bell (#C0C0C0) for game feedback, with a small red ribbon (#8B0000) or holly accent, clean and modern, transparent background, PNG format, optimized for 32x32px, 64x64px, and 96x96px, high contrast for iPhone screens."
+- **Prompt**: 
+```
+Create silver Christmas bell for game feedback: 32x32, 64x64, 96x96 pixels, PNG transparent, cartoon Scandinavian style, silver bell (#C0C0C0), red ribbon (#8B0000) or holly accent, clean modern, high contrast iPhone
+```
 
 #### 10. Small Christmas Tree Feedback *(Alternative option)*
 - Miniature tree, different from main tree
@@ -218,15 +228,30 @@
 - **Contrast**: Optimized specifically for white/light UI element visibility
 
 **Technical Requirements:**
-- **Size**: 1920x1080px (scales perfectly to all iPhone sizes)
+- **Size**: 430x932px (iPhone 14 Pro Max portrait dimensions - scales down perfectly for smaller iPhones)
 - **Format**: PNG for gradient quality
-- **File Size**: Under 150KB for mobile loading
+- **File Size**: Under 100KB for mobile loading
 - **Naming**: `bg_mobile.png` or `bg_gradient.png`
 - **Performance**: Fast loading on mobile networks
+- **Orientation**: Portrait mode optimized
 
 **AI Generation Prompt:**
 ```
-"A subtle, mobile-optimized background for a Christmas Mastermind puzzle game, soft vertical gradient from deep navy blue (#1a1a2e) at top to medium blue (#2c3e50) at bottom, very faint snowflake pattern scattered throughout at 15% opacity, minimalist winter theme, designed specifically for high contrast with white and light-colored UI elements, smooth gradient transitions, optimized for iPhone touch gameplay, no distracting elements, PNG format, 1920x1080px, under 150KB file size"
+Create a mobile game background image with these exact specifications:
+- Dimensions: 430 pixels wide × 932 pixels tall (portrait orientation)
+- File format: PNG with transparent background support
+- Soft vertical gradient: deep navy blue (#1a1a2e) at top smoothly transitioning to medium blue (#2c3e50) at bottom
+- Very subtle snowflake pattern scattered throughout at 15% opacity (barely visible)
+- Minimalist winter theme, non-distracting
+- High contrast design for white UI text overlay
+- Clean, smooth gradient transitions
+- Christmas Mastermind puzzle game aesthetic
+- File size under 100KB when exported
+```
+
+**Alternative prompt for AI tools that require square format:**
+```
+Design: Mobile Christmas game background, 430x932 portrait, navy blue (#1a1a2e) to medium blue (#2c3e50) vertical gradient, subtle snowflakes 15% opacity, PNG format, high contrast for white text, minimalist winter theme, non-distracting, under 100KB
 ```
 
 #### 🥈 Alternative Options (If Primary Option Doesn't Work):
@@ -235,34 +260,52 @@
 - **Base**: Very dark blue/black background (#0a0a0f)
 - **Elements**: Extremely blurred warm light orbs (gold, red, white)
 - **Effect**: Heavy bokeh blur, completely out of focus
-- **Prompt**: "A subtle bokeh Christmas lights background for mobile game, very dark navy background (#0a0a0f), soft extremely blurred warm light spots in gold (#FFD700), red (#8B0000), and warm white, heavy bokeh effect, completely out of focus, designed for high contrast with white UI elements, optimized for iPhone gameplay, PNG format, 1920x1080px, under 150KB"
+- **Prompt**: 
+```
+Create mobile game background: 430x932 pixels, PNG format, very dark navy (#0a0a0f), soft blurred Christmas light orbs in gold (#FFD700), red (#8B0000), white, heavy bokeh effect, out of focus, high contrast for white UI text, portrait orientation, under 100KB
+```
 
 **Option C: Minimalist Snow Silhouette**
 - **Sky**: Gradient from dark blue (#1a1a2e) to lighter blue (#2c3e50)
 - **Elements**: Simple black evergreen tree silhouettes at bottom edge only (20% of image)
 - **Details**: No texture or detail, pure geometric shapes
-- **Prompt**: "A minimalist Christmas background for mobile puzzle game, simple gradient sky from dark blue (#1a1a2e) to medium blue (#2c3e50), very simple black evergreen tree silhouettes only at bottom 20% of image, clean geometric tree shapes, high contrast design for white UI overlay, optimized for iPhone touch gameplay, PNG format, 1920x1080px, under 150KB"
+- **Prompt**: 
+```
+Create mobile game background: 430x932 pixels, PNG format, gradient sky dark blue (#1a1a2e) to medium blue (#2c3e50), simple black evergreen tree silhouettes bottom 20%, geometric shapes, high contrast white UI overlay, portrait orientation, under 100KB
+```
 
 #### 📱 Mobile-First Design Principles:
 1. **High Contrast**: Background must make white UI elements highly visible
 2. **Touch-Friendly**: No background elements that look interactive
 3. **Performance**: Small file size for fast loading on mobile networks  
-4. **Scalable**: Must look excellent on iPhone SE (375px) to Pro Max (428px)
+4. **Portrait Optimized**: Must look excellent in iPhone portrait mode (375px-428px wide)
 5. **Non-Distracting**: Players focus on puzzle elements, not background
 6. **Accessibility**: Works for users with visual impairments
 
 #### ✅ Implementation Notes:
 - Replace existing `assets/bg.jpg` with new mobile-optimized background
 - No code changes needed - `MainMenu.js` and `GameScene.js` will automatically use new file
-- Test across different iPhone models to ensure optimal contrast and performance
+- Test across different iPhone models in portrait mode to ensure optimal contrast and performance
+
+#### 🤖 AI Generation Tips:
+**For tools that default to square 1024x1024 JPG:**
+1. **Generate at 1024x1024** first, then crop/resize to 430x932 in post-processing
+2. **Use editing tools** like Photoshop, GIMP, or online tools to convert JPG→PNG and resize
+3. **Specify "PNG transparent background"** in the prompt
+4. **Try these tools that support custom dimensions:**
+   - Midjourney: Use `--ar 430:932` parameter
+   - DALL-E: Often supports custom dimensions in advanced settings
+   - Stable Diffusion: Supports custom dimensions natively
+   - Canva AI: Allows custom canvas sizes
+5. **Post-processing workflow:** Generate → Resize → Convert to PNG → Optimize file size
 
 ### 19. Dark Overlay Texture
 - Semi-transparent dark overlay for contrast behind feedback elements
 - Subtle Christmas pattern (optional - small snowflakes or holly)
-- **Size**: 800x600px, tileable
+- **Size**: 430x932px, tileable (matches mobile background dimensions)
 - **Opacity**: 70-80% transparency
 - **File naming**: `overlay_dark.png`
-- **Prompt**: "A cartoon style, semi-transparent Scandinavian-style dark overlay for a game, soft gray (#E0E0E0) with 70-80% transparency, optional subtle snowflake or holly pattern (#F5F5DC), tileable, transparent background, PNG format, optimized for 800x600px, under 50KB, high contrast for iPhone UI elements."
+- **Prompt**: "A cartoon style, semi-transparent Scandinavian-style dark overlay for a game, soft gray (#E0E0E0) with 70-80% transparency, optional subtle snowflake or holly pattern (#F5F5DC), tileable, transparent background, PNG format, optimized for 430x932px portrait orientation, under 50KB, high contrast for iPhone UI elements."
 
 ---
 
@@ -344,14 +387,14 @@
 ### ✅ COMPLETED Assets (Game Elements):
 ```
 assets/
-├── Santa.png, santa_1x.png, Santa_2x.png, Santa_3x.png          ✅
-├── Present.png, Present_1x.png, Present_2x.png, Present_3x.png   ✅  
-├── mistletoe.png, mistletoe_1x.png, mistletoe_2x.png, mistletoe_3x.png ✅
-├── Star.png, Star_1x.png, Star_2x.png, Star_3x.png              ✅
-├── Tree.png, Tree_1x.png, Tree_2x.png, Tree_3x.png              ✅
-├── snowflake.png, snowflake_1x.png, snowflake_2x.png, snowflake_3x.png ✅
-├── bg.jpg                                                        ⚠️ (needs replacement)
-├── icon.png, icon2.png                                          ⚠️ (needs organization)
+├── santa.png, santa_1x.png, santa_2x.png, santa_3x.png                    ✅
+├── present.png, present_1x.png, present_2x.png, present_3x.png            ✅  
+├── mistletoe.png, mistletoe_1x.png, mistletoe_2x.png, mistletoe_3x.png    ✅
+├── star.png, star_1x.png, star_2x.png, star_3x.png                        ✅
+├── tree.png, tree_1x.png, tree_2x.png, tree_3x.png                        ✅
+├── snowflake.png, snowflake_1x.png, snowflake_2x.png, snowflake_3x.png    ✅
+├── bg.jpg                                                                  ⚠️ (needs replacement)
+├── icon.png, icon2.png                                                     ⚠️ (needs organization)
 ```
 
 ### ❌ MISSING Assets (High Priority):
@@ -446,5 +489,76 @@ If you have any questions about these requirements or need clarification on any 
 1. Replace `bg.jpg` with mobile-optimized subtle background
 2. Create Christmas-themed feedback symbols for Task 6
 3. Design festive UI buttons for enhanced visual appeal
+
+---
+
+## 🤖 AI Image Generation Guide
+
+### Common AI Tool Limitations & Solutions:
+
+#### **Problem: AI tools default to 1024x1024 JPG**
+**Solutions:**
+1. **Generate larger, then resize**: Create at 1024x1024, then resize to needed dimensions
+2. **Use aspect ratio parameters**: 
+   - Midjourney: Add `--ar 430:932` for backgrounds, `--ar 1:1` for square elements
+   - Stable Diffusion: Set custom width/height in advanced settings
+3. **Post-process**: Use free tools like GIMP, Photoshop, or online converters
+
+#### **Problem: Getting JPG instead of PNG**
+**Solutions:**
+1. **Add "PNG transparent background" to every prompt**
+2. **Use online converters**: JPG → PNG conversion tools
+3. **Specify "transparent background, no background, isolated on transparent"**
+4. **Use background removal tools**: Remove.bg, Photoshop, GIMP
+
+#### **Problem: Wrong dimensions**
+**Solutions:**
+1. **Canvas resize tools**: Canva, Figma, Photoshop allow custom canvas sizes
+2. **Batch processing**: Use tools like ImageMagick for multiple files
+3. **Online resizers**: TinyPNG, ResizePixel for quick resizing
+
+### **Recommended AI Tools for This Project:**
+
+#### **Best for Custom Dimensions:**
+- **Stable Diffusion** (ComfyUI, Automatic1111): Full control over dimensions
+- **Midjourney** (with aspect ratio parameters): `--ar 430:932`
+- **Adobe Firefly**: Good custom dimension support
+- **Canva AI**: Built-in canvas sizing
+
+#### **Best for Transparent Backgrounds:**
+- **DALL-E 3**: Often generates good transparent backgrounds
+- **Stable Diffusion**: With proper prompting
+- **Remove.bg**: For post-processing any generated image
+
+#### **Best for Multiple Resolutions:**
+- **Upscalers**: Waifu2x, Real-ESRGAN for creating 2x, 3x versions
+- **Batch tools**: Photoshop actions, GIMP scripts
+
+### **Optimized Prompt Format for Modern AI:**
+
+```
+Subject: [what to create]
+Style: cartoon, Scandinavian, clean, modern
+Dimensions: [width]x[height] pixels  
+Format: PNG transparent background
+Colors: [specific hex codes]
+Details: [specific requirements]
+Optimization: mobile game, high contrast, under [size]KB
+```
+
+### **Post-Processing Workflow:**
+
+1. **Generate** with AI tool (may be 1024x1024 JPG)
+2. **Remove background** (if not transparent)
+3. **Resize** to exact dimensions needed
+4. **Convert** to PNG format
+5. **Optimize** file size (TinyPNG, ImageOptim)
+6. **Create variants** (1x, 2x, 3x resolutions)
+
+### **File Size Optimization:**
+- **TinyPNG**: Best for PNG compression
+- **ImageOptim**: Mac tool for optimization  
+- **Squoosh**: Google's web-based optimizer
+- **Target sizes**: Under 50KB for game elements, under 100KB for backgrounds
 
 Thank you for helping make XmasMM a beautiful and engaging Christmas game! 🎄✨
