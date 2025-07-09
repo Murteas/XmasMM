@@ -6,7 +6,7 @@ class MainMenu extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image('bg', 'assets/bg.jpg');
+    this.load.image('bg', 'assets/bg_mobile2.png');
   }
 
   create() {

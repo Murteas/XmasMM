@@ -8,7 +8,7 @@ class DifficultySelection extends Phaser.Scene {
   preload() {
     // Background already loaded by MainMenu, but ensure it's available
     if (!this.textures.exists('bg')) {
-      this.load.image('bg', 'assets/bg.jpg');
+      this.load.image('bg', 'assets/bg_mobile2.png');
     }
   }
   
