@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Touch Interaction Test</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #1a1a2e;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+    
+    .test-panel {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0,0,0,0.9);
+      padding: 10px;
+      z-index: 1000;
+      font-size: 11px;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+    
+    .touch-log {
+      background: rgba(255,255,255,0.1);
+      padding: 5px;
+      border-radius: 4px;
+      margin-top: 5px;
+      max-height: 60px;
+      overflow-y: auto;
+      font-family: monospace;
+      font-size: 10px;
+    }
+    
+    .test-instructions {
+      background: rgba(76, 175, 80, 0.2);
+      padding: 8px;
+      border-radius: 4px;
+      margin-bottom: 5px;
+    }
+    
+    #game-container {
+      margin-top: 120px;
+      height: calc(100vh - 140px);
+    }
+    
+    .back-button {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(76, 175, 80, 0.9);
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      z-index: 1001;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-panel">
+    <div class="test-instructions">
+      <strong>👆 Touch Interaction Test</strong><br>
+      1. Start a game 2. Try element selection 3. Test modal picker 4. Check button accessibility
+    </div>
+    
+    <div class="touch-log" id="touch-log">
+      Touch events will appear here...
+    </div>
+  </div>
+  
+  <button class="back-button" onclick="window.location.href='index.html'">← Back to Tests</button>
+  
+  <div id="game-container"></div>
+  
+  <!-- Load game scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+  <script src="../js/utils/GameUtils.js"></script>
+  <script src="../js/managers/ScoreManager.js"></script>
+  <script src="../js/managers/HistoryManager.js"></script>
+  <script src="../js/scenes/MainMenu.js"></script>
+  <script src="../js/scenes/DifficultySelection.js"></script>
+  <script src="../js/scenes/GameScene.js"></script>
+  <script src="../js/main.js"></script>
+  
+  <script>
+    let touchEventCount = 0;
+    const maxLogEntries = 10;
+    const touchLog = document.getElementById('touch-log');
+    
+    function logTouchEvent(event, type) {
+      touchEventCount++;
+      
+      let x = 'N/A', y = 'N/A';
+      if (event.touches && event.touches.length > 0) {
+        x = Math.round(event.touches[0].clientX);
+        y = Math.round(event.touches[0].clientY);
+      } else if (event.clientX !== undefined) {
+        x = Math.round(event.clientX);
+        y = Math.round(event.clientY);
+      }
+      
+      const timestamp = new Date().toLocaleTimeString();
+      const logEntry = `${timestamp} - ${type}: (${x}, ${y})`;
+      
+      // Add to log
+      const logLines = touchLog.innerHTML.split('<br>').filter(line => line.trim());
+      logLines.unshift(logEntry);
+      
+      // Keep only recent entries
+      if (logLines.length > maxLogEntries) {
+        logLines.splice(maxLogEntries);
+      }
+      
+      touchLog.innerHTML = logLines.join('<br>');
+    }
+    
+    // Monitor touch events
+    document.addEventListener('touchstart', (e) => logTouchEvent(e, 'Touch Start'));
+    document.addEventListener('touchend', (e) => logTouchEvent(e, 'Touch End'));
+    document.addEventListener('click', (e) => logTouchEvent(e, 'Click'));
+    document.addEventListener('pointerdown', (e) => logTouchEvent(e, 'Pointer Down'));
+    
+    // Monitor for modal appearances
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === 1) { // Element node
+            // Check for modal or picker elements
+            if (node.style && (node.style.backgroundColor || node.className)) {
+              const timestamp = new Date().toLocaleTimeString();
+              touchLog.innerHTML = `${timestamp} - Modal/Element added to DOM<br>` + touchLog.innerHTML;
+            }
+          }
+        });
+      });
+    });
+    
+    // Start observing when game loads
+    setTimeout(() => {
+      if (document.querySelector('canvas')) {
+        observer.observe(document.body, { childList: true, subtree: true });
+      }
+    }, 1000);
+  </script>
+</body>
+</html>

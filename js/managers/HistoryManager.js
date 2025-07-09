@@ -27,10 +27,16 @@ class HistoryManager {
     const { width, height } = this.scene.cameras.main;
     
     // Adjust history start position to account for new header layout
-    // Responsive spacing based on screen size
-    const isSmallScreen = width < 400;
-    const historyStartY = isSmallScreen ? 160 : 120; // More space for stacked header on small screens
-    const historyEndY = height - 100;
+    // MOBILE-OPTIMIZED SPACING: Use percentage-based layout
+    const isSmallScreen = width < 500; // Increased threshold for better mobile detection
+    
+    // Dynamic header space based on actual header content
+    const baseHeaderHeight = isSmallScreen ? 140 : 120;
+    const historyStartY = Math.max(baseHeaderHeight, height * 0.22); // Max 22% for header
+    
+    // CRITICAL: Use much more of available height
+    const bottomMargin = isSmallScreen ? 60 : 80; // Reduced from 100
+    const historyEndY = height - bottomMargin;
     
     // Create invisible touch area for history scrolling
     this.historyTouchArea = this.scene.add.rectangle(
@@ -77,12 +83,15 @@ class HistoryManager {
   scrollHistory(delta) {
     if (this.guessHistory.length === 0 && !this.hasActiveRow) return;
     
-    const { width } = this.scene.cameras.main;
-    const isSmallScreen = width < 400;
-    const historyStartY = isSmallScreen ? 160 : 120;
+    const { width, height } = this.scene.cameras.main;
+    // CONSISTENCY FIX: Use same responsive calculation as setupHistoryScroll
+    const isSmallScreen = width < 500;
+    const baseHeaderHeight = isSmallScreen ? 140 : 120;
+    const historyStartY = Math.max(baseHeaderHeight, height * 0.22);
     
-    const rowHeight = 60; // Updated to match active row height
-    const maxVisibleRows = Math.floor((this.scene.cameras.main.height - historyStartY - 100) / rowHeight);
+    const rowHeight = 60;
+    const bottomMargin = isSmallScreen ? 60 : 80;
+    const maxVisibleRows = Math.floor((height - historyStartY - bottomMargin) / rowHeight);
     const totalRows = this.guessHistory.length + (this.hasActiveRow ? 1 : 0);
     const maxScrollOffset = Math.max(0, (totalRows * rowHeight) - (maxVisibleRows * rowHeight));
     
@@ -99,13 +108,16 @@ class HistoryManager {
     this.guessHistory.push([...guess]);
     this.feedbackHistory.push(feedback);
     
-    const { width } = this.scene.cameras.main;
-    const isSmallScreen = width < 400;
-    const historyStartY = isSmallScreen ? 160 : 120;
+    const { width, height } = this.scene.cameras.main;
+    // CONSISTENCY FIX: Use same responsive calculation 
+    const isSmallScreen = width < 500;
+    const baseHeaderHeight = isSmallScreen ? 140 : 120;
+    const historyStartY = Math.max(baseHeaderHeight, height * 0.22);
     
     // Auto-scroll to show the newest guess
-    const rowHeight = 60; // Updated to match active row height
-    const maxVisibleRows = Math.floor((this.scene.cameras.main.height - historyStartY - 100) / rowHeight);
+    const rowHeight = 60;
+    const bottomMargin = isSmallScreen ? 60 : 80;
+    const maxVisibleRows = Math.floor((height - historyStartY - bottomMargin) / rowHeight);
     const totalRows = this.guessHistory.length + (this.hasActiveRow ? 1 : 0);
     const maxScrollRange = (totalRows * rowHeight) - (maxVisibleRows * rowHeight);
     
@@ -139,11 +151,14 @@ class HistoryManager {
     
     this.historyGroup = this.scene.add.group();
     
-    const { width } = this.scene.cameras.main;
-    const isSmallScreen = width < 400;
-    const startY = isSmallScreen ? 160 : 120;
-    const rowHeight = 60; // Updated to match active row height
-    const maxVisibleRows = Math.floor((this.scene.cameras.main.height - startY - 100) / rowHeight);
+    const { width, height } = this.scene.cameras.main;
+    // CONSISTENCY FIX: Use same responsive calculation
+    const isSmallScreen = width < 500;
+    const baseHeaderHeight = isSmallScreen ? 140 : 120;
+    const startY = Math.max(baseHeaderHeight, height * 0.22);
+    const rowHeight = 60;
+    const bottomMargin = isSmallScreen ? 60 : 80;
+    const maxVisibleRows = Math.floor((height - startY - bottomMargin) / rowHeight);
     
     const totalRows = this.guessHistory.length;
     const maxScrollOffset = Math.max(0, (totalRows * rowHeight) - (maxVisibleRows * rowHeight));
@@ -175,8 +190,8 @@ class HistoryManager {
     const codeLength = guess.length;
     const { width } = this.scene.cameras.main;
     
-    // Responsive positioning that matches active row layout
-    const isSmallScreen = width < 400;
+    // CONSISTENCY FIX: Use same responsive thresholds
+    const isSmallScreen = width < 500;
     const elementSpacing = isSmallScreen ? 45 : 60; // Tighter spacing on mobile
     const elementWidth = isSmallScreen ? 35 : 40;   // Smaller slots on mobile
     
@@ -257,14 +272,15 @@ class HistoryManager {
       }
       
       if (endIndex < totalRows) {
-        // Position scroll down button at a safe location that's always visible
-        const downButtonY = Math.min(startY + maxVisibleRows * rowHeight + 10, height - 80);
+        // MOBILE UX: Position scroll button safely with responsive margin
+        const bottomMargin = height < 400 ? 40 : 60; // Smaller margin on small screens
+        const downButtonY = Math.min(startY + maxVisibleRows * rowHeight + 10, height - bottomMargin);
         const downIndicator = this.scene.add.text(width - 50, downButtonY, '↓ Scroll down', {
           font: '10px Arial',
           fill: '#fff',
           backgroundColor: '#444',
           padding: { left: 4, right: 4, top: 2, bottom: 2 }
-        }).setOrigin(1, 0.5).setDepth(GameUtils.getDepthLayers().UI) // Higher depth for visibility
+        }).setOrigin(1, 0.5).setDepth(GameUtils.getDepthLayers().UI + 10) // Much higher depth
           .setInteractive({ useHandCursor: true }); // Make it clickable
         
         downIndicator.on('pointerdown', () => {
@@ -324,13 +340,14 @@ class HistoryManager {
       this.removeActiveRow();
     }
 
-    const { width } = this.scene.cameras.main;
+    const { width, height } = this.scene.cameras.main;
     const codeLength = this.scene.codeLength;
     const elements = this.scene.elements;
     
-    // Calculate position for active row (always at the bottom of history)
-    const isSmallScreen = width < 400;
-    const historyStartY = isSmallScreen ? 160 : 120;
+    // CONSISTENCY FIX: Use same responsive calculation as setupHistoryScroll
+    const isSmallScreen = width < 500;
+    const baseHeaderHeight = isSmallScreen ? 140 : 120;
+    const historyStartY = Math.max(baseHeaderHeight, height * 0.22);
     const rowHeight = 60;
     const activeRowY = historyStartY + (this.guessHistory.length * rowHeight) - this.historyScrollOffset;
     
@@ -431,10 +448,12 @@ class HistoryManager {
     if (!this.hasActiveRow) return;
     
     const { width, height } = this.scene.cameras.main;
-    // Use responsive positioning
-    const isSmallScreen = width < 400;
-    const historyStartY = isSmallScreen ? 160 : 120;
-    const historyEndY = height - 100;
+    // MOBILE-OPTIMIZED: Use same responsive calculation as history
+    const isSmallScreen = width < 500;
+    const baseHeaderHeight = isSmallScreen ? 140 : 120;
+    const historyStartY = Math.max(baseHeaderHeight, height * 0.22);
+    const bottomMargin = isSmallScreen ? 60 : 80;
+    const historyEndY = height - bottomMargin;
     const rowHeight = 60;
     const activeRowY = historyStartY + (this.guessHistory.length * rowHeight);
     
@@ -450,9 +469,11 @@ class HistoryManager {
   updateActiveRowPosition() {
     if (!this.hasActiveRow) return;
     
-    const { width } = this.scene.cameras.main;
-    const isSmallScreen = width < 400;
-    const historyStartY = isSmallScreen ? 160 : 120;
+    const { width, height } = this.scene.cameras.main;
+    // CONSISTENCY FIX: Use same responsive calculation as setupHistoryScroll
+    const isSmallScreen = width < 500;
+    const baseHeaderHeight = isSmallScreen ? 140 : 120;
+    const historyStartY = Math.max(baseHeaderHeight, height * 0.22);
     const rowHeight = 60;
     const activeRowY = historyStartY + (this.guessHistory.length * rowHeight) - this.historyScrollOffset;
     
@@ -514,10 +535,11 @@ class HistoryManager {
       this.closeElementPicker();
     });
 
-    // Create picker container with proper height for cancel button
-    const pickerWidth = Math.min(300, gameWidth - 40);
-    const baseHeight = 280; // Increased to accommodate cancel button
-    const pickerHeight = Math.min(baseHeight, gameHeight - 100);
+    // Create picker container with mobile-optimized sizing
+    const pickerWidth = Math.min(320, gameWidth - 20); // Wider on mobile, less margin
+    const baseHeight = gameHeight < 500 ? 300 : 280; // Taller on small screens
+    const minMargin = gameHeight < 500 ? 40 : 100; // Less margin on small screens  
+    const pickerHeight = Math.min(baseHeight, gameHeight - minMargin);
     
     this.elementPicker = this.scene.add.container(gameWidth / 2, gameHeight / 2);
     this.elementPicker.setDepth(GameUtils.getDepthLayers().MODAL + 1);

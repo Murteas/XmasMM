@@ -6,22 +6,29 @@ function calculateCanvasSize() {
   const viewportHeight = window.innerHeight;
   const devicePixelRatio = window.devicePixelRatio || 1;
   
-  // Account for mobile browser UI (address bar, navigation)
-  const availableHeight = viewportHeight * 0.9; // 90% to leave space for browser UI
-  const availableWidth = viewportWidth * 0.95;  // 95% to avoid edge overflow
+  // MOBILE-FIRST APPROACH: Use nearly full viewport
+  // Account for mobile browser UI but maximize playable area
+  const availableHeight = viewportHeight * 0.95; // Increased from 0.9 to 0.95
+  const availableWidth = viewportWidth * 0.98;   // Increased from 0.95 to 0.98
   
-  // Maintain aspect ratio (4:3) while fitting within available space
-  const aspectRatio = 4 / 3;
+  // CRITICAL FIX: Remove aspect ratio constraint for mobile portrait
+  // Use available space more effectively for portrait devices
   let canvasWidth, canvasHeight;
   
-  if (availableWidth / availableHeight > aspectRatio) {
-    // Height is the limiting factor
-    canvasHeight = Math.min(availableHeight, 600); // Max 600px height
-    canvasWidth = canvasHeight * aspectRatio;
+  if (viewportWidth < 500) {
+    // Mobile portrait: Use almost full available space
+    canvasWidth = Math.min(availableWidth, viewportWidth);
+    canvasHeight = Math.min(availableHeight, viewportHeight);
   } else {
-    // Width is the limiting factor
-    canvasWidth = Math.min(availableWidth, 800); // Max 800px width
-    canvasHeight = canvasWidth / aspectRatio;
+    // Desktop/landscape: Maintain aspect ratio for traditional layout
+    const aspectRatio = 4 / 3;
+    if (availableWidth / availableHeight > aspectRatio) {
+      canvasHeight = Math.min(availableHeight, 600);
+      canvasWidth = canvasHeight * aspectRatio;
+    } else {
+      canvasWidth = Math.min(availableWidth, 800);
+      canvasHeight = canvasWidth / aspectRatio;
+    }
   }
   
   return {

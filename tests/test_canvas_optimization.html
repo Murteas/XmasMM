@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Canvas Optimization Test</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      color: white;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+    
+    .test-overlay {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.8);
+      padding: 10px;
+      border-radius: 8px;
+      z-index: 1000;
+      font-size: 12px;
+      backdrop-filter: blur(10px);
+    }
+    
+    .metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .metric {
+      background: rgba(255,255,255,0.1);
+      padding: 8px;
+      border-radius: 4px;
+      text-align: center;
+    }
+    
+    .metric-value {
+      font-size: 16px;
+      font-weight: bold;
+      color: #4CAF50;
+    }
+    
+    .metric-label {
+      font-size: 10px;
+      opacity: 0.7;
+    }
+    
+    .warning {
+      color: #FF6B6B;
+    }
+    
+    .success {
+      color: #4CAF50;
+    }
+    
+    #game-container {
+      width: 100vw;
+      height: 100vh;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    
+    .back-button {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(76, 175, 80, 0.9);
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      z-index: 1001;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-overlay">
+    <div><strong>📐 Canvas Size Optimization Test</strong></div>
+    <div id="test-status">Initializing...</div>
+    
+    <div class="metrics">
+      <div class="metric">
+        <div class="metric-value" id="screen-usage">--%</div>
+        <div class="metric-label">Screen Usage</div>
+      </div>
+      <div class="metric">
+        <div class="metric-value" id="canvas-size">--×--</div>
+        <div class="metric-label">Canvas Size</div>
+      </div>
+      <div class="metric">
+        <div class="metric-value" id="viewport-size">--×--</div>
+        <div class="metric-label">Viewport Size</div>
+      </div>
+      <div class="metric">
+        <div class="metric-value" id="optimization-score">--</div>
+        <div class="metric-label">Optimization</div>
+      </div>
+    </div>
+  </div>
+  
+  <button class="back-button" onclick="window.location.href='index.html'">← Back to Tests</button>
+  
+  <div id="game-container"></div>
+  
+  <!-- Load game scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+  <script src="../js/utils/GameUtils.js"></script>
+  <script src="../js/managers/ScoreManager.js"></script>
+  <script src="../js/managers/HistoryManager.js"></script>
+  <script src="../js/scenes/MainMenu.js"></script>
+  <script src="../js/scenes/DifficultySelection.js"></script>
+  <script src="../js/scenes/GameScene.js"></script>
+  <script src="../js/main.js"></script>
+  
+  <script>
+    function updateMetrics() {
+      const canvas = document.querySelector('canvas');
+      const viewport = {
+        width: window.innerWidth,
+        height: window.innerHeight
+      };
+      
+      if (canvas) {
+        const canvasSize = {
+          width: canvas.width,
+          height: canvas.height
+        };
+        
+        const screenUsage = Math.round((canvasSize.height / viewport.height) * 100);
+        const isOptimized = screenUsage >= 85; // Target: 85%+ usage
+        
+        // Update metrics display
+        document.getElementById('screen-usage').textContent = screenUsage + '%';
+        document.getElementById('screen-usage').className = 'metric-value ' + (isOptimized ? 'success' : 'warning');
+        
+        document.getElementById('canvas-size').textContent = `${canvasSize.width}×${canvasSize.height}`;
+        document.getElementById('viewport-size').textContent = `${viewport.width}×${viewport.height}`;
+        
+        // Calculate optimization score
+        let score = 'Poor';
+        if (screenUsage >= 90) score = 'Excellent';
+        else if (screenUsage >= 80) score = 'Good';
+        else if (screenUsage >= 60) score = 'Fair';
+        
+        document.getElementById('optimization-score').textContent = score;
+        document.getElementById('optimization-score').className = 'metric-value ' + (isOptimized ? 'success' : 'warning');
+        
+        // Update status
+        const status = isOptimized 
+          ? `✅ Canvas optimization successful! Using ${screenUsage}% of screen height.`
+          : `⚠️ Canvas not optimized. Only using ${screenUsage}% of screen height.`;
+        
+        document.getElementById('test-status').innerHTML = status;
+      } else {
+        document.getElementById('test-status').textContent = 'Waiting for game canvas to load...';
+      }
+    }
+    
+    // Update metrics periodically
+    const metricsInterval = setInterval(updateMetrics, 500);
+    updateMetrics();
+    
+    // Handle orientation changes
+    window.addEventListener('orientationchange', () => {
+      setTimeout(updateMetrics, 500);
+    });
+  </script>
+</body>
+</html>

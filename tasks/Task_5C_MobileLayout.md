@@ -63,4 +63,4 @@
 
 ---
 **Previous**: Task 5B (Family-Friendly UX)  
-**Next**: Task 6 (Christmas Theme)
+**Next**: Task 5D (Christmas Theme)
