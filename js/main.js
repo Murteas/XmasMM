@@ -40,6 +40,11 @@ const config = {
   height: canvasSize.height,
   backgroundColor: '#1a1a2e',
   parent: 'game-container',
+  render: {
+    antialias: true,
+    pixelArt: false,
+    transparent: false
+  },
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
@@ -62,6 +67,22 @@ window.onload = function() {
   
   // Add resize event listener for orientation changes
   window.addEventListener('resize', handleResize);
+  
+  // Set willReadFrequently on the canvas after it's created (for performance optimization)
+  game.events.once('ready', () => {
+    if (game.canvas) {
+      const context = game.canvas.getContext('2d');
+      if (context && typeof context.getImageData === 'function') {
+        // Canvas is ready and supports getImageData
+        try {
+          // This helps with performance for frequent canvas reads
+          game.canvas.style.willReadFrequently = 'true';
+        } catch (e) {
+          // Silently ignore if not supported
+        }
+      }
+    }
+  });
 };
 
 // Handle window resize events (orientation changes, browser UI changes)

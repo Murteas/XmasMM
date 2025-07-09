@@ -14,37 +14,58 @@ class GameScene extends Phaser.Scene {
     // Load Christmas element images (responsive sizing for different screen densities)
     // Base resolution (1x) images
     this.load.image('santa_1x', 'assets/santa_1x.png');
-    this.load.image('present_1x', 'assets/Present_1x.png');
+    this.load.image('present_1x', 'assets/present_1x.png');
     this.load.image('mistletoe_1x', 'assets/mistletoe_1x.png');
-    this.load.image('star_1x', 'assets/Star_1x.png');
-    this.load.image('tree_1x', 'assets/Tree_1x.png');
+    this.load.image('star_1x', 'assets/star_1x.png');
+    this.load.image('tree_1x', 'assets/tree_1x.png');
     this.load.image('snowflake_1x', 'assets/snowflake_1x.png');
     
     // Retina (2x) images
-    this.load.image('santa_2x', 'assets/Santa_2x.png');
-    this.load.image('present_2x', 'assets/Present_2x.png');
+    this.load.image('santa_2x', 'assets/santa_2x.png');
+    this.load.image('present_2x', 'assets/present_2x.png');
     this.load.image('mistletoe_2x', 'assets/mistletoe_2x.png');
-    this.load.image('star_2x', 'assets/Star_2x.png');
-    this.load.image('tree_2x', 'assets/Tree_2x.png');
+    this.load.image('star_2x', 'assets/star_2x.png');
+    this.load.image('tree_2x', 'assets/tree_2x.png');
     this.load.image('snowflake_2x', 'assets/snowflake_2x.png');
     
     // Super Retina (3x) images  
-    this.load.image('santa_3x', 'assets/Santa_3x.png');
-    this.load.image('present_3x', 'assets/Present_3x.png');
+    this.load.image('santa_3x', 'assets/santa_3x.png');
+    this.load.image('present_3x', 'assets/present_3x.png');
     this.load.image('mistletoe_3x', 'assets/mistletoe_3x.png');
-    this.load.image('star_3x', 'assets/Star_3x.png');
-    this.load.image('tree_3x', 'assets/Tree_3x.png');
+    this.load.image('star_3x', 'assets/star_3x.png');
+    this.load.image('tree_3x', 'assets/tree_3x.png');
     this.load.image('snowflake_3x', 'assets/snowflake_3x.png');
+    
+    // Show loading progress
+    this.load.on('progress', (value) => {
+      if (this.loadingText) {
+        this.loadingText.setText(`Loading Christmas Magic... ${Math.round(value * 100)}%`);
+      }
+    });
+    
+    // Handle loading errors
+    this.load.on('fileerror', (key, type, url) => {
+      console.warn(`Failed to load ${type}: ${key} from ${url}`);
+    });
   }
   
   create() {
-    this.initializeGame();
-    this.setupBackground();
-    this.setupGameState();
-    this.setupManagers();
-    this.setupUI();
-    this.setupInlineGuessing();
-    this.setupButtons();
+    // Show loading state first (now that camera is ready)
+    this.showLoadingState();
+    
+    // Small delay to ensure loading screen is visible
+    this.time.delayedCall(100, () => {
+      this.initializeGame();
+      this.setupBackground();
+      this.setupGameState();
+      this.setupManagers();
+      this.setupUI();
+      this.setupInlineGuessing();
+      this.setupButtons();
+      
+      // Hide loading state with smooth transition
+      this.hideLoadingState();
+    });
   }
 
   initializeGame() {
@@ -222,12 +243,18 @@ class GameScene extends Phaser.Scene {
       this.submitGuess();
     });
     
+    // Add touch feedback to submit button
+    this.addButtonTouchFeedback(this.submitBtn, { colorTint: 0x2ecc71 });
+    
     // Santa's Hint button is now set up in setupHeaderLayout() method
     // Configure its interactivity here
     this.hintBtn.setInteractive({ useHandCursor: true });
     this.hintBtn.on('pointerdown', () => {
       this.useSantasHint();
     });
+    
+    // Add touch feedback to hint button
+    this.addButtonTouchFeedback(this.hintBtn, { colorTint: 0xe67e22 });
     
     // Back button
     const backBtn = this.add.text(50, height - 50, 'Back', {
@@ -240,6 +267,9 @@ class GameScene extends Phaser.Scene {
     backBtn.on('pointerdown', () => {
       this.scene.start('DifficultySelection');
     });
+    
+    // Add touch feedback to back button
+    this.addButtonTouchFeedback(backBtn, { colorTint: 0x7f8c8d });
   }
   
   submitGuess() {
@@ -283,19 +313,59 @@ class GameScene extends Phaser.Scene {
   }
 
   showIncompleteGuessError() {
-    // Create a temporary error message
-    const { width } = this.cameras.main;
-    const errorText = this.add.text(width / 2, 240, 'Please fill all slots!', {
-      font: '16px Arial',
-      fill: '#e74c3c',
-      backgroundColor: '#000',
-      padding: { left: 8, right: 8, top: 4, bottom: 4 }
-    }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI + 2);
+    // Prevent multiple error messages
+    if (this.errorMessage) return;
     
-    // Remove the error message after 2 seconds
-    this.time.delayedCall(2000, () => {
-      if (errorText) {
-        errorText.destroy();
+    const { width, height } = this.cameras.main;
+    
+    // Create error container for better positioning
+    this.errorMessage = this.add.container(0, 0);
+    
+    // Error background with gentle animation
+    const errorBg = this.add.rectangle(width / 2, height / 2, width * 0.8, 100, 0x000000, 0.9);
+    errorBg.setStrokeStyle(2, 0xe74c3c);
+    
+    // Friendly error message
+    const errorText = this.add.text(width / 2, height / 2 - 10, '🎄 Please select all Christmas elements! 🎄', {
+      font: '18px Arial',
+      fill: '#fff',
+      fontStyle: 'bold',
+      align: 'center',
+      wordWrap: { width: width * 0.7 }
+    }).setOrigin(0.5);
+    
+    // Helpful hint
+    const hintText = this.add.text(width / 2, height / 2 + 15, 'Tap empty slots to choose elements', {
+      font: '14px Arial',
+      fill: '#f39c12',
+      align: 'center'
+    }).setOrigin(0.5);
+    
+    this.errorMessage.add([errorBg, errorText, hintText]);
+    this.errorMessage.setDepth(GameUtils.getDepthLayers().UI + 2);
+    
+    // Gentle bounce animation
+    this.errorMessage.setScale(0.8);
+    this.tweens.add({
+      targets: this.errorMessage,
+      scaleX: 1,
+      scaleY: 1,
+      duration: 200,
+      ease: 'Back.easeOut'
+    });
+    
+    // Remove after 3 seconds with fade
+    this.time.delayedCall(3000, () => {
+      if (this.errorMessage) {
+        this.tweens.add({
+          targets: this.errorMessage,
+          alpha: 0,
+          duration: 300,
+          onComplete: () => {
+            this.errorMessage.destroy();
+            this.errorMessage = null;
+          }
+        });
       }
     });
   }
@@ -321,15 +391,8 @@ class GameScene extends Phaser.Scene {
     );
     
     if (hintResult) {
-      // Apply the hint to the active row
-      this.historyManager.activeRowGuess[hintResult.position] = hintResult.element;
-      
-      // Update the visual display of the active row
-      if (this.historyManager.activeRowElements && this.historyManager.activeRowElements[hintResult.position]) {
-        const elementData = this.historyManager.activeRowElements[hintResult.position];
-        elementData.text.setText(hintResult.element);
-        elementData.text.setFill('#fff');
-      }
+      // Apply the hint to the active row using the proper method
+      this.historyManager.selectElement(hintResult.position, hintResult.element);
       
       // Visual feedback with better positioning and higher depth
       const { width, height } = this.cameras.main;
@@ -413,12 +476,141 @@ class GameScene extends Phaser.Scene {
     // Map element names to the exact asset keys loaded in preload()
     const normalizedName = elementName.toLowerCase();
     
+    // Determine the appropriate resolution suffix
+    let suffix;
     if (pixelRatio >= 3) {
-      return `${normalizedName}_3x`;
+      suffix = '_3x';
     } else if (pixelRatio >= 2) {
-      return `${normalizedName}_2x`;
+      suffix = '_2x';
     } else {
-      return `${normalizedName}_1x`;
+      suffix = '_1x';
     }
+    
+    const imageKey = `${normalizedName}${suffix}`;
+    
+    // Verify the texture exists before returning the key
+    if (this.textures.exists(imageKey)) {
+      return imageKey;
+    } else {
+      console.warn(`Texture not found: ${imageKey}, falling back to 1x version`);
+      const fallbackKey = `${normalizedName}_1x`;
+      return this.textures.exists(fallbackKey) ? fallbackKey : 'missing';
+    }
+  }
+  
+  showLoadingState() {
+    const { width, height } = this.cameras.main;
+    
+    // Only create if not already created
+    if (this.loadingContainer) return;
+    
+    // Create loading container
+    this.loadingContainer = this.add.container(0, 0);
+    
+    // Loading background
+    const loadingBg = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.8);
+    
+    // Loading text
+    this.loadingText = this.add.text(width / 2, height / 2 - 20, 'Loading Christmas Magic...', {
+      font: '24px Arial',
+      fill: '#fff',
+      fontStyle: 'bold'
+    }).setOrigin(0.5);
+    
+    // Simple loading indicator (spinning snowflake)
+    this.loadingSpinner = this.add.text(width / 2, height / 2 + 30, '❄️', {
+      font: '32px Arial'
+    }).setOrigin(0.5);
+    
+    // Add to container
+    this.loadingContainer.add([loadingBg, this.loadingText, this.loadingSpinner]);
+    this.loadingContainer.setDepth(1000);
+    
+    // Spin the snowflake
+    this.loadingTween = this.tweens.add({
+      targets: this.loadingSpinner,
+      rotation: Math.PI * 2,
+      duration: 2000,
+      repeat: -1,
+      ease: 'Linear'
+    });
+  }
+  
+  hideLoadingState() {
+    if (this.loadingContainer) {
+      // Stop the spinning animation safely
+      if (this.loadingTween && this.loadingTween.isPlaying()) {
+        this.loadingTween.remove();
+      }
+      this.loadingTween = null;
+      
+      this.tweens.add({
+        targets: this.loadingContainer,
+        alpha: 0,
+        duration: 500,
+        onComplete: () => {
+          if (this.loadingContainer) {
+            this.loadingContainer.destroy();
+            this.loadingContainer = null;
+            this.loadingText = null;
+            this.loadingSpinner = null;
+          }
+        }
+      });
+    }
+  }
+  
+  addButtonTouchFeedback(button, config = {}) {
+    const { 
+      scaleDown = 0.95, 
+      scaleUp = 1.05, 
+      duration = 100,
+      colorTint = 0xf39c12 
+    } = config;
+    
+    button.on('pointerdown', () => {
+      // Scale down and tint
+      this.tweens.add({
+        targets: button,
+        scaleX: scaleDown,
+        scaleY: scaleDown,
+        duration: duration,
+        ease: 'Power2'
+      });
+      
+      // Subtle color change
+      button.setTint(colorTint);
+    });
+    
+    button.on('pointerup', () => {
+      // Scale back up with slight overshoot for satisfying feel
+      this.tweens.add({
+        targets: button,
+        scaleX: scaleUp,
+        scaleY: scaleUp,
+        duration: duration,
+        ease: 'Back.easeOut',
+        onComplete: () => {
+          // Return to normal scale
+          this.tweens.add({
+            targets: button,
+            scaleX: 1,
+            scaleY: 1,
+            duration: duration,
+            ease: 'Power2'
+          });
+        }
+      });
+      
+      // Clear tint
+      button.clearTint();
+    });
+    
+    // Handle pointer out (when finger moves off button)
+    button.on('pointerout', () => {
+      this.tweens.killTweensOf(button);
+      button.setScale(1);
+      button.clearTint();
+    });
   }
 }

@@ -173,11 +173,21 @@ class HistoryManager {
 
   renderGuessRow(guess, feedback, rowIndex, y, depth) {
     const codeLength = guess.length;
+    const { width } = this.scene.cameras.main;
+    
+    // Responsive positioning that matches active row layout
+    const isSmallScreen = width < 400;
+    const elementSpacing = isSmallScreen ? 45 : 60; // Tighter spacing on mobile
+    const elementWidth = isSmallScreen ? 35 : 40;   // Smaller slots on mobile
+    
+    // Center the row based on screen width and code length (same logic as active row)
+    const totalRowWidth = (codeLength * elementSpacing) - elementSpacing + elementWidth;
+    const startX = Math.max(30, (width - totalRowWidth) / 2); // Ensure minimum margin
     
     // Display guess elements with images
     guess.forEach((element, colIndex) => {
-      const x = 100 + colIndex * 60;
-      const slot = this.scene.add.rectangle(x, y, 40, 30, 0x666666)
+      const x = startX + colIndex * elementSpacing;
+      const slot = this.scene.add.rectangle(x, y, elementWidth, 30, 0x666666)
         .setStrokeStyle(1, 0xffffff)
         .setDepth(depth);
       
@@ -195,8 +205,9 @@ class HistoryManager {
       this.historyElements.push(slot, elementImage);
     });
     
-    // Display feedback
-    const feedbackX = 100 + codeLength * 60 + 40;
+    // Display feedback - position relative to last element
+    const lastElementX = startX + (codeLength - 1) * elementSpacing;
+    const feedbackX = lastElementX + elementSpacing + 20; // Position after last element with margin
     
     const feedbackBg = this.scene.add.rectangle(feedbackX, y, 60, 25, 0xffffff, 0.9)
       .setStrokeStyle(1, 0x333333)
@@ -212,8 +223,9 @@ class HistoryManager {
     this.historyGroup.add(feedbackText);
     this.historyElements.push(feedbackBg, feedbackText);
     
-    // Add row number
-    const rowNumberText = this.scene.add.text(50, y, `${rowIndex + 1}`, {
+    // Add row number - position it to the left with proper margin
+    const rowNumberX = Math.max(15, startX - 20); // Ensure it doesn't go off screen
+    const rowNumberText = this.scene.add.text(rowNumberX, y, `${rowIndex + 1}`, {
       font: '10px Arial',
       fill: '#aaa'
     }).setOrigin(0.5).setDepth(depth);
@@ -380,16 +392,8 @@ class HistoryManager {
       
       // Click handler to open element picker (mobile-friendly UX)
       slot.on('pointerdown', () => {
-        // Add subtle tap feedback for empty slots
-        if (!this.activeRowGuess[i]) {
-          slot.setScale(0.95);
-          this.scene.tweens.add({
-            targets: slot,
-            scale: 1,
-            duration: 100,
-            ease: 'Power2'
-          });
-        }
+        // Enhanced touch feedback
+        this.addSlotTouchFeedback(slot, i);
         this.cycleActiveRowElement(i);
       });
       
@@ -409,6 +413,9 @@ class HistoryManager {
       this.scene.submitGuess();
     });
     
+    // Add touch feedback to submit button using the method defined in HistoryManager
+    this.addSubmitButtonTouchFeedback(this.activeRowSubmitBtn);
+    
     // Store the glow effect reference for cleanup
     this.activeRowGlowEffect = glowEffect;
     
@@ -418,6 +425,63 @@ class HistoryManager {
     this.scrollToActiveRow();
     
     return activeRowY;
+  }
+
+  scrollToActiveRow() {
+    if (!this.hasActiveRow) return;
+    
+    const { width, height } = this.scene.cameras.main;
+    // Use responsive positioning
+    const isSmallScreen = width < 400;
+    const historyStartY = isSmallScreen ? 160 : 120;
+    const historyEndY = height - 100;
+    const rowHeight = 60;
+    const activeRowY = historyStartY + (this.guessHistory.length * rowHeight);
+    
+    // Check if active row is below visible area
+    if (activeRowY > historyEndY - 50) {
+      const targetScroll = activeRowY - historyEndY + 100;
+      this.historyScrollOffset = Math.max(0, targetScroll);
+      this.displayGuessHistory();
+      this.updateActiveRowPosition();
+    }
+  }
+
+  updateActiveRowPosition() {
+    if (!this.hasActiveRow) return;
+    
+    const { width } = this.scene.cameras.main;
+    const isSmallScreen = width < 400;
+    const historyStartY = isSmallScreen ? 160 : 120;
+    const rowHeight = 60;
+    const activeRowY = historyStartY + (this.guessHistory.length * rowHeight) - this.historyScrollOffset;
+    
+    // Update positions of active row elements
+    if (this.activeRowBackground) {
+      this.activeRowBackground.setY(activeRowY);
+    }
+    
+    if (this.activeRowGlowEffect) {
+      this.activeRowGlowEffect.setY(activeRowY);
+    }
+    
+    if (this.activeRowElements) {
+      const codeLength = this.scene.codeLength;
+      const startX = width / 2 - (codeLength * 25) - 30;
+      
+      this.activeRowElements.forEach((elementData, i) => {
+        const x = startX + i * 50;
+        elementData.slot.setPosition(x, activeRowY);
+        elementData.displayElement.setPosition(x, activeRowY);
+      });
+    }
+    
+    if (this.activeRowSubmitBtn) {
+      const codeLength = this.scene.codeLength;
+      const startX = width / 2 - (codeLength * 25) - 30;
+      const submitButtonX = startX + (codeLength * 50) + 25;
+      this.activeRowSubmitBtn.setPosition(submitButtonX, activeRowY);
+    }
   }
 
   cycleActiveRowElement(index) {
@@ -634,38 +698,77 @@ class HistoryManager {
     });
   }
 
-  removeActiveRow() {
-    if (!this.hasActiveRow) return;
+  addSlotTouchFeedback(slot, slotIndex) {
+    // Enhanced visual feedback for slot interaction
+    const isEmptySlot = !this.activeRowGuess[slotIndex];
     
-    // Clean up active row elements
-    if (this.activeRowBackground) {
-      this.activeRowBackground.destroy();
-      this.activeRowBackground = null;
-    }
-    
-    if (this.activeRowGlowEffect) {
-      this.activeRowGlowEffect.destroy();
-      this.activeRowGlowEffect = null;
-    }
-    
-    if (this.activeRowElements) {
-      this.activeRowElements.forEach(element => {
-        if (element.slot) element.slot.destroy();
-        if (element.displayElement) element.displayElement.destroy();
+    if (isEmptySlot) {
+      // Pulse effect for empty slots to guide user
+      slot.setScale(0.95);
+      this.scene.tweens.add({
+        targets: slot,
+        scale: 1.1,
+        duration: 150,
+        ease: 'Back.easeOut',
+        onComplete: () => {
+          this.scene.tweens.add({
+            targets: slot,
+            scale: 1,
+            duration: 100,
+            ease: 'Power2'
+          });
+        }
       });
-      this.activeRowElements = null;
+      
+      // Subtle glow effect
+      slot.setStrokeStyle(2, 0xf39c12, 0.8);
+      this.scene.time.delayedCall(300, () => {
+        slot.setStrokeStyle(2, 0x3498db);
+      });
+    } else {
+      // Scale feedback for filled slots
+      slot.setScale(0.9);
+      this.scene.tweens.add({
+        targets: slot,
+        scale: 1,
+        duration: 150,
+        ease: 'Bounce.easeOut'
+      });
     }
+  }
+  
+  addSubmitButtonTouchFeedback(button) {
+    button.on('pointerdown', () => {
+      // Scale down with color change
+      button.setScale(0.95);
+      button.setStyle({ backgroundColor: '#2ecc71' });
+    });
     
-    if (this.activeRowSubmitBtn) {
-      this.activeRowSubmitBtn.destroy();
-      this.activeRowSubmitBtn = null;
-    }
-
-    // Clean up element picker if open
-    this.closeElementPicker();
+    button.on('pointerup', () => {
+      // Satisfying bounce back
+      this.scene.tweens.add({
+        targets: button,
+        scale: 1.05,
+        duration: 100,
+        ease: 'Back.easeOut',
+        onComplete: () => {
+          this.scene.tweens.add({
+            targets: button,
+            scale: 1,
+            duration: 100,
+            ease: 'Power2'
+          });
+        }
+      });
+      button.setStyle({ backgroundColor: '#27ae60' });
+    });
     
-    this.hasActiveRow = false;
-    this.activeRowGuess = [];
+    button.on('pointerout', () => {
+      // Reset if finger moves off button
+      this.scene.tweens.killTweensOf(button);
+      button.setScale(1);
+      button.setStyle({ backgroundColor: '#27ae60' });
+    });
   }
 
   submitActiveRowGuess() {
@@ -683,87 +786,45 @@ class HistoryManager {
     return guess;
   }
 
-  scrollToActiveRow() {
-    if (!this.hasActiveRow) return;
-    
-    const { width, height } = this.scene.cameras.main;
-    // Use responsive positioning
-    const isSmallScreen = width < 400;
-    const historyStartY = isSmallScreen ? 160 : 120;
-    const historyEndY = height - 100;
-    const rowHeight = 60;
-    const activeRowY = historyStartY + (this.guessHistory.length * rowHeight);
-    
-    // Check if active row is below visible area
-    if (activeRowY > historyEndY - 50) {
-      const targetScroll = activeRowY - historyEndY + 100;
-      this.historyScrollOffset = Math.max(0, targetScroll);
-      this.updateHistoryDisplay();
-      this.updateActiveRowPosition();
-    }
-  }
-
-  updateActiveRowPosition() {
-    if (!this.hasActiveRow) return;
-    
-    const { width } = this.scene.cameras.main;
-    // Use responsive positioning instead of hardcoded value
-    const isSmallScreen = width < 400;
-    const historyStartY = isSmallScreen ? 160 : 120;
-    const rowHeight = 60;
-    const activeRowY = historyStartY + (this.guessHistory.length * rowHeight) - this.historyScrollOffset;
-    
-    // Update background position
-    if (this.activeRowBackground) {
-      this.activeRowBackground.setY(activeRowY);
-    }
-    
-    // Update glow effect position
-    if (this.activeRowGlowEffect) {
-      this.activeRowGlowEffect.setY(activeRowY);
-    }
-    
-    // Update element positions
-    if (this.activeRowElements) {
-      const codeLength = this.scene.codeLength;
-      const startX = width / 2 - (codeLength * 25) - 30; // Shifted left to make room for submit button
-      
-      this.activeRowElements.forEach((element, i) => {
-        const x = startX + i * 50;
-        element.slot.setPosition(x, activeRowY);
-        element.displayElement.setPosition(x, activeRowY);
-      });
-    }
-    
-    // Update integrated submit button position
-    if (this.activeRowSubmitBtn) {
-      const codeLength = this.scene.codeLength;
-      const startX = width / 2 - (codeLength * 25) - 30;
-      const submitButtonX = startX + (codeLength * 50) + 25;
-      this.activeRowSubmitBtn.setPosition(submitButtonX, activeRowY);
-    }
-  }
-
-  updateHistoryDisplay() {
-    this.displayGuessHistory();
-  }
-
   getActiveRowGuess() {
     return this.hasActiveRow ? [...this.activeRowGuess] : null;
   }
 
-  isActiveRowComplete() {
-    return this.hasActiveRow && !this.activeRowGuess.includes(null);
-  }
-
-  getActiveRowY() {
-    if (!this.hasActiveRow) return null;
+  removeActiveRow() {
+    if (!this.hasActiveRow) return;
     
-    const { width } = this.scene.cameras.main;
-    // Use responsive positioning
-    const isSmallScreen = width < 400;
-    const historyStartY = isSmallScreen ? 160 : 120;
-    const rowHeight = 60;
-    return historyStartY + (this.guessHistory.length * rowHeight) - this.historyScrollOffset;
+    // Clean up active row elements
+    if (this.activeRowElements) {
+      this.activeRowElements.forEach(elementData => {
+        if (elementData.slot) elementData.slot.destroy();
+        if (elementData.displayElement) elementData.displayElement.destroy();
+      });
+      this.activeRowElements = null;
+    }
+    
+    // Clean up active row background
+    if (this.activeRowBackground) {
+      this.activeRowBackground.destroy();
+      this.activeRowBackground = null;
+    }
+    
+    // Clean up glow effect
+    if (this.activeRowGlowEffect) {
+      this.activeRowGlowEffect.destroy();
+      this.activeRowGlowEffect = null;
+    }
+    
+    // Clean up submit button
+    if (this.activeRowSubmitBtn) {
+      this.activeRowSubmitBtn.destroy();
+      this.activeRowSubmitBtn = null;
+    }
+    
+    // Reset state
+    this.hasActiveRow = false;
+    this.activeRowGuess = [];
+    
+    // Refresh display
+    this.displayGuessHistory();
   }
 }
