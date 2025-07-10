@@ -225,8 +225,8 @@
         "Ensure symbols work on all iPhone displays"
       ],
       "deliverables": [
-        "js/managers/HistoryManager.js - Feedback symbol display",
-        "js/scenes/GameScene.js - Feedback legend"
+        "js/managers/HistoryRenderer.js - Christmas feedback symbol display (replaces ●/○ pegs)",
+        "js/scenes/GameScene.js - Feedback legend explaining Christmas symbols"
       ],
       "successCriteria": [
         "New players understand feedback without Mastermind experience",
@@ -330,7 +330,7 @@
       ],
       "deliverables": [
         "js/scenes/RoundOver.js - Quality calculation",
-        "js/managers/HistoryManager.js - Quality display"
+        "js/managers/HistoryRenderer.js - Quality display indicators"
       ],
       "successCriteria": [
         "Family members can see which guesses were helpful",
