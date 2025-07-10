@@ -3,13 +3,22 @@
 ## 🚀 Quick Start for New AI Agents
 **First time using this system?** Run these commands immediately:
 ```bash
-python scripts/automation.py status        # Get current project state
-python scripts/automation.py help          # See current task details
-python scripts/automation.py update-docs   # Update all documentation
+# Step 1: Check current project state
+cat PROJECT_STATUS.md                  # View live project status (auto-updated)
+
+# Step 2: Validate automation system
+python scripts/automation.py status    # Get current project state
+python scripts/automation.py help      # See current task details
+
+# Step 3: Refresh documentation (if needed)
+python scripts/automation.py update-docs   # Update status documents
 python scripts/sync_task_files.py          # Ensure all docs are synced
 ```
 
-**⚠️ IMPORTANT**: Always run `update-docs` after completing tasks to keep documentation current!
+**⚠️ IMPORTANT**: 
+- `PROJECT_STATUS.md` is your **live dashboard** - always check it first
+- Only `PROJECT_STATUS.md` gets auto-updated with current tasks
+- `README.md` and `AI_AGENT_BRIEFING.md` are stable reference documents
 
 ## Overview
 XmasMM uses a machine-readable task management system designed for agentic AI consumption. The system ensures consistent task tracking across different AI models and sessions.

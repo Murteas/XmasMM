@@ -111,28 +111,80 @@ class DocumentationUpdater:
         """Check if documentation might be stale"""
         issues = []
         
-        # Check AI_AGENT_BRIEFING.md
-        briefing_file = self.base_path / "AI_AGENT_BRIEFING.md"
-        if briefing_file.exists():
-            with open(briefing_file, 'r', encoding='utf-8') as f:
+        # Only check PROJECT_STATUS.md for freshness since it's the live status doc
+        # AI_AGENT_BRIEFING.md and README.md are now stable reference documents
+        status_file = self.base_path / "PROJECT_STATUS.md"
+        if status_file.exists():
+            with open(status_file, 'r', encoding='utf-8') as f:
                 content = f.read()
             
-            # Look for outdated progress information
+            # Look for outdated progress information in PROJECT_STATUS.md
             state = self.get_current_state()
             if f"{state['progress']}%" not in content:
-                issues.append("AI_AGENT_BRIEFING.md has outdated progress information")
+                issues.append("PROJECT_STATUS.md has outdated progress information")
             
             if state['current_task'] and f"Task {state['current_task']['id']}" not in content:
-                issues.append("AI_AGENT_BRIEFING.md references wrong current task")
+                issues.append("PROJECT_STATUS.md references wrong current task")
         
         return issues
     
+    def update_project_status(self):
+        """Update PROJECT_STATUS.md with current state"""
+        state = self.get_current_state()
+        status_file = self.base_path / "PROJECT_STATUS.md"
+        
+        if not status_file.exists():
+            print("⚠️  PROJECT_STATUS.md not found - skipping")
+            return
+        
+        with open(status_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        # Update date
+        date_pattern = r'Last updated: [^\n]+'
+        new_date = f"Last updated: {datetime.now().strftime('%B %d, %Y')}"
+        content = re.sub(date_pattern, new_date, content)
+        
+        # Update current task
+        if state['current_task']:
+            task_pattern = r'\*\*Current Task\*\*: Task \d+ - [^\n]+'
+            new_task = f"**Current Task**: Task {state['current_task']['id']} - {state['current_task']['name']}"
+            content = re.sub(task_pattern, new_task, content)
+            
+            # Update description
+            desc_pattern = r'\*\*Description\*\*: [^\n]+'
+            task_desc = state['current_task']['objectives'][0] if state['current_task']['objectives'] else 'In progress'
+            new_desc = f"**Description**: {task_desc}"
+            content = re.sub(desc_pattern, new_desc, content)
+        
+        # Update progress
+        progress_pattern = r'\*\*Progress\*\*: \d+% complete \(\d+/\d+ tasks\)'
+        new_progress = f"**Progress**: {state['progress']}% complete ({state['completed_count']}/{state['total_count']} tasks)"
+        content = re.sub(progress_pattern, new_progress, content)
+        
+        # Update next task
+        if state['next_task']:
+            next_pattern = r'\*\*Next Task\*\*: Task \d+ - [^\n]+'
+            new_next = f"**Next Task**: Task {state['next_task']['id']} - {state['next_task']['name']}"
+            content = re.sub(next_pattern, new_next, content)
+        
+        # Update overall progress section
+        overall_pattern = r'### \*\*Overall Progress\*\*: \d+% \(\d+/\d+ tasks completed\)'
+        new_overall = f"### **Overall Progress**: {state['progress']}% ({state['completed_count']}/{state['total_count']} tasks completed)"
+        content = re.sub(overall_pattern, new_overall, content)
+        
+        with open(status_file, 'w', encoding='utf-8') as f:
+            f.write(content)
+        
+        print(f"✅ Updated PROJECT_STATUS.md with current state")
+
     def update_all(self):
         """Update all automatically updatable documentation"""
         print("🔄 Updating documentation with current project state...")
         
-        self.update_ai_agent_briefing()
-        self.update_readme_progress()
+        # Only update PROJECT_STATUS.md automatically
+        # AI_AGENT_BRIEFING.md should remain stable
+        self.update_project_status()
         
         # Check for remaining issues
         issues = self.check_documentation_freshness()
