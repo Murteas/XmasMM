@@ -389,12 +389,9 @@ class HistoryManager {
     
     // Pre-fill with previous guess if provided
     if (prefillGuess && Array.isArray(prefillGuess)) {
-      console.log(`Create Active Row: Pre-filling with previous guess:`, prefillGuess);
       for (let i = 0; i < Math.min(prefillGuess.length, codeLength); i++) {
         this.activeRowGuess[i] = prefillGuess[i];
       }
-    } else {
-      console.log(`Create Active Row: Starting with empty guess`);
     }
     
     // CONSISTENCY FIX: Use same responsive calculation as setupHistoryScroll
@@ -426,7 +423,7 @@ class HistoryManager {
       .setStrokeStyle(3, 0xffd700) // Golden border
       .setDepth(GameUtils.getDepthLayers().HISTORY + 0.1);
 
-    // Create interactive slots with mobile-optimized positioning
+    // Create interactive slots with responsive positioning
     this.activeRowElements = [];
     
     // MOBILE FIX: Better responsive positioning for different code lengths
@@ -439,22 +436,16 @@ class HistoryManager {
     const totalRowWidth = totalElementsWidth + submitButtonWidth + 20; // 20px gap before submit
     const minMargin = 15; // Minimum margin from screen edges
     
-    console.log(`Mobile Debug: Screen width: ${width}, Code length: ${codeLength}`);
-    console.log(`Mobile Debug: Element spacing: ${elementSpacing}, Element width: ${elementWidth}`);
-    console.log(`Mobile Debug: Total elements width: ${totalElementsWidth}, Total row width: ${totalRowWidth}`);
-    
     // Calculate starting X position - center the row or use minimum margin
     let startX;
     if (totalRowWidth + (minMargin * 2) <= width) {
       // Center the row
       startX = (width - totalRowWidth) / 2;
-      console.log(`Mobile Debug: Centering row, startX: ${startX}`);
     } else {
       // Use minimum margin and reduce spacing if needed
       startX = minMargin;
       const availableElementWidth = width - (minMargin * 2) - submitButtonWidth - 20;
       const adjustedSpacing = Math.max(30, availableElementWidth / codeLength);
-      console.log(`Mobile Debug: Tight fit - adjusting spacing to ${adjustedSpacing}px for ${codeLength} elements`);
     }
     
     for (let i = 0; i < codeLength; i++) {
@@ -472,7 +463,6 @@ class HistoryManager {
         // Show element image with error handling
         const element = this.activeRowGuess[i];
         const imageKey = this.scene.getElementImageKey(element);
-        console.log(`Active Row Creation: Slot ${i} pre-filled with ${element}, using key ${imageKey}`);
         
         try {
           if (this.scene.textures.exists(imageKey) && imageKey !== '__MISSING') {
@@ -482,19 +472,17 @@ class HistoryManager {
               // Scale to fit in slot
               const imageScale = Math.min(28 / displayElement.width, 28 / displayElement.height);
               displayElement.setScale(imageScale);
-              console.log(`Active Row Creation: Successfully created image for ${element}`);
             } else {
-              console.warn(`Active Row Creation: Image created but texture invalid for ${element}`);
+              console.warn(`Active Row: Image created but texture invalid for ${element}`);
               displayElement.destroy();
               displayElement = null;
             }
           } else {
-            console.warn(`Active Row Creation: Texture ${imageKey} does not exist for ${element}`);
+            console.warn(`Active Row: Texture ${imageKey} does not exist for ${element}`);
             displayElement = null;
           }
           
           if (!displayElement) {
-            console.log(`Active Row Creation: Creating fallback text for ${element}`);
             displayElement = this.scene.add.text(x, activeRowY, element.charAt(0).toUpperCase(), {
               font: '12px Arial',
               fill: '#fff',
@@ -503,7 +491,7 @@ class HistoryManager {
             });
           }
         } catch (error) {
-          console.error(`Active Row Creation: Error creating image for ${element}:`, error);
+          console.error(`Active Row: Error creating image for ${element}:`, error);
           displayElement = this.scene.add.text(x, activeRowY, element.charAt(0).toUpperCase(), {
             font: '12px Arial',
             fill: '#fff',
@@ -513,7 +501,6 @@ class HistoryManager {
         }
       } else {
         // Show "TAP" hint text
-        console.log(`Active Row Creation: Slot ${i} empty, showing TAP hint`);
         displayElement = this.scene.add.text(x, activeRowY, 'TAP', {
           font: '9px Arial',
           fill: '#aaa'
@@ -812,13 +799,12 @@ class HistoryManager {
   }
 
   selectElement(slotIndex, element) {
-    console.log(`🔧 Select Debug: Selecting element ${element} for slot ${slotIndex}`);
     this.activeRowGuess[slotIndex] = element;
     
     // Update visual - replace display element with image
     const elementData = this.activeRowElements[slotIndex];
     if (!elementData) {
-      console.error(`🔧 Select Debug: No element data for slot ${slotIndex}`);
+      console.error(`No element data for slot ${slotIndex}`);
       return;
     }
     
@@ -833,18 +819,13 @@ class HistoryManager {
     }
     oldElement.destroy();
     
-    // Create new image element with comprehensive error handling
+    // Create new image element with error handling
     const imageKey = this.scene.getElementImageKey(element);
-    console.log(`🔧 Select Debug: Using image key '${imageKey}' for element '${element}'`);
-    
     let newImage;
     
     // First check if we have a valid texture
     if (this.scene.textures.exists(imageKey) && imageKey !== '__MISSING') {
       try {
-        const texture = this.scene.textures.get(imageKey);
-        console.log(`🔧 Select Debug: Texture found:`, texture);
-        
         newImage = this.scene.add.image(x, y, imageKey);
         
         // Verify the image was created with valid texture
@@ -852,28 +833,24 @@ class HistoryManager {
           const imageScale = Math.min(32 / newImage.width, 32 / newImage.height);
           newImage.setScale(imageScale);
           newImage.setOrigin(0.5);
-          newImage.setVisible(true); // Ensure visibility
-          newImage.setAlpha(1); // Ensure full opacity
-          console.log(`🔧 Select Debug: Successfully created image for ${element}, scale: ${imageScale}, visible: ${newImage.visible}, alpha: ${newImage.alpha}`);
-          console.log(`🔧 Select Debug: Image dimensions: ${newImage.width}x${newImage.height}, position: ${newImage.x},${newImage.y}, depth: ${newImage.depth}`);
+          newImage.setVisible(true);
+          newImage.setAlpha(1);
         } else {
-          console.warn(`🔧 Select Debug: Image created but invalid dimensions for ${element}`);
+          console.warn(`Image created but invalid dimensions for ${element}`);
           if (newImage) newImage.destroy();
           newImage = null;
         }
       } catch (error) {
-        console.error(`🔧 Select Debug: Error creating image for ${element}:`, error);
+        console.error(`Error creating image for ${element}:`, error);
         if (newImage) newImage.destroy();
         newImage = null;
       }
     } else {
-      console.warn(`🔧 Select Debug: Texture ${imageKey} does not exist or is missing for ${element}`);
+      console.warn(`Texture ${imageKey} does not exist or is missing for ${element}`);
     }
     
     // Create fallback if image failed
     if (!newImage) {
-      console.log(`🔧 Select Debug: Creating fallback display for ${element}`);
-      
       // Create a simple colored rectangle with text as fallback
       newImage = this.scene.add.rectangle(x, y, 30, 30, 0x3498db);
       newImage.setStrokeStyle(2, 0x2980b9);
@@ -886,7 +863,7 @@ class HistoryManager {
       }).setOrigin(0.5);
       
       // Set depths properly
-      newImage.setDepth(GameUtils.getDepthLayers().TOUCH_AREA + 2.1); // Slightly higher than existing display elements
+      newImage.setDepth(GameUtils.getDepthLayers().TOUCH_AREA + 2.1);
       fallbackText.setDepth(GameUtils.getDepthLayers().TOUCH_AREA + 2.2);
       
       // Store both elements for cleanup
@@ -894,13 +871,12 @@ class HistoryManager {
     }
     
     if (newImage) {
-      newImage.setDepth(GameUtils.getDepthLayers().TOUCH_AREA + 2.1); // Slightly higher than existing display elements
+      newImage.setDepth(GameUtils.getDepthLayers().TOUCH_AREA + 2.1);
       
       // Update reference
       elementData.displayElement = newImage;
-      console.log(`🔧 Select Debug: Element ${element} selection complete`);
     } else {
-      console.error(`🔧 Select Debug: Failed to create any display element for ${element}`);
+      console.error(`Failed to create any display element for ${element}`);
     }
   }
 

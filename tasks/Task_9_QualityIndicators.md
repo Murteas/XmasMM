@@ -1,7 +1,9 @@
 # Task 9: Add Basic Guess Quality Indicators
 
-**Status**: 📋 QUEUED  
+**Status**: 📋 PENDING (blocked by 8)  
 **Objective**: Add simple visual indicators to help family members understand how well they're doing and learn strategy.
+> 📊 **Note**: Status managed in [tasks.json](../tasks.json). Use `python scripts/automation.py status` for current state.
+
 
 ## Why This Matters
 Family members learn at different rates. Visual feedback helps everyone understand what makes a good guess, making the game more educational and engaging.

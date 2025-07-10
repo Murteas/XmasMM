@@ -19,7 +19,9 @@ function calculateCanvasSize() {
     canvasHeight = Math.min(viewportHeight * 0.95, 600);
   }
   
-  console.log(`Canvas Debug: Viewport ${viewportWidth}x${viewportHeight} -> Canvas ${canvasWidth}x${canvasHeight}`);
+  if (TestConfig && TestConfig.shouldShowDebugLogs()) {
+    console.log(`Canvas Debug: Viewport ${viewportWidth}x${viewportHeight} -> Canvas ${canvasWidth}x${canvasHeight}`);
+  }
   
   return {
     width: Math.floor(canvasWidth),
@@ -82,7 +84,9 @@ window.onload = function() {
 function handleResize() {
   if (game) {
     const newSize = calculateCanvasSize();
-    console.log(`🔄 Resize: New canvas size ${newSize.width}x${newSize.height}`);
+    if (TestConfig && TestConfig.shouldShowDebugLogs()) {
+      console.log(`🔄 Resize: New canvas size ${newSize.width}x${newSize.height}`);
+    }
     game.scale.resize(newSize.width, newSize.height);
     
     // Refresh current scene layout

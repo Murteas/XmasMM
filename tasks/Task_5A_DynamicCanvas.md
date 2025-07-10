@@ -1,7 +1,9 @@
 # Task 5A: Implement Dynamic Canvas Sizing
 
-**Status**: ✅ **COMPLETED**  
+**Status**: ✅ COMPLETED  
 **Objective**: Make the game canvas responsive to different mobile screen sizes and handle device pixel ratios for crisp graphics.
+> 📊 **Note**: Status managed in [tasks.json](../tasks.json). Use `python scripts/automation.py status` for current state.
+
 
 ## Current Project State
 - ✅ **Foundation Complete**: Working Phaser.js game with modular structure

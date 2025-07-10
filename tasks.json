@@ -1,0 +1,478 @@
+{
+  "project": {
+    "name": "XmasMM",
+    "version": "1.0.0",
+    "lastUpdated": "2025-07-09T00:00:00Z"
+  },
+  "phases": {
+    "mobile_foundation": {
+      "name": "Mobile Foundation",
+      "status": "COMPLETED",
+      "completedAt": "2025-07-08T00:00:00Z",
+      "tasks": [
+        "5A",
+        "5B",
+        "5C",
+        "5D"
+      ]
+    },
+    "code_preparation": {
+      "name": "Code Preparation",
+      "status": "CURRENT",
+      "tasks": [
+        "5E"
+      ]
+    },
+    "feature_development": {
+      "name": "Feature Development",
+      "status": "PENDING",
+      "tasks": [
+        "6",
+        "7",
+        "8",
+        "9"
+      ]
+    },
+    "finalization": {
+      "name": "Finalization",
+      "status": "PENDING",
+      "tasks": [
+        "10",
+        "14"
+      ]
+    }
+  },
+  "tasks": {
+    "5A": {
+      "id": "5A",
+      "name": "Dynamic Canvas Sizing",
+      "status": "COMPLETED",
+      "priority": 1,
+      "phase": "mobile_foundation",
+      "completedAt": "2025-07-06T00:00:00Z",
+      "description": "Implement responsive canvas for all iPhone models",
+      "objectives": [
+        "Responsive canvas implementation (375px-428px iPhone range)",
+        "Complete viewport utilization (100vw x 100vh)",
+        "Phaser Scale.RESIZE mode implementation",
+        "Full viewport usage with safe area handling"
+      ],
+      "deliverables": [
+        "js/main.js - Canvas sizing logic",
+        "styles.css - Responsive container styles"
+      ],
+      "successCriteria": [
+        "Game displays properly on all iPhone models",
+        "Canvas adapts when browser UI changes",
+        "Graphics remain crisp on Retina displays",
+        "Complete viewport utilization achieved"
+      ],
+      "dependencies": [],
+      "dependents": [
+        "5B",
+        "5C",
+        "5D"
+      ]
+    },
+    "5B": {
+      "id": "5B",
+      "name": "Family UX Improvements",
+      "status": "COMPLETED",
+      "priority": 2,
+      "phase": "mobile_foundation",
+      "completedAt": "2025-07-06T00:00:00Z",
+      "description": "Add family-friendly UX elements and guidance",
+      "objectives": [
+        "Loading states and asset verification",
+        "Input validation with friendly error messages",
+        "Touch feedback for all interactive elements",
+        "Help system with family-friendly guidance"
+      ],
+      "deliverables": [
+        "js/scenes/GameScene.js - Loading states and validation",
+        "js/scenes/MainMenu.js - Help system",
+        "js/managers/HistoryManager.js - Touch feedback"
+      ],
+      "successCriteria": [
+        "New family members can start playing without explanation",
+        "All button taps provide immediate visual feedback",
+        "Clear error messages guide users to correct actions",
+        "Loading states prevent confusion during initialization"
+      ],
+      "dependencies": [
+        "5A"
+      ],
+      "dependents": [
+        "5C",
+        "5D"
+      ]
+    },
+    "5C": {
+      "id": "5C",
+      "name": "Mobile Layout Fixes",
+      "status": "COMPLETED",
+      "priority": 3,
+      "phase": "mobile_foundation",
+      "completedAt": "2025-07-07T00:00:00Z",
+      "description": "Fix specific mobile layout bugs and positioning",
+      "objectives": [
+        "Modal picker sizing and positioning optimized",
+        "History display responsive centering",
+        "Button positioning verified and optimized",
+        "48px minimum touch targets maintained"
+      ],
+      "deliverables": [
+        "js/managers/HistoryManager.js - Modal and history fixes"
+      ],
+      "successCriteria": [
+        "Cancel button does not overlap with element grid",
+        "All elements in history rows visible on iPhone SE",
+        "Modal picker works reliably on mobile",
+        "Touch targets meet accessibility standards"
+      ],
+      "dependencies": [
+        "5A",
+        "5B"
+      ],
+      "dependents": [
+        "5D"
+      ]
+    },
+    "5D": {
+      "id": "5D",
+      "name": "Mobile Polish",
+      "status": "COMPLETED",
+      "priority": 4,
+      "phase": "mobile_foundation",
+      "completedAt": "2025-07-07T00:00:00Z",
+      "description": "Final mobile UX refinements and optimization",
+      "objectives": [
+        "Help overlay mobile layout improvements",
+        "Console error cleanup for production",
+        "Final testing validation across iPhone models",
+        "Performance optimization maintained (60 FPS)"
+      ],
+      "deliverables": [
+        "js/scenes/MainMenu.js - Help overlay redesign",
+        "All files - Debug cleanup"
+      ],
+      "successCriteria": [
+        "Game utilizes complete viewport on all devices",
+        "Help overlay readable on iPhone SE",
+        "Zero console errors during normal gameplay",
+        "60fps performance maintained"
+      ],
+      "dependencies": [
+        "5A",
+        "5B",
+        "5C"
+      ],
+      "dependents": [
+        "5E"
+      ]
+    },
+    "5E": {
+      "id": "5E",
+      "name": "Code Refactoring",
+      "status": "CURRENT",
+      "priority": 5,
+      "phase": "code_preparation",
+      "description": "Refactor large files into maintainable modules before feature development",
+      "objectives": [
+        "Split HistoryManager.js into focused modules",
+        "Split GameScene.js into smaller components",
+        "Improve code organization and maintainability",
+        "Prepare codebase for feature development"
+      ],
+      "deliverables": [
+        "js/components/ - New component modules",
+        "js/managers/ - Refactored manager files",
+        "Updated imports across all files"
+      ],
+      "successCriteria": [
+        "No single file exceeds 500 lines",
+        "Clear separation of concerns",
+        "All existing functionality preserved",
+        "Improved debugging and maintenance"
+      ],
+      "dependencies": [
+        "5D"
+      ],
+      "dependents": [
+        "6",
+        "7",
+        "8",
+        "9"
+      ],
+      "estimatedHours": 8,
+      "files": [
+        "js/managers/HistoryManager.js",
+        "js/scenes/GameScene.js"
+      ]
+    },
+    "6": {
+      "id": "6",
+      "name": "Christmas Theme",
+      "status": "READY",
+      "priority": 6,
+      "phase": "feature_development",
+      "description": "Implement Christmas-themed feedback symbols",
+      "objectives": [
+        "Replace traditional pegs with Christmas feedback symbols",
+        "Implement Perfect Star, Close Bell, Wrong X feedback",
+        "Add family-friendly feedback legend",
+        "Ensure symbols work on all iPhone displays"
+      ],
+      "deliverables": [
+        "js/managers/HistoryManager.js - Feedback symbol display",
+        "js/scenes/GameScene.js - Feedback legend"
+      ],
+      "successCriteria": [
+        "New players understand feedback without Mastermind experience",
+        "Feedback symbols clearly visible on iPhone displays",
+        "Legend explains symbol meanings",
+        "Maintains Christmas theme consistency"
+      ],
+      "dependencies": [
+        "5E"
+      ],
+      "dependents": [
+        "7"
+      ],
+      "assets": {
+        "required": [
+          "feedback_perfect_star_1x.png",
+          "feedback_close_bell_1x.png",
+          "feedback_wrong_x_1x.png"
+        ],
+        "status": "COMPLETE"
+      },
+      "estimatedHours": 6
+    },
+    "7": {
+      "id": "7",
+      "name": "Round Over Screen",
+      "status": "PENDING",
+      "priority": 7,
+      "phase": "feature_development",
+      "description": "Create end-game screen with enhanced scoring and solution display",
+      "objectives": [
+        "Display solution using actual element images",
+        "Enhanced scoring with Santa's Hint penalties",
+        "Family-friendly design with encouraging messages",
+        "Clear play again functionality"
+      ],
+      "deliverables": [
+        "js/scenes/RoundOver.js - New scene file",
+        "js/managers/ScoreManager.js - Enhanced scoring",
+        "js/scenes/GameScene.js - Scene transition"
+      ],
+      "successCriteria": [
+        "Round over screen displays all game information clearly",
+        "Solution uses actual element images not text",
+        "Santa's Hint penalties properly implemented",
+        "All family members can achieve satisfying scores"
+      ],
+      "dependencies": [
+        "6"
+      ],
+      "dependents": [
+        "8"
+      ],
+      "estimatedHours": 10
+    },
+    "8": {
+      "id": "8",
+      "name": "Audio Integration",
+      "status": "PENDING",
+      "priority": 8,
+      "phase": "feature_development",
+      "description": "Add Christmas-themed audio effects and background music",
+      "objectives": [
+        "Christmas sound effects for game events",
+        "Optional background music",
+        "Audio controls and iOS Safari compatibility",
+        "Game functions perfectly with audio disabled"
+      ],
+      "deliverables": [
+        "js/scenes/MainMenu.js - Audio preloading",
+        "js/scenes/GameScene.js - Sound triggers",
+        "assets/ - Audio files"
+      ],
+      "successCriteria": [
+        "Christmas sounds enhance gameplay without being intrusive",
+        "All audio respects toggle settings",
+        "Game works perfectly with audio disabled",
+        "Audio files load quickly"
+      ],
+      "dependencies": [
+        "7"
+      ],
+      "dependents": [
+        "9"
+      ],
+      "estimatedHours": 8
+    },
+    "9": {
+      "id": "9",
+      "name": "Quality Indicators",
+      "status": "PENDING",
+      "priority": 9,
+      "phase": "feature_development",
+      "description": "Add guess quality feedback for learning",
+      "objectives": [
+        "Quality indicators for guess helpfulness",
+        "Educational design for strategy improvement",
+        "Age-appropriate encouraging feedback",
+        "Visual effects that enhance learning"
+      ],
+      "deliverables": [
+        "js/scenes/RoundOver.js - Quality calculation",
+        "js/managers/HistoryManager.js - Quality display"
+      ],
+      "successCriteria": [
+        "Family members can see which guesses were helpful",
+        "Quality indicators are encouraging not discouraging",
+        "Feature helps family members learn strategy",
+        "Interface remains clean and uncluttered"
+      ],
+      "dependencies": [
+        "8"
+      ],
+      "dependents": [
+        "10"
+      ],
+      "estimatedHours": 6
+    },
+    "10": {
+      "id": "10",
+      "name": "Final Testing",
+      "status": "PENDING",
+      "priority": 10,
+      "phase": "finalization",
+      "description": "Comprehensive testing and deployment preparation",
+      "objectives": [
+        "Multi-device family testing",
+        "Performance and reliability testing",
+        "Create family-oriented documentation",
+        "Final deployment to GitHub Pages"
+      ],
+      "deliverables": [
+        "README.md - Family player guide",
+        "MAINTAINER.md - Technical maintenance guide",
+        "Final deployment verification"
+      ],
+      "successCriteria": [
+        "Game works flawlessly on all target iPhone models",
+        "Family members can play without assistance",
+        "Clear maintenance documentation exists",
+        "All performance targets met"
+      ],
+      "dependencies": [
+        "9"
+      ],
+      "dependents": [
+        "14"
+      ],
+      "estimatedHours": 12
+    },
+    "14": {
+      "id": "14",
+      "name": "Usability Improvements",
+      "status": "PENDING",
+      "priority": 11,
+      "phase": "finalization",
+      "description": "Final accessibility and polish improvements",
+      "objectives": [
+        "Accessibility improvements",
+        "Cross-device consistency verification",
+        "Long-term maintainability enhancements",
+        "Final user experience polish"
+      ],
+      "deliverables": [
+        "Accessibility enhancements across all files",
+        "Final UX polish and consistency checks"
+      ],
+      "successCriteria": [
+        "Game meets accessibility standards",
+        "Consistent experience across all devices",
+        "Clear long-term maintenance path",
+        "Polished professional user experience"
+      ],
+      "dependencies": [
+        "10"
+      ],
+      "dependents": [],
+      "estimatedHours": 8
+    }
+  },
+  "assets": {
+    "gameElements": {
+      "status": "COMPLETE",
+      "files": [
+        "santa_1x.png",
+        "santa_2x.png",
+        "santa_3x.png",
+        "present_1x.png",
+        "present_2x.png",
+        "present_3x.png",
+        "mistletoe_1x.png",
+        "mistletoe_2x.png",
+        "mistletoe_3x.png",
+        "star_1x.png",
+        "star_2x.png",
+        "star_3x.png",
+        "tree_1x.png",
+        "tree_2x.png",
+        "tree_3x.png",
+        "snowflake_1x.png",
+        "snowflake_2x.png",
+        "snowflake_3x.png"
+      ]
+    },
+    "feedbackSymbols": {
+      "status": "COMPLETE",
+      "files": [
+        "feedback_perfect_star_1x.png",
+        "feedback_perfect_star_2x.png",
+        "feedback_perfect_star_3x.png",
+        "feedback_close_bell_1x.png",
+        "feedback_close_bell_2x.png",
+        "feedback_close_bell_3x.png",
+        "feedback_wrong_x_1x.png",
+        "feedback_wrong_x_2x.png",
+        "feedback_wrong_x_3x.png"
+      ]
+    },
+    "background": {
+      "status": "COMPLETE",
+      "files": [
+        "bg_mobile2.png"
+      ]
+    }
+  },
+  "currentState": {
+    "activeTask": "5E",
+    "nextTask": "6",
+    "blockedTasks": [],
+    "readyTasks": [
+      "6"
+    ],
+    "completedPhases": [
+      "mobile_foundation"
+    ],
+    "currentPhase": "code_preparation",
+    "overallProgress": {
+      "completed": 4,
+      "total": 11,
+      "percentage": 36
+    }
+  },
+  "validation": {
+    "lastValidated": "2025-07-09T20:51:42.685974",
+    "automated": false,
+    "issues": [
+      "Task 6 depends on incomplete task 5E"
+    ]
+  }
+}

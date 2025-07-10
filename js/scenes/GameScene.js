@@ -7,10 +7,9 @@ class GameScene extends Phaser.Scene {
 
   preload() {
     // Determine if we're running from tests directory
-    const isTestEnvironment = window.location.pathname.includes('/tests/');
-    const assetPath = isTestEnvironment ? '../assets/' : 'assets/';
-    
-    console.log(`Asset Debug: Running in ${isTestEnvironment ? 'test' : 'main'} environment, using path: ${assetPath}`);
+    // Dynamic asset path selection based on environment
+    const isTestEnvironment = TestConfig.isTestEnvironment();
+    const assetPath = TestConfig.getAssetPath();
     
     // Background already loaded by MainMenu, but ensure it's available
     if (!this.textures.exists('bg')) {
@@ -54,25 +53,29 @@ class GameScene extends Phaser.Scene {
       console.error(`🚨 Failed to load ${type}: ${key} from ${url}`);
     });
     
-    // Log successful loads
+    // Log successful loads in test environment only
     this.load.on('fileload', (key, type, url) => {
-      console.log(`✅ Loaded ${type}: ${key} from ${url}`);
+      if (TestConfig.shouldShowDebugLogs()) {
+        console.log(`✅ Loaded ${type}: ${key} from ${url}`);
+      }
     });
     
     // When all assets are loaded, verify they're accessible
     this.load.on('complete', () => {
-      console.log('🎄 Asset loading complete. Verifying textures...');
-      const elements = ['santa', 'present', 'mistletoe', 'star', 'tree', 'snowflake'];
-      elements.forEach(element => {
-        const key1x = `${element}_1x`;
-        const key2x = `${element}_2x`;
-        const key3x = `${element}_3x`;
-        
-        console.log(`🔍 Checking ${element}:`);
-        console.log(`  ${key1x}: ${this.textures.exists(key1x) ? '✅' : '❌'}`);
-        console.log(`  ${key2x}: ${this.textures.exists(key2x) ? '✅' : '❌'}`);
-        console.log(`  ${key3x}: ${this.textures.exists(key3x) ? '✅' : '❌'}`);
-      });
+      if (TestConfig.shouldShowDebugLogs()) {
+        console.log('🎄 Asset loading complete. Verifying textures...');
+        const elements = ['santa', 'present', 'mistletoe', 'star', 'tree', 'snowflake'];
+        elements.forEach(element => {
+          const key1x = `${element}_1x`;
+          const key2x = `${element}_2x`;
+          const key3x = `${element}_3x`;
+          
+          console.log(`🔍 Checking ${element}:`);
+          console.log(`  ${key1x}: ${this.textures.exists(key1x) ? '✅' : '❌'}`);
+          console.log(`  ${key2x}: ${this.textures.exists(key2x) ? '✅' : '❌'}`);
+          console.log(`  ${key3x}: ${this.textures.exists(key3x) ? '✅' : '❌'}`);
+        });
+      }
     });
   }
   
@@ -523,8 +526,7 @@ class GameScene extends Phaser.Scene {
     const imageKey = `${normalizedName}${suffix}`;
     
     // Enhanced debugging for asset loading (only show in test environments)
-    const isTestEnvironment = window.location.pathname.includes('/tests/');
-    if (isTestEnvironment) {
+    if (TestConfig.shouldShowDebugLogs()) {
       console.log(`Asset Debug: Looking for element '${elementName}' -> normalized '${normalizedName}' -> key '${imageKey}'`);
     }
     
@@ -532,24 +534,24 @@ class GameScene extends Phaser.Scene {
     if (this.textures.exists(imageKey)) {
       const texture = this.textures.get(imageKey);
       if (texture && texture.source && texture.source[0]) {
-        if (isTestEnvironment) console.log(`Asset Debug: Found valid texture ${imageKey}`);
+        if (TestConfig.shouldShowDebugLogs()) console.log(`Asset Debug: Found valid texture ${imageKey}`);
         return imageKey;
       } else {
-        if (isTestEnvironment) console.warn(`Asset Debug: Texture ${imageKey} exists but is invalid`);
+        if (TestConfig.shouldShowDebugLogs()) console.warn(`Asset Debug: Texture ${imageKey} exists but is invalid`);
       }
     }
     
-    if (isTestEnvironment) console.warn(`Asset Debug: Texture not found: ${imageKey}, trying fallback`);
+    if (TestConfig.shouldShowDebugLogs()) console.warn(`Asset Debug: Texture not found: ${imageKey}, trying fallback`);
     const fallbackKey = `${normalizedName}_1x`;
     if (this.textures.exists(fallbackKey)) {
       const fallbackTexture = this.textures.get(fallbackKey);
       if (fallbackTexture && fallbackTexture.source && fallbackTexture.source[0]) {
-        if (isTestEnvironment) console.log(`Asset Debug: Using valid fallback ${fallbackKey}`);
+        if (TestConfig.shouldShowDebugLogs()) console.log(`Asset Debug: Using valid fallback ${fallbackKey}`);
         return fallbackKey;
       }
     }
     
-    if (isTestEnvironment) {
+    if (TestConfig.shouldShowDebugLogs()) {
       console.error(`Asset Debug: No valid texture found for ${elementName}`);
       console.log(`Asset Debug: Available texture keys:`, Object.keys(this.textures.list));
     }

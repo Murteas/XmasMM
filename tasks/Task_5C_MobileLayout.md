@@ -1,7 +1,9 @@
 # Task 5C: Fix Mobile Layout Issues
 
-**Status**: ✅ **COMPLETED**  
+**Status**: ✅ COMPLETED  
 **Objective**: Fix specific mobile layout bugs including modal picker spacing, history display positioning, and button placement conflicts.
+> 📊 **Note**: Status managed in [tasks.json](../tasks.json). Use `python scripts/automation.py status` for current state.
+
 
 ## Current Issues to Address
 

@@ -1,7 +1,9 @@
 # Task 5B: Add Family-Friendly UX Improvements
 
-**Status**: ✅ **COMPLETED**  
+**Status**: ✅ COMPLETED  
 **Objective**: Add user guidance, loading states, and error prevention to make the game intuitive for family members of all ages.
+> 📊 **Note**: Status managed in [tasks.json](../tasks.json). Use `python scripts/automation.py status` for current state.
+
 
 ## Why This Matters
 Family games need to be self-explanatory. Grandparents and children should be able to play without technical assistance.

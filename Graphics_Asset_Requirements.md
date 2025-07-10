@@ -2,6 +2,8 @@
 
 **Status**: ✅ **All critical assets complete!** Ready for Task 6.
 
+> 📊 **Current Task Status**: Check [tasks.json](tasks.json) or run `python scripts/automation.py status`
+
 ---
 
 ## ✅ COMPLETED ASSETS

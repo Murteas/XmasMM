@@ -1,7 +1,9 @@
 # Task 10: Final Testing and Deployment
 
-**Status**: 📋 QUEUED  
+**Status**: 📋 PENDING (blocked by 9)  
 **Objective**: Comprehensive testing with family users and final deployment with documentation.
+> 📊 **Note**: Status managed in [tasks.json](../tasks.json). Use `python scripts/automation.py status` for current state.
+
 
 ## Why This Matters
 The game needs to work flawlessly for family members with varying technical skills. Documentation helps the Java developer maintainer manage the game long-term.

@@ -1,7 +1,9 @@
 # Task 8: Add Christmas Audio Integration
 
-**Status**: 📋 QUEUED  
+**Status**: 📋 PENDING (blocked by 7)  
 **Objective**: Add Christmas-themed audio effects and background music that enhance family gameplay without being overwhelming.
+> 📊 **Note**: Status managed in [tasks.json](../tasks.json). Use `python scripts/automation.py status` for current state.
+
 
 ## Why This Matters
 Audio adds festive atmosphere for family gatherings, but must be optional since families may be playing in quiet environments or with sleeping children.

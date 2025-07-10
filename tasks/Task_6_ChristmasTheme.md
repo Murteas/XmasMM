@@ -1,7 +1,9 @@
 # Task 6: Implement Christmas-Themed Feedback System
 
-**Status**: 📋 QUEUED  
+**Status**: 🚀 READY (depends on 5E)  
 **Objective**: Replace traditional black/white pegs with intuitive Christmas-themed feedback symbols that are easier for new players to understand.
+
+> 📊 **Note**: Status managed in [tasks.json](../tasks.json). Use `python scripts/automation.py status` for current state.
 
 ## Current State
 Game uses basic black/white peg feedback that requires Mastermind knowledge.
