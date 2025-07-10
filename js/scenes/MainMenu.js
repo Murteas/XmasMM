@@ -6,7 +6,11 @@ class MainMenu extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image('bg', 'assets/bg_mobile2.png');
+    // Determine if we're running from tests directory
+    const isTestEnvironment = window.location.pathname.includes('/tests/');
+    const assetPath = isTestEnvironment ? '../assets/' : 'assets/';
+    
+    this.load.image('bg', `${assetPath}bg_mobile2.png`);
   }
 
   create() {

@@ -68,7 +68,8 @@
   <div class="test-panel">
     <div class="test-instructions">
       <strong>👆 Touch Interaction Test</strong><br>
-      1. Start a game 2. Try element selection 3. Test modal picker 4. Check button accessibility
+      1. Start a game 2. Try element selection 3. Test modal picker 4. Check button accessibility<br>
+      <strong>Note:</strong> This test includes debug logging. Check console for detailed interaction data.
     </div>
     
     <div class="touch-log" id="touch-log">
@@ -82,6 +83,7 @@
   
   <!-- Load game scripts -->
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+  <script src="../js/utils/TestConfig.js"></script>
   <script src="../js/utils/GameUtils.js"></script>
   <script src="../js/managers/ScoreManager.js"></script>
   <script src="../js/managers/HistoryManager.js"></script>

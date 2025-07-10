@@ -11,7 +11,6 @@ class HistoryManager {
     this.historyTouchArea = null;
     
     // Inline editing properties
-    this.hasActiveRow = false;
     this.activeRowElements = null;
     this.activeRowBackground = null;
     this.activeRowGuess = [];
@@ -39,6 +38,7 @@ class HistoryManager {
     const historyEndY = height - bottomMargin;
     
     // Create invisible touch area for history scrolling
+    // TEMPORARY: Disable to test if this interferes with slot touches
     this.historyTouchArea = this.scene.add.rectangle(
       width / 2, 
       (historyStartY + historyEndY) / 2, 
@@ -47,8 +47,9 @@ class HistoryManager {
       0x000000, 
       0
     )
-      .setInteractive()
-      .setDepth(GameUtils.getDepthLayers().TOUCH_AREA);
+      .setDepth(GameUtils.getDepthLayers().TOUCH_AREA); // Lower depth than slots
+      // Temporarily disable interactivity to test
+      // .setInteractive()
     
     let startY = 0;
     let isDragging = false;
@@ -206,14 +207,53 @@ class HistoryManager {
         .setStrokeStyle(1, 0xffffff)
         .setDepth(depth);
       
-      // Display element image instead of text
+      // Display element image instead of text with error handling
       const imageKey = this.scene.getElementImageKey(element);
-      const elementImage = this.scene.add.image(x, y, imageKey);
+      let elementImage;
       
-      // Scale image to fit in history slot (smaller than active row)
-      const imageScale = Math.min(24 / elementImage.width, 24 / elementImage.height);
-      elementImage.setScale(imageScale);
-      elementImage.setOrigin(0.5).setDepth(depth + 0.01);
+      try {
+        elementImage = this.scene.add.image(x, y, imageKey);
+        
+        // Check if the image was created successfully
+        if (!elementImage.texture || elementImage.texture.key === '__MISSING') {
+          console.warn(`History: Failed to create image for ${element}, using fallback rectangle`);
+          elementImage.destroy();
+          
+          // Create fallback colored rectangle
+          elementImage = this.scene.add.rectangle(x, y, elementWidth - 4, 26, 0xff6b6b)
+            .setDepth(depth + 0.01);
+          
+          // Add element initial text
+          const elementText = this.scene.add.text(x, y, element.charAt(0).toUpperCase(), {
+            font: '10px Arial',
+            fill: '#fff',
+            fontStyle: 'bold'
+          }).setOrigin(0.5).setDepth(depth + 0.02);
+          
+          this.historyGroup.add(elementText);
+          this.historyElements.push(elementText);
+        } else {
+          // Scale image to fit in history slot (smaller than active row)
+          const imageScale = Math.min(24 / elementImage.width, 24 / elementImage.height);
+          elementImage.setScale(imageScale);
+          elementImage.setOrigin(0.5).setDepth(depth + 0.01);
+        }
+      } catch (error) {
+        console.error(`History: Error creating image for ${element}:`, error);
+        
+        // Create fallback rectangle as safety measure
+        elementImage = this.scene.add.rectangle(x, y, elementWidth - 4, 26, 0xff6b6b)
+          .setDepth(depth + 0.01);
+        
+        const elementText = this.scene.add.text(x, y, element.charAt(0).toUpperCase(), {
+          font: '10px Arial',
+          fill: '#fff',
+          fontStyle: 'bold'
+        }).setOrigin(0.5).setDepth(depth + 0.02);
+        
+        this.historyGroup.add(elementText);
+        this.historyElements.push(elementText);
+      }
       
       this.historyGroup.add(slot);
       this.historyGroup.add(elementImage);
@@ -344,6 +384,19 @@ class HistoryManager {
     const codeLength = this.scene.codeLength;
     const elements = this.scene.elements;
     
+    // Initialize the active row guess array
+    this.activeRowGuess = new Array(codeLength).fill(null);
+    
+    // Pre-fill with previous guess if provided
+    if (prefillGuess && Array.isArray(prefillGuess)) {
+      console.log(`Create Active Row: Pre-filling with previous guess:`, prefillGuess);
+      for (let i = 0; i < Math.min(prefillGuess.length, codeLength); i++) {
+        this.activeRowGuess[i] = prefillGuess[i];
+      }
+    } else {
+      console.log(`Create Active Row: Starting with empty guess`);
+    }
+    
     // CONSISTENCY FIX: Use same responsive calculation as setupHistoryScroll
     const isSmallScreen = width < 500;
     const baseHeaderHeight = isSmallScreen ? 140 : 120;
@@ -373,42 +426,103 @@ class HistoryManager {
       .setStrokeStyle(3, 0xffd700) // Golden border
       .setDepth(GameUtils.getDepthLayers().HISTORY + 0.1);
 
-    // Initialize active guess
-    this.activeRowGuess = prefillGuess ? [...prefillGuess] : new Array(codeLength).fill(null);
-    
-    // Create interactive slots
+    // Create interactive slots with mobile-optimized positioning
     this.activeRowElements = [];
-    const startX = width / 2 - (codeLength * 25) - 30; // Shifted left to make room for submit button
+    
+    // MOBILE FIX: Better responsive positioning for different code lengths
+    const elementWidth = isSmallScreen ? 35 : 40;
+    const elementSpacing = isSmallScreen ? 42 : 50; // Tighter spacing on mobile
+    const submitButtonWidth = 60;
+    
+    // Calculate total width needed and ensure it fits on screen with margins
+    const totalElementsWidth = (codeLength * elementSpacing) - (elementSpacing - elementWidth);
+    const totalRowWidth = totalElementsWidth + submitButtonWidth + 20; // 20px gap before submit
+    const minMargin = 15; // Minimum margin from screen edges
+    
+    console.log(`Mobile Debug: Screen width: ${width}, Code length: ${codeLength}`);
+    console.log(`Mobile Debug: Element spacing: ${elementSpacing}, Element width: ${elementWidth}`);
+    console.log(`Mobile Debug: Total elements width: ${totalElementsWidth}, Total row width: ${totalRowWidth}`);
+    
+    // Calculate starting X position - center the row or use minimum margin
+    let startX;
+    if (totalRowWidth + (minMargin * 2) <= width) {
+      // Center the row
+      startX = (width - totalRowWidth) / 2;
+      console.log(`Mobile Debug: Centering row, startX: ${startX}`);
+    } else {
+      // Use minimum margin and reduce spacing if needed
+      startX = minMargin;
+      const availableElementWidth = width - (minMargin * 2) - submitButtonWidth - 20;
+      const adjustedSpacing = Math.max(30, availableElementWidth / codeLength);
+      console.log(`Mobile Debug: Tight fit - adjusting spacing to ${adjustedSpacing}px for ${codeLength} elements`);
+    }
     
     for (let i = 0; i < codeLength; i++) {
-      const x = startX + i * 50;
+      const x = startX + i * elementSpacing;
       
-      // Slot background with tap indicator
-      const slot = this.scene.add.rectangle(x, activeRowY, 40, 40, 0x666666)
+      // Slot background with tap indicator 
+      const slot = this.scene.add.rectangle(x, activeRowY, elementWidth, elementWidth, 0x666666, 0)
         .setStrokeStyle(2, 0xffffff)
         .setInteractive({ useHandCursor: true })
-        .setDepth(GameUtils.getDepthLayers().TOUCH_AREA + 1); // Above touch area
+        .setDepth(GameUtils.getDepthLayers().TOUCH_AREA); // Lower depth so images can show on top
       
-      // Element display (image or tap hint)
+      // Element display (image or tap hint) with error handling
       let displayElement;
       if (this.activeRowGuess[i]) {
-        // Show element image
-        const imageKey = this.scene.getElementImageKey(this.activeRowGuess[i]);
-        displayElement = this.scene.add.image(x, activeRowY, imageKey);
-        // Scale to fit in slot
-        const imageScale = Math.min(32 / displayElement.width, 32 / displayElement.height);
-        displayElement.setScale(imageScale);
+        // Show element image with error handling
+        const element = this.activeRowGuess[i];
+        const imageKey = this.scene.getElementImageKey(element);
+        console.log(`Active Row Creation: Slot ${i} pre-filled with ${element}, using key ${imageKey}`);
+        
+        try {
+          if (this.scene.textures.exists(imageKey) && imageKey !== '__MISSING') {
+            displayElement = this.scene.add.image(x, activeRowY, imageKey);
+            
+            if (displayElement && displayElement.texture && displayElement.texture.key !== '__MISSING') {
+              // Scale to fit in slot
+              const imageScale = Math.min(28 / displayElement.width, 28 / displayElement.height);
+              displayElement.setScale(imageScale);
+              console.log(`Active Row Creation: Successfully created image for ${element}`);
+            } else {
+              console.warn(`Active Row Creation: Image created but texture invalid for ${element}`);
+              displayElement.destroy();
+              displayElement = null;
+            }
+          } else {
+            console.warn(`Active Row Creation: Texture ${imageKey} does not exist for ${element}`);
+            displayElement = null;
+          }
+          
+          if (!displayElement) {
+            console.log(`Active Row Creation: Creating fallback text for ${element}`);
+            displayElement = this.scene.add.text(x, activeRowY, element.charAt(0).toUpperCase(), {
+              font: '12px Arial',
+              fill: '#fff',
+              backgroundColor: '#ff6b6b',
+              padding: { left: 4, right: 4, top: 2, bottom: 2 }
+            });
+          }
+        } catch (error) {
+          console.error(`Active Row Creation: Error creating image for ${element}:`, error);
+          displayElement = this.scene.add.text(x, activeRowY, element.charAt(0).toUpperCase(), {
+            font: '12px Arial',
+            fill: '#fff',
+            backgroundColor: '#ff6b6b',
+            padding: { left: 4, right: 4, top: 2, bottom: 2 }
+          });
+        }
       } else {
         // Show "TAP" hint text
+        console.log(`Active Row Creation: Slot ${i} empty, showing TAP hint`);
         displayElement = this.scene.add.text(x, activeRowY, 'TAP', {
-          font: '10px Arial',
+          font: '9px Arial',
           fill: '#aaa'
         });
       }
-      displayElement.setOrigin(0.5).setDepth(GameUtils.getDepthLayers().TOUCH_AREA + 1.1); // Above touch area
+      displayElement.setOrigin(0.5).setDepth(GameUtils.getDepthLayers().TOUCH_AREA + 2); // Above touch area but below UI
       
       // Click handler to open element picker (mobile-friendly UX)
-      slot.on('pointerdown', () => {
+      slot.on('pointerdown', (pointer) => {
         // Enhanced touch feedback
         this.addSlotTouchFeedback(slot, i);
         this.cycleActiveRowElement(i);
@@ -417,13 +531,13 @@ class HistoryManager {
       this.activeRowElements.push({ slot, displayElement });
     }
     
-    // Create integrated submit button within the active row
-    const submitButtonX = startX + (codeLength * 50) + 25;
+    // Create integrated submit button within the active row - positioned correctly
+    const submitButtonX = startX + (codeLength * elementSpacing) + 10; // 10px gap from last element
     this.activeRowSubmitBtn = this.scene.add.text(submitButtonX, activeRowY, 'Submit', {
-      font: '12px Arial',
+      font: '11px Arial',
       fill: '#fff',
       backgroundColor: '#27ae60',
-      padding: { left: 8, right: 8, top: 4, bottom: 4 }
+      padding: { left: 6, right: 6, top: 3, bottom: 3 }
     }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(GameUtils.getDepthLayers().TOUCH_AREA + 1.2);
     
     this.activeRowSubmitBtn.on('pointerdown', () => {
@@ -488,19 +602,33 @@ class HistoryManager {
     
     if (this.activeRowElements) {
       const codeLength = this.scene.codeLength;
-      const startX = width / 2 - (codeLength * 25) - 30;
+      
+      // MOBILE FIX: Use same responsive positioning logic as createActiveRow
+      const elementWidth = isSmallScreen ? 35 : 40;
+      const elementSpacing = isSmallScreen ? 42 : 50;
+      const submitButtonWidth = 60;
+      
+      const totalElementsWidth = (codeLength * elementSpacing) - (elementSpacing - elementWidth);
+      const totalRowWidth = totalElementsWidth + submitButtonWidth + 20;
+      const minMargin = 15;
+      
+      let startX;
+      if (totalRowWidth + (minMargin * 2) <= width) {
+        startX = (width - totalRowWidth) / 2;
+      } else {
+        startX = minMargin;
+      }
       
       this.activeRowElements.forEach((elementData, i) => {
-        const x = startX + i * 50;
+        const x = startX + i * elementSpacing;
         elementData.slot.setPosition(x, activeRowY);
         elementData.displayElement.setPosition(x, activeRowY);
       });
     }
     
     if (this.activeRowSubmitBtn) {
-      const codeLength = this.scene.codeLength;
-      const startX = width / 2 - (codeLength * 25) - 30;
-      const submitButtonX = startX + (codeLength * 50) + 25;
+      // Use same positioning logic as elements
+      const submitButtonX = startX + (codeLength * elementSpacing) + 10;
       this.activeRowSubmitBtn.setPosition(submitButtonX, activeRowY);
     }
   }
@@ -582,10 +710,27 @@ class HistoryManager {
       const imageKey = this.scene.getElementImageKey(element);
       const elementImage = this.scene.add.image(x, y, imageKey);
       
-      // Scale image to fit within button while maintaining aspect ratio
-      const imageScale = Math.min((elementSize - 8) / elementImage.width, (elementSize - 8) / elementImage.height);
-      elementImage.setScale(imageScale);
-      elementImage.setOrigin(0.5);
+      // Store elements to add to picker container
+      let elementsToAdd = [elementBg];
+      
+      // Check if image was created successfully
+      if (!elementImage.texture || elementImage.texture.key === '__MISSING') {
+        console.warn(`Mobile: Failed to load image for ${element}, using fallback`);
+        // Create a fallback colored rectangle if image fails
+        const fallbackRect = this.scene.add.rectangle(x, y, elementSize - 8, elementSize - 8, 0xff6b6b);
+        const fallbackText = this.scene.add.text(x, y, element.charAt(0), {
+          fontSize: '16px',
+          fill: '#ffffff',
+          fontFamily: 'Arial'
+        }).setOrigin(0.5);
+        elementsToAdd.push(fallbackRect, fallbackText);
+      } else {
+        // Scale image to fit within button while maintaining aspect ratio
+        const imageScale = Math.min((elementSize - 8) / elementImage.width, (elementSize - 8) / elementImage.height);
+        elementImage.setScale(imageScale);
+        elementImage.setOrigin(0.5);
+        elementsToAdd.push(elementImage);
+      }
 
       // Highlight if currently selected
       const currentElement = this.activeRowGuess[slotIndex];
@@ -625,7 +770,7 @@ class HistoryManager {
         }
       });
 
-      this.elementPicker.add([elementBg, elementImage]);
+      this.elementPicker.add(elementsToAdd);
     });
 
     // Close button with proper touch target size - positioned below elements
@@ -667,26 +812,96 @@ class HistoryManager {
   }
 
   selectElement(slotIndex, element) {
+    console.log(`🔧 Select Debug: Selecting element ${element} for slot ${slotIndex}`);
     this.activeRowGuess[slotIndex] = element;
     
     // Update visual - replace display element with image
     const elementData = this.activeRowElements[slotIndex];
+    if (!elementData) {
+      console.error(`🔧 Select Debug: No element data for slot ${slotIndex}`);
+      return;
+    }
+    
     const oldElement = elementData.displayElement;
     const x = oldElement.x;
     const y = oldElement.y;
     
-    // Remove old element
+    // Remove old element and any associated fallback text
+    if (elementData.fallbackText) {
+      elementData.fallbackText.destroy();
+      elementData.fallbackText = null;
+    }
     oldElement.destroy();
     
-    // Create new image element
+    // Create new image element with comprehensive error handling
     const imageKey = this.scene.getElementImageKey(element);
-    const newImage = this.scene.add.image(x, y, imageKey);
-    const imageScale = Math.min(32 / newImage.width, 32 / newImage.height);
-    newImage.setScale(imageScale);
-    newImage.setOrigin(0.5).setDepth(GameUtils.getDepthLayers().TOUCH_AREA + 1.1);
+    console.log(`🔧 Select Debug: Using image key '${imageKey}' for element '${element}'`);
     
-    // Update reference
-    elementData.displayElement = newImage;
+    let newImage;
+    
+    // First check if we have a valid texture
+    if (this.scene.textures.exists(imageKey) && imageKey !== '__MISSING') {
+      try {
+        const texture = this.scene.textures.get(imageKey);
+        console.log(`🔧 Select Debug: Texture found:`, texture);
+        
+        newImage = this.scene.add.image(x, y, imageKey);
+        
+        // Verify the image was created with valid texture
+        if (newImage && newImage.texture && newImage.texture.key !== '__MISSING' && newImage.width > 0 && newImage.height > 0) {
+          const imageScale = Math.min(32 / newImage.width, 32 / newImage.height);
+          newImage.setScale(imageScale);
+          newImage.setOrigin(0.5);
+          newImage.setVisible(true); // Ensure visibility
+          newImage.setAlpha(1); // Ensure full opacity
+          console.log(`🔧 Select Debug: Successfully created image for ${element}, scale: ${imageScale}, visible: ${newImage.visible}, alpha: ${newImage.alpha}`);
+          console.log(`🔧 Select Debug: Image dimensions: ${newImage.width}x${newImage.height}, position: ${newImage.x},${newImage.y}, depth: ${newImage.depth}`);
+        } else {
+          console.warn(`🔧 Select Debug: Image created but invalid dimensions for ${element}`);
+          if (newImage) newImage.destroy();
+          newImage = null;
+        }
+      } catch (error) {
+        console.error(`🔧 Select Debug: Error creating image for ${element}:`, error);
+        if (newImage) newImage.destroy();
+        newImage = null;
+      }
+    } else {
+      console.warn(`🔧 Select Debug: Texture ${imageKey} does not exist or is missing for ${element}`);
+    }
+    
+    // Create fallback if image failed
+    if (!newImage) {
+      console.log(`🔧 Select Debug: Creating fallback display for ${element}`);
+      
+      // Create a simple colored rectangle with text as fallback
+      newImage = this.scene.add.rectangle(x, y, 30, 30, 0x3498db);
+      newImage.setStrokeStyle(2, 0x2980b9);
+      newImage.setOrigin(0.5);
+      
+      // Add text on top of rectangle
+      const fallbackText = this.scene.add.text(x, y, element.charAt(0).toUpperCase(), {
+        font: 'bold 12px Arial',
+        fill: '#ffffff'
+      }).setOrigin(0.5);
+      
+      // Set depths properly
+      newImage.setDepth(GameUtils.getDepthLayers().TOUCH_AREA + 2.1); // Slightly higher than existing display elements
+      fallbackText.setDepth(GameUtils.getDepthLayers().TOUCH_AREA + 2.2);
+      
+      // Store both elements for cleanup
+      elementData.fallbackText = fallbackText;
+    }
+    
+    if (newImage) {
+      newImage.setDepth(GameUtils.getDepthLayers().TOUCH_AREA + 2.1); // Slightly higher than existing display elements
+      
+      // Update reference
+      elementData.displayElement = newImage;
+      console.log(`🔧 Select Debug: Element ${element} selection complete`);
+    } else {
+      console.error(`🔧 Select Debug: Failed to create any display element for ${element}`);
+    }
   }
 
   closeElementPicker() {
@@ -758,19 +973,19 @@ class HistoryManager {
       });
     }
   }
-  
-  addSubmitButtonTouchFeedback(button) {
+    addSubmitButtonTouchFeedback(button) {
     button.on('pointerdown', () => {
-      // Scale down with color change
-      button.setScale(0.95);
-      button.setStyle({ backgroundColor: '#2ecc71' });
+      // Simple, reliable scale-down feedback
+      button.setScale(0.9);
+      button.setAlpha(0.8);
     });
-    
+
     button.on('pointerup', () => {
       // Satisfying bounce back
       this.scene.tweens.add({
         targets: button,
-        scale: 1.05,
+        scale: 1.1,
+        alpha: 1,
         duration: 100,
         ease: 'Back.easeOut',
         onComplete: () => {
@@ -782,14 +997,13 @@ class HistoryManager {
           });
         }
       });
-      button.setStyle({ backgroundColor: '#27ae60' });
     });
     
     button.on('pointerout', () => {
       // Reset if finger moves off button
       this.scene.tweens.killTweensOf(button);
       button.setScale(1);
-      button.setStyle({ backgroundColor: '#27ae60' });
+      button.setAlpha(1);
     });
   }
 

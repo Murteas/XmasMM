@@ -6,30 +6,20 @@ function calculateCanvasSize() {
   const viewportHeight = window.innerHeight;
   const devicePixelRatio = window.devicePixelRatio || 1;
   
-  // MOBILE-FIRST APPROACH: Use nearly full viewport
-  // Account for mobile browser UI but maximize playable area
-  const availableHeight = viewportHeight * 0.95; // Increased from 0.9 to 0.95
-  const availableWidth = viewportWidth * 0.98;   // Increased from 0.95 to 0.98
-  
-  // CRITICAL FIX: Remove aspect ratio constraint for mobile portrait
-  // Use available space more effectively for portrait devices
+  // MOBILE-FIRST APPROACH: Use full viewport for immersive experience
   let canvasWidth, canvasHeight;
   
   if (viewportWidth < 500) {
-    // Mobile portrait: Use almost full available space
-    canvasWidth = Math.min(availableWidth, viewportWidth);
-    canvasHeight = Math.min(availableHeight, viewportHeight);
+    // Mobile: Use full viewport dimensions
+    canvasWidth = viewportWidth;
+    canvasHeight = viewportHeight;
   } else {
-    // Desktop/landscape: Maintain aspect ratio for traditional layout
-    const aspectRatio = 4 / 3;
-    if (availableWidth / availableHeight > aspectRatio) {
-      canvasHeight = Math.min(availableHeight, 600);
-      canvasWidth = canvasHeight * aspectRatio;
-    } else {
-      canvasWidth = Math.min(availableWidth, 800);
-      canvasHeight = canvasWidth / aspectRatio;
-    }
+    // Desktop: Use generous dimensions but maintain some margin
+    canvasWidth = Math.min(viewportWidth * 0.95, 800);
+    canvasHeight = Math.min(viewportHeight * 0.95, 600);
   }
+  
+  console.log(`Canvas Debug: Viewport ${viewportWidth}x${viewportHeight} -> Canvas ${canvasWidth}x${canvasHeight}`);
   
   return {
     width: Math.floor(canvasWidth),
@@ -43,26 +33,22 @@ const canvasSize = calculateCanvasSize();
 
 const config = {
   type: Phaser.AUTO,
-  width: canvasSize.width,
-  height: canvasSize.height,
+  scale: {
+    mode: Phaser.Scale.RESIZE,
+    parent: 'game-container',
+    width: '100%',
+    height: '100%',
+    min: {
+      width: 320,
+      height: 480
+    }
+    // Removed max constraints to allow true full viewport
+  },
   backgroundColor: '#1a1a2e',
-  parent: 'game-container',
   render: {
     antialias: true,
     pixelArt: false,
     transparent: false
-  },
-  scale: {
-    mode: Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
-    min: {
-      width: 320,  // Minimum width for very small screens
-      height: 240
-    },
-    max: {
-      width: 800,  // Maximum width to prevent oversized display
-      height: 600
-    }
   },
   scene: [MainMenu, DifficultySelection, GameScene]
 };
@@ -96,6 +82,13 @@ window.onload = function() {
 function handleResize() {
   if (game) {
     const newSize = calculateCanvasSize();
+    console.log(`🔄 Resize: New canvas size ${newSize.width}x${newSize.height}`);
     game.scale.resize(newSize.width, newSize.height);
+    
+    // Refresh current scene layout
+    const currentScene = game.scene.getScene(game.scene.getScenes(true)[0].scene.key);
+    if (currentScene && currentScene.refreshLayout) {
+      currentScene.refreshLayout();
+    }
   }
 }

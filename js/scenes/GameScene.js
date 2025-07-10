@@ -6,35 +6,41 @@ class GameScene extends Phaser.Scene {
   }
 
   preload() {
+    // Determine if we're running from tests directory
+    const isTestEnvironment = window.location.pathname.includes('/tests/');
+    const assetPath = isTestEnvironment ? '../assets/' : 'assets/';
+    
+    console.log(`Asset Debug: Running in ${isTestEnvironment ? 'test' : 'main'} environment, using path: ${assetPath}`);
+    
     // Background already loaded by MainMenu, but ensure it's available
     if (!this.textures.exists('bg')) {
-      this.load.image('bg', 'assets/bg_mobile2.png');
+      this.load.image('bg', `${assetPath}bg_mobile2.png`);
     }
     
     // Load Christmas element images (responsive sizing for different screen densities)
     // Base resolution (1x) images
-    this.load.image('santa_1x', 'assets/santa_1x.png');
-    this.load.image('present_1x', 'assets/present_1x.png');
-    this.load.image('mistletoe_1x', 'assets/mistletoe_1x.png');
-    this.load.image('star_1x', 'assets/star_1x.png');
-    this.load.image('tree_1x', 'assets/tree_1x.png');
-    this.load.image('snowflake_1x', 'assets/snowflake_1x.png');
+    this.load.image('santa_1x', `${assetPath}santa_1x.png`);
+    this.load.image('present_1x', `${assetPath}present_1x.png`);
+    this.load.image('mistletoe_1x', `${assetPath}mistletoe_1x.png`);
+    this.load.image('star_1x', `${assetPath}star_1x.png`);
+    this.load.image('tree_1x', `${assetPath}tree_1x.png`);
+    this.load.image('snowflake_1x', `${assetPath}snowflake_1x.png`);
     
     // Retina (2x) images
-    this.load.image('santa_2x', 'assets/santa_2x.png');
-    this.load.image('present_2x', 'assets/present_2x.png');
-    this.load.image('mistletoe_2x', 'assets/mistletoe_2x.png');
-    this.load.image('star_2x', 'assets/star_2x.png');
-    this.load.image('tree_2x', 'assets/tree_2x.png');
-    this.load.image('snowflake_2x', 'assets/snowflake_2x.png');
+    this.load.image('santa_2x', `${assetPath}santa_2x.png`);
+    this.load.image('present_2x', `${assetPath}present_2x.png`);
+    this.load.image('mistletoe_2x', `${assetPath}mistletoe_2x.png`);
+    this.load.image('star_2x', `${assetPath}star_2x.png`);
+    this.load.image('tree_2x', `${assetPath}tree_2x.png`);
+    this.load.image('snowflake_2x', `${assetPath}snowflake_2x.png`);
     
     // Super Retina (3x) images  
-    this.load.image('santa_3x', 'assets/santa_3x.png');
-    this.load.image('present_3x', 'assets/present_3x.png');
-    this.load.image('mistletoe_3x', 'assets/mistletoe_3x.png');
-    this.load.image('star_3x', 'assets/star_3x.png');
-    this.load.image('tree_3x', 'assets/tree_3x.png');
-    this.load.image('snowflake_3x', 'assets/snowflake_3x.png');
+    this.load.image('santa_3x', `${assetPath}santa_3x.png`);
+    this.load.image('present_3x', `${assetPath}present_3x.png`);
+    this.load.image('mistletoe_3x', `${assetPath}mistletoe_3x.png`);
+    this.load.image('star_3x', `${assetPath}star_3x.png`);
+    this.load.image('tree_3x', `${assetPath}tree_3x.png`);
+    this.load.image('snowflake_3x', `${assetPath}snowflake_3x.png`);
     
     // Show loading progress
     this.load.on('progress', (value) => {
@@ -43,9 +49,30 @@ class GameScene extends Phaser.Scene {
       }
     });
     
-    // Handle loading errors
+    // Handle loading errors with better reporting
     this.load.on('fileerror', (key, type, url) => {
-      console.warn(`Failed to load ${type}: ${key} from ${url}`);
+      console.error(`🚨 Failed to load ${type}: ${key} from ${url}`);
+    });
+    
+    // Log successful loads
+    this.load.on('fileload', (key, type, url) => {
+      console.log(`✅ Loaded ${type}: ${key} from ${url}`);
+    });
+    
+    // When all assets are loaded, verify they're accessible
+    this.load.on('complete', () => {
+      console.log('🎄 Asset loading complete. Verifying textures...');
+      const elements = ['santa', 'present', 'mistletoe', 'star', 'tree', 'snowflake'];
+      elements.forEach(element => {
+        const key1x = `${element}_1x`;
+        const key2x = `${element}_2x`;
+        const key3x = `${element}_3x`;
+        
+        console.log(`🔍 Checking ${element}:`);
+        console.log(`  ${key1x}: ${this.textures.exists(key1x) ? '✅' : '❌'}`);
+        console.log(`  ${key2x}: ${this.textures.exists(key2x) ? '✅' : '❌'}`);
+        console.log(`  ${key3x}: ${this.textures.exists(key3x) ? '✅' : '❌'}`);
+      });
     });
   }
   
@@ -475,26 +502,58 @@ class GameScene extends Phaser.Scene {
     // Map element names to the exact asset keys loaded in preload()
     const normalizedName = elementName.toLowerCase();
     
-    // Determine the appropriate resolution suffix
+    // MOBILE FIX: Force 1x images for now to ensure compatibility
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
     let suffix;
-    if (pixelRatio >= 3) {
-      suffix = '_3x';
-    } else if (pixelRatio >= 2) {
-      suffix = '_2x';
-    } else {
+    if (isMobile) {
+      // Force 1x for mobile devices to ensure loading
       suffix = '_1x';
+    } else {
+      // Use device pixel ratio for desktop
+      if (pixelRatio >= 3) {
+        suffix = '_3x';
+      } else if (pixelRatio >= 2) {
+        suffix = '_2x';
+      } else {
+        suffix = '_1x';
+      }
     }
     
     const imageKey = `${normalizedName}${suffix}`;
     
+    // Enhanced debugging for asset loading (only show in test environments)
+    const isTestEnvironment = window.location.pathname.includes('/tests/');
+    if (isTestEnvironment) {
+      console.log(`Asset Debug: Looking for element '${elementName}' -> normalized '${normalizedName}' -> key '${imageKey}'`);
+    }
+    
     // Verify the texture exists before returning the key
     if (this.textures.exists(imageKey)) {
-      return imageKey;
-    } else {
-      console.warn(`Texture not found: ${imageKey}, falling back to 1x version`);
-      const fallbackKey = `${normalizedName}_1x`;
-      return this.textures.exists(fallbackKey) ? fallbackKey : 'missing';
+      const texture = this.textures.get(imageKey);
+      if (texture && texture.source && texture.source[0]) {
+        if (isTestEnvironment) console.log(`Asset Debug: Found valid texture ${imageKey}`);
+        return imageKey;
+      } else {
+        if (isTestEnvironment) console.warn(`Asset Debug: Texture ${imageKey} exists but is invalid`);
+      }
     }
+    
+    if (isTestEnvironment) console.warn(`Asset Debug: Texture not found: ${imageKey}, trying fallback`);
+    const fallbackKey = `${normalizedName}_1x`;
+    if (this.textures.exists(fallbackKey)) {
+      const fallbackTexture = this.textures.get(fallbackKey);
+      if (fallbackTexture && fallbackTexture.source && fallbackTexture.source[0]) {
+        if (isTestEnvironment) console.log(`Asset Debug: Using valid fallback ${fallbackKey}`);
+        return fallbackKey;
+      }
+    }
+    
+    if (isTestEnvironment) {
+      console.error(`Asset Debug: No valid texture found for ${elementName}`);
+      console.log(`Asset Debug: Available texture keys:`, Object.keys(this.textures.list));
+    }
+    return '__MISSING'; // Return a key that will trigger Phaser's missing texture display
   }
   
   showLoadingState() {
