@@ -94,7 +94,6 @@ class GameScene extends Phaser.Scene {
     
     // Generate random code
     this.secretCode = GameUtils.generateRandomCode(this.elements, this.codeLength);
-    console.log('Secret code:', this.secretCode); // For testing
   }
 
   setupManagers() {
