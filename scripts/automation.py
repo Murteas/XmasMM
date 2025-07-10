@@ -15,6 +15,17 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from scripts.task_manager import TaskManager, get_current_task_info, get_project_status
 
+def update_documentation():
+    """Update all documentation with current state"""
+    try:
+        from scripts.update_documentation import DocumentationUpdater
+        updater = DocumentationUpdater()
+        updater.update_all()
+        return True
+    except Exception as e:
+        print(f"❌ Error updating documentation: {e}")
+        return False
+
 def check_status():
     """Check current project status"""
     print("=== XmasMM Task Status ===")
@@ -63,10 +74,21 @@ def complete_task(task_id, notes=""):
         
         print(f"✅ Task {task_id} marked as completed")
         
-        # Update documentation
-        print("📝 Updating documentation...")
-        # Note: update_readme.py has encoding issues, so we skip it for now
-        # We'll update README manually when needed
+        # Auto-update documentation
+        print("📝 Auto-updating documentation...")
+        doc_success = update_documentation()
+        if doc_success:
+            print("📋 Documentation updated successfully")
+        else:
+            print("⚠️  Documentation update had issues - check manually")
+        
+        # Sync task files
+        try:
+            subprocess.run([sys.executable, "scripts/sync_task_files.py"], 
+                         capture_output=True, text=True, check=True)
+            print("📄 Task files synchronized")
+        except subprocess.CalledProcessError:
+            print("⚠️  Task file sync had issues")
         
         print("🎉 Task completion successful!")
         return True
@@ -105,6 +127,7 @@ def main():
         print("  python scripts/automation.py complete <id>    # Complete task with ID")
         print("  python scripts/automation.py next            # Start next ready task")
         print("  python scripts/automation.py help            # Show current task details")
+        print("  python scripts/automation.py update-docs     # Update documentation")
         return
     
     command = sys.argv[1].lower()
@@ -122,6 +145,14 @@ def main():
         
     elif command == "next":
         start_next()
+        
+    elif command == "update-docs":
+        print("📝 Manually updating documentation...")
+        success = update_documentation()
+        if success:
+            print("✅ Documentation update completed")
+        else:
+            print("❌ Documentation update failed")
         
     elif command == "help":
         try:
