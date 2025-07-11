@@ -28,6 +28,8 @@ XmasMM uses a machine-readable task management system designed for agentic AI co
 
 #### 🔧 Management Scripts
 
+### 🔧 Management Scripts
+
 #### `scripts/automation.py`
 AI Agent Task Automation
 
@@ -112,6 +114,7 @@ Key functions:
 - `get_current_files()` - Get list of all current JavaScript files in the project.
 - `check_task_references()` - Check all task references against current file structure.
 - `main()` - No documentation
+
 
 ## 📋 `tasks.json` - Single Source of Truth
 Machine-readable registry containing:

@@ -1,6 +1,6 @@
 # Task 6: Implement Christmas-Themed Feedback System
 
-**Status**: 🚀 READY (depends on 5E)  
+**Status**: 🔄 CURRENT  
 **Objective**: Replace traditional black/white pegs with intuitive Christmas-themed feedback symbols that are easier for new players to understand.
 
 > 📊 **Note**: Status managed in [tasks.json](../tasks.json). Use `python scripts/automation.py status` for current state.
@@ -24,6 +24,15 @@ Game uses basic black/white peg feedback that requires Mastermind knowledge.
 - Create small legend in `GameScene.js` explaining symbols
 - Position legend where it doesn't interfere with gameplay
 - Make legend toggle-able or collapsible for experienced players
+
+## Known Issues to Fix
+
+### Layout Conflict Issue
+- **Problem**: Active guess row overlaps with Christmas legend
+- **Symptom**: "TAP" placeholders cover legend text, blocking readability
+- **Root Cause**: Active row positioning doesn't account for legend space
+- **Solution**: Adjust active row Y positioning to be below legend
+- **Files**: `js/managers/ActiveRowManager.js` or `js/scenes/GameScene.js`
 
 ## Files to Modify
 - `js/managers/HistoryManager.js` - Update feedback display

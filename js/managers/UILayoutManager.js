@@ -282,17 +282,24 @@ class UILayoutManager {
   }
 
   showGameLost(secretCode) {
-    this.scene.add.text(this.scene.cameras.main.width / 2, this.scene.cameras.main.height / 2, 'GAME OVER', {
-      font: '36px Arial',
+    const { width, height } = this.scene.cameras.main;
+    
+    // Position GAME OVER at bottom to not cover game history
+    this.scene.add.text(width / 2, height - 100, 'GAME OVER', {
+      font: '28px Arial',
       fill: '#e74c3c',
-      fontStyle: 'bold'
+      fontStyle: 'bold',
+      backgroundColor: '#000000',
+      padding: { left: 20, right: 20, top: 10, bottom: 10 }
     }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().GAME_OVER);
     
-    // Show solution
-    this.scene.add.text(this.scene.cameras.main.width / 2, this.scene.cameras.main.height / 2 + 50, 
+    // Show solution below GAME OVER
+    this.scene.add.text(width / 2, height - 60, 
       `Solution: ${secretCode.join(', ')}`, {
-      font: '18px Arial',
-      fill: '#fff'
+      font: '16px Arial',
+      fill: '#fff',
+      backgroundColor: '#000000',
+      padding: { left: 15, right: 15, top: 5, bottom: 5 }
     }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().GAME_OVER);
   }
 
@@ -408,12 +415,12 @@ class UILayoutManager {
       }
     ];
     
-    // Calculate responsive legend positioning
+    // Calculate responsive legend positioning  
     const isSmallScreen = width < 500;
-    const isVerySmallScreen = width < 400; // Same threshold as header layout
-    const legendWidth = isSmallScreen ? width - 20 : 280;
-    const itemHeight = 24;
-    const legendHeight = (legendItems.length * itemHeight) + 30;
+    const isVerySmallScreen = width < 400;
+    const legendWidth = isSmallScreen ? Math.min(width - 20, 250) : 220; // Reduced width
+    const itemHeight = 20; // Reduced from 24
+    const legendHeight = (legendItems.length * itemHeight) + 25; // Reduced padding
     const padding = 10;
     
     // Position legend below all header UI elements
