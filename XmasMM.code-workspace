@@ -1,0 +1,19 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "github.copilot.chat.welcomeMessage": "Please read AI_AGENT_BRIEFING.md before starting work. This project uses specialized agentic AI task management.",
+    "files.associations": {
+      "*.md": "markdown"
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "GitHub.copilot",
+      "GitHub.copilot-chat"
+    ]
+  }
+}

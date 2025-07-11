@@ -1,4 +1,12 @@
 {
   "liveServer.settings.port": 8000,
-  "liveServer.settings.donotShowInfoMsg": true
+  "liveServer.settings.donotShowInfoMsg": true,
+  "github.copilot.chat.welcomeMessage": "custom",
+  "github.copilot.chat.customWelcomeMessage": "Please read AI_AGENT_BRIEFING.md before starting any work on this project.",
+  "github.copilot.chat.localeOverride": "en",
+  "github.copilot.enable": {
+    "*": true,
+    "plaintext": false,
+    "markdown": true
+  }
 }

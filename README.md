@@ -2,6 +2,8 @@
 
 **A mobile-optimized Christmas puzzle game for family fun!**
 
+> **🤖 AI Agents**: Read [AI_AGENT_BRIEFING.md](AI_AGENT_BRIEFING.md) before starting work - this project uses specialized agentic task management.
+
 ## ✨ Current Status
 🎉 **Mobile foundation complete!** Christmas feature development in progress.
 

@@ -410,14 +410,18 @@ class UILayoutManager {
     
     // Calculate responsive legend positioning
     const isSmallScreen = width < 500;
+    const isVerySmallScreen = width < 400; // Same threshold as header layout
     const legendWidth = isSmallScreen ? width - 20 : 280;
     const itemHeight = 24;
     const legendHeight = (legendItems.length * itemHeight) + 30;
     const padding = 10;
     
-    // Position legend in top-right corner, but below UI elements
+    // Position legend below all header UI elements
+    // Small screens: title=30, guesses/score=70, hint_text=100, hint_button=130
+    // Larger screens: title=30, guesses/score=70, hint=85
+    const headerBottomY = isVerySmallScreen ? 145 : (isSmallScreen ? 120 : 95); 
     const legendX = width - legendWidth - padding;
-    const legendY = 80; // Below difficulty and score
+    const legendY = headerBottomY + 10; // 10px gap below header elements
     
     // Create legend background
     const legendBg = this.scene.add.rectangle(legendX, legendY, legendWidth, legendHeight, 0x000000, 0.8)

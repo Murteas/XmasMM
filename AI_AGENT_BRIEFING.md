@@ -28,6 +28,8 @@
 - `python scripts/automation.py regen-docs` - Regenerate scripts documentation
 - `python scripts/sync_task_files.py` - Sync all documentation
 
+*For terminal command syntax and technical details, see `TECHNICAL_GUIDELINES.md`*
+
 **VALIDATION CHECKLIST**:
 1. ✅ You can access and read `PROJECT_STATUS.md` for current state
 2. ✅ You can access and read `tasks.json` for task definitions
@@ -42,6 +44,7 @@
 - **`PROJECT_STATUS.md`** - Real-time project state (auto-updated) **← START HERE**
 - **`tasks.json`** - Master task registry (MOST IMPORTANT)
 - **`TASK_MANAGEMENT.md`** - Complete AI agent guide and system documentation
+- **`TECHNICAL_GUIDELINES.md`** - Terminal commands and development guidelines ⚡
 - **`Graphics_Asset_Requirements.md`** - All Christmas assets ready for implementation ✅
 - **`README.md`** - Project overview and general documentation
 - **`tasks/`** - Individual task documentation (see PROJECT_STATUS.md for current task)

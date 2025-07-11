@@ -58,6 +58,25 @@ const config = {
 let game;
 
 window.onload = function() {
+  // Suppress common browser extension async listener errors
+  window.addEventListener('error', (event) => {
+    if (event.message && event.message.includes('message channel closed before a response was received')) {
+      // This is a browser extension error, not our code - suppress it
+      event.preventDefault();
+      return false;
+    }
+  });
+  
+  // Suppress unhandled promise rejections from browser extensions
+  window.addEventListener('unhandledrejection', (event) => {
+    if (event.reason && event.reason.message && 
+        event.reason.message.includes('message channel closed before a response was received')) {
+      // This is a browser extension error, not our code - suppress it
+      event.preventDefault();
+      return false;
+    }
+  });
+  
   game = new Phaser.Game(config);
   
   // Add resize event listener for orientation changes
