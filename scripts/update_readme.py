@@ -12,11 +12,11 @@ def update_readme_from_tasks():
     """Update README.md with current status from tasks.json"""
     
     # Load task data
-    with open('tasks.json', 'r') as f:
+    with open('tasks.json', 'r', encoding='utf-8') as f:
         data = json.load(f)
     
     # Read current README
-    with open('README.md', 'r') as f:
+    with open('README.md', 'r', encoding='utf-8') as f:
         readme_content = f.read()
     
     # Get current status
@@ -68,7 +68,7 @@ def update_readme_from_tasks():
     )
     
     # Write updated README
-    with open('README.md', 'w') as f:
+    with open('README.md', 'w', encoding='utf-8') as f:
         f.write(readme_content)
     
     print("✅ README.md updated from tasks.json")

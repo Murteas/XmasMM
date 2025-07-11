@@ -12,7 +12,7 @@ from pathlib import Path
 
 def load_tasks():
     """Load the task registry from tasks.json"""
-    with open('tasks.json', 'r') as f:
+    with open('tasks.json', 'r', encoding='utf-8') as f:
         return json.load(f)
 
 def get_current_status(data):
@@ -94,7 +94,7 @@ def main():
     data = update_validation(data)
     
     # Save updated validation
-    with open('tasks.json', 'w') as f:
+    with open('tasks.json', 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=2)
     
     # Generate status report

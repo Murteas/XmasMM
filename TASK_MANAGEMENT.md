@@ -13,6 +13,7 @@ python scripts/automation.py help      # See current task details
 # Step 3: Refresh documentation (if needed)
 python scripts/automation.py update-docs   # Update status documents
 python scripts/sync_task_files.py          # Ensure all docs are synced
+python scripts/automation.py regen-docs    # Regenerate scripts documentation
 ```
 
 **⚠️ IMPORTANT**: 
@@ -25,7 +26,94 @@ XmasMM uses a machine-readable task management system designed for agentic AI co
 
 ## Core Files
 
-### 📋 `tasks.json` - Single Source of Truth
+#### 🔧 Management Scripts
+
+#### `scripts/automation.py`
+AI Agent Task Automation
+
+Simple script for AI agents to check status and update tasks.
+Run this after completing any task to update documentation automatically.
+Key functions:
+- `update_documentation()` - Update all documentation with current state
+- `check_status()` - Check current project status
+- `complete_task()` - Complete a task and update documentation
+- `start_next()` - Start the next ready task
+- `main()` - Main automation function
+
+#### `scripts/sync_task_files.py`
+Task File Status Sync
+
+Updates individual task .md files to reflect current status from tasks.json
+Key functions:
+- `sync_task_files()` - Sync task file status with tasks.json
+
+#### `scripts/task_manager.py`
+Task Update Script for AI Agents
+
+Provides simple functions for AI agents to update task status in tasks.json
+Key functions:
+- `get_current_task_info()` - Simple function to get current task information
+- `complete_current_task()` - Simple function to complete the current task
+- `start_next_task()` - Simple function to start the next ready task
+- `get_project_status()` - Get overall project status
+- `get_current_task()` - Get the current active task
+- `get_next_task()` - Get the next task to work on
+- `get_ready_tasks()` - Get all tasks that are ready to start (dependencies satisfied)
+- `complete_task()` - Mark a task as completed
+- `start_task()` - Start working on a task
+- `get_task_summary()` - Get a summary of a task for AI consumption
+- `validate_state()` - Validate current state and return any issues
+
+#### `scripts/task_status.py`
+Task Status Generator for XmasMM Project
+
+Reads the machine-readable tasks.json and generates human-readable documentation.
+This ensures consistency between AI-readable data and human documentation.
+Key functions:
+- `load_tasks()` - Load the task registry from tasks.json
+- `get_current_status()` - Get current project status
+- `generate_readme_status()` - Generate the Current Status section for README
+- `generate_task_list()` - Generate task list with current status
+- `validate_dependencies()` - Validate that task dependencies are satisfied
+- `update_validation()` - Update validation status
+- `main()` - Main function to generate status reports
+
+#### `scripts/update_documentation.py`
+Documentation Auto-Update System
+Automatically updates documentation files with current project state
+Key functions:
+- `get_current_state()` - Get current project state from tasks.json
+- `update_ai_agent_briefing()` - Update AI_AGENT_BRIEFING.md with current state
+- `update_readme_progress()` - Update README.md progress information
+- `check_documentation_freshness()` - Check if documentation might be stale
+- `update_project_status()` - Update PROJECT_STATUS.md with current state
+- `update_all()` - Update all automatically updatable documentation
+
+#### `scripts/update_readme.py`
+README Updater - Updates README.md from tasks.json
+
+This ensures the README always reflects the current state in tasks.json
+Key functions:
+- `update_readme_from_tasks()` - Update README.md with current status from tasks.json
+
+#### `scripts/validate_refactoring.py`
+Validation script for XmasMM refactoring.
+Checks if all files are under 500 lines and verifies structure.
+Key functions:
+- `count_lines()` - Count lines in a file.
+- `validate_refactoring()` - Validate the refactoring results.
+
+#### `scripts/validate_task_references.py`
+Validate and suggest updates for task file references after code refactoring.
+
+This script checks that all file references in tasks.json are still valid
+after the Task 5E refactoring that split large files into smaller modules.
+Key functions:
+- `get_current_files()` - Get list of all current JavaScript files in the project.
+- `check_task_references()` - Check all task references against current file structure.
+- `main()` - No documentation
+
+## 📋 `tasks.json` - Single Source of Truth
 Machine-readable registry containing:
 - **Project metadata** and overall progress
 - **Task definitions** with dependencies, objectives, and success criteria  
@@ -34,38 +122,189 @@ Machine-readable registry containing:
 - **Current state** validation
 
 ### 🔧 Management Scripts
-
-#### `scripts/task_manager.py`
-Core API for AI agents:
-- `get_current_task_info()` - Get active task details
-- `complete_current_task(notes)` - Mark current task complete
-- `start_next_task()` - Begin next ready task
-- `get_project_status()` - Overall project state
-
-#### `scripts/task_status.py`
-Status reporting and validation:
-- Generates human-readable status reports
-- Validates task dependencies
-- Shows current task details and objectives
-
-#### `scripts/update_readme.py`
-Documentation synchronization:
-- Updates README.md from tasks.json
-- Ensures documentation matches current state
-- Maintains single source of truth
-
-#### `scripts/sync_task_files.py`
-Task file synchronization:
-- Updates individual task .md files with current status from tasks.json
-- Adds automation references to task files
-- Ensures all documentation stays synchronized
+*Scripts documentation is auto-generated from actual files. To regenerate: `python scripts/automation.py regen-docs`*
 
 #### `scripts/automation.py`
-Simple AI agent interface:
-- `status` - Check current project state
-- `help` - Get current task details  
-- `complete <id>` - Mark task as completed
-- `next` - Start next ready task
+AI Agent Task Automation
+
+Simple script for AI agents to check status and update tasks.
+Run this after completing any task to update documentation automatically.
+Key functions:
+- `update_documentation()` - Update all documentation with current state
+- `check_status()` - Check current project status
+- `complete_task()` - Complete a task and update documentation
+- `start_next()` - Start the next ready task
+- `main()` - Main automation function
+
+#### `scripts/sync_task_files.py`
+Task File Status Sync
+
+Updates individual task .md files to reflect current status from tasks.json
+Key functions:
+- `sync_task_files()` - Sync task file status with tasks.json
+
+#### `scripts/task_manager.py`
+Task Update Script for AI Agents
+
+Provides simple functions for AI agents to update task status in tasks.json
+Key functions:
+- `get_current_task_info()` - Simple function to get current task information
+- `complete_current_task()` - Simple function to complete the current task
+- `start_next_task()` - Simple function to start the next ready task
+- `get_project_status()` - Get overall project status
+- `get_current_task()` - Get the current active task
+- `get_next_task()` - Get the next task to work on
+- `get_ready_tasks()` - Get all tasks that are ready to start (dependencies satisfied)
+- `complete_task()` - Mark a task as completed
+- `start_task()` - Start working on a task
+- `get_task_summary()` - Get a summary of a task for AI consumption
+- `validate_state()` - Validate current state and return any issues
+
+#### `scripts/task_status.py`
+Task Status Generator for XmasMM Project
+
+Reads the machine-readable tasks.json and generates human-readable documentation.
+This ensures consistency between AI-readable data and human documentation.
+Key functions:
+- `load_tasks()` - Load the task registry from tasks.json
+- `get_current_status()` - Get current project status
+- `generate_readme_status()` - Generate the Current Status section for README
+- `generate_task_list()` - Generate task list with current status
+- `validate_dependencies()` - Validate that task dependencies are satisfied
+- `update_validation()` - Update validation status
+- `main()` - Main function to generate status reports
+
+#### `scripts/update_documentation.py`
+Documentation Auto-Update System
+Automatically updates documentation files with current project state
+Key functions:
+- `get_current_state()` - Get current project state from tasks.json
+- `update_ai_agent_briefing()` - Update AI_AGENT_BRIEFING.md with current state
+- `update_readme_progress()` - Update README.md progress information
+- `check_documentation_freshness()` - Check if documentation might be stale
+- `update_project_status()` - Update PROJECT_STATUS.md with current state
+- `update_all()` - Update all automatically updatable documentation
+
+#### `scripts/update_readme.py`
+README Updater - Updates README.md from tasks.json
+
+This ensures the README always reflects the current state in tasks.json
+Key functions:
+- `update_readme_from_tasks()` - Update README.md with current status from tasks.json
+
+#### `scripts/validate_refactoring.py`
+Validation script for XmasMM refactoring.
+Checks if all files are under 500 lines and verifies structure.
+Key functions:
+- `count_lines()` - Count lines in a file.
+- `validate_refactoring()` - Validate the refactoring results.
+
+#### `scripts/validate_task_references.py`
+Validate and suggest updates for task file references after code refactoring.
+
+This script checks that all file references in tasks.json are still valid
+after the Task 5E refactoring that split large files into smaller modules.
+Key functions:
+- `get_current_files()` - Get list of all current JavaScript files in the project.
+- `check_task_references()` - Check all task references against current file structure.
+- `main()` - No documentation
+
+## 📋 `tasks.json` - Single Source of Truth
+Machine-readable registry containing:
+- **Project metadata** and overall progress
+- **Task definitions** with dependencies, objectives, and success criteria  
+- **Phase organization** for logical grouping
+- **Asset status** and completion tracking
+- **Current state** validation
+
+### 🔧 Management Scripts
+*Scripts documentation is auto-generated from actual files. To regenerate: `python scripts/automation.py regen-docs`*
+
+#### `scripts/automation.py`
+AI Agent Task Automation
+
+Simple script for AI agents to check status and update tasks.
+Run this after completing any task to update documentation automatically.
+Key functions:
+- `update_documentation()` - Update all documentation with current state
+- `check_status()` - Check current project status
+- `complete_task()` - Complete a task and update documentation
+- `start_next()` - Start the next ready task
+- `main()` - Main automation function
+
+#### `scripts/sync_task_files.py`
+Task File Status Sync
+
+Updates individual task .md files to reflect current status from tasks.json
+Key functions:
+- `sync_task_files()` - Sync task file status with tasks.json
+
+#### `scripts/task_manager.py`
+Task Update Script for AI Agents
+
+Provides simple functions for AI agents to update task status in tasks.json
+Key functions:
+- `get_current_task_info()` - Simple function to get current task information
+- `complete_current_task()` - Simple function to complete the current task
+- `start_next_task()` - Simple function to start the next ready task
+- `get_project_status()` - Get overall project status
+- `get_current_task()` - Get the current active task
+- `get_next_task()` - Get the next task to work on
+- `get_ready_tasks()` - Get all tasks that are ready to start (dependencies satisfied)
+- `complete_task()` - Mark a task as completed
+- `start_task()` - Start working on a task
+- `get_task_summary()` - Get a summary of a task for AI consumption
+- `validate_state()` - Validate current state and return any issues
+
+#### `scripts/task_status.py`
+Task Status Generator for XmasMM Project
+
+Reads the machine-readable tasks.json and generates human-readable documentation.
+This ensures consistency between AI-readable data and human documentation.
+Key functions:
+- `load_tasks()` - Load the task registry from tasks.json
+- `get_current_status()` - Get current project status
+- `generate_readme_status()` - Generate the Current Status section for README
+- `generate_task_list()` - Generate task list with current status
+- `validate_dependencies()` - Validate that task dependencies are satisfied
+- `update_validation()` - Update validation status
+- `main()` - Main function to generate status reports
+
+#### `scripts/update_documentation.py`
+Documentation Auto-Update System
+Automatically updates documentation files with current project state
+Key functions:
+- `get_current_state()` - Get current project state from tasks.json
+- `update_ai_agent_briefing()` - Update AI_AGENT_BRIEFING.md with current state
+- `update_readme_progress()` - Update README.md progress information
+- `check_documentation_freshness()` - Check if documentation might be stale
+- `update_project_status()` - Update PROJECT_STATUS.md with current state
+- `update_all()` - Update all automatically updatable documentation
+
+#### `scripts/update_readme.py`
+README Updater - Updates README.md from tasks.json
+
+This ensures the README always reflects the current state in tasks.json
+Key functions:
+- `update_readme_from_tasks()` - Update README.md with current status from tasks.json
+
+#### `scripts/validate_refactoring.py`
+Validation script for XmasMM refactoring.
+Checks if all files are under 500 lines and verifies structure.
+Key functions:
+- `count_lines()` - Count lines in a file.
+- `validate_refactoring()` - Validate the refactoring results.
+
+#### `scripts/validate_task_references.py`
+Validate and suggest updates for task file references after code refactoring.
+
+This script checks that all file references in tasks.json are still valid
+after the Task 5E refactoring that split large files into smaller modules.
+Key functions:
+- `get_current_files()` - Get list of all current JavaScript files in the project.
+- `check_task_references()` - Check all task references against current file structure.
+- `main()` - No documentation
+
 
 ## Usage for AI Agents
 
@@ -131,14 +370,20 @@ The system automatically calculates:
 ```
 XmasMM/
 ├── tasks.json              # Master task registry
-├── scripts/
-│   ├── task_manager.py      # Core AI agent API
+├── scripts/                # Management scripts (auto-documented)
+│   ├── automation.py        # Main AI agent interface
+│   ├── task_manager.py      # Core task management API
 │   ├── task_status.py       # Status reporting
-│   ├── update_readme.py     # Documentation sync
+│   ├── generate_docs.py     # Dynamic script documentation generator
+│   ├── update_documentation.py  # Auto-update system
+│   ├── update_readme.py     # README synchronization
 │   ├── sync_task_files.py   # Task file synchronization
-│   └── automation.py        # Simple AI agent interface
+│   ├── validate_refactoring.py  # Code structure validation
+│   └── validate_task_references.py  # Task reference validation
 ├── tasks/                   # Individual task documentation
 └── README.md               # Human-readable project overview
 ```
+
+*Note: Scripts documentation above is auto-generated. To refresh: `python scripts/automation.py regen-docs`*
 
 This system ensures reliable task management regardless of which AI agent or model continues the work.

@@ -16,13 +16,13 @@ class TaskManager:
     
     def _load_tasks(self) -> Dict:
         """Load tasks from JSON file"""
-        with open(self.tasks_file, 'r') as f:
+        with open(self.tasks_file, 'r', encoding='utf-8') as f:
             return json.load(f)
     
     def _save_tasks(self):
         """Save tasks to JSON file"""
         self.data['project']['lastUpdated'] = datetime.datetime.now().isoformat()
-        with open(self.tasks_file, 'w') as f:
+        with open(self.tasks_file, 'w', encoding='utf-8') as f:
             json.dump(self.data, f, indent=2)
     
     def get_current_task(self) -> Dict:

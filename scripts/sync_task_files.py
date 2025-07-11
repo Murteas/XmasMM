@@ -14,7 +14,7 @@ def sync_task_files():
     """Sync task file status with tasks.json"""
     
     # Load tasks.json
-    with open('tasks.json', 'r') as f:
+    with open('tasks.json', 'r', encoding='utf-8') as f:
         data = json.load(f)
     
     tasks_dir = Path('tasks')

@@ -86,15 +86,12 @@ The project includes a comprehensive test suite accessible at `/tests/`:
 - **Device Comparison Test:** Cross-device optimization analysis
 - **Asset Loading Test:** Image loading validation with retina display support
 
-## Task Management for AI Agents
-This project uses a machine-readable task management system optimized for agentic AI:
-- **Status Check**: `python scripts/automation.py status`
-- **Current Task Details**: `python scripts/automation.py help`
-- **Complete Task**: `python scripts/automation.py complete <task_id>` (auto-updates documentation)
-- **Start Next Task**: `python scripts/automation.py next`
-- **Update Documentation**: `python scripts/automation.py update-docs` (manual refresh)
-
-See [TASK_MANAGEMENT.md](TASK_MANAGEMENT.md) for complete documentation.
+## Task Management System
+This project uses a machine-readable task management system optimized for agentic AI development:
+- **Live Status**: [PROJECT_STATUS.md](PROJECT_STATUS.md) - Real-time project state
+- **Task Registry**: [tasks.json](tasks.json) - Machine-readable task definitions  
+- **AI Agent Guide**: [AI_AGENT_BRIEFING.md](AI_AGENT_BRIEFING.md) - New agent onboarding
+- **Complete Documentation**: [TASK_MANAGEMENT.md](TASK_MANAGEMENT.md) - Full system guide
 
 ## Repository
 Visit the repository at [https://github.com/Murteas/XmasMM](https://github.com/Murteas/XmasMM) for source code and deployment details.

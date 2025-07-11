@@ -128,6 +128,7 @@ def main():
         print("  python scripts/automation.py next            # Start next ready task")
         print("  python scripts/automation.py help            # Show current task details")
         print("  python scripts/automation.py update-docs     # Update documentation")
+        print("  python scripts/automation.py regen-docs      # Regenerate scripts documentation")
         return
     
     command = sys.argv[1].lower()
@@ -153,6 +154,23 @@ def main():
             print("✅ Documentation update completed")
         else:
             print("❌ Documentation update failed")
+        
+    elif command == "regen-docs":
+        print("Regenerating scripts documentation...")
+        try:
+            # Run the generate_docs.py script
+            os.environ['PYTHONIOENCODING'] = 'utf-8'
+            result = subprocess.run([sys.executable, "scripts/generate_docs.py"], 
+                                  capture_output=True, text=True, check=True)
+            # Filter out Unicode characters for display
+            output = result.stdout.encode('ascii', 'ignore').decode('ascii')
+            print(output)
+            print("Scripts documentation regenerated successfully")
+        except subprocess.CalledProcessError as e:
+            print(f"Error regenerating docs: {e}")
+            if e.stderr:
+                stderr_clean = e.stderr.encode('ascii', 'ignore').decode('ascii')
+                print(f"Error output: {stderr_clean}")
         
     elif command == "help":
         try:
