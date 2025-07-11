@@ -25,6 +25,11 @@ class GameScene extends Phaser.Scene {
     this.load.image('tree_1x', `${assetPath}tree_1x.png`);
     this.load.image('snowflake_1x', `${assetPath}snowflake_1x.png`);
     
+    // Christmas feedback symbols (1x resolution)
+    this.load.image('feedback_perfect_star_1x', `${assetPath}feedback_perfect_star_1x.png`);
+    this.load.image('feedback_close_bell_1x', `${assetPath}feedback_close_bell_1x.png`);
+    this.load.image('feedback_wrong_x_1x', `${assetPath}feedback_wrong_x_1x.png`);
+    
     // Retina (2x) images
     this.load.image('santa_2x', `${assetPath}santa_2x.png`);
     this.load.image('present_2x', `${assetPath}present_2x.png`);
@@ -33,6 +38,11 @@ class GameScene extends Phaser.Scene {
     this.load.image('tree_2x', `${assetPath}tree_2x.png`);
     this.load.image('snowflake_2x', `${assetPath}snowflake_2x.png`);
     
+    // Christmas feedback symbols (2x resolution)
+    this.load.image('feedback_perfect_star_2x', `${assetPath}feedback_perfect_star_2x.png`);
+    this.load.image('feedback_close_bell_2x', `${assetPath}feedback_close_bell_2x.png`);
+    this.load.image('feedback_wrong_x_2x', `${assetPath}feedback_wrong_x_2x.png`);
+    
     // Super Retina (3x) images  
     this.load.image('santa_3x', `${assetPath}santa_3x.png`);
     this.load.image('present_3x', `${assetPath}present_3x.png`);
@@ -40,6 +50,11 @@ class GameScene extends Phaser.Scene {
     this.load.image('star_3x', `${assetPath}star_3x.png`);
     this.load.image('tree_3x', `${assetPath}tree_3x.png`);
     this.load.image('snowflake_3x', `${assetPath}snowflake_3x.png`);
+    
+    // Christmas feedback symbols (3x resolution)
+    this.load.image('feedback_perfect_star_3x', `${assetPath}feedback_perfect_star_3x.png`);
+    this.load.image('feedback_close_bell_3x', `${assetPath}feedback_close_bell_3x.png`);
+    this.load.image('feedback_wrong_x_3x', `${assetPath}feedback_wrong_x_3x.png`);
     
     // Show loading progress
     this.load.on('progress', (value) => {
@@ -121,6 +136,7 @@ class GameScene extends Phaser.Scene {
     this.uiLayoutManager.setupBackground();
     this.uiLayoutManager.setupUI();
     this.uiLayoutManager.setupButtons();
+    this.uiLayoutManager.setupChristmasLegend();
     this.setupInlineGuessing();
   }
   
@@ -209,6 +225,46 @@ class GameScene extends Phaser.Scene {
       console.log(`Asset Debug: Available texture keys:`, Object.keys(this.textures.list));
     }
     return '__MISSING'; // Return a key that will trigger Phaser's missing texture display
+  }
+  
+  /**
+   * Get the appropriate feedback symbol image key based on device pixel ratio
+   * @param {string} symbolType - 'perfect', 'close', or 'wrong'
+   * @returns {string} The image key for the feedback symbol
+   */
+  getFeedbackImageKey(symbolType) {
+    const pixelRatio = window.devicePixelRatio || 1;
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    let suffix;
+    if (isMobile) {
+      // Force 1x for mobile devices to ensure compatibility
+      suffix = '_1x';
+    } else {
+      // Use device pixel ratio for desktop
+      if (pixelRatio >= 3) {
+        suffix = '_3x';
+      } else if (pixelRatio >= 2) {
+        suffix = '_2x';
+      } else {
+        suffix = '_1x';
+      }
+    }
+    
+    // Map feedback types to Christmas symbols
+    const symbolMap = {
+      'perfect': 'feedback_perfect_star',
+      'close': 'feedback_close_bell', 
+      'wrong': 'feedback_wrong_x'
+    };
+    
+    const baseKey = symbolMap[symbolType];
+    if (!baseKey) {
+      console.warn(`Unknown feedback symbol type: ${symbolType}`);
+      return 'feedback_wrong_x_1x'; // fallback
+    }
+    
+    return `${baseKey}${suffix}`;
   }
   
   showLoadingState() {

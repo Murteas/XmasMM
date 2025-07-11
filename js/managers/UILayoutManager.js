@@ -386,4 +386,95 @@ class UILayoutManager {
       submitBtn: this.submitBtn
     };
   }
+
+  /**
+   * Setup Christmas feedback legend - explains the new symbol meanings
+   * Positioned responsively to not interfere with game elements
+   */
+  setupChristmasLegend() {
+    const { width, height } = this.scene.cameras.main;
+    
+    // Christmas feedback legend configuration
+    const legendItems = [
+      { 
+        symbolType: 'perfect', 
+        description: '★ Perfect Match!', 
+        explanation: 'Right element in right position'
+      },
+      { 
+        symbolType: 'close', 
+        description: '🔔 Close Match!', 
+        explanation: 'Right element in wrong position'
+      }
+    ];
+    
+    // Calculate responsive legend positioning
+    const isSmallScreen = width < 500;
+    const legendWidth = isSmallScreen ? width - 20 : 280;
+    const itemHeight = 24;
+    const legendHeight = (legendItems.length * itemHeight) + 30;
+    const padding = 10;
+    
+    // Position legend in top-right corner, but below UI elements
+    const legendX = width - legendWidth - padding;
+    const legendY = 80; // Below difficulty and score
+    
+    // Create legend background
+    const legendBg = this.scene.add.rectangle(legendX, legendY, legendWidth, legendHeight, 0x000000, 0.8)
+      .setOrigin(0, 0)
+      .setStrokeStyle(2, 0xffffff, 0.3)
+      .setDepth(GameUtils.getDepthLayers().UI);
+    
+    // Legend title
+    const titleText = this.scene.add.text(legendX + legendWidth/2, legendY + 15, 'Christmas Feedback', {
+      font: `${isSmallScreen ? '14px' : '16px'} Arial`,
+      fill: '#ffffff',
+      fontStyle: 'bold'
+    }).setOrigin(0.5, 0.5).setDepth(GameUtils.getDepthLayers().UI + 0.1);
+    
+    // Create legend items
+    legendItems.forEach((item, index) => {
+      const itemY = legendY + 35 + (index * itemHeight);
+      const symbolX = legendX + 20;
+      const textX = legendX + 45;
+      
+      // Create Christmas symbol
+      try {
+        const symbolKey = this.scene.getFeedbackImageKey(item.symbolType);
+        
+        if (this.scene.textures.exists(symbolKey)) {
+          const symbol = this.scene.add.image(symbolX, itemY, symbolKey)
+            .setOrigin(0.5, 0.5)
+            .setDisplaySize(18, 18)
+            .setDepth(GameUtils.getDepthLayers().UI + 0.1);
+        } else {
+          // Fallback to text symbols
+          const fallbackSymbols = { 'perfect': '★', 'close': '🔔' };
+          this.scene.add.text(symbolX, itemY, fallbackSymbols[item.symbolType] || '?', {
+            font: '16px Arial',
+            fill: '#FFD700'
+          }).setOrigin(0.5, 0.5).setDepth(GameUtils.getDepthLayers().UI + 0.1);
+        }
+      } catch (error) {
+        console.warn(`Could not create legend symbol for ${item.symbolType}:`, error);
+        // Fallback text
+        this.scene.add.text(symbolX, itemY, item.symbolType === 'perfect' ? '★' : '🔔', {
+          font: '16px Arial',
+          fill: '#FFD700'
+        }).setOrigin(0.5, 0.5).setDepth(GameUtils.getDepthLayers().UI + 0.1);
+      }
+      
+      // Description text
+      this.scene.add.text(textX, itemY, item.description, {
+        font: `${isSmallScreen ? '11px' : '13px'} Arial`,
+        fill: '#ffffff'
+      }).setOrigin(0, 0.5).setDepth(GameUtils.getDepthLayers().UI + 0.1);
+    });
+    
+    // Store legend elements for potential future updates
+    this.legendElements = {
+      background: legendBg,
+      title: titleText
+    };
+  }
 }

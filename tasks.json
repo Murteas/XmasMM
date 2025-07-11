@@ -91,7 +91,7 @@
       "deliverables": [
         "js/scenes/GameScene.js - Loading states and validation",
         "js/scenes/MainMenu.js - Help system",
-        "js/managers/HistoryManager.js - Touch feedback"
+        "js/managers/UILayoutManager.js - Touch feedback for interactive elements"
       ],
       "successCriteria": [
         "New family members can start playing without explanation",
@@ -122,7 +122,8 @@
         "48px minimum touch targets maintained"
       ],
       "deliverables": [
-        "js/managers/HistoryManager.js - Modal and history fixes"
+        "js/managers/ElementPicker.js - Modal picker sizing and positioning",
+        "js/managers/HistoryRenderer.js - History display responsive centering"
       ],
       "successCriteria": [
         "Cancel button does not overlap with element grid",
@@ -185,9 +186,13 @@
         "Prepare codebase for feature development"
       ],
       "deliverables": [
-        "js/components/ - New component modules",
-        "js/managers/ - Refactored manager files",
-        "Updated imports across all files"
+        "js/managers/HistoryRenderer.js - Display and feedback rendering logic",
+        "js/managers/HistoryScroller.js - Scroll behavior management", 
+        "js/managers/ActiveRowManager.js - Current row interaction logic",
+        "js/managers/ElementPicker.js - Element selection modal",
+        "js/managers/GameInputHandler.js - Input processing and validation",
+        "js/managers/GameStateManager.js - Game state and logic management",
+        "js/managers/UILayoutManager.js - UI setup and responsive positioning"
       ],
       "successCriteria": [
         "No single file exceeds 500 lines",
@@ -226,7 +231,7 @@
       ],
       "deliverables": [
         "js/managers/HistoryRenderer.js - Christmas feedback symbol display (replaces ●/○ pegs)",
-        "js/scenes/GameScene.js - Feedback legend explaining Christmas symbols"
+        "js/managers/UILayoutManager.js - Christmas feedback legend explaining symbols"
       ],
       "successCriteria": [
         "New players understand feedback without Mastermind experience",
@@ -267,7 +272,7 @@
       "deliverables": [
         "js/scenes/RoundOver.js - New scene file",
         "js/managers/ScoreManager.js - Enhanced scoring",
-        "js/scenes/GameScene.js - Scene transition"
+        "js/managers/UILayoutManager.js - Scene transition and game over display"
       ],
       "successCriteria": [
         "Round over screen displays all game information clearly",
@@ -298,7 +303,8 @@
       ],
       "deliverables": [
         "js/scenes/MainMenu.js - Audio preloading",
-        "js/scenes/GameScene.js - Sound triggers",
+        "js/managers/GameInputHandler.js - Sound triggers for game events",
+        "js/managers/UILayoutManager.js - UI sound feedback",
         "assets/ - Audio files"
       ],
       "successCriteria": [

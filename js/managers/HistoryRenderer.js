@@ -153,19 +153,135 @@ class HistoryRenderer {
     const lastElementX = startX + (codeLength - 1) * elementSpacing;
     const feedbackX = lastElementX + elementSpacing + 20;
     
-    const feedbackBg = this.scene.add.rectangle(feedbackX, y, 60, 25, 0xffffff, 0.9)
+    // Create Christmas feedback symbols instead of traditional pegs
+    this.renderChristmasFeedback(feedback, feedbackX, y, depth);
+  }
+
+  /**
+   * Render Christmas-themed feedback symbols instead of traditional Mastermind pegs
+   * @param {Object} feedback - Object with black (perfect) and white (close) counts
+   * @param {number} x - X position for feedback display
+   * @param {number} y - Y position for feedback display  
+   * @param {number} depth - Rendering depth
+   */
+  renderChristmasFeedback(feedback, x, y, depth) {
+    const symbolSize = 16; // Size for each feedback symbol
+    const symbolSpacing = 18; // Spacing between symbols
+    
+    // Calculate total width needed for all symbols
+    const totalSymbols = feedback.black + feedback.white;
+    const totalWidth = totalSymbols > 0 ? (totalSymbols * symbolSpacing) - (symbolSpacing - symbolSize) : 60;
+    
+    // Background for feedback area (slightly larger than text version for symbols)
+    const feedbackBg = this.scene.add.rectangle(x, y, Math.max(totalWidth + 10, 60), 25, 0xffffff, 0.9)
       .setStrokeStyle(1, 0x333333)
       .setDepth(depth);
     
-    const feedbackText = this.scene.add.text(feedbackX, y, `●${feedback.black} ○${feedback.white}`, {
-      font: '12px Arial',
+    this.historyGroup.add(feedbackBg);
+    this.historyElements.push(feedbackBg);
+    
+    // No feedback case - show empty background
+    if (totalSymbols === 0) {
+      return;
+    }
+    
+    // Start position for symbols (centered in feedback area)
+    const startSymbolX = x - (totalWidth / 2) + (symbolSize / 2);
+    let currentX = startSymbolX;
+    
+    // Render perfect feedback symbols (Christmas Stars)
+    for (let i = 0; i < feedback.black; i++) {
+      this.renderFeedbackSymbol('perfect', currentX, y, symbolSize, depth + 0.01);
+      currentX += symbolSpacing;
+    }
+    
+    // Render close feedback symbols (Christmas Bells)
+    for (let i = 0; i < feedback.white; i++) {
+      this.renderFeedbackSymbol('close', currentX, y, symbolSize, depth + 0.01);
+      currentX += symbolSpacing;
+    }
+  }
+
+  /**
+   * Render individual Christmas feedback symbol with fallback
+   * @param {string} symbolType - 'perfect', 'close', or 'wrong'
+   * @param {number} x - X position
+   * @param {number} y - Y position
+   * @param {number} size - Symbol size
+   * @param {number} depth - Rendering depth
+   */
+  renderFeedbackSymbol(symbolType, x, y, size, depth) {
+    try {
+      // Get the appropriate image key for this device
+      const imageKey = this.scene.getFeedbackImageKey(symbolType);
+      
+      // Check if the texture exists
+      if (!this.scene.textures.exists(imageKey)) {
+        console.warn(`Feedback symbol texture not found: ${imageKey}, using fallback`);
+        this.renderFallbackFeedbackSymbol(symbolType, x, y, size, depth);
+        return;
+      }
+      
+      // Create the Christmas symbol image
+      const symbolImage = this.scene.add.image(x, y, imageKey);
+      
+      if (!symbolImage.texture || symbolImage.texture.key === '__MISSING') {
+        console.warn(`Failed to create feedback symbol: ${imageKey}, using fallback`);
+        symbolImage.destroy();
+        this.renderFallbackFeedbackSymbol(symbolType, x, y, size, depth);
+        return;
+      }
+      
+      // Scale the symbol to fit the feedback area
+      const imageScale = Math.min(size / symbolImage.width, size / symbolImage.height);
+      symbolImage.setScale(imageScale);
+      symbolImage.setOrigin(0.5).setDepth(depth);
+      
+      this.historyGroup.add(symbolImage);
+      this.historyElements.push(symbolImage);
+      
+    } catch (error) {
+      console.error(`Error creating Christmas feedback symbol ${symbolType}:`, error);
+      this.renderFallbackFeedbackSymbol(symbolType, x, y, size, depth);
+    }
+  }
+
+  /**
+   * Render fallback symbols if Christmas assets fail to load
+   * @param {string} symbolType - 'perfect', 'close', or 'wrong'
+   * @param {number} x - X position
+   * @param {number} y - Y position  
+   * @param {number} size - Symbol size
+   * @param {number} depth - Rendering depth
+   */
+  renderFallbackFeedbackSymbol(symbolType, x, y, size, depth) {
+    const colors = {
+      'perfect': 0xFFD700, // Gold for perfect
+      'close': 0xC0C0C0,   // Silver for close
+      'wrong': 0xFF6B6B    // Red for wrong
+    };
+    
+    const symbols = {
+      'perfect': '★',
+      'close': '◇', 
+      'wrong': '✕'
+    };
+    
+    // Create a colored circle background
+    const circle = this.scene.add.circle(x, y, size / 2, colors[symbolType])
+      .setStrokeStyle(1, 0x333333)
+      .setDepth(depth);
+    
+    // Add symbol text
+    const symbolText = this.scene.add.text(x, y, symbols[symbolType], {
+      font: `${Math.round(size * 0.8)}px Arial`,
       fill: '#000',
       fontStyle: 'bold'
     }).setOrigin(0.5).setDepth(depth + 0.01);
     
-    this.historyGroup.add(feedbackBg);
-    this.historyGroup.add(feedbackText);
-    this.historyElements.push(feedbackBg, feedbackText);
+    this.historyGroup.add(circle);
+    this.historyGroup.add(symbolText);
+    this.historyElements.push(circle, symbolText);
   }
 
   renderRowNumber(rowIndex, startX, y, depth) {
