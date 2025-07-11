@@ -174,26 +174,29 @@ class MainMenu extends Phaser.Scene {
       '  🎅 Santa, 🎁 Presents, 🌟 Stars, 🎄 Trees, ❄️ Snowflakes, 🪴 Mistletoe',
       '• Tap Submit when your guess is complete',
       '',
-      '💡 Reading Feedback:',
-      '• ⚫ Black peg = Right element, right position',
-      '• ⚪ White peg = Right element, wrong position',
-      '• No peg = Element not in the code',
+      '💡 Christmas Feedback Symbols:',
+      '• ⭐ Gold Star = Perfect! Right element, right spot',
+      '• 🔔 Gold Bell = Close! Right element, wrong spot', 
+      '• (No symbol) = Element not in the secret code',
+      '',
+      '📝 Example: If secret is [🎅🎁🎄🪴] and you guess [🎅🪴🎄🌟]:',
+      '   🎅⭐ 🪴🔔 🎄🔔 🌟(no symbol)',
       '',
       '🎁 Santa\'s Hint: Available after a few guesses!',
       '',
       '🏆 Win by guessing the complete code!'
     ];
     
-    const instructionText = this.add.text(width / 2, height * 0.5, instructions.join('\n'), {
-      font: '16px Arial',
+    const instructionText = this.add.text(width / 2, height * 0.52, instructions.join('\n'), {
+      font: '15px Arial',
       fill: '#fff',
       align: 'left',
-      lineSpacing: 8,
-      wordWrap: { width: width * 0.85 }
+      lineSpacing: 6,
+      wordWrap: { width: width * 0.9 }
     }).setOrigin(0.5);
     
     // Close button
-    const closeBtn = this.add.text(width / 2, height * 0.85, 'Got it! Let\'s Play! 🎄', {
+    const closeBtn = this.add.text(width / 2, height * 0.88, 'Got it! Let\'s Play! 🎄', {
       font: '20px Arial',
       fill: '#fff',
       backgroundColor: '#c0392b',

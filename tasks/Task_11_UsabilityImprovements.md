@@ -1,4 +1,4 @@
-# Task 14: Additional Usability Improvements
+# Task 11: Additional Usability Improvements
 
 **Status**: 📋 PENDING (blocked by 10)  
 **Objective**: Implement additional usability enhancements to improve family gaming experience based on testing and feedback.
@@ -34,29 +34,11 @@ After establishing core functionality, there are always opportunities to make th
   - **File**: `js/managers/UILayoutManager.js` - adjust positioning in `setupStackedHeader()` and `setupHorizontalHeader()`
   - **Implementation**: Reduce X position from current `50` to `30-40` pixels from left edge
 
-### 4. Performance and Polish
-- Optimize rendering for older devices
-- Add loading indicators where appropriate
-- Implement smooth transitions between game states
-- Add edge case handling for unusual screen sizes or orientations
-
-### 5. Family-Focused Features
-- Add quick restart option (without going back to difficulty selection)
-- Implement game statistics tracking (games played, best scores, etc.)
-- Add sharing functionality for achievements
-- Consider adding multiple color schemes or themes
-
-## Implementation Priority
-
-### High Priority
-- Enhanced touch feedback and visual clarity
-- Undo functionality for current guess
-- Better loading and transition states
-
-### Medium Priority  
-- Accessibility improvements (larger targets, high contrast)
-- Game state saving and resume
-- Performance optimizations
+### Medium Priority
+- Add confirmation dialog for "Back" button during active game
+- Implement gesture support for common actions (swipe to undo, etc.)
+- Add customizable element picker layouts
+- Consider adding difficulty-specific UI adaptations
 
 ### Low Priority
 - Statistics tracking
@@ -89,8 +71,10 @@ After establishing core functionality, there are always opportunities to make th
 - **Polish**: Small details make big differences in user experience
 
 ---
-**Previous**: Task 13 (Scoring System Review)  
+**Previous**: Task 10 (Final Testing)  
 **Next**: To be determined based on testing and feedback
 
 ## Notes
 This task serves as a placeholder for improvements discovered during development and testing. Items can be moved to separate, more specific tasks as priorities become clear.
+
+**Migration Note**: This task was renumbered from Task 14 to Task 11 to fix task numbering sequence (2025-07-10).
