@@ -7,6 +7,59 @@
 
 ## 🚨 Open Issues
 
+### **TEST-001: Testing Infrastructure Not AI-Agent Friendly** 🔧 NEEDS IMPROVEMENT
+
+**Issue ID**: TEST-001  
+**Date Reported**: July 12, 2025  
+**Severity**: Medium  
+**Status**: 🔧 Open  
+**Related Task**: Should be addressed before Testing task
+
+## Problem Description
+Current testing infrastructure requires manual gameplay to reach specific game states and doesn't provide AI agents with useful feedback or results. Tests exist but are not effectively usable for automated development workflow.
+
+## Current Testing Limitations
+- **Manual Testing Required**: Developer must manually play through games to test specific scenarios
+- **No AI-Readable Results**: Tests don't output results that AI agents can analyze
+- **Limited State Setup**: Can't easily create specific game states for testing
+- **No Automated Feedback**: Test results not captured for review and debugging
+
+## Expected Behavior
+Tests should provide:
+- **Automated State Setup**: Create specific game scenarios programmatically
+- **AI-Readable Output**: Generate test reports in files/console that AI can analyze
+- **Comprehensive Coverage**: Test all major game states without manual intervention
+- **Debug Information**: Detailed logging and state snapshots for issue identification
+
+## Impact on Development
+- **Inefficient Workflow**: Manual testing slows down development cycles
+- **Limited AI Assistance**: AI agents can't effectively use current test infrastructure
+- **Reduced Quality Assurance**: Difficult to verify fixes across all scenarios
+- **Developer Burden**: Testing becomes time-consuming manual process
+
+## Proposed Solutions
+1. **Automated Test Runners**: Scripts that set up game states and run tests
+2. **AI-Friendly Output**: JSON/text reports that AI agents can read and analyze
+3. **State Management**: Programmatic setup of specific game scenarios
+4. **Console Integration**: Better debug logging and error reporting
+5. **Test Documentation**: Clear descriptions of what each test verifies
+
+## Implementation Ideas
+```javascript
+// Example: AI-readable test output
+TestRunner.runTest('score-breakdown', {
+  setup: () => createGameState({ score: 300, won: false }),
+  verify: () => checkScoreBreakdownVisible(),
+  output: 'test-results/score-breakdown.json'
+});
+```
+
+## Priority Justification
+- **Development Efficiency**: Faster iteration cycles with automated testing
+- **AI Integration**: Enables AI agents to effectively contribute to quality assurance
+- **Code Quality**: Better test coverage leads to more reliable game experience
+- **Workflow Improvement**: Reduces manual testing burden on developers
+
 *No open issues currently*
 
 ---
