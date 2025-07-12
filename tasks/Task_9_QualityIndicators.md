@@ -1,6 +1,6 @@
 # Task 9: Add Basic Guess Quality Indicators
 
-**Status**: 📋 PENDING (blocked by 8)  
+**Status**: 🚀 READY (depends on 7)  
 **Objective**: Add simple visual indicators to help family members understand how well they're doing and learn strategy.
 > 📊 **Note**: Status managed in [tasks.json](../tasks.json). Use `python scripts/automation.py status` for current state.
 

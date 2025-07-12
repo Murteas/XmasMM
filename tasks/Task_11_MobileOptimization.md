@@ -1,6 +1,6 @@
 # Task 11: Mobile Layout Optimization
 
-**Status**: 📋 PENDING (blocked by 10)  
+**Status**: 📋 PENDING (blocked by 9)  
 **Objective**: Systematically fix mobile layout issues across all screens to ensure optimal family gaming experience on iPhones and other mobile devices.
 > 📊 **Note**: Status managed in [tasks.json](../tasks.json). Use `python scripts/automation.py status` for current state.
 

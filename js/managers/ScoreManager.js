@@ -154,6 +154,28 @@ class ScoreManager {
     };
   }
 
+  /**
+   * Calculate ongoing score during gameplay (simplified for real-time updates)
+   * @param {number} maxGuesses - Maximum guesses allowed
+   * @param {number} guessesRemaining - Guesses remaining
+   * @param {number} codeLength - Length of the code
+   */
+  calculateScore(maxGuesses, guessesRemaining, codeLength) {
+    // Simple ongoing score calculation - just track guesses used
+    const guessesUsed = maxGuesses - guessesRemaining;
+    
+    // Basic score: starts high, decreases with more guesses
+    this.currentScore = Math.max(0, 1000 - (guessesUsed * 100));
+    
+    // Apply hint penalty if used
+    if (this.hintUsed) {
+      this.currentScore -= 200;
+    }
+    
+    // Ensure score doesn't go negative
+    this.currentScore = Math.max(0, this.currentScore);
+  }
+
   reset() {
     this.currentScore = 0;
     this.hintUsed = false;
