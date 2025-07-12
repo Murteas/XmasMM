@@ -7,54 +7,6 @@
 
 ## 🚨 Open Issues
 
-### **SCORE-001: Score Calculation and Display Issues** 🚨 CRITICAL
-
-**Issue ID**: SCORE-001  
-**Date Reported**: July 12, 2025  
-**Severity**: High  
-**Status**: 🚨 Open  
-**Related Task**: RoundOverScene, ScoreManager logic
-
-## Problem Description
-Score calculation appears to be fundamentally broken. Test game with 7 guesses and 2 excellent guesses only scored 200 points with "Elements: 0" despite winning the game. Hint penalties are not being displayed or calculated. Quality indicator borders remain too muted to see clearly.
-
-## Observed Issues from Testing
-1. **Incorrect Element Points**: Shows "Elements: 0" for a winning game (should be substantial points)
-2. **Missing Complete Bonus**: No completion bonus displayed for winning game
-3. **Missing Hint Penalty**: Santa's hint used but no penalty shown in breakdown
-4. **Total Score Too Low**: 200 points for 7-guess win with 2 excellent guesses seems dramatically under-calculated
-5. **Border Visibility**: Cyan quality indicator borders still too muted on blue background
-
-## Expected Behavior (from RoundOverScene requirements)
-- **Element Points**: Should award points for correct elements found
-- **Complete Bonus**: Should give substantial bonus for winning game
-- **Hint Penalty**: Should show penalty if Santa's hint was used
-- **Transparent Calculation**: All score components should be visible and logical
-
-## Test Case Details
-- **Game Result**: Won in 7 guesses
-- **Quality Assessment**: 2 excellent guesses, multiple good guesses
-- **Displayed Score**: 200 points with "Elements: 0  Total: 200"
-- **Expected Score**: Should be 500+ points for winning game
-
-## Root Cause Investigation Needed
-- ✅ ScoreManager.calculateFinalScore() logic verification
-- ❓ Element points calculation may be broken or not called
-- ❓ Complete bonus may not be applied for winning games
-- ❓ Hint penalty tracking and display issues
-- ❓ Score breakdown data structure problems
-
-## Impact
-- **Game Balance**: Players get incorrect feedback about performance
-- **Educational Value**: Broken score transparency defeats learning purpose
-- **User Experience**: Low scores for good performance demotivates players
-- **Task Completion**: RoundOverScene requirements not properly implemented
-
-## Files to Investigate
-- `js/managers/ScoreManager.js` - Core scoring logic
-- `js/scenes/RoundOver.js` - Score display and breakdown
-- `js/scenes/GameScene.js` - Score calculation triggering
-
 ### **UI-002: Quality Indicator Border Visibility Still Poor** 🔧 NEEDS FIX
 
 **Issue ID**: UI-002  
@@ -188,6 +140,30 @@ TestRunner.runTest('score-breakdown', {
 ---
 
 ## 📋 Closed Issues
+
+### **SCORE-001: Score Calculation and Display Issues** ✅ RESOLVED
+
+**Issue ID**: SCORE-001  
+**Date Reported**: July 12, 2025  
+**Date Resolved**: July 12, 2025  
+**Severity**: High  
+**Status**: ✅ Closed  
+**Related Task**: RoundOverScene, ScoreManager logic
+
+## Problem Description (RESOLVED)
+Score calculation was fundamentally broken due to legacy scoring system being used instead of proper element-based scoring.
+
+## Root Cause Identified
+`GameInputHandler.js` was calling `ScoreManager.calculateScore()` (legacy 1000-based scoring) instead of `ScoreManager.calculateFinalScore()` (proper element-based scoring with complete bonus, hint penalties, etc.)
+
+## Solution Implemented
+- Modified `GameInputHandler.transitionToRoundOver()` to call `calculateFinalScore()` instead of legacy scoring
+- Added safety check in ScoreManager for winning games to ensure proper element points
+- This enables proper display of element points, complete bonus, speed bonus, and hint penalties
+
+## Files Modified
+- `js/managers/GameInputHandler.js` - Fixed scoring method call
+- `js/managers/ScoreManager.js` - Added safety checks for winning games
 
 ### **UI-001: Score Breakdown Not Displaying on Game Over Screen** ✅ RESOLVED
 
