@@ -11,6 +11,7 @@
       "tasks": [
         "QualityIndicators",
         "MobileLayoutOptimization",
+        "GameScreenMobileOptimization",
         "CodeArchitectureRefactoring",
         "UsabilityImprovements"
       ]
@@ -172,11 +173,53 @@
         "QualityIndicators"
       ],
       "dependents": [
+        "GameScreenMobileOptimization",
         "CodeArchitectureRefactoring",
         "UsabilityImprovements"
       ],
       "estimatedHours": 12,
       "startedAt": "2025-07-12T08:59:36.953462"
+    },
+    "GameScreenMobileOptimization": {
+      "id": "GameScreenMobileOptimization",
+      "name": "Game Screen Mobile Optimization",
+      "status": "PENDING",
+      "priority": 4.5,
+      "phase": "feature_development",
+      "description": "Optimize spacing, layout, and messaging of game screen and round over scene for mobile devices",
+      "objectives": [
+        "Maximize utilization of available vertical space in round over scene",
+        "Improve score messaging clarity and user understanding",
+        "Enhance mobile-specific layout and touch interaction",
+        "Better visual hierarchy with improved spacing ratios"
+      ],
+      "deliverables": [
+        "js/scenes/RoundOver.js - Enhanced spacing and messaging improvements",
+        "js/managers/UILayoutManager.js - Mobile-optimized layout enhancements",
+        "tests/test_mobile_expert.html - Validation testing framework"
+      ],
+      "successCriteria": [
+        "Better utilization of available vertical space in round over scene",
+        "Clear, descriptive messaging explaining scoring components",
+        "Optimal spacing and sizing for mobile touch interaction",
+        "Maintains visual consistency with overall game design",
+        "Works well across all simulated device sizes"
+      ],
+      "dependencies": [
+        "MobileLayoutOptimization"
+      ],
+      "dependents": [
+        "CodeArchitectureRefactoring"
+      ],
+      "estimatedHours": 4,
+      "requirements": {
+        "expertise": ["Expert Mobile Developer", "Phaser Expert"],
+        "focus_areas": [
+          "Round over scene spacing optimization",
+          "Score messaging clarity improvements", 
+          "Mobile touch interaction enhancements"
+        ]
+      }
     },
     "CodeArchitectureRefactoring": {
       "id": "CodeArchitectureRefactoring",

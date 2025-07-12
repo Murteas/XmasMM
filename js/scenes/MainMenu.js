@@ -157,9 +157,9 @@ class MainMenu extends Phaser.Scene {
     // Background
     const helpBg = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.9);
     
-    // Title with responsive sizing
-    const helpTitle = this.add.text(width / 2, height * 0.08, '🎄 How to Play XmasMM 🎄', {
-      font: `${Math.round(24 * layout.fontScale)}px Arial`,
+    // Title with responsive sizing - increased size
+    const helpTitle = this.add.text(width / 2, height * 0.06, '🎄 How to Play XmasMM 🎄', {
+      font: `${Math.round(28 * layout.fontScale)}px Arial`, // Increased from 24 to 28
       fill: '#fff',
       fontStyle: 'bold',
       align: 'center'
@@ -189,15 +189,15 @@ class MainMenu extends Phaser.Scene {
     ];
 
     const instructionText = this.add.text(width / 2, height * 0.38, instructions.join('\n'), {
-      font: `${Math.round(12 * layout.fontScale)}px Arial`,
+      font: `${Math.round(15 * layout.fontScale)}px Arial`, // Increased from 12 to 15
       fill: '#fff',
       align: 'left',
-      lineSpacing: Math.round(2 * layout.fontScale),
+      lineSpacing: Math.round(3 * layout.fontScale), // Increased line spacing
       wordWrap: { width: width * 0.85 }
     }).setOrigin(0.5);
 
-    // Close button - positioned to avoid overlap
-    const closeBtn = this.add.text(width / 2, height * 0.88, 'Got it! Let\'s Play! 🎄', {
+    // Close button - positioned higher to avoid Safari footer
+    const closeBtn = this.add.text(width / 2, height * 0.82, 'Got it! Let\'s Play! 🎄', {
       font: `${Math.round(16 * layout.fontScale)}px Arial`,
       fill: '#fff',
       backgroundColor: '#c0392b',
