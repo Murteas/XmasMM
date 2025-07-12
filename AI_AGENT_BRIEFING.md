@@ -40,6 +40,7 @@
 2. ✅ You can access and read `tasks.json` for task definitions
 3. ✅ The automation scripts work on your system (`python scripts/automation.py status`)
 4. ✅ Current task status matches between PROJECT_STATUS.md and automation.py status
+5. ✅ **TESTING REQUIREMENT**: Any code changes must be tested with local server (`python -m http.server 8000`) and comprehensive test suite
 
 **Only after confirming the task system is working should you proceed with actual development work.**
 
