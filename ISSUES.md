@@ -7,6 +7,77 @@
 
 ## 🚨 Open Issues
 
+### **SCORE-001: Score Calculation and Display Issues** 🚨 CRITICAL
+
+**Issue ID**: SCORE-001  
+**Date Reported**: July 12, 2025  
+**Severity**: High  
+**Status**: 🚨 Open  
+**Related Task**: RoundOverScene, ScoreManager logic
+
+## Problem Description
+Score calculation appears to be fundamentally broken. Test game with 7 guesses and 2 excellent guesses only scored 200 points with "Elements: 0" despite winning the game. Hint penalties are not being displayed or calculated. Quality indicator borders remain too muted to see clearly.
+
+## Observed Issues from Testing
+1. **Incorrect Element Points**: Shows "Elements: 0" for a winning game (should be substantial points)
+2. **Missing Complete Bonus**: No completion bonus displayed for winning game
+3. **Missing Hint Penalty**: Santa's hint used but no penalty shown in breakdown
+4. **Total Score Too Low**: 200 points for 7-guess win with 2 excellent guesses seems dramatically under-calculated
+5. **Border Visibility**: Cyan quality indicator borders still too muted on blue background
+
+## Expected Behavior (from RoundOverScene requirements)
+- **Element Points**: Should award points for correct elements found
+- **Complete Bonus**: Should give substantial bonus for winning game
+- **Hint Penalty**: Should show penalty if Santa's hint was used
+- **Transparent Calculation**: All score components should be visible and logical
+
+## Test Case Details
+- **Game Result**: Won in 7 guesses
+- **Quality Assessment**: 2 excellent guesses, multiple good guesses
+- **Displayed Score**: 200 points with "Elements: 0  Total: 200"
+- **Expected Score**: Should be 500+ points for winning game
+
+## Root Cause Investigation Needed
+- ✅ ScoreManager.calculateFinalScore() logic verification
+- ❓ Element points calculation may be broken or not called
+- ❓ Complete bonus may not be applied for winning games
+- ❓ Hint penalty tracking and display issues
+- ❓ Score breakdown data structure problems
+
+## Impact
+- **Game Balance**: Players get incorrect feedback about performance
+- **Educational Value**: Broken score transparency defeats learning purpose
+- **User Experience**: Low scores for good performance demotivates players
+- **Task Completion**: RoundOverScene requirements not properly implemented
+
+## Files to Investigate
+- `js/managers/ScoreManager.js` - Core scoring logic
+- `js/scenes/RoundOver.js` - Score display and breakdown
+- `js/scenes/GameScene.js` - Score calculation triggering
+
+### **UI-002: Quality Indicator Border Visibility Still Poor** 🔧 NEEDS FIX
+
+**Issue ID**: UI-002  
+**Date Reported**: July 12, 2025  
+**Severity**: Medium  
+**Status**: 🔧 Open  
+**Related Task**: Quality Indicators display
+
+## Problem Description
+Despite changing cyan color (#00E5FF), quality indicator borders are still too muted to see clearly against the blue Christmas background in the history view.
+
+## Current State
+- Cyan color improved visibility slightly
+- Borders still blend into blue background
+- Quality text labels are visible and working well
+
+## Proposed Solution
+Consider stronger contrast options:
+- White borders with colored text
+- Thicker border width (2px instead of 1px)
+- Alternative bright colors (yellow, lime green)
+- Dark borders with light text
+
 ### **ASSET-001: Asset Cleanup and Optimization Needed** 🔧 NEEDS CLEANUP
 
 **Issue ID**: ASSET-001  

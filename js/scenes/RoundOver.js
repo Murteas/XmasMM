@@ -64,9 +64,6 @@ class RoundOver extends Phaser.Scene {
     
     const breakdown = this.gameData.scoreManager.getScoreBreakdown();
     
-    // Debug logging to understand the breakdown structure
-    console.log('Score breakdown data:', breakdown);
-    
     // Main score
     const scoreText = this.add.text(width / 2, scoreY, `Score: ${breakdown.total} points`, {
       font: '24px Arial',
@@ -101,10 +98,6 @@ class RoundOver extends Phaser.Scene {
       font: '14px Arial',
       fill: '#ccc'
     }).setOrigin(0.5);
-    
-    // Debug log what we're displaying
-    console.log('Breakdown parts:', breakdownParts);
-    console.log('Breakdown text:', breakdownParts.join('  '));
     
     this.mainContainer.add([scoreText, breakdownText]);
   }
