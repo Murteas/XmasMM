@@ -163,6 +163,52 @@ Dependents: {', '.join(task['dependents']) if task['dependents'] else 'None'}
             issues.append("No task marked as CURRENT")
         
         return issues
+    
+    def recalculate_state(self):
+        """Recalculate currentState based on actual task statuses"""
+        # Count completed tasks
+        completed_tasks = [t for t in self.data['tasks'].values() if t['status'] == 'COMPLETED']
+        total_tasks = len(self.data['tasks'])
+        completed_count = len(completed_tasks)
+        percentage = round((completed_count / total_tasks) * 100) if total_tasks > 0 else 0
+        
+        # Update currentState
+        self.data['currentState']['overallProgress'] = {
+            'completed': completed_count,
+            'total': total_tasks,
+            'percentage': percentage
+        }
+        
+        # Find current task (first CURRENT task, or next READY task)
+        current_task = None
+        next_task = None
+        
+        for task_id, task in self.data['tasks'].items():
+            if task['status'] == 'CURRENT':
+                current_task = task_id
+                break
+        
+        # If no current task, find next ready task
+        if not current_task:
+            for task_id, task in self.data['tasks'].items():
+                if task['status'] == 'READY':
+                    current_task = task_id
+                    break
+        
+        # Find next task after current
+        if current_task:
+            # Look for dependent tasks or next in priority
+            for task_id, task in self.data['tasks'].items():
+                if (task['status'] in ['READY', 'PENDING'] and 
+                    task_id != current_task):
+                    next_task = task_id
+                    break
+        
+        self.data['currentState']['activeTask'] = current_task or 'None'
+        self.data['currentState']['nextTask'] = next_task or current_task
+        
+        self._save_tasks()
+        return True
 
 # Helper functions for AI agents
 def get_current_task_info() -> Dict:

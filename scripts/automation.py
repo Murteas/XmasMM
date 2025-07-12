@@ -74,6 +74,10 @@ def complete_task(task_id, notes=""):
         
         print(f"✅ Task {task_id} marked as completed")
         
+        # Recalculate state to fix progress tracking
+        tm.recalculate_state()
+        print("🔄 Project state recalculated")
+        
         # Auto-update documentation
         print("📝 Auto-updating documentation...")
         doc_success = update_documentation()
@@ -154,6 +158,18 @@ def main():
             print("✅ Documentation update completed")
         else:
             print("❌ Documentation update failed")
+        
+    elif command == "sync-state":
+        print("🔄 Recalculating project state...")
+        try:
+            tm = TaskManager()
+            tm.recalculate_state()
+            print("✅ Project state synchronized with actual task statuses")
+            print("📝 Updating documentation...")
+            update_documentation()
+            print("✅ Documentation updated with corrected state")
+        except Exception as e:
+            print(f"❌ Error syncing state: {e}")
         
     elif command == "regen-docs":
         print("Regenerating scripts documentation...")
