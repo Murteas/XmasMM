@@ -64,6 +64,9 @@ class RoundOver extends Phaser.Scene {
     
     const breakdown = this.gameData.scoreManager.getScoreBreakdown();
     
+    // Debug logging to understand the breakdown structure
+    console.log('Score breakdown data:', breakdown);
+    
     // Main score
     const scoreText = this.add.text(width / 2, scoreY, `Score: ${breakdown.total} points`, {
       font: '24px Arial',
@@ -73,19 +76,35 @@ class RoundOver extends Phaser.Scene {
     
     // Score breakdown
     let breakdownParts = [];
-    if (breakdown.elementPoints > 0) breakdownParts.push(`Elements: ${breakdown.elementPoints}`);
-    if (breakdown.completeBonus > 0) breakdownParts.push(`Complete: +${breakdown.completeBonus}`);
+    
+    // Always show element points (can be 0)
+    breakdownParts.push(`Elements: ${breakdown.elementPoints}`);
+    
+    // Show bonuses and penalties (can be 0 but still informative)
+    if (breakdown.completeBonus !== 0) {
+      breakdownParts.push(`Complete: +${breakdown.completeBonus}`);
+    }
     if (breakdown.speedBonus !== 0) {
       const speedLabel = breakdown.speedBonus > 0 ? 'Speed Bonus' : 'Speed Penalty';
       const speedSign = breakdown.speedBonus > 0 ? '+' : '';
       breakdownParts.push(`${speedLabel}: ${speedSign}${breakdown.speedBonus}`);
     }
-    if (breakdown.hintPenalty !== 0) breakdownParts.push(`Hint: ${breakdown.hintPenalty}`);
+    if (breakdown.hintPenalty !== 0) {
+      breakdownParts.push(`Hint: ${breakdown.hintPenalty}`);
+    }
     
+    // If no breakdown parts exist (all zeros), show basic calculation
+    if (breakdownParts.length === 1 && breakdown.elementPoints === 0) {
+      breakdownParts = [`Elements: ${breakdown.elementPoints}  Total: ${breakdown.total}`];
+    }    
     const breakdownText = this.add.text(width / 2, scoreY + 35, breakdownParts.join('  '), {
       font: '14px Arial',
       fill: '#ccc'
     }).setOrigin(0.5);
+    
+    // Debug log what we're displaying
+    console.log('Breakdown parts:', breakdownParts);
+    console.log('Breakdown text:', breakdownParts.join('  '));
     
     this.mainContainer.add([scoreText, breakdownText]);
   }
