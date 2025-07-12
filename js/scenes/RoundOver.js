@@ -244,7 +244,7 @@ class RoundOver extends Phaser.Scene {
     
     // Add subtle background highlight for quality
     const rowBackground = this.add.rectangle(width / 2, y, width - 40, 35, 0x000000, 0.3)
-      .setStrokeStyle(1, quality.color, 0.5);
+      .setStrokeStyle(1, quality.colorHex, 0.5);
     container.add(rowBackground);
     
     // Row number
@@ -493,6 +493,7 @@ class RoundOver extends Phaser.Scene {
         label: 'Excellent!',
         description: 'Amazing detective work!',
         color: '#FFD700', // Gold
+        colorHex: 0xFFD700, // Gold for Phaser
         bgColor: 'rgba(255, 215, 0, 0.1)'
       };
     } else if (elementAccuracy >= 0.50) {
@@ -500,24 +501,27 @@ class RoundOver extends Phaser.Scene {
         category: 'good',
         label: 'Good job!',
         description: 'You\'re getting closer!',
-        color: '#C0C0C0', // Silver
-        bgColor: 'rgba(192, 192, 192, 0.1)'
+        color: '#4CAF50', // Green 
+        colorHex: 0x4CAF50, // Green for Phaser
+        bgColor: 'rgba(76, 175, 80, 0.1)'
       };
     } else if (elementAccuracy >= 0.25) {
       return {
         category: 'fair',
         label: 'Getting warmer!',
         description: 'Keep up the great thinking!',
-        color: '#CD7F32', // Bronze
-        bgColor: 'rgba(205, 127, 50, 0.1)'
+        color: '#FF9800', // Orange
+        colorHex: 0xFF9800, // Orange for Phaser
+        bgColor: 'rgba(255, 152, 0, 0.1)'
       };
     } else {
       return {
         category: 'learning',
         label: 'Keep trying!',
         description: 'Every guess teaches us something!',
-        color: '#4A90E2', // Encouraging blue
-        bgColor: 'rgba(74, 144, 226, 0.1)'
+        color: '#2196F3', // Blue
+        colorHex: 0x2196F3, // Blue for Phaser
+        bgColor: 'rgba(33, 150, 243, 0.1)'
       };
     }
   }
