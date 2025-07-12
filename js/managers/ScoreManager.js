@@ -131,7 +131,10 @@ class ScoreManager {
   }
 
   updateScoreDisplay(scoreText) {
-    scoreText.setText(`Score: ${this.currentScore}`);
+    // Now displays guess progress instead of misleading score
+    const guessesUsed = this.scene.gameStateManager.guessesUsed;
+    const maxGuesses = this.scene.gameStateManager.maxGuesses;
+    scoreText.setText(`Guesses: ${guessesUsed}/${maxGuesses}`);
   }
 
   checkHintAvailability(hintBtn, hintText) {

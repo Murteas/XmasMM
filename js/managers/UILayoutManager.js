@@ -45,7 +45,7 @@ class UILayoutManager {
       fill: '#fff'
     }).setDepth(GameUtils.getDepthLayers().UI);
     
-    this.scoreText = this.scene.add.text(width - 50, 70, `Score: ${this.scene.scoreManager.getCurrentScore()}`, {
+    this.scoreText = this.scene.add.text(width - 50, 70, `Guesses: ${this.scene.gameStateManager.guessesUsed}/${this.scene.gameStateManager.maxGuesses}`, {
       font: '16px Arial',
       fill: '#fff'
     }).setOrigin(1, 0).setDepth(GameUtils.getDepthLayers().UI);
@@ -74,7 +74,7 @@ class UILayoutManager {
       fill: '#fff'
     }).setDepth(GameUtils.getDepthLayers().UI);
     
-    this.scoreText = this.scene.add.text(width - 50, 70, `Score: ${this.scene.scoreManager.getCurrentScore()}`, {
+    this.scoreText = this.scene.add.text(width - 50, 70, `Guesses: ${this.scene.gameStateManager.guessesUsed}/${this.scene.gameStateManager.maxGuesses}`, {
       font: '18px Arial',
       fill: '#fff'
     }).setOrigin(1, 0).setDepth(GameUtils.getDepthLayers().UI);
