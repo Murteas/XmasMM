@@ -1,4 +1,13 @@
-# Task Management System Sync Issue
+# 🐛 Project Issues Tracker
+
+> **For Feature Development**: Use the task system in `tasks/` folder  
+> **For System/Infrastructure Problems**: Document here for immediate attention
+
+---
+
+## 🚨 Open Issues
+
+### **TMS-001: Task Management System Sync Issue**
 
 **Issue ID**: TMS-001  
 **Date Reported**: July 12, 2025  
@@ -46,3 +55,33 @@ The task management automation system has a synchronization issue where completi
 **Reporter**: AI Agent  
 **Priority**: Fix before next major feature implementation  
 **Estimated Effort**: 2-4 hours investigation + fix
+
+---
+
+## 📋 Closed Issues
+
+*No closed issues yet*
+
+---
+
+## 📝 Issue Guidelines
+
+### When to Create an Issue (vs Task):
+- ✅ **System/Infrastructure problems** (automation, build, deployment)
+- ✅ **Blocking bugs** that prevent current development
+- ✅ **Critical fixes** that can't wait for task prioritization
+- ✅ **Technical debt** that affects multiple features
+
+### When to Create a Task Instead:
+- 📋 **Feature development** (new game functionality)
+- 📋 **Planned improvements** (can be prioritized and scheduled)
+- 📋 **Enhancement requests** (non-critical additions)
+- 📋 **Refactoring work** (planned code improvements)
+
+### Issue Format:
+- **Issue ID**: Unique identifier (TMS-001, etc.)
+- **Date Reported**: When discovered
+- **Severity**: Critical/High/Medium/Low
+- **Status**: Open/In Progress/Closed
+- **Clear Description**: Problem, symptoms, impact
+- **Next Steps**: Actionable investigation/fix steps
