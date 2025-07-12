@@ -163,8 +163,7 @@ class MainMenu extends Phaser.Scene {
       fontStyle: 'bold',
       align: 'center'
     }).setOrigin(0.5);
-    
-    // Instructions with emojis for family-friendly appeal
+      // Instructions with emojis for family-friendly appeal
     const instructions = [
       '🎯 Goal: Guess Santa\'s secret Christmas code!',
       '',
@@ -186,18 +185,18 @@ class MainMenu extends Phaser.Scene {
       '',
       '🏆 Win by guessing the complete code!'
     ];
-    
-    const instructionText = this.add.text(width / 2, height * 0.52, instructions.join('\n'), {
-      font: '15px Arial',
+
+    const instructionText = this.add.text(width / 2, height * 0.48, instructions.join('\n'), {
+      font: '14px Arial',
       fill: '#fff',
       align: 'left',
-      lineSpacing: 6,
+      lineSpacing: 5,
       wordWrap: { width: width * 0.9 }
     }).setOrigin(0.5);
-    
-    // Close button
-    const closeBtn = this.add.text(width / 2, height * 0.88, 'Got it! Let\'s Play! 🎄', {
-      font: '20px Arial',
+
+    // Close button - moved higher for mobile accessibility
+    const closeBtn = this.add.text(width / 2, height * 0.82, 'Got it! Let\'s Play! 🎄', {
+      font: '18px Arial',
       fill: '#fff',
       backgroundColor: '#c0392b',
       padding: { left: 20, right: 20, top: 10, bottom: 10 },
@@ -210,11 +209,10 @@ class MainMenu extends Phaser.Scene {
     
     // Add touch feedback to close button
     this.addButtonTouchFeedback(closeBtn, { colorTint: 0xe74c3c });
-    
-    // Add to container
+      // Add to container
     this.helpOverlay.add([helpBg, helpTitle, instructionText, closeBtn]);
     this.helpOverlay.setDepth(1000);
-    
+
     // Smooth entrance animation
     this.helpOverlay.setAlpha(0);
     this.helpOverlay.setScale(0.9);
@@ -226,11 +224,6 @@ class MainMenu extends Phaser.Scene {
       duration: 300,
       ease: 'Back.easeOut'
     });
-    
-    // Create feedback legend
-    const legendX = width * 0.1;
-    const legendY = height * 0.3;
-    this.createFeedbackLegend(legendX, legendY, this.helpOverlay);
   }
   
   hideHelpOverlay() {
