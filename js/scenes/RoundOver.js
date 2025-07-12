@@ -200,17 +200,20 @@ class RoundOver extends Phaser.Scene {
     this.historyContainer.removeAll(true);
     
     // History header
-    const headerText = this.add.text(width / 2, 60, 'Guess History', {
+    const headerText = this.add.text(width / 2, 40, 'Guess History', {
       font: '24px Arial',
       fill: '#fff',
       fontStyle: 'bold'
     }).setOrigin(0.5);
     
+    // Add quality summary for learning encouragement
+    this.createQualitySummary(width, 70);
+    
     // Scrollable history area
     const historyArea = this.add.container(0, 0);
-    const startY = 120;
+    const startY = 140;
     const rowHeight = 50;
-    const maxVisibleRows = Math.floor((height - 200) / rowHeight);
+    const maxVisibleRows = Math.floor((height - 220) / rowHeight);
     
     this.gameData.guessHistory.forEach((guess, index) => {
       const y = startY + (index * rowHeight);
@@ -235,6 +238,14 @@ class RoundOver extends Phaser.Scene {
 
   createHistoryRow(guess, feedback, rowNumber, y, container) {
     const { width } = this.cameras.main;
+    
+    // Calculate guess quality for this row
+    const quality = this.calculateGuessQuality(guess, this.gameData.secretCode);
+    
+    // Add subtle background highlight for quality
+    const rowBackground = this.add.rectangle(width / 2, y, width - 40, 35, 0x000000, 0.3)
+      .setStrokeStyle(1, quality.color, 0.5);
+    container.add(rowBackground);
     
     // Row number
     const rowText = this.add.text(30, y, `${rowNumber}:`, {
@@ -292,7 +303,14 @@ class RoundOver extends Phaser.Scene {
       feedbackX += 15;
     }
     
-    container.add(rowText);
+    // Add quality label with encouraging message
+    const qualityLabel = this.add.text(feedbackX + 20, y, quality.label, {
+      font: '12px Arial',
+      fill: quality.color,
+      fontStyle: 'bold'
+    }).setOrigin(0, 0.5);
+    
+    container.add([rowText, qualityLabel]);
   }
 
   createFeedbackSymbol(symbolType, x, y, size, container) {
@@ -457,4 +475,116 @@ class RoundOver extends Phaser.Scene {
     
     return feedbackMap[symbolType] + suffix;
   }
+
+  // Quality assessment methods for family-friendly feedback
+  calculateGuessQuality(guess, secretCode) {
+    const feedback = this.calculateElementFeedback(guess, secretCode);
+    const totalElements = secretCode.length;
+    const correctPositions = feedback.perfect;
+    const totalCorrectElements = feedback.perfect + feedback.close;
+    
+    const positionAccuracy = correctPositions / totalElements;
+    const elementAccuracy = totalCorrectElements / totalElements;
+    
+    // Quality categories with family-friendly labels
+    if (positionAccuracy >= 0.75) {
+      return {
+        category: 'excellent',
+        label: 'Excellent!',
+        description: 'Amazing detective work!',
+        color: '#FFD700', // Gold
+        bgColor: 'rgba(255, 215, 0, 0.1)'
+      };
+    } else if (elementAccuracy >= 0.50) {
+      return {
+        category: 'good',
+        label: 'Good job!',
+        description: 'You\'re getting closer!',
+        color: '#C0C0C0', // Silver
+        bgColor: 'rgba(192, 192, 192, 0.1)'
+      };
+    } else if (elementAccuracy >= 0.25) {
+      return {
+        category: 'fair',
+        label: 'Getting warmer!',
+        description: 'Keep up the great thinking!',
+        color: '#CD7F32', // Bronze
+        bgColor: 'rgba(205, 127, 50, 0.1)'
+      };
+    } else {
+      return {
+        category: 'learning',
+        label: 'Keep trying!',
+        description: 'Every guess teaches us something!',
+        color: '#4A90E2', // Encouraging blue
+        bgColor: 'rgba(74, 144, 226, 0.1)'
+      };
+    }
+  }
+
+  calculateElementFeedback(guess, code) {
+    let perfect = 0;
+    let close = 0;
+    
+    const guessCopy = [...guess];
+    const codeCopy = [...code];
+    
+    // First pass: count perfect matches
+    for (let i = guessCopy.length - 1; i >= 0; i--) {
+      if (guessCopy[i] === codeCopy[i]) {
+        perfect++;
+        guessCopy.splice(i, 1);
+        codeCopy.splice(i, 1);
+      }
+    }
+    
+    // Second pass: count close matches
+    for (let i = 0; i < guessCopy.length; i++) {
+      const index = codeCopy.indexOf(guessCopy[i]);
+      if (index !== -1) {
+        close++;
+        codeCopy.splice(index, 1);
+      }
+    }
+    
+    return { perfect, close };
+  }
+
+  createQualitySummary(width, y) {
+    // Calculate quality distribution across all guesses
+    const qualityStats = {
+      excellent: 0,
+      good: 0,
+      fair: 0,
+      learning: 0
+    };
+    
+    this.gameData.guessHistory.forEach(guess => {
+      const quality = this.calculateGuessQuality(guess, this.gameData.secretCode);
+      qualityStats[quality.category]++;
+    });
+    
+    const totalGuesses = this.gameData.guessHistory.length;
+    let summaryText = '';
+    
+    if (qualityStats.excellent > 0) {
+      summaryText = `Amazing! ${qualityStats.excellent} excellent guess${qualityStats.excellent > 1 ? 'es' : ''}!`;
+    } else if (qualityStats.good > 0) {
+      summaryText = `Great job! ${qualityStats.good} good guess${qualityStats.good > 1 ? 'es' : ''}!`;
+    } else if (qualityStats.fair > 0) {
+      summaryText = `You're learning! ${qualityStats.fair} warm guess${qualityStats.fair > 1 ? 'es' : ''}!`;
+    } else {
+      summaryText = 'Every guess teaches us something new!';
+    }
+    
+    const summaryLabel = this.add.text(width / 2, y, summaryText, {
+      font: '14px Arial',
+      fill: '#4CAF50',
+      fontStyle: 'italic'
+    }).setOrigin(0.5);
+    
+    this.historyContainer.add(summaryLabel);
+  }
+
+  // ...existing code...
 }
