@@ -2,7 +2,7 @@
   "project": {
     "name": "XmasMM",
     "version": "1.0.0",
-    "lastUpdated": "2025-07-11T20:11:08.580580"
+    "lastUpdated": "2025-07-11T20:27:05.890383"
   },
   "phases": {
     "feature_development": {
@@ -20,7 +20,8 @@
       "status": "PENDING",
       "tasks": [
         "10",
-        "11"
+        "11",
+        "12"
       ]
     }
   },
@@ -100,7 +101,7 @@
     "8": {
       "id": "8",
       "name": "Audio Integration",
-      "status": "READY",
+      "status": "CURRENT",
       "priority": 8,
       "phase": "feature_development",
       "description": "Add Christmas-themed audio effects and background music",
@@ -128,7 +129,8 @@
       "dependents": [
         "9"
       ],
-      "estimatedHours": 8
+      "estimatedHours": 8,
+      "startedAt": "2025-07-11T20:27:05.890383"
     },
     "9": {
       "id": "9",
@@ -195,9 +197,45 @@
     },
     "11": {
       "id": "11",
-      "name": "Usability Improvements",
+      "name": "Mobile Layout Optimization",
       "status": "PENDING",
       "priority": 11,
+      "phase": "finalization",
+      "description": "Systematically fix mobile layout issues across all screens",
+      "objectives": [
+        "Fix button positioning issues on mobile devices",
+        "Create mobile-responsive design system",
+        "Ensure all screens work on iPhone XR and similar devices",
+        "Add mobile layout utility functions"
+      ],
+      "deliverables": [
+        "js/utils/GameUtils.js - Mobile layout utility functions",
+        "js/scenes/DifficultySelection.js - Fixed confirm button positioning",
+        "js/scenes/RoundOver.js - Fixed action button layout for mobile",
+        "js/managers/UILayoutManager.js - Fixed back button and game over positioning",
+        "index.html - Proper mobile viewport meta tag",
+        "tests/test_mobile_layout.html - Mobile layout testing"
+      ],
+      "successCriteria": [
+        "All critical buttons visible without scrolling on iPhone XR",
+        "Touch targets meet 44px minimum size requirement",
+        "Consistent mobile experience across all game screens",
+        "No UI elements cut off by browser chrome",
+        "Family members can navigate easily on mobile"
+      ],
+      "dependencies": [
+        "10"
+      ],
+      "dependents": [
+        "12"
+      ],
+      "estimatedHours": 10
+    },
+    "12": {
+      "id": "12",
+      "name": "Usability Improvements",
+      "status": "PENDING",
+      "priority": 12,
       "phase": "finalization",
       "description": "Final accessibility and polish improvements",
       "objectives": [
@@ -217,7 +255,7 @@
         "Polished professional user experience"
       ],
       "dependencies": [
-        "10"
+        "11"
       ],
       "dependents": [],
       "estimatedHours": 8
@@ -269,7 +307,7 @@
     }
   },
   "currentState": {
-    "activeTask": "6",
+    "activeTask": "8",
     "nextTask": "8",
     "blockedTasks": [],
     "readyTasks": [
