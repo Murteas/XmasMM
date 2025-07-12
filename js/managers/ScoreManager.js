@@ -132,7 +132,7 @@ class ScoreManager {
 
   updateScoreDisplay(scoreText) {
     // Now displays guess progress instead of misleading score
-    const guessesUsed = this.scene.gameStateManager.guessesUsed;
+    const guessesUsed = this.scene.gameStateManager.maxGuesses - this.scene.gameStateManager.guessesRemaining;
     const maxGuesses = this.scene.gameStateManager.maxGuesses;
     scoreText.setText(`Guesses: ${guessesUsed}/${maxGuesses}`);
   }

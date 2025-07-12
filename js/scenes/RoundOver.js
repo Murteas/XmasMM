@@ -75,7 +75,7 @@ class RoundOver extends Phaser.Scene {
     let breakdownParts = [];
     
     // Calculate and show detailed breakdown using symbols families understand
-    const finalFeedback = this.scene.get('GameScene').scoreManager.calculateElementFeedback(
+    const finalFeedback = this.gameData.scoreManager.calculateElementFeedback(
       this.gameData.finalGuess, 
       this.gameData.secretCode
     );
