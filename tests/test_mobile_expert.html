@@ -7,12 +7,15 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Expert Mobile Layout Test - XmasMM</title>
+  <link rel="icon" type="image/png" href="../assets/icon.png">
+  <link rel="apple-touch-icon" href="../assets/icon.png">
   
   <!-- Phaser.js -->
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
   
   <!-- Game Scripts -->
-  <script src="../js/utils/GameUtils.js"></script>
+  <script src="../js/utils/TestConfig.js?v=1"></script>
+  <script src="../js/utils/GameUtils.js?v=1"></script>
   <script src="../js/managers/GameStateManager.js"></script>
   <script src="../js/managers/ScoreManager.js"></script>
   <script src="../js/managers/UILayoutManager.js"></script>
@@ -42,7 +45,25 @@
       background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
       color: white;
       font-family: Arial, sans-serif;
-      overflow: hidden;
+      overflow: auto; /* Allow scrolling when device is scaled */
+      min-height: 100vh;
+    }
+    
+    #game-container {
+      transition: all 0.3s ease;
+      background: #000;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+    
+    /* Override main CSS for device simulation */
+    #game-container.device-simulation canvas {
+      position: relative !important;
+      width: 100% !important;
+      height: 100% !important;
+      max-width: none !important;
+      max-height: none !important;
+      top: 0 !important;
+      left: 0 !important;
     }
     
     .test-overlay {
@@ -175,6 +196,7 @@
     </div>
     
     <div class="test-row">
+      <button class="device-button" onclick="resetToFullScreen()" style="background: #9C27B0;">🖥️ Full Screen</button>
       <button class="device-button" onclick="testTouchTargets()">👆 Touch Targets</button>
       <button class="device-button" onclick="testSafeAreas()">📐 Safe Areas</button>
       <button class="device-button" onclick="testTextWrapping()">📝 Text Wrap</button>
@@ -244,32 +266,248 @@
       document.querySelectorAll('.device-button').forEach(btn => btn.classList.remove('active'));
       event.target.classList.add('active');
       
-      // Simulate device viewport
+      console.log(`🔄 Setting device size: ${width}×${height}`);
+      
+      // Simulate device viewport with proper scaling
       const container = document.getElementById('game-container');
+      const body = document.body;
+      
+      // Reset any previous transformations
+      container.style.transform = '';
+      container.style.transformOrigin = '';
+      container.style.width = '';
+      container.style.height = '';
+      container.style.margin = '';
+      container.style.border = '';
+      container.style.borderRadius = '';
+      container.style.position = '';
+      container.style.boxShadow = '';
+      
+      // Calculate scale to fit device in viewport if needed
+      const maxWidth = window.innerWidth - 40; // Leave margin
+      const maxHeight = window.innerHeight - 200; // Leave space for test overlay
+      
+      let scale = 1;
+      if (width > maxWidth || height > maxHeight) {
+        const scaleX = maxWidth / width;
+        const scaleY = maxHeight / height;
+        scale = Math.min(scaleX, scaleY, 1); // Don't scale up, only down
+        console.log(`📱 Scaling device to ${(scale * 100).toFixed(1)}% to fit viewport`);
+      }
+      
+      // Apply device simulation styles
       container.style.width = width + 'px';
       container.style.height = height + 'px';
-      container.style.margin = '0 auto';
+      container.style.margin = '100px auto 20px auto'; // Top margin for test overlay
       container.style.border = '2px solid #444';
+      container.style.borderRadius = '12px'; // Make it look like a phone
+      container.style.overflow = 'hidden';
+      container.style.position = 'relative';
       
+      // Add CSS class for device simulation
+      container.classList.add('device-simulation');
+      
+      if (scale < 1) {
+        container.style.transform = `scale(${scale})`;
+        container.style.transformOrigin = 'center top';
+      }
+      
+      // DON'T change viewport meta - this can cause conflicts
+      // Instead, let Phaser handle the scaling internally
+      
+      // Resize game if it exists
       if (game) {
+        console.log(`🎮 Resizing Phaser game to ${width}×${height}`);
+        
+        // IMPORTANT: Override GameUtils viewport detection for device simulation
+        if (typeof GameUtils !== 'undefined') {
+          GameUtils._simulatedViewport = {
+            width: width,
+            height: height,
+            devicePixelRatio: window.devicePixelRatio || 1,
+            aspectRatio: width / height,
+            isSmallDevice: width <= 375,
+            isStandardDevice: width >= 414 && width <= 428,
+            orientation: height > width ? 'portrait' : 'landscape'
+          };
+          console.log(`🎯 Set simulated viewport for GameUtils:`, GameUtils._simulatedViewport);
+        }
+        
+        // First, update the game's canvas size
         game.scale.resize(width, height);
+        
+        // Force camera bounds update
+        setTimeout(() => {
+          if (game.scene && game.scene.manager) {
+            const activeScenes = game.scene.manager.getScenes(true);
+            activeScenes.forEach(scene => {
+              if (scene.cameras && scene.cameras.main) {
+                console.log(`🎥 Updating camera for scene ${scene.scene.key}: ${width}×${height}`);
+                scene.cameras.main.setSize(width, height);
+                scene.cameras.main.setBounds(0, 0, width, height);
+              }
+            });
+          }
+        }, 25);
+        
+        // Force canvas to match container size exactly
+        setTimeout(() => {
+          const canvas = document.querySelector('canvas');
+          if (canvas) {
+            // Override CSS !important rules by setting them with !important
+            canvas.style.setProperty('width', width + 'px', 'important');
+            canvas.style.setProperty('height', height + 'px', 'important');
+            canvas.style.setProperty('position', 'relative', 'important');
+            canvas.style.setProperty('top', '0', 'important');
+            canvas.style.setProperty('left', '0', 'important');
+            canvas.style.setProperty('max-width', width + 'px', 'important');
+            canvas.style.setProperty('max-height', height + 'px', 'important');
+            
+            console.log(`🎯 Canvas resized to ${width}×${height}`);
+            console.log(`🎯 Canvas computed style: ${getComputedStyle(canvas).width} × ${getComputedStyle(canvas).height}`);
+          } else {
+            console.warn('❌ Canvas not found for resizing');
+          }
+        }, 50);
+        
+        // Trigger a layout update in the current scene
+        if (game.scene.isActive('MainMenu')) {
+          const scene = game.scene.getScene('MainMenu');
+          if (scene && scene.updateLayout) {
+            scene.updateLayout();
+          }
+        }
+        
+        // Force a scene refresh to ensure proper positioning
+        safeSceneRefresh(game, 200); // Longer delay for camera updates
       }
       
       updateDeviceMetrics();
+      
+      // Update test results with device info
+      setTimeout(() => {
+        const canvas = document.querySelector('canvas');
+        const canvasInfo = canvas ? 
+          `${getComputedStyle(canvas).width} × ${getComputedStyle(canvas).height}` : 
+          'Not found';
+        
+        document.getElementById('testResults').innerHTML = `
+          <strong>Device Simulation Active:</strong><br>
+          📱 Size: ${width}×${height}px<br>
+          📐 Scale: ${(scale * 100).toFixed(1)}%<br>
+          🎯 Container: ${container.style.width} × ${container.style.height}<br>
+          🖥️ Viewport: ${window.innerWidth}×${window.innerHeight}<br>
+          🎮 Canvas: ${canvasInfo}<br>
+          🔍 Canvas Element: ${canvas ? 'Found' : 'Missing'}
+        `;
+      }, 100);
+    }
+
+    // Helper function to safely refresh Phaser scenes
+    function safeSceneRefresh(gameInstance, delay = 100) {
+      if (!gameInstance) {
+        console.log('🔄 No game instance for scene refresh');
+        return;
+      }
+      
+      setTimeout(() => {
+        try {
+          console.log('🔄 Scene refresh starting - GameUtils viewport check...');
+          const currentViewport = GameUtils.getMobileViewport();
+          console.log('📱 Current GameUtils viewport:', currentViewport);
+          
+          if (gameInstance && 
+              gameInstance.scene && 
+              gameInstance.scene.manager && 
+              gameInstance.scene.manager.scenes && 
+              gameInstance.scene.manager.scenes.length > 0) {
+            
+            console.log(`🔄 Found ${gameInstance.scene.manager.scenes.length} scenes`);
+            
+            // Get the currently active scene
+            const activeScenes = gameInstance.scene.manager.getScenes(true);
+            console.log(`🔄 Active scenes:`, activeScenes.map(s => s.scene.key));
+            
+            if (activeScenes.length > 0) {
+              const activeScene = activeScenes[0];
+              console.log(`🔄 Refreshing active scene: ${activeScene.scene.key}`);
+              
+              // Log camera info before restart
+              if (activeScene.cameras && activeScene.cameras.main) {
+                console.log('📸 Current camera size:', {
+                  width: activeScene.cameras.main.width,
+                  height: activeScene.cameras.main.height
+                });
+              }
+              
+              // Force scene to restart with new viewport
+              const sceneKey = activeScene.scene.key;
+              const sceneData = activeScene.scene.settings.data || {};
+              
+              console.log(`🎯 About to restart scene ${sceneKey} with viewport:`, currentViewport);
+              
+              // Restart the scene completely
+              gameInstance.scene.restart(sceneKey, sceneData);
+              console.log(`✅ Scene ${sceneKey} restart command sent`);
+              
+              // Check after restart
+              setTimeout(() => {
+                const newActiveScenes = gameInstance.scene.manager.getScenes(true);
+                console.log(`📋 Post-restart active scenes:`, newActiveScenes.map(s => s.scene.key));
+                
+                if (newActiveScenes.length > 0 && newActiveScenes[0].cameras && newActiveScenes[0].cameras.main) {
+                  console.log('📸 New camera size:', {
+                    width: newActiveScenes[0].cameras.main.width,
+                    height: newActiveScenes[0].cameras.main.height
+                  });
+                }
+              }, 100);
+            }
+          } else {
+            console.log('🔄 Game or scene manager not ready for refresh');
+          }
+        } catch (error) {
+          console.warn('Scene refresh error:', error.message);
+        }
+      }, delay);
     }
 
     // Update device metrics display
     function updateDeviceMetrics() {
-      const viewport = GameUtils.getMobileViewport();
-      const layout = GameUtils.getResponsiveLayout(viewport.width, viewport.height);
-      const safeArea = GameUtils.getSafeAreaInsets();
+      // Enhanced safety check for GameUtils availability
+      console.log('Checking GameUtils...', typeof GameUtils);
+      if (typeof GameUtils !== 'undefined') {
+        console.log('GameUtils methods:', Object.getOwnPropertyNames(GameUtils));
+      }
       
-      document.getElementById('deviceMetrics').innerHTML = `
-        <strong>Viewport:</strong> ${viewport.width}×${viewport.height} (${viewport.aspectRatio.toFixed(2)}:1)<br>
-        <strong>Font Scale:</strong> ${layout.fontScale}x | <strong>Device Type:</strong> ${viewport.isSmallDevice ? 'Small' : 'Standard'}<br>
-        <strong>Safe Area:</strong> T:${safeArea.top} R:${safeArea.right} B:${safeArea.bottom} L:${safeArea.left}<br>
-        <strong>Layout Positions:</strong> Header:${layout.headerY} Primary:${layout.primaryButtonY} Secondary:${layout.secondaryButtonY}
-      `;
+      if (typeof GameUtils === 'undefined' || !GameUtils.getMobileViewport) {
+        document.getElementById('deviceMetrics').innerHTML = `
+          <strong>Loading GameUtils...</strong><br>
+          Waiting for game scripts to initialize...<br>
+          <small>GameUtils type: ${typeof GameUtils}</small>
+        `;
+        return;
+      }
+      
+      try {
+        const viewport = GameUtils.getMobileViewport();
+        const layout = GameUtils.getResponsiveLayout(viewport.width, viewport.height);
+        const safeArea = GameUtils.getSafeAreaInsets();
+        
+        document.getElementById('deviceMetrics').innerHTML = `
+          <strong>Viewport:</strong> ${viewport.width}×${viewport.height} (${viewport.aspectRatio.toFixed(2)}:1)<br>
+          <strong>Font Scale:</strong> ${layout.fontScale}x | <strong>Device Type:</strong> ${viewport.isSmallDevice ? 'Small' : 'Standard'}<br>
+          <strong>Safe Area:</strong> T:${safeArea.top} R:${safeArea.right} B:${safeArea.bottom} L:${safeArea.left}<br>
+          <strong>Touch Targets:</strong> Min ${layout.minTouchTarget}px | <strong>Button Scale:</strong> ${layout.buttonScale}x
+        `;
+      } catch (error) {
+        document.getElementById('deviceMetrics').innerHTML = `
+          <strong>Error:</strong> ${error.message}<br>
+          Check console for details...<br>
+          <small>GameUtils: ${typeof GameUtils}</small>
+        `;
+        console.error('GameUtils error:', error);
+      }
     }
 
     // Test functions
@@ -280,16 +518,28 @@
     }
 
     function runLayoutValidation() {
-      const results = [];
-      const viewport = GameUtils.getMobileViewport();
-      const layout = GameUtils.getResponsiveLayout(viewport.width, viewport.height);
+      console.log('Running layout validation...', typeof GameUtils);
       
-      // Check button positioning
-      if (layout.primaryButtonY > viewport.height - 100) {
-        results.push('❌ Primary button too low');
-      } else {
-        results.push('✅ Primary button positioned correctly');
+      if (typeof GameUtils === 'undefined' || !GameUtils.getMobileViewport) {
+        document.getElementById('testResults').innerHTML = `
+          GameUtils not loaded yet. Please wait...<br>
+          <small>Type: ${typeof GameUtils}</small><br>
+          <button onclick="updateDeviceMetrics(); runLayoutValidation();" style="margin-top:5px; padding:2px 6px; font-size:9px;">🔄 Retry</button>
+        `;
+        return;
       }
+      
+      try {
+        const results = [];
+        const viewport = GameUtils.getMobileViewport();
+        const layout = GameUtils.getResponsiveLayout(viewport.width, viewport.height);
+        
+        // Check button positioning
+        if (layout.primaryButtonY > viewport.height - 100) {
+          results.push('❌ Primary button too low');
+        } else {
+          results.push('✅ Primary button positioned correctly');
+        }
       
       // Check safe areas
       const safeArea = GameUtils.getSafeAreaInsets();
@@ -307,6 +557,13 @@
       }
       
       document.getElementById('testResults').innerHTML = results.join('<br>');
+      } catch (error) {
+        document.getElementById('testResults').innerHTML = `
+          <strong>Layout Validation Error:</strong> ${error.message}<br>
+          Check console for details...
+        `;
+        console.error('Layout validation error:', error);
+      }
     }
 
     function runPerformanceTest() {
@@ -349,15 +606,28 @@
     }
 
     function testSafeAreas() {
-      const safeArea = GameUtils.getSafeAreaInsets();
-      const hasNotch = safeArea.top > 20 || safeArea.bottom > 20;
+      if (typeof GameUtils === 'undefined' || !GameUtils.getSafeAreaInsets) {
+        document.getElementById('testResults').innerHTML = 'GameUtils not loaded yet. Please wait...';
+        return;
+      }
       
-      document.getElementById('testResults').innerHTML = `
-        <strong>Safe Area Detection:</strong><br>
-        ${hasNotch ? '📱' : '📱'} Device: ${hasNotch ? 'Has notch/home indicator' : 'Standard bezels'}<br>
-        📐 Insets: ${safeArea.top}/${safeArea.right}/${safeArea.bottom}/${safeArea.left}<br>
-        ${safeArea.top > 0 ? '✅' : '❓'} CSS env() support: ${safeArea.top > 0 ? 'Working' : 'Check implementation'}
-      `;
+      try {
+        const safeArea = GameUtils.getSafeAreaInsets();
+        const hasNotch = safeArea.top > 20 || safeArea.bottom > 20;
+        
+        document.getElementById('testResults').innerHTML = `
+          <strong>Safe Area Detection:</strong><br>
+          ${hasNotch ? '📱' : '📱'} Device: ${hasNotch ? 'Has notch/home indicator' : 'Standard bezels'}<br>
+          📐 Insets: ${safeArea.top}/${safeArea.right}/${safeArea.bottom}/${safeArea.left}<br>
+          ${safeArea.top > 0 ? '✅' : '❓'} CSS env() support: ${safeArea.top > 0 ? 'Working' : 'Check implementation'}
+        `;
+      } catch (error) {
+        document.getElementById('testResults').innerHTML = `
+          <strong>Safe Area Test Error:</strong> ${error.message}<br>
+          Check console for details...
+        `;
+        console.error('Safe area test error:', error);
+      }
     }
 
     function testTextWrapping() {
@@ -372,19 +642,131 @@
 
     // Initialize
     window.addEventListener('load', () => {
-      game = new Phaser.Game(config);
-      updateFPS();
-      updateDeviceMetrics();
+      console.log('Window loaded, checking scripts...');
       
-      // Auto-hide overlay after 3 seconds
+      // Hide TEST MODE overlay that blocks the Tests button
       setTimeout(() => {
-        if (testOverlayVisible) toggleTestOverlay();
-      }, 3000);
+        // Try multiple methods to find and hide the TEST MODE overlay
+        const overlays = document.querySelectorAll('div');
+        overlays.forEach(overlay => {
+          const style = window.getComputedStyle(overlay);
+          const text = overlay.textContent || overlay.innerText;
+          
+          if ((text.includes('TEST MODE') || text.includes('Screen:') || text.includes('DPR:')) && 
+              (style.position === 'fixed' || style.position === 'absolute') &&
+              (overlay.style.zIndex > 1000 || style.zIndex > 1000)) {
+            overlay.style.display = 'none';
+            console.log('🎯 Hidden TEST MODE overlay:', text.substring(0, 50));
+          }
+        });
+        
+        // Also try to hide by common test overlay patterns
+        const testOverlays = document.querySelectorAll('[style*="position: fixed"], [style*="z-index"]');
+        testOverlays.forEach(overlay => {
+          const text = overlay.textContent || '';
+          if (text.includes('TEST') || text.includes('Screen:') || text.includes('DPR:')) {
+            overlay.style.display = 'none';
+            console.log('🎯 Hidden test overlay via pattern matching');
+          }
+        });
+      }, 200);
+      
+      // Keep checking for test overlays that might appear later
+      setInterval(() => {
+        const overlays = document.querySelectorAll('div[style*="position: fixed"], div[style*="position: absolute"]');
+        overlays.forEach(overlay => {
+          const text = overlay.textContent || '';
+          if (text.includes('TEST MODE') || text.includes('Screen:') || text.includes('DPR:')) {
+            if (overlay.style.display !== 'none') {
+              overlay.style.display = 'none';
+              console.log('🔄 Continuously hidden test overlay');
+            }
+          }
+        });
+      }, 1000);
+      
+      // Debug script loading
+      console.log('Available classes:');
+      console.log('- Phaser:', typeof Phaser);
+      console.log('- TestConfig:', typeof TestConfig);
+      console.log('- GameUtils:', typeof GameUtils);
+      console.log('- GameStateManager:', typeof GameStateManager);
+      console.log('- MainMenu:', typeof MainMenu);
+      
+      // Debug GameUtils methods specifically
+      if (typeof GameUtils !== 'undefined') {
+        console.log('GameUtils methods:', Object.getOwnPropertyNames(GameUtils));
+        console.log('GameUtils prototype methods:', Object.getOwnPropertyNames(GameUtils.prototype));
+        console.log('All GameUtils properties:', Object.getOwnPropertyDescriptors(GameUtils));
+        console.log('Checking mobile methods:');
+        console.log('- getMobileViewport:', typeof GameUtils.getMobileViewport);
+        console.log('- getResponsiveLayout:', typeof GameUtils.getResponsiveLayout);
+        console.log('- getSafeAreaInsets:', typeof GameUtils.getSafeAreaInsets);
+        
+        // Test calling the method
+        try {
+          const testViewport = GameUtils.getMobileViewport();
+          console.log('✅ getMobileViewport works:', testViewport);
+        } catch (error) {
+          console.error('❌ getMobileViewport failed:', error);
+        }
+      }
+      
+      // Check if GameUtils.js actually loaded
+      if (typeof GameUtils === 'undefined') {
+        console.error('❌ GameUtils is undefined - script failed to load');
+        document.getElementById('deviceMetrics').innerHTML = `
+          <strong>❌ GameUtils Script Failed</strong><br>
+          Check Network tab for 404 errors<br>
+          <small>Path: ../js/utils/GameUtils.js</small>
+        `;
+        document.getElementById('testResults').innerHTML = `
+          <strong>Script Loading Debug:</strong><br>
+          Phaser: ${typeof Phaser}<br>
+          TestConfig: ${typeof TestConfig}<br>
+          GameUtils: ${typeof GameUtils}<br>
+          Check browser Network tab for failed requests
+        `;
+        return;
+      }
+      
+      // Wait longer for all scripts to initialize
+      setTimeout(() => {
+        try {
+          console.log('Initializing game...');
+          game = new Phaser.Game(config);
+          updateFPS();
+          updateDeviceMetrics();
+          
+          // Auto-hide overlay after 5 seconds
+          setTimeout(() => {
+            if (testOverlayVisible) toggleTestOverlay();
+          }, 5000);
+        } catch (error) {
+          console.error('Game initialization error:', error);
+          document.getElementById('testResults').innerHTML = `
+            <strong>Initialization Error:</strong> ${error.message}<br>
+            Check console for details...
+          `;
+        }
+      }, 500);
     });
 
     // Handle viewport changes
     window.addEventListener('resize', () => {
+      console.log('🔄 Window resized, updating metrics');
       updateDeviceMetrics();
+      
+      // If in full screen mode, resize game to match
+      const container = document.getElementById('game-container');
+      if (container.style.width === '100vw' || !container.style.width) {
+        if (game) {
+          const width = window.innerWidth;
+          const height = window.innerHeight;
+          console.log(`🎮 Auto-resizing game to: ${width}×${height}`);
+          game.scale.resize(width, height);
+        }
+      }
     });
 
     // Prevent zoom on mobile
@@ -402,6 +784,80 @@
       }
       lastTouchEnd = now;
     }, false);
+
+    // Reset to full screen mode
+    function resetToFullScreen() {
+      document.querySelectorAll('.device-button').forEach(btn => btn.classList.remove('active'));
+      
+      console.log('🖥️ Resetting to full screen mode');
+      
+      const container = document.getElementById('game-container');
+      
+      // Reset all simulation styles completely
+      container.style.width = '100vw';
+      container.style.height = '100vh';
+      container.style.margin = '0';
+      container.style.border = 'none';
+      container.style.borderRadius = '0';
+      container.style.transform = '';
+      container.style.transformOrigin = '';
+      container.style.overflow = 'hidden';
+      container.style.position = 'static';
+      container.style.boxShadow = 'none';
+      
+      // Remove CSS class for device simulation
+      container.classList.remove('device-simulation');
+      
+      // DON'T reset viewport meta - leave it as originally set
+      
+      // Reset body overflow
+      document.body.style.overflow = 'hidden';
+      
+      // Resize game back to full screen
+      if (game) {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        console.log(`🎮 Resizing game back to full screen: ${width}×${height}`);
+        
+        // Clear simulated viewport
+        if (typeof GameUtils !== 'undefined') {
+          GameUtils._simulatedViewport = null;
+          console.log(`🎯 Cleared simulated viewport for GameUtils`);
+        }
+        
+        game.scale.resize(width, height);
+        
+        // Reset canvas styles to original
+        setTimeout(() => {
+          const canvas = document.querySelector('canvas');
+          if (canvas) {
+            // Restore original CSS rules with !important
+            canvas.style.setProperty('width', '100vw', 'important');
+            canvas.style.setProperty('height', '100vh', 'important');
+            canvas.style.setProperty('position', 'fixed', 'important');
+            canvas.style.setProperty('top', '0', 'important');
+            canvas.style.setProperty('left', '0', 'important');
+            canvas.style.removeProperty('max-width');
+            canvas.style.removeProperty('max-height');
+            
+            console.log(`🎯 Canvas reset to full screen: ${width}×${height}`);
+            console.log(`🎯 Canvas computed style: ${getComputedStyle(canvas).width} × ${getComputedStyle(canvas).height}`);
+          }
+        }, 50);
+        
+        // Trigger scene refresh
+        safeSceneRefresh(game, 150);
+      }
+      
+      updateDeviceMetrics();
+      
+      document.getElementById('testResults').innerHTML = `
+        <strong>Full Screen Mode:</strong><br>
+        🖥️ Device simulation disabled<br>
+        📱 Using actual device viewport<br>
+        🎯 Testing native mobile experience
+      `;
+    }
   </script>
 </body>
 </html>

@@ -54,9 +54,14 @@ class GameUtils {
       MODAL: 15
     };
   }
-
   // Expert Mobile Layout System
   static getMobileViewport() {
+    // Use simulated viewport if set (for device simulation testing)
+    if (this._simulatedViewport) {
+      console.log('🎯 Using simulated viewport:', this._simulatedViewport);
+      return this._simulatedViewport;
+    }
+    
     const viewport = {
       width: window.innerWidth,
       height: window.innerHeight,
@@ -66,13 +71,13 @@ class GameUtils {
       isStandardDevice: window.innerWidth >= 414 && window.innerWidth <= 428, // iPhone XR to Pro Max
       orientation: window.innerHeight > window.innerWidth ? 'portrait' : 'landscape'
     };
-    
+
     // Add performance throttling for viewport changes
     if (!this._lastViewportCheck || Date.now() - this._lastViewportCheck > 100) {
       this._cachedViewport = viewport;
       this._lastViewportCheck = Date.now();
     }
-    
+
     return this._cachedViewport || viewport;
   }
 

@@ -34,6 +34,8 @@
 - **Use Git Bash terminal** - Provides better cross-platform consistency for AI agents
 - **Check TECHNICAL_GUIDELINES.md** - Critical terminal and development rules
 - **Never use `isBackground: true`** for servers or long-running processes
+- **Always test changes** - Use the comprehensive test suite in `TESTING.md` before considering any implementation complete
+- **CRITICAL: Server management** - Always stop development servers (`tasklist | grep python` → `taskkill //PID [PID] //F`) before running new terminal commands
 
 *For Git Bash command syntax and technical details, see `TECHNICAL_GUIDELINES.md`*
 
@@ -43,7 +45,10 @@
 3. ✅ You can access and read `tasks.json` for task definitions
 4. ✅ The automation scripts work on your system (`python scripts/automation.py status`)
 5. ✅ Current task status matches between PROJECT_STATUS.md and automation.py status
-6. ✅ **TESTING REQUIREMENT**: Any code changes must be tested with local server (`python -m http.server 8000`) and comprehensive test suite
+6. ✅ **TESTING REQUIREMENT**: Any code changes must be tested with local server (`python -m http.server 8000`) and comprehensive test suite in `TESTING.md`
+   - **Expert Mobile Testing**: Use `tests/test_mobile_expert.html` for device simulation and performance validation
+   - **Integration Testing**: Use `tests/test_comprehensive.html` for architecture validation
+   - **Follow test procedures**: See `TESTING.md` for complete testing checklist and debugging guidance
 
 **Only after confirming the task system is working should you proceed with actual development work.**
 
@@ -59,6 +64,7 @@
 - **`Graphics_Asset_Requirements.md`** - All Christmas assets ready for implementation ✅
 - **`README.md`** - Project overview and general documentation
 - **`tasks/`** - Individual task documentation (see PROJECT_STATUS.md for current task)
-- **`TESTING.md`** - Test suite documentation
+- **`TESTING.md`** - **🧪 COMPREHENSIVE TEST SUITE** - Mobile optimization validation, device simulation, and integration testing
+- **`tests/`** - **Expert mobile testing framework** with device simulation and performance monitoring
 
 **The system is designed so any AI agent can pick up exactly where the previous one left off without missing context or creating inconsistencies.**

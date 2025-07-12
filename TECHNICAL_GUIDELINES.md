@@ -54,28 +54,43 @@ find . -name "*.js"              # Find files by pattern
 wc -l ISSUES.md                  # Count lines
 ```
 
-### **Server Management**
+### **Server Management for AI Agents**
+
+**Option 1: Using dev_server.py (Recommended)**:
 ```bash
-# Start development server
-python -m http.server 8000
-
-# Check what's running on port 8000
-netstat -ano | grep :8000
-
-# Find and kill server by PID
-tasklist | grep python
-taskkill //PID [PID_NUMBER] //F
-
-# Alternative: Kill all Python processes (use with caution)
-taskkill //IM python.exe //F
-taskkill //IM python3.11.exe //F
+python scripts/dev_server.py status     # Check what's running on port 8000
+python scripts/dev_server.py start      # Start server (blocks terminal)
+python scripts/dev_server.py stop       # Stop server (run in new terminal)
 ```
 
-**Best Practices**:
-- Always stop development servers when done working
-- Use `Ctrl+C` in the terminal where you started the server (preferred method)
-- Use `taskkill` only when the terminal is no longer accessible
-- Check for running servers before starting new ones to avoid port conflicts
+**Option 2: Manual Python server**:
+```bash
+# Start development server (blocks terminal - this is expected behavior)
+python -m http.server 8000
+
+# IMPORTANT: Server will block terminal until stopped
+# To continue using terminal, you MUST stop the server first
+
+# Method 1: Check and kill by PID (Recommended for manual approach)
+tasklist | grep python                    # Find Python processes
+taskkill //PID [PID_NUMBER] //F           # Kill specific process
+
+# Method 2: Kill all Python processes (use with caution)
+taskkill //IM python.exe //F
+taskkill //IM python3.11.exe //F
+
+# Method 3: Check port usage
+netstat -ano | grep :8000                 # See what's using port 8000
+```
+
+**AI Agent Workflow**:
+**Recommended**: Use `python scripts/dev_server.py start` → test → `python scripts/dev_server.py stop`
+**Alternative**: Use `python -m http.server 8000` → test → `tasklist | grep python` → `taskkill //PID [PID] //F`
+
+**Critical Rule for AI Agents**: 
+- ❌ **NEVER leave servers running** - Always stop before attempting new terminal commands
+- ✅ **Always check for running servers** before starting new ones
+- ✅ **Prefer dev_server.py for safer management** - handles cleanup automatically
 
 ## Development Environment
 
