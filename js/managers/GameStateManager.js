@@ -8,6 +8,8 @@ class GameStateManager {
     this.maxGuesses = 10;
     this.guessesRemaining = 10;
     this.secretCode = [];
+    this.isWon = false;
+    this.gameComplete = false;
   }
 
   initializeGameState() {
@@ -25,10 +27,22 @@ class GameStateManager {
     // Update guesses remaining
     this.guessesRemaining--;
     
+    // Check game state
+    const isWin = feedback.black === this.codeLength;
+    const isGameOver = this.guessesRemaining <= 0;
+    
+    // Update internal state
+    if (isWin) {
+      this.isWon = true;
+      this.gameComplete = true;
+    } else if (isGameOver) {
+      this.gameComplete = true;
+    }
+    
     return {
       feedback,
-      isWin: feedback.black === this.codeLength,
-      isGameOver: this.guessesRemaining <= 0,
+      isWin,
+      isGameOver,
       guessesRemaining: this.guessesRemaining
     };
   }
@@ -54,12 +68,16 @@ class GameStateManager {
       codeLength: this.codeLength,
       maxGuesses: this.maxGuesses,
       guessesRemaining: this.guessesRemaining,
-      secretCode: [...this.secretCode]
+      secretCode: [...this.secretCode],
+      isWon: this.isWon,
+      gameComplete: this.gameComplete
     };
   }
 
   reset() {
     this.guessesRemaining = this.maxGuesses;
     this.secretCode = GameUtils.generateRandomCode(this.elements, this.codeLength);
+    this.isWon = false;
+    this.gameComplete = false;
   }
 }

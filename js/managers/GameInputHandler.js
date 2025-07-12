@@ -143,7 +143,24 @@ class GameInputHandler {
       this.scene.historyManager.removeActiveRow();
     }
     
-    // Show restart button
-    this.scene.uiLayoutManager.showRestartButton();
+    // Transition to Round Over screen after a brief delay
+    this.scene.time.delayedCall(2000, () => {
+      this.transitionToRoundOver();
+    });
+  }
+
+  transitionToRoundOver() {
+    const gameStats = this.scene.gameStateManager.getGameStats();
+    const gameData = {
+      won: gameStats.isWon,
+      finalGuess: this.scene.historyManager.getLastGuess(),
+      secretCode: this.scene.gameStateManager.getSecretCode(),
+      guessesUsed: gameStats.maxGuesses - gameStats.guessesRemaining,
+      scoreManager: this.scene.scoreManager,
+      guessHistory: this.scene.historyManager.getGuessHistory(),
+      feedbackHistory: this.scene.historyManager.getFeedbackHistory()
+    };
+    
+    this.scene.scene.start('RoundOver', gameData);
   }
 }

@@ -96,6 +96,10 @@ class HistoryManager {
     return [...this.feedbackHistory];
   }
 
+  getLastGuess() {
+    return this.guessHistory.length > 0 ? [...this.guessHistory[this.guessHistory.length - 1]] : null;
+  }
+
   // Lifecycle methods
   reset() {
     this.guessHistory = [];
