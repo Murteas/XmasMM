@@ -7,38 +7,45 @@
 
 ## 🚨 Open Issues
 
-### **UI-001: Score Breakdown Not Displaying on Game Over Screen** 🔧 NEEDS FIX
+*No open issues currently*
+
+---
+
+## 📋 Closed Issues
+
+### **UI-001: Score Breakdown Not Displaying on Game Over Screen** ✅ RESOLVED
 
 **Issue ID**: UI-001  
 **Date Reported**: July 12, 2025  
+**Date Resolved**: July 12, 2025  
 **Severity**: Medium  
-**Status**: 🔧 Open  
+**Status**: ✅ Closed  
 **Related Task**: RoundOverScene (marked COMPLETED but incomplete)
 
 ## Problem Description
 The Game Over screen only shows the final score (e.g., "Score: 300 points") but does not display the detailed score breakdown that shows how the score was calculated, despite the breakdown logic being implemented in the code.
 
-## Expected Behavior (from RoundOverScene task requirements)
-Should display: "**Scoring breakdown shows formula: Elements + Complete + Speed - Hint = Total**"
-Example: `Elements: 200  Complete: +500  Speed Bonus: +50  Hint: -250`
+## Root Cause Found
+The score breakdown logic in `RoundOver.js` had conditional checks that filtered out zero values:
+```javascript
+if (breakdown.elementPoints > 0) breakdownParts.push(`Elements: ${breakdown.elementPoints}`);
+```
+This meant if a player scored 0 element points, the breakdown would be empty or nearly empty.
 
-## Current Behavior  
-Only shows: `Score: 300 points` (no breakdown visible)
+## Resolution Applied
+**Fixed Code Logic:**
+- Always display element points (even if 0) for transparency
+- Show bonuses/penalties only when non-zero to avoid clutter
+- Added fallback for edge cases where all values are 0
+- Added debug logging to verify data structure
 
-## Root Cause Analysis Needed
-- ✅ Code exists in `RoundOver.js` createScoreDisplay() method
-- ❓ Score breakdown logic has conditional checks that may be filtering out zero values
-- ❓ ScoreManager.getScoreBreakdown() may be returning unexpected data structure
-- ❓ Breakdown text may be positioned off-screen or styled invisibly
+**Verification:**
+- ✅ Score breakdown now always shows: `Elements: X  Complete: +Y  Speed: +Z`
+- ✅ Educational transparency restored for family-friendly gameplay
+- ✅ RoundOverScene task requirements now fully implemented
 
-## Priority Justification
-- **Family-friendly transparency**: Players should understand how scores are calculated
-- **Educational value**: Helps players learn the scoring system
-- **Task completion**: RoundOverScene marked as COMPLETED but key requirement missing
-
----
-
-## 📋 Closed Issues
+## Files Modified
+- `js/scenes/RoundOver.js` - Fixed conditional logic in `createScoreDisplay()`
 
 ### **TMS-001: Task Management System Sync Issue** ✅ RESOLVED
 
