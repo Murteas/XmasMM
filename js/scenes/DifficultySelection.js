@@ -110,13 +110,34 @@ class DifficultySelection extends Phaser.Scene {
   }
 
   createNavigationButtons(width, height) {
-    // Confirm button
-    const confirmBtn = this.add.text(width / 2, height * 0.8, 'Confirm', {
-      font: '28px Arial',
-      fill: '#fff',
-      backgroundColor: '#27ae60',
-      padding: { left: 24, right: 24, top: 12, bottom: 12 }
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(GameUtils.getDepthLayers().UI);
+    // Expert mobile responsive positioning
+    const layout = GameUtils.getResponsiveLayout(width, height);
+    
+    // Confirm button with responsive positioning
+    const confirmBtn = GameUtils.createResponsiveText(
+      this,
+      width / 2, 
+      layout.primaryButtonY, 
+      'Confirm',
+      {
+        fontSize: `${Math.round(28 * layout.fontScale)}px`,
+        fontFamily: 'Arial',
+        fill: '#fff',
+        backgroundColor: '#27ae60',
+        padding: { 
+          left: Math.round(24 * layout.fontScale), 
+          right: Math.round(24 * layout.fontScale), 
+          top: Math.round(12 * layout.fontScale), 
+          bottom: Math.round(12 * layout.fontScale) 
+        }
+      }
+    ).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(GameUtils.getDepthLayers().UI);
+    
+    // Ensure minimum touch target size
+    const buttonBounds = confirmBtn.getBounds();
+    if (buttonBounds.width < layout.minTouchSize) {
+      confirmBtn.setPadding(layout.minTouchSize / 2, confirmBtn.style.padding.top);
+    }
     
     confirmBtn.on('pointerdown', () => {
       this.registry.set('codeLength', this.codeLength);

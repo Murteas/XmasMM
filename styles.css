@@ -1,7 +1,21 @@
+/* Expert Mobile CSS with Safe Area Support */
+:root {
+  /* Safe area CSS variables for Phaser.js integration */
+  --sat: env(safe-area-inset-top);
+  --sar: env(safe-area-inset-right);
+  --sab: env(safe-area-inset-bottom);
+  --sal: env(safe-area-inset-left);
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  /* Performance optimizations */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 html {
@@ -10,6 +24,10 @@ html {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  /* Orientation lock */
+  writing-mode: horizontal-tb;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -22,6 +40,25 @@ body {
   position: fixed;
   top: 0;
   left: 0;
+  /* Mobile performance optimizations */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transform: translateZ(0);
+  will-change: auto;
+}
+
+/* Force portrait orientation */
+@media screen and (orientation: landscape) {
+  body {
+    transform: rotate(90deg);
+    transform-origin: left top;
+    width: 100vh;
+    height: 100vw;
+    overflow: hidden;
+    position: absolute;
+    top: 100%;
+    left: 0;
+  }
 }
 
 #game-container {

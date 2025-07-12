@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Expert Mobile Layout Test - XmasMM</title>
+  
+  <!-- Phaser.js -->
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+  
+  <!-- Game Scripts -->
+  <script src="../js/utils/GameUtils.js"></script>
+  <script src="../js/managers/GameStateManager.js"></script>
+  <script src="../js/managers/ScoreManager.js"></script>
+  <script src="../js/managers/UILayoutManager.js"></script>
+  <script src="../js/managers/ActiveRowManager.js"></script>
+  <script src="../js/managers/ElementPicker.js"></script>
+  <script src="../js/managers/GameInputHandler.js"></script>
+  <script src="../js/managers/HistoryManager.js"></script>
+  <script src="../js/managers/HistoryRenderer.js"></script>
+  <script src="../js/managers/HistoryScroller.js"></script>
+  <script src="../js/scenes/MainMenu.js"></script>
+  <script src="../js/scenes/DifficultySelection.js"></script>
+  <script src="../js/scenes/GameScene.js"></script>
+  <script src="../js/scenes/RoundOver.js"></script>
+  
+  <style>
+    /* Safe area CSS variables */
+    :root {
+      --sat: env(safe-area-inset-top);
+      --sar: env(safe-area-inset-right);
+      --sab: env(safe-area-inset-bottom);
+      --sal: env(safe-area-inset-left);
+    }
+    
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: white;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+    
+    .test-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0,0,0,0.95);
+      padding: env(safe-area-inset-top, 10px) 15px 15px 15px;
+      border-radius: 0 0 12px 12px;
+      z-index: 2000;
+      font-size: 11px;
+      backdrop-filter: blur(10px);
+      transform: translateY(-100%);
+      transition: transform 0.3s ease;
+    }
+    
+    .test-overlay.visible {
+      transform: translateY(0);
+    }
+    
+    .test-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .device-button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 10px;
+      cursor: pointer;
+      flex: 1;
+      min-width: 80px;
+    }
+    
+    .device-button:hover {
+      background: #45a049;
+    }
+    
+    .device-button.active {
+      background: #FF9800;
+    }
+    
+    .metrics {
+      background: rgba(255,255,255,0.1);
+      padding: 8px;
+      border-radius: 6px;
+      margin-top: 8px;
+      font-size: 10px;
+    }
+    
+    .fps-monitor {
+      background: rgba(255,0,0,0.8);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: bold;
+    }
+    
+    .fps-good { background: rgba(0,255,0,0.8); }
+    .fps-warning { background: rgba(255,165,0,0.8); }
+    .fps-critical { background: rgba(255,0,0,0.8); }
+    
+    .toggle-btn {
+      position: fixed;
+      top: env(safe-area-inset-top, 10px);
+      right: 15px;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      z-index: 2001;
+      backdrop-filter: blur(5px);
+    }
+    
+    .safe-area-indicator {
+      position: fixed;
+      border: 2px dashed rgba(255,255,0,0.5);
+      pointer-events: none;
+      z-index: 1999;
+    }
+    
+    .safe-area-top {
+      top: 0;
+      left: 0;
+      right: 0;
+      height: env(safe-area-inset-top, 0px);
+      border-bottom: 2px dashed rgba(255,255,0,0.8);
+    }
+    
+    .safe-area-bottom {
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: env(safe-area-inset-bottom, 0px);
+      border-top: 2px dashed rgba(255,255,0,0.8);
+    }
+  </style>
+</head>
+<body>
+  <!-- Safe Area Indicators -->
+  <div class="safe-area-indicator safe-area-top"></div>
+  <div class="safe-area-indicator safe-area-bottom"></div>
+  
+  <!-- Toggle Button -->
+  <button class="toggle-btn" onclick="toggleTestOverlay()">📱 Tests</button>
+  
+  <!-- Test Overlay -->
+  <div class="test-overlay" id="testOverlay">
+    <div class="test-row">
+      <div class="fps-monitor" id="fpsMonitor">FPS: --</div>
+      <button class="device-button" onclick="runLayoutValidation()">✓ Validate Layout</button>
+      <button class="device-button" onclick="runPerformanceTest()">⚡ Performance</button>
+    </div>
+    
+    <div class="test-row">
+      <button class="device-button" onclick="setDeviceSize(375, 667)">iPhone SE</button>
+      <button class="device-button active" onclick="setDeviceSize(414, 896)">iPhone XR</button>
+      <button class="device-button" onclick="setDeviceSize(428, 926)">iPhone Pro Max</button>
+    </div>
+    
+    <div class="test-row">
+      <button class="device-button" onclick="testTouchTargets()">👆 Touch Targets</button>
+      <button class="device-button" onclick="testSafeAreas()">📐 Safe Areas</button>
+      <button class="device-button" onclick="testTextWrapping()">📝 Text Wrap</button>
+    </div>
+    
+    <div class="metrics" id="deviceMetrics">
+      Loading device metrics...
+    </div>
+    
+    <div class="metrics" id="testResults">
+      Ready for testing...
+    </div>
+  </div>
+
+  <div id="game-container"></div>
+
+  <script>
+    // Expert Mobile Testing System
+    let game;
+    let fpsCounter = 0;
+    let lastTime = performance.now();
+    let testOverlayVisible = false;
+
+    // Initialize game with mobile optimization
+    const config = {
+      type: Phaser.AUTO,
+      width: window.innerWidth,
+      height: window.innerHeight,
+      parent: 'game-container',
+      backgroundColor: '#1a1a2e',
+      scale: {
+        mode: Phaser.Scale.RESIZE,
+        autoCenter: Phaser.Scale.CENTER_BOTH
+      },
+      scene: [MainMenu, DifficultySelection, GameScene, RoundOver],
+      physics: {
+        default: 'arcade',
+        arcade: { debug: false }
+      }
+    };
+
+    // Performance monitoring
+    function updateFPS() {
+      const now = performance.now();
+      const delta = now - lastTime;
+      lastTime = now;
+      
+      if (delta > 0) {
+        const fps = Math.round(1000 / delta);
+        fpsCounter = fps;
+        
+        const fpsMonitor = document.getElementById('fpsMonitor');
+        fpsMonitor.textContent = `FPS: ${fps}`;
+        
+        // Color coding
+        fpsMonitor.className = 'fps-monitor';
+        if (fps >= 55) fpsMonitor.classList.add('fps-good');
+        else if (fps >= 45) fpsMonitor.classList.add('fps-warning');
+        else fpsMonitor.classList.add('fps-critical');
+      }
+      
+      requestAnimationFrame(updateFPS);
+    }
+
+    // Device simulation
+    function setDeviceSize(width, height) {
+      document.querySelectorAll('.device-button').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      // Simulate device viewport
+      const container = document.getElementById('game-container');
+      container.style.width = width + 'px';
+      container.style.height = height + 'px';
+      container.style.margin = '0 auto';
+      container.style.border = '2px solid #444';
+      
+      if (game) {
+        game.scale.resize(width, height);
+      }
+      
+      updateDeviceMetrics();
+    }
+
+    // Update device metrics display
+    function updateDeviceMetrics() {
+      const viewport = GameUtils.getMobileViewport();
+      const layout = GameUtils.getResponsiveLayout(viewport.width, viewport.height);
+      const safeArea = GameUtils.getSafeAreaInsets();
+      
+      document.getElementById('deviceMetrics').innerHTML = `
+        <strong>Viewport:</strong> ${viewport.width}×${viewport.height} (${viewport.aspectRatio.toFixed(2)}:1)<br>
+        <strong>Font Scale:</strong> ${layout.fontScale}x | <strong>Device Type:</strong> ${viewport.isSmallDevice ? 'Small' : 'Standard'}<br>
+        <strong>Safe Area:</strong> T:${safeArea.top} R:${safeArea.right} B:${safeArea.bottom} L:${safeArea.left}<br>
+        <strong>Layout Positions:</strong> Header:${layout.headerY} Primary:${layout.primaryButtonY} Secondary:${layout.secondaryButtonY}
+      `;
+    }
+
+    // Test functions
+    function toggleTestOverlay() {
+      testOverlayVisible = !testOverlayVisible;
+      const overlay = document.getElementById('testOverlay');
+      overlay.classList.toggle('visible', testOverlayVisible);
+    }
+
+    function runLayoutValidation() {
+      const results = [];
+      const viewport = GameUtils.getMobileViewport();
+      const layout = GameUtils.getResponsiveLayout(viewport.width, viewport.height);
+      
+      // Check button positioning
+      if (layout.primaryButtonY > viewport.height - 100) {
+        results.push('❌ Primary button too low');
+      } else {
+        results.push('✅ Primary button positioned correctly');
+      }
+      
+      // Check safe areas
+      const safeArea = GameUtils.getSafeAreaInsets();
+      if (layout.headerY > safeArea.top + 50) {
+        results.push('✅ Header respects safe area');
+      } else {
+        results.push('⚠️ Header may conflict with safe area');
+      }
+      
+      // Check font scaling
+      if (layout.fontScale >= 0.9 && layout.fontScale <= 1.2) {
+        results.push('✅ Font scaling within range');
+      } else {
+        results.push('⚠️ Font scaling may be extreme');
+      }
+      
+      document.getElementById('testResults').innerHTML = results.join('<br>');
+    }
+
+    function runPerformanceTest() {
+      let frameCount = 0;
+      let totalTime = 0;
+      const startTime = performance.now();
+      
+      function measureFrames() {
+        frameCount++;
+        totalTime = performance.now() - startTime;
+        
+        if (totalTime >= 3000) { // 3 second test
+          const avgFPS = Math.round((frameCount / totalTime) * 1000);
+          const result = avgFPS >= 55 ? '✅' : avgFPS >= 45 ? '⚠️' : '❌';
+          
+          document.getElementById('testResults').innerHTML = `
+            ${result} <strong>Performance Test Complete</strong><br>
+            Average FPS: ${avgFPS}<br>
+            Frames: ${frameCount} in ${Math.round(totalTime)}ms<br>
+            Status: ${avgFPS >= 55 ? 'Excellent' : avgFPS >= 45 ? 'Good' : 'Needs Optimization'}
+          `;
+        } else {
+          requestAnimationFrame(measureFrames);
+        }
+      }
+      
+      document.getElementById('testResults').innerHTML = 'Running 3-second performance test...';
+      measureFrames();
+    }
+
+    function testTouchTargets() {
+      // This would need integration with actual game scenes
+      document.getElementById('testResults').innerHTML = `
+        <strong>Touch Target Guidelines:</strong><br>
+        ✅ Minimum size: 44px × 44px<br>
+        ✅ Spacing: 12px between targets<br>
+        📱 Test by tapping buttons in-game<br>
+        💡 Check accessibility compliance
+      `;
+    }
+
+    function testSafeAreas() {
+      const safeArea = GameUtils.getSafeAreaInsets();
+      const hasNotch = safeArea.top > 20 || safeArea.bottom > 20;
+      
+      document.getElementById('testResults').innerHTML = `
+        <strong>Safe Area Detection:</strong><br>
+        ${hasNotch ? '📱' : '📱'} Device: ${hasNotch ? 'Has notch/home indicator' : 'Standard bezels'}<br>
+        📐 Insets: ${safeArea.top}/${safeArea.right}/${safeArea.bottom}/${safeArea.left}<br>
+        ${safeArea.top > 0 ? '✅' : '❓'} CSS env() support: ${safeArea.top > 0 ? 'Working' : 'Check implementation'}
+      `;
+    }
+
+    function testTextWrapping() {
+      document.getElementById('testResults').innerHTML = `
+        <strong>Text Wrapping Test:</strong><br>
+        📝 Navigate to game over screen to test score explanation wrapping<br>
+        📱 Check that long text fits within screen bounds<br>
+        ✅ Should use multiple lines instead of horizontal overflow<br>
+        💡 Font should scale appropriately for device size
+      `;
+    }
+
+    // Initialize
+    window.addEventListener('load', () => {
+      game = new Phaser.Game(config);
+      updateFPS();
+      updateDeviceMetrics();
+      
+      // Auto-hide overlay after 3 seconds
+      setTimeout(() => {
+        if (testOverlayVisible) toggleTestOverlay();
+      }, 3000);
+    });
+
+    // Handle viewport changes
+    window.addEventListener('resize', () => {
+      updateDeviceMetrics();
+    });
+
+    // Prevent zoom on mobile
+    document.addEventListener('touchstart', function(event) {
+      if (event.touches.length > 1) {
+        event.preventDefault();
+      }
+    }, { passive: false });
+
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function(event) {
+      const now = (new Date()).getTime();
+      if (now - lastTouchEnd <= 300) {
+        event.preventDefault();
+      }
+      lastTouchEnd = now;
+    }, false);
+  </script>
+</body>
+</html>

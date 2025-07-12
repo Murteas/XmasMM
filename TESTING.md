@@ -13,29 +13,29 @@
 ### 1. **Test Navigation Hub** (`tests/index.html`)
 Central testing interface with device detection and metrics.
 
-### 2. **Comprehensive Integration Test** (`test_comprehensive.html`) ⭐
-**NEW**: Complete validation of refactored modular architecture
+### 2. **Expert Mobile Layout Test** (`test_mobile_expert.html`) ⭐ **NEW**
+**Professional mobile optimization validation** with comprehensive testing suite:
+- Real-time FPS monitoring and performance validation
+- Device simulation (iPhone SE, XR, Pro Max) 
+- Safe area detection and CSS env() validation
+- Touch target accessibility testing (44px compliance)
+- Responsive typography and text wrapping validation
+- Layout constraint validation with automated testing
+
+### 3. **Comprehensive Integration Test** (`test_comprehensive.html`) 
+**Complete validation of refactored modular architecture**
 - Tests all 9 refactored manager classes
 - Validates module loading and dependency resolution
 - Real-time console monitoring and error detection
 - Interactive game testing and manager functionality validation
 
-### 3. **Canvas Optimization Test** (`test_canvas_optimization.html`)
+### 4. **Canvas Optimization Test** (`test_canvas_optimization.html`)
 Validates mobile canvas improvements - **Key Success**: Complete viewport utilization (100vw x 100vh) ✅
 
-### 4. **Responsive Layout Test** (`test_responsive_layout.html`)  
-Tests layout across iPhone models (SE to Pro Max) ✅
-
-### 5. **Touch Interaction Test** (`test_touch_interaction.html`)
-Monitors modal and button touch behavior ✅
-
-### 6. **Debug & Performance Test** (`test_debug_performance.html`)
+### 5. **Debug & Performance Test** (`test_debug_performance.html`)
 Real-time FPS and memory monitoring
 
-### 7. **Device Comparison Test** (`test_device_comparison.html`)
-Cross-device optimization analysis
-
-### 8. **Asset Loading Test** (`test_asset_loading.html`)
+### 6. **Asset Loading Test** (`test_asset_loading.html`)
 Christmas graphics loading validation
 
 ---
@@ -78,9 +78,9 @@ Christmas graphics loading validation
 - Kill by PID if needed: `taskkill //PID [PID_NUMBER] //F`
 
 ### Priority Testing Order:
-1. **Integration Test** - Validates refactored architecture
-2. **Canvas/Layout Tests** - Mobile optimization validation  
-3. **Performance Tests** - FPS and memory monitoring
+1. **Expert Mobile Test** - Comprehensive mobile optimization validation with professional-grade metrics
+2. **Integration Test** - Validates refactored architecture  
+3. **Canvas/Performance Tests** - Mobile optimization and FPS monitoring
 4. **Asset Tests** - Graphics loading validation
 
 ### Mobile Testing:

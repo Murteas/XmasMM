@@ -114,11 +114,27 @@ class RoundOver extends Phaser.Scene {
     // If no breakdown parts exist (all zeros), show encouraging basic calculation  
     if (breakdownParts.length === 1 && breakdown.elementPoints === 0) {
       breakdownParts = [`Pattern Points: ${breakdown.elementPoints} (No matches yet - try again!)  Total: ${breakdown.total}`];
-    }    
-    const breakdownText = this.add.text(width / 2, scoreY + 35, breakdownParts.join('  '), {
-      font: '14px Arial',
-      fill: '#ccc'
-    }).setOrigin(0.5);
+    }
+    
+    // Expert mobile responsive text with proper wrapping
+    const layout = GameUtils.getResponsiveLayout(width, height);
+    const breakdownText = GameUtils.createResponsiveText(
+      this,
+      width / 2, 
+      scoreY + Math.round(35 * layout.fontScale),
+      breakdownParts.join('\n'), // Use line breaks instead of spaces for mobile
+      {
+        fontSize: `${Math.round(14 * layout.fontScale)}px`,
+        fontFamily: 'Arial',
+        fill: '#ccc',
+        align: 'center',
+        lineSpacing: Math.round(4 * layout.fontScale),
+        wordWrap: { 
+          width: Math.min(width * 0.9, 400),
+          useAdvancedWrap: true 
+        }
+      }
+    ).setOrigin(0.5);
     
     this.mainContainer.add([scoreText, breakdownText]);
   }
@@ -177,16 +193,31 @@ class RoundOver extends Phaser.Scene {
 
   createActionButtons() {
     const { width, height } = this.cameras.main;
-    const buttonY = height - 180;
-    const buttonSpacing = 80;
     
-    // View History Button
-    const historyBtn = this.add.text(width / 2, buttonY, 'View History', {
-      font: '16px Arial',
-      fill: '#fff',
-      backgroundColor: '#3498db',
-      padding: { left: 15, right: 15, top: 8, bottom: 8 }
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    // Expert mobile responsive positioning
+    const layout = GameUtils.getResponsiveLayout(width, height);
+    const buttonY = layout.secondaryButtonY;
+    const buttonSpacing = Math.max(layout.minTouchSize + layout.touchSpacing, 80);
+    
+    // View History Button with responsive design
+    const historyBtn = GameUtils.createResponsiveText(
+      this,
+      width / 2, 
+      buttonY,
+      'View History',
+      {
+        fontSize: `${Math.round(16 * layout.fontScale)}px`,
+        fontFamily: 'Arial',
+        fill: '#fff',
+        backgroundColor: '#3498db',
+        padding: { 
+          left: Math.round(15 * layout.fontScale), 
+          right: Math.round(15 * layout.fontScale), 
+          top: Math.round(8 * layout.fontScale), 
+          bottom: Math.round(8 * layout.fontScale) 
+        }
+      }
+    ).setOrigin(0.5).setInteractive({ useHandCursor: true });
     
     historyBtn.on('pointerdown', () => this.showHistory());
     this.addButtonFeedback(historyBtn);

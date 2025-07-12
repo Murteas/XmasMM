@@ -37,32 +37,56 @@ class UILayoutManager {
   }
 
   setupStackedHeader() {
-    const { width } = this.scene.cameras.main;
+    const { width, height } = this.scene.cameras.main;
     
-    // Row 1: Guesses and Score
-    this.guessesText = this.scene.add.text(50, 70, `Guesses: ${this.scene.gameStateManager.guessesRemaining}`, {
-      font: '16px Arial',
-      fill: '#fff'
-    }).setDepth(GameUtils.getDepthLayers().UI);
+    // Expert mobile responsive layout with consolidated display
+    const layout = GameUtils.getResponsiveLayout(width, height);
     
-    this.scoreText = this.scene.add.text(width - 50, 70, `Guesses: ${this.scene.gameStateManager.maxGuesses - this.scene.gameStateManager.guessesRemaining}/${this.scene.gameStateManager.maxGuesses}`, {
-      font: '16px Arial',
-      fill: '#fff'
-    }).setOrigin(1, 0).setDepth(GameUtils.getDepthLayers().UI);
+    // Single consolidated progress display (removes redundancy)
+    this.progressText = GameUtils.createResponsiveText(
+      this.scene,
+      50,
+      layout.headerY,
+      `Progress: ${this.scene.gameStateManager.maxGuesses - this.scene.gameStateManager.guessesRemaining}/${this.scene.gameStateManager.maxGuesses}`,
+      {
+        fontSize: `${Math.round(16 * layout.fontScale)}px`,
+        fontFamily: 'Arial',
+        fill: '#fff'
+      }
+    ).setDepth(GameUtils.getDepthLayers().UI);
     
-    // Row 2: Hint status and button (centered)
-    this.hintText = this.scene.add.text(width / 2, 100, 'Hint: Locked', {
-      font: '14px Arial',
-      fill: '#888'
-    }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
+    // Hint status (right aligned for balance)
+    this.hintText = GameUtils.createResponsiveText(
+      this.scene,
+      width - 50,
+      layout.headerY,
+      'Hint: Locked',
+      {
+        fontSize: `${Math.round(14 * layout.fontScale)}px`,
+        fontFamily: 'Arial',
+        fill: '#888'
+      }
+    ).setOrigin(1, 0).setDepth(GameUtils.getDepthLayers().UI);
     
-    // Santa's Hint button positioned in header
-    this.hintBtn = this.scene.add.text(width / 2, 130, "Santa's Hint", {
-      font: '14px Arial',
-      fill: '#888',
-      backgroundColor: '#333',
-      padding: { left: 10, right: 10, top: 6, bottom: 6 }
-    }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
+    // Santa's Hint button positioned safely below header
+    this.hintBtn = GameUtils.createResponsiveText(
+      this.scene,
+      width / 2,
+      layout.headerY + Math.round(35 * layout.fontScale),
+      "Santa's Hint",
+      {
+        fontSize: `${Math.round(14 * layout.fontScale)}px`,
+        fontFamily: 'Arial',
+        fill: '#888',
+        backgroundColor: '#333',
+        padding: { 
+          left: Math.round(10 * layout.fontScale), 
+          right: Math.round(10 * layout.fontScale), 
+          top: Math.round(6 * layout.fontScale), 
+          bottom: Math.round(6 * layout.fontScale) 
+        }
+      }
+    ).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
   }
 
   setupHorizontalHeader() {
@@ -124,13 +148,26 @@ class UILayoutManager {
     // Add touch feedback to hint button
     this.addButtonTouchFeedback(this.hintBtn, { colorTint: 0xe67e22 });
     
-    // Back button
-    const backBtn = this.scene.add.text(50, height - 50, 'Back', {
-      font: '16px Arial',
-      fill: '#fff',
-      backgroundColor: '#444',
-      padding: { left: 12, right: 12, top: 6, bottom: 6 }
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(GameUtils.getDepthLayers().UI);
+    // Expert mobile responsive back button
+    const layout = GameUtils.getResponsiveLayout(width, height);
+    const backBtn = GameUtils.createResponsiveText(
+      this.scene,
+      50,
+      height - layout.marginBottom,
+      'Back',
+      {
+        fontSize: `${Math.round(16 * layout.fontScale)}px`,
+        fontFamily: 'Arial',
+        fill: '#fff',
+        backgroundColor: '#444',
+        padding: { 
+          left: Math.round(12 * layout.fontScale), 
+          right: Math.round(12 * layout.fontScale), 
+          top: Math.round(6 * layout.fontScale), 
+          bottom: Math.round(6 * layout.fontScale) 
+        }
+      }
+    ).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(GameUtils.getDepthLayers().UI);
     
     backBtn.on('pointerdown', () => {
       this.scene.scene.start('DifficultySelection');
@@ -379,6 +416,11 @@ class UILayoutManager {
   }
 
   updateScoreDisplay(scoreText) {
+    // Update consolidated progress display
+    if (this.progressText) {
+      this.progressText.setText(scoreText);
+    }
+    // Legacy support for any remaining scoreText references
     if (this.scoreText) {
       this.scoreText.setText(scoreText);
     }
