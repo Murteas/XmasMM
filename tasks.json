@@ -39,7 +39,7 @@
         "Ensure symbols work on all iPhone displays"
       ],
       "deliverables": [
-        "js/managers/HistoryRenderer.js - Christmas feedback symbol display (replaces ●/○ pegs)",
+        "js/managers/HistoryRenderer.js - Christmas feedback symbol display (replaces \u25cf/\u25cb pegs)",
         "js/managers/UILayoutManager.js - Christmas feedback legend explaining symbols"
       ],
       "successCriteria": [
@@ -371,7 +371,7 @@
     }
   },
   "validation": {
-    "lastValidated": "2025-07-12T00:00:00.000000",
+    "lastValidated": "2025-07-12T08:28:35.539184",
     "automated": true,
     "issues": []
   }

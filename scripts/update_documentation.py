@@ -123,7 +123,7 @@ class DocumentationUpdater:
             if f"{state['progress']}%" not in content:
                 issues.append("PROJECT_STATUS.md has outdated progress information")
             
-            if state['current_task'] and f"Task {state['current_task']['id']}" not in content:
+            if state['current_task'] and state['current_task']['id'] not in content:
                 issues.append("PROJECT_STATUS.md references wrong current task")
         
         return issues
@@ -162,10 +162,10 @@ class DocumentationUpdater:
         new_progress = f"**Progress**: {state['progress']}% complete ({state['completed_count']}/{state['total_count']} tasks)"
         content = re.sub(progress_pattern, new_progress, content)
         
-        # Update next task
+        # Update next task  
         if state['next_task']:
-            next_pattern = r'\*\*Next Task\*\*: Task \d+ - [^\n]+'
-            new_next = f"**Next Task**: Task {state['next_task']['id']} - {state['next_task']['name']}"
+            next_pattern = r'\*\*Next Task\*\*: [^\n]+'
+            new_next = f"**Next Task**: {state['next_task']['id']} - {state['next_task']['name']}"
             content = re.sub(next_pattern, new_next, content)
         
         # Update overall progress section
