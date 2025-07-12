@@ -71,11 +71,32 @@ class RoundOver extends Phaser.Scene {
       fontStyle: 'bold'
     }).setOrigin(0.5);
     
-    // Score breakdown
+    // Score breakdown with family-friendly explanations
     let breakdownParts = [];
     
-    // Always show element points (can be 0)
-    breakdownParts.push(`Elements: ${breakdown.elementPoints}`);
+    // Calculate and show detailed breakdown using symbols families understand
+    const finalFeedback = this.scene.get('GameScene').scoreManager.calculateElementFeedback(
+      this.gameData.finalGuess, 
+      this.gameData.secretCode
+    );
+    
+    // Build detailed breakdown showing symbol counts and points
+    const perfectCount = finalFeedback.perfect;
+    const closeCount = finalFeedback.close;
+    
+    let pointsExplanation = [];
+    if (perfectCount > 0) {
+      pointsExplanation.push(`${perfectCount} Gold Star${perfectCount > 1 ? 's' : ''} (${perfectCount}×200)`);
+    }
+    if (closeCount > 0) {
+      pointsExplanation.push(`${closeCount} Silver Bell${closeCount > 1 ? 's' : ''} (${closeCount}×100)`);
+    }
+    
+    if (pointsExplanation.length === 0) {
+      breakdownParts.push(`Pattern Points: ${breakdown.elementPoints} (Keep trying!)`);
+    } else {
+      breakdownParts.push(`Pattern Points: ${breakdown.elementPoints} (${pointsExplanation.join(' + ')})`);
+    }
     
     // Show bonuses and penalties (can be 0 but still informative)
     if (breakdown.completeBonus !== 0) {
@@ -90,9 +111,9 @@ class RoundOver extends Phaser.Scene {
       breakdownParts.push(`Hint: ${breakdown.hintPenalty}`);
     }
     
-    // If no breakdown parts exist (all zeros), show basic calculation
+    // If no breakdown parts exist (all zeros), show encouraging basic calculation  
     if (breakdownParts.length === 1 && breakdown.elementPoints === 0) {
-      breakdownParts = [`Elements: ${breakdown.elementPoints}  Total: ${breakdown.total}`];
+      breakdownParts = [`Pattern Points: ${breakdown.elementPoints} (No matches yet - try again!)  Total: ${breakdown.total}`];
     }    
     const breakdownText = this.add.text(width / 2, scoreY + 35, breakdownParts.join('  '), {
       font: '14px Arial',
