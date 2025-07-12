@@ -66,10 +66,16 @@ Christmas graphics loading validation
 ### Local Development:
 **Note**: Use Git Bash for better cross-platform compatibility (see [AI_AGENT_BRIEFING.md](AI_AGENT_BRIEFING.md))
 
-1. Start server: `python -m http.server 8000`
-2. Navigate to: `http://localhost:8000/tests/`
-3. Run comprehensive integration test first: `test_comprehensive.html`
-4. Run specific tests as needed
+1. **Start server**: `python -m http.server 8000`
+2. **Navigate to**: `http://localhost:8000/tests/`
+3. **Run comprehensive integration test first**: `test_comprehensive.html`
+4. **Run specific tests as needed**
+5. **Stop server when done**: Use `Ctrl+C` in the terminal, or if needed: `taskkill //IM python.exe //F`
+
+**Server Management**:
+- Always stop the development server when finished testing
+- Check for existing servers: `netstat -ano | grep :8000`
+- Kill by PID if needed: `taskkill //PID [PID_NUMBER] //F`
 
 ### Priority Testing Order:
 1. **Integration Test** - Validates refactored architecture

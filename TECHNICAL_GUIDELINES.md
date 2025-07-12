@@ -54,6 +54,29 @@ find . -name "*.js"              # Find files by pattern
 wc -l ISSUES.md                  # Count lines
 ```
 
+### **Server Management**
+```bash
+# Start development server
+python -m http.server 8000
+
+# Check what's running on port 8000
+netstat -ano | grep :8000
+
+# Find and kill server by PID
+tasklist | grep python
+taskkill //PID [PID_NUMBER] //F
+
+# Alternative: Kill all Python processes (use with caution)
+taskkill //IM python.exe //F
+taskkill //IM python3.11.exe //F
+```
+
+**Best Practices**:
+- Always stop development servers when done working
+- Use `Ctrl+C` in the terminal where you started the server (preferred method)
+- Use `taskkill` only when the terminal is no longer accessible
+- Check for running servers before starting new ones to avoid port conflicts
+
 ## Development Environment
 
 ### **Project Structure Rules**

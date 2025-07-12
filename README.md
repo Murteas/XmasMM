@@ -95,5 +95,30 @@ This project uses a machine-readable task management system optimized for agenti
 - **AI Agent Guide**: [AI_AGENT_BRIEFING.md](AI_AGENT_BRIEFING.md) - New agent onboarding
 - **Complete Documentation**: [TASK_MANAGEMENT.md](TASK_MANAGEMENT.md) - Full system guide
 
+## 🖥️ Development Server Management
+
+**Quick Start**:
+```bash
+# Check server status
+python scripts/dev_server.py status
+
+# Start development server
+python scripts/dev_server.py start
+
+# Stop development server
+python scripts/dev_server.py stop
+```
+
+**Manual Commands**:
+```bash
+# Traditional approach
+python -m http.server 8000
+
+# Stop with Ctrl+C, or if needed:
+taskkill //IM python.exe //F
+```
+
+**Access**: Navigate to `http://localhost:8000` for the game or `http://localhost:8000/tests/` for testing.
+
 ## Repository
 Visit the repository at [https://github.com/Murteas/XmasMM](https://github.com/Murteas/XmasMM) for source code and deployment details.
