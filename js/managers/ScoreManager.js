@@ -33,6 +33,15 @@ class ScoreManager {
     const feedback = this.calculateElementFeedback(finalGuess, secretCode);
     this.scoreBreakdown.elementPoints = (feedback.perfect * 200) + (feedback.close * 100);
 
+    // For winning games, ensure we got credit for all elements
+    if (gameWon && feedback.perfect !== secretCode.length) {
+      console.warn('Scoring issue: Won game but not all elements marked as perfect', {
+        finalGuess, secretCode, feedback
+      });
+      // Force correct element points for winning game
+      this.scoreBreakdown.elementPoints = secretCode.length * 200;
+    }
+
     // Complete solution bonus (only if won)
     if (gameWon) {
       this.scoreBreakdown.completeBonus = 300;

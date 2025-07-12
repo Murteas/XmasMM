@@ -151,11 +151,23 @@ class GameInputHandler {
 
   transitionToRoundOver() {
     const gameStats = this.scene.gameStateManager.getGameStats();
+    const finalGuess = this.scene.historyManager.getLastGuess();
+    const secretCode = this.scene.gameStateManager.getSecretCode();
+    const guessesUsed = gameStats.maxGuesses - gameStats.guessesRemaining;
+    
+    // Calculate final score using proper element-based scoring
+    this.scene.scoreManager.calculateFinalScore(
+      finalGuess,
+      secretCode,
+      guessesUsed,
+      gameStats.isWon
+    );
+    
     const gameData = {
       won: gameStats.isWon,
-      finalGuess: this.scene.historyManager.getLastGuess(),
-      secretCode: this.scene.gameStateManager.getSecretCode(),
-      guessesUsed: gameStats.maxGuesses - gameStats.guessesRemaining,
+      finalGuess: finalGuess,
+      secretCode: secretCode,
+      guessesUsed: guessesUsed,
       scoreManager: this.scene.scoreManager,
       guessHistory: this.scene.historyManager.getGuessHistory(),
       feedbackHistory: this.scene.historyManager.getFeedbackHistory()
