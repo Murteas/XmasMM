@@ -31,10 +31,11 @@
 
 **COMMUNICATION GUIDELINES**:
 - **Default to concise summaries** - Use commit-ready messages unless details needed
+- **Use Git Bash terminal** - Provides better cross-platform consistency for AI agents
 - **Check TECHNICAL_GUIDELINES.md** - Critical terminal and development rules
 - **Never use `isBackground: true`** for servers or long-running processes
 
-*For terminal command syntax and technical details, see `TECHNICAL_GUIDELINES.md`*
+*For Git Bash command syntax and technical details, see `TECHNICAL_GUIDELINES.md`*
 
 **VALIDATION CHECKLIST**:
 1. ✅ **CRITICAL**: Read `ISSUES.md` for any blocking problems before starting work

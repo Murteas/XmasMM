@@ -2,10 +2,11 @@
 
 ## Terminal Command Guidelines
 
-### **PowerShell Environment (Windows)**
-- **Shell**: PowerShell v5.1 (Windows PowerShell)
-- **Command Chaining**: Use `;` instead of `&&`
-- **Directory Changes**: Use `Set-Location "path"` instead of `cd`
+### **Git Bash Environment (Recommended for AI Agents)**
+- **Shell**: Git Bash (provides Unix-like commands on Windows)
+- **Command Chaining**: Use `&&` for success chaining, `||` for failure handling
+- **Directory Changes**: Use `cd "path"` with standard Unix syntax
+- **Benefits**: Cross-platform consistency, better text processing tools
 
 ### **Automation Commands**
 ```bash
@@ -16,8 +17,8 @@ python scripts/automation.py update-docs     # Refresh all documentation
 python scripts/automation.py regen-docs      # Regenerate scripts documentation
 python scripts/sync_task_files.py           # Sync all documentation
 
-# Command chaining (use semicolon in PowerShell)
-python scripts/automation.py status; python scripts/automation.py help
+# Command chaining (Unix style)
+python scripts/automation.py status && python scripts/automation.py help
 ```
 
 ### **Critical Rule: NO BACKGROUND PROCESSES**
@@ -36,15 +37,21 @@ run_in_terminal({
 ```
 
 ### **Common Command Patterns**
-```powershell
+```bash
 # Directory navigation
-Set-Location "d:\DJS Projects\XmasMM"
+cd "/d/DJS Projects/XmasMM"
 
 # Command chaining
-python scripts/automation.py status; python scripts/automation.py help
+python scripts/automation.py status && python scripts/automation.py help
 
 # Testing server (foreground only)
 python -m http.server 8000
+
+# File operations
+ls -la                           # List files
+grep -r "pattern" js/            # Search in files
+find . -name "*.js"              # Find files by pattern
+wc -l ISSUES.md                  # Count lines
 ```
 
 ## Development Environment
@@ -72,11 +79,17 @@ ERROR: Cannot read properties of undefined (reading 'executeCommand')
 ```
 **Solution**: Always use `isBackground: false`
 
-### **PowerShell Syntax Error**
+### **Command Syntax Error (Old PowerShell)**
 ```
 The token '&&' is not a valid statement separator
 ```
-**Solution**: Use `;` for command chaining in PowerShell
+**Solution**: Switch to Git Bash for better AI agent compatibility. Git Bash supports standard Unix commands (`&&`, `||`, `grep`, `find`, etc.)
+
+### **Path Format Error**
+```
+No such file or directory: d:\path\to\file
+```
+**Solution**: In Git Bash, use Unix paths: `/d/DJS Projects/XmasMM`
 
 ### **Encoding Error**
 ```

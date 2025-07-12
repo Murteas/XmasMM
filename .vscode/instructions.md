@@ -11,7 +11,7 @@
 
 ## Key Reminders
 - ⚠️ **NO BACKGROUND PROCESSES**: Always use `isBackground=false` 
-- ⚠️ **PowerShell Syntax**: Use `;` not `&&` for command chaining
+- ⚠️ **Use Git Bash**: Better cross-platform compatibility than PowerShell
 - ⚠️ **Never manual status updates**: Use automation scripts only
 - ⚠️ **UTF-8 encoding**: Required for all Python file operations
 

@@ -64,6 +64,8 @@ Christmas graphics loading validation
 ## 🔧 Quick Testing
 
 ### Local Development:
+**Note**: Use Git Bash for better cross-platform compatibility (see [AI_AGENT_BRIEFING.md](AI_AGENT_BRIEFING.md))
+
 1. Start server: `python -m http.server 8000`
 2. Navigate to: `http://localhost:8000/tests/`
 3. Run comprehensive integration test first: `test_comprehensive.html`
