@@ -28,7 +28,14 @@ After technical implementation is complete, the final layer of polish ensures th
 - Add automated testing for critical game flows
 - Implement version management and rollback procedures
 
-### 4. Final User Experience Polish
+### 4. Family-Friendly Strategy Education
+- Add "How to Score" info button in main menu or game screen
+- Provide clear explanation of Pattern Points (Gold Stars vs Silver Bells)
+- Show scoring formula: Pattern Points + Complete Bonus + Speed Bonus - Hint Penalty
+- Include strategy tips for optimal family gameplay
+- Make scoring education optional/discoverable rather than overwhelming
+
+### 5. Final User Experience Polish
 - Smooth transitions and animations throughout the game
 - Consistent visual hierarchy and typography
 - Error message improvements for family-friendly language
@@ -44,6 +51,7 @@ After technical implementation is complete, the final layer of polish ensures th
 - [ ] Game meets WCAG 2.1 accessibility standards
 - [ ] Consistent experience across all target devices and browsers
 - [ ] Clear maintenance documentation for future developers
+- [ ] **"How to Score" educational feature provides optional strategy guidance**
 - [ ] Polished professional user experience with no rough edges
 - [ ] Automated tests cover critical game functionality
 - [ ] Performance meets family gaming requirements on older devices

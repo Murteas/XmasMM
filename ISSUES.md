@@ -7,29 +7,6 @@
 
 ## 🚨 Open Issues
 
-### **UI-003: Misleading Live Score During Gameplay** 🔧 NEEDS FIX
-
-**Issue ID**: UI-003  
-**Date Reported**: July 12, 2025  
-**Severity**: Medium  
-**Status**: 🔧 Open  
-**Related Task**: Scoring system consistency
-
-## Problem Description
-During gameplay, the score display shows legacy scoring (1000 - guesses*100) but at game end it switches to element-based scoring with completely different logic. This creates a confusing and misleading user experience.
-
-## Current Inconsistent Behavior
-- **During Game**: Shows `Score: 700` (calculated as 1000 - 3*100)
-- **Game End**: Shows `Pattern Points: 400 (2 Gold Stars)  Complete: +300  Total: 700`
-
-While totals might coincidentally match, the underlying calculation methods are completely different, making the live score meaningless and potentially misleading for strategy.
-
-## Proposed Solution
-Replace misleading live score with clear progress indicator:
-- Change `Score: 700` to `Guesses: 3/10` or similar
-- Reserve actual scoring for the educational breakdown at game end
-- Maintain focus on strategic thinking rather than score optimization during play
-
 ### **UI-002: Quality Indicator Border Visibility Still Poor** 🔧 NEEDS FIX
 
 **Issue ID**: UI-002  
@@ -163,6 +140,28 @@ TestRunner.runTest('score-breakdown', {
 ---
 
 ## 📋 Closed Issues
+
+### **UI-003: Misleading Live Score During Gameplay** ✅ RESOLVED
+
+**Issue ID**: UI-003  
+**Date Reported**: July 12, 2025  
+**Date Resolved**: July 12, 2025  
+**Severity**: Medium  
+**Status**: ✅ Closed  
+**Related Task**: Scoring system consistency
+
+## Problem Description (RESOLVED)
+During gameplay, the score display showed legacy scoring (1000 - guesses*100) but at game end it switched to element-based scoring with completely different logic, creating a confusing user experience.
+
+## Solution Implemented
+Replaced misleading live score with clear progress indicator:
+- Changed `Score: 700` to `Guesses: 3/10`
+- Reserved actual scoring for the educational breakdown at game end
+- Now focuses on strategic thinking rather than score optimization during play
+
+## Files Modified
+- `js/managers/UILayoutManager.js` - Updated display text to show guess progress
+- `js/managers/ScoreManager.js` - Modified updateScoreDisplay method
 
 ### **SCORE-001: Score Calculation and Display Issues** ✅ RESOLVED
 
