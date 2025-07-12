@@ -7,6 +7,77 @@
 
 ## 🚨 Open Issues
 
+### **MOBILE-001: Round Over Scene Space Utilization** 🔧 NEEDS IMPROVEMENT
+
+**Issue ID**: MOBILE-001  
+**Date Reported**: July 12, 2025  
+**Severity**: Medium  
+**Status**: 🔧 Open  
+**Related Task**: GameScreenMobileOptimization
+
+## Problem Description
+Round over scene doesn't utilize available vertical space effectively, especially on larger mobile screens like iPhone XR. Score display appears to use only ~60% of available screen height.
+
+## Current State
+- Score breakdown displays correctly but with minimal spacing
+- Large amount of unused vertical space below score elements
+- Font sizes appropriate but could be larger for better readability
+- Visual hierarchy could be improved with better spacing ratios
+
+## Expected Behavior
+- Better utilization of available vertical space for improved readability
+- Larger spacing between score elements for cleaner visual hierarchy
+- Optimized font sizes and element positioning for mobile screens
+- Enhanced visual presentation while maintaining functionality
+
+## Impact
+- Suboptimal mobile user experience
+- Missed opportunity for better readability and visual appeal
+- Screen real estate not effectively utilized for family gaming
+
+## Evidence
+- Screenshot feedback showing significant unused vertical space
+- Mobile evaluation framework identifies poor space utilization
+- Current implementation focuses on functionality over mobile UX optimization
+
+### **MOBILE-002: Score Messaging Clarity** 🔧 NEEDS IMPROVEMENT
+
+**Issue ID**: MOBILE-002  
+**Date Reported**: July 12, 2025  
+**Severity**: Medium  
+**Status**: 🔧 Open  
+**Related Task**: GameScreenMobileOptimization
+
+## Problem Description
+Score breakdown uses unclear messaging ("Complete: +300") and provides minimal explanation for speed bonus calculation, making it difficult for users to understand scoring components.
+
+## Current State
+- "Complete: +300" message unclear about what was completed
+- Speed bonus shows value but lacks context about time-based scoring
+- Users may not understand how scoring components are calculated
+- Minimal explanation of time limits and speed bonus mechanics
+
+## Expected Behavior
+- Clear, descriptive messaging explaining each score component
+- Enhanced speed bonus explanation with time context
+- User-friendly labels that help family members understand scoring
+- Contextual information about time taken vs. time limits
+
+## Proposed Solutions
+- Replace "Complete: +300" with clearer options:
+  - "Puzzle Solved: +300"
+  - "Correct Pattern: +300" 
+  - "Solution Found: +300"
+- Enhance speed bonus with time context:
+  - Show time taken vs. time limit
+  - Explain how speed affects bonus calculation
+  - Provide encouraging context for time-based scoring
+
+## Impact
+- Users may not understand scoring system
+- Reduced educational value of the feedback
+- Missed opportunity to teach strategy and time management
+
 ### **UI-002: Quality Indicator Border Visibility Still Poor** 🔧 NEEDS FIX
 
 **Issue ID**: UI-002  
@@ -82,16 +153,47 @@ grep -r "assets/" js/ --include="*.js" | sort | uniq
 - `js/scenes/RoundOver.js` - Asset reference patterns
 - `js/managers/*.js` - Asset usage in managers
 
-### **TEST-001: Testing Infrastructure Not AI-Agent Friendly** 🔧 NEEDS IMPROVEMENT
+### **TEST-001: Testing Infrastructure Not AI-Agent Friendly** 🔧 PARTIALLY RESOLVED
 
 **Issue ID**: TEST-001  
 **Date Reported**: July 12, 2025  
+**Last Updated**: July 12, 2025  
 **Severity**: Medium  
-**Status**: 🔧 Open  
+**Status**: 🔧 Partially Resolved  
 **Related Task**: Should be addressed before Testing task
 
 ## Problem Description
 Current testing infrastructure requires manual gameplay to reach specific game states and doesn't provide AI agents with useful feedback or results. Tests exist but are not effectively usable for automated development workflow.
+
+## Recent Progress ✅
+- **Mobile Evaluation Framework**: Created `tests/test_mobile_evaluation.html` with AI-readable console output
+- **Automated Analysis**: `scripts/mobile_evaluation.py` provides status analysis and debug output
+- **Debug Infrastructure**: Console-based reporting system for layout validation
+- **Issue Detection**: Automated identification of mobile UX problems with severity classification
+
+## Remaining Limitations ⚠️
+- **Game State Setup**: Still requires manual gameplay for specific scenarios
+- **Cross-Scene Testing**: Limited automated flow between different game screens
+- **Score Scenario Testing**: Manual setup needed for different score combinations
+- **Complete AI Integration**: Framework exists but needs integration into main workflow
+
+## Expected Behavior
+Tests should provide:
+- **Automated State Setup**: Create specific game scenarios programmatically ✅ PARTIAL
+- **AI-Readable Output**: Generate test reports in files/console that AI can analyze ✅ COMPLETE
+- **Comprehensive Coverage**: Test all major game states without manual intervention ⚠️ PARTIAL
+- **Debug Information**: Detailed logging and state snapshots for issue identification ✅ COMPLETE
+
+## Next Steps
+1. **Integrate Mobile Framework**: Add mobile evaluation to main testing workflow
+2. **Expand Coverage**: Create frameworks for game state testing beyond mobile layout
+3. **Automated Scenarios**: Build programmatic setup for different game outcomes
+4. **Documentation**: Update testing procedures with new AI-friendly frameworks
+
+## Files Created
+- `tests/test_mobile_evaluation.html` - Mobile-specific evaluation with console output
+- `scripts/mobile_evaluation.py` - Analysis runner with AI-readable results
+- `mobile-issues-consolidation.md` - Comprehensive mobile status analysis
 
 ## Current Testing Limitations
 - **Manual Testing Required**: Developer must manually play through games to test specific scenarios

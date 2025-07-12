@@ -3,8 +3,10 @@
 ## Task ID: GSM-001
 **Priority**: Medium  
 **Assigned to**: Expert Mobile Developer + Phaser Expert  
-**Status**: Pending  
+**Status**: 📋 PENDING (blocked by MobileLayoutOptimization)  
 **Estimated Effort**: 3-4 hours  
+> 📊 **Note**: Status managed in [tasks.json](../tasks.json). Use `python scripts/automation.py status` for current state.
+
 
 ## Overview
 Optimize the spacing, layout, and messaging of the game screen and round over scene for mobile devices. While currently functional, there are opportunities to better utilize available screen space and improve user experience clarity.
