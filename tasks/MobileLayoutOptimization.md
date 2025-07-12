@@ -52,12 +52,22 @@ Family members primarily play on mobile devices. Poor mobile layouts frustrate u
 - Fix game over text positioning to prevent cutoff
 - Ensure Christmas legend doesn't overlap with critical UI elements
 
-### 5. Add Mobile-Specific CSS and Viewport Meta
+### 5. Fix RoundOver Score Explanation Text Wrapping
+- **Problem**: Score breakdown text runs off mobile screen edges (`breakdownParts.join('  ')` creates single long line)
+- **Impact**: Players can't read complete score explanation on mobile devices
+- **Solution**: Add proper text wrapping with `wordWrap: { width: width * 0.9 }` and multi-line layout
+
+### 6. Clean Up Redundant Round/Guess Display
+- **Problem**: UILayoutManager shows both `guessesText` (remaining) and `scoreText` (used/total) creating redundant displays
+- **Impact**: Cluttered UI with duplicate information confusing to players
+- **Solution**: Consolidate to single clear guess counter or differentiate their purposes
+
+### 7. Add Mobile-Specific CSS and Viewport Meta
 - Update index.html with proper mobile viewport meta tag
 - Add CSS rules to prevent zooming and ensure consistent rendering
 - Test touch target sizes meet mobile accessibility guidelines (44px minimum)
 
-### 6. Comprehensive Mobile Testing Framework
+### 8. Comprehensive Mobile Testing Framework
 - Create test script that simulates common mobile screen sizes
 - Test on iPhone XR (414x896), iPhone SE (375x667), Android (360x640)
 - Validate all buttons are reachable without scrolling
@@ -66,8 +76,8 @@ Family members primarily play on mobile devices. Poor mobile layouts frustrate u
 ## Files to Create/Modify
 - `js/utils/GameUtils.js` - Add mobile layout utility functions
 - `js/scenes/DifficultySelection.js` - Fix confirm button positioning
-- `js/scenes/RoundOver.js` - Fix action button layout for mobile
-- `js/managers/UILayoutManager.js` - Fix back button and game over text positioning
+- `js/scenes/RoundOver.js` - Fix action button layout for mobile + score explanation text wrapping
+- `js/managers/UILayoutManager.js` - Fix back button, game over text positioning, and redundant guess displays
 - `index.html` - Add proper mobile viewport meta tag and CSS
 - `tests/test_mobile_layout.html` - New mobile layout test file
 
@@ -83,6 +93,8 @@ Family members primarily play on mobile devices. Poor mobile layouts frustrate u
 - [ ] Touch targets meet 44px minimum size requirement
 - [ ] Consistent mobile experience across all game screens
 - [ ] No UI elements cut off by browser chrome or device features
+- [ ] Score explanation text wraps properly on mobile screens
+- [ ] Redundant guess/round displays consolidated for clarity
 - [ ] Family members can easily navigate on mobile without frustration
 - [ ] Game remains playable in both portrait and landscape orientations
 
