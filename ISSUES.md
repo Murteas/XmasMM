@@ -7,7 +7,34 @@
 
 ## 🚨 Open Issues
 
-*No open issues currently*
+### **UI-001: Score Breakdown Not Displaying on Game Over Screen** 🔧 NEEDS FIX
+
+**Issue ID**: UI-001  
+**Date Reported**: July 12, 2025  
+**Severity**: Medium  
+**Status**: 🔧 Open  
+**Related Task**: RoundOverScene (marked COMPLETED but incomplete)
+
+## Problem Description
+The Game Over screen only shows the final score (e.g., "Score: 300 points") but does not display the detailed score breakdown that shows how the score was calculated, despite the breakdown logic being implemented in the code.
+
+## Expected Behavior (from RoundOverScene task requirements)
+Should display: "**Scoring breakdown shows formula: Elements + Complete + Speed - Hint = Total**"
+Example: `Elements: 200  Complete: +500  Speed Bonus: +50  Hint: -250`
+
+## Current Behavior  
+Only shows: `Score: 300 points` (no breakdown visible)
+
+## Root Cause Analysis Needed
+- ✅ Code exists in `RoundOver.js` createScoreDisplay() method
+- ❓ Score breakdown logic has conditional checks that may be filtering out zero values
+- ❓ ScoreManager.getScoreBreakdown() may be returning unexpected data structure
+- ❓ Breakdown text may be positioned off-screen or styled invisibly
+
+## Priority Justification
+- **Family-friendly transparency**: Players should understand how scores are calculated
+- **Educational value**: Helps players learn the scoring system
+- **Task completion**: RoundOverScene marked as COMPLETED but key requirement missing
 
 ---
 
