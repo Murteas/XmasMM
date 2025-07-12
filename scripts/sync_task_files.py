@@ -21,14 +21,15 @@ def sync_task_files():
     updated_files = []
     
     for task_id, task_data in data['tasks'].items():
-        # Find corresponding task file
-        task_files = list(tasks_dir.glob(f"Task_{task_id}_*.md"))
-        
-        if not task_files:
-            print(f"⚠️ No file found for task {task_id}")
-            continue
-            
-        task_file = task_files[0]
+        # Find corresponding task file - first try new naming convention, then old
+        task_file = tasks_dir / f"{task_id}.md"
+        if not task_file.exists():
+            # Try old naming pattern as fallback
+            task_files = list(tasks_dir.glob(f"Task_{task_id}_*.md"))
+            if not task_files:
+                print(f"⚠️ No file found for task {task_id}")
+                continue
+            task_file = task_files[0]
         
         # Read current content
         with open(task_file, 'r', encoding='utf-8') as f:
