@@ -7,6 +7,58 @@
 
 ## 🚨 Open Issues
 
+### **ASSET-001: Asset Cleanup and Optimization Needed** 🔧 NEEDS CLEANUP
+
+**Issue ID**: ASSET-001  
+**Date Reported**: July 12, 2025  
+**Severity**: Medium  
+**Status**: 🔧 Open  
+**Related Task**: Affects mobile performance and testing efficiency
+
+## Problem Description
+Current asset folder contains unnecessary large images that slow down browser loading during development and testing. Some assets may be unused or could be replaced with smaller alternatives. Asset loading affects mobile performance and localhost testing speed.
+
+## Current Asset Issues Identified
+- **Large File Sizes**: Some images may be unnecessarily large for web delivery
+- **Unused Assets**: Potential duplicate or unused image files taking up space
+- **Loading Performance**: Slow asset transfer affects testing iteration speed
+- **Mobile Impact**: Large assets negatively affect mobile device performance
+- **Potential Element Changes**: May want to replace mistletoe with candy canes using existing images
+
+## Expected Improvements
+- **Faster Loading**: Optimized assets for quicker browser transfer
+- **Reduced Bundle Size**: Remove unused assets to minimize download
+- **Better Mobile Performance**: Right-sized images for mobile devices
+- **Efficient Testing**: Faster localhost loading during development
+- **Asset Flexibility**: Clean asset structure for easy element swapping
+
+## Proposed Actions
+1. **Asset Audit**: Review all files in `assets/` folder for usage and necessity
+2. **Size Optimization**: Compress large images while maintaining quality
+3. **Unused File Removal**: Identify and remove assets not referenced in code
+4. **Resolution Analysis**: Verify 1x/2x/3x images are appropriately sized
+5. **Element Alternatives**: Evaluate candy cane replacement for mistletoe
+6. **Loading Strategy**: Consider asset loading optimization techniques
+
+## Impact Areas
+- **Development Speed**: Faster testing and iteration cycles
+- **Mobile Performance**: Better game experience on mobile devices
+- **Bandwidth Usage**: Reduced data usage for players
+- **Code Maintenance**: Cleaner asset structure for future development
+
+## Investigation Needed
+```bash
+# Check current asset usage
+find assets/ -name "*.png" -exec ls -lh {} \; | sort -k5 -hr
+grep -r "assets/" js/ --include="*.js" | sort | uniq
+```
+
+## Files to Review
+- `assets/*.png` - All image files for size and usage analysis
+- `js/scenes/GameScene.js` - Asset loading logic
+- `js/scenes/RoundOver.js` - Asset reference patterns
+- `js/managers/*.js` - Asset usage in managers
+
 ### **TEST-001: Testing Infrastructure Not AI-Agent Friendly** 🔧 NEEDS IMPROVEMENT
 
 **Issue ID**: TEST-001  
