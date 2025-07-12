@@ -8,7 +8,7 @@
 
 **ONBOARDING CHECKLIST - Before doing anything else, please:**
 
-1. **🚨 CHECK ISSUES FIRST**: Read `ISSUES.md` for any blocking system problems that need immediate attention
+1. **🚨 CHECK ISSUES FIRST**: Read `ISSUES.md` for any blocking system problems that need immediate attention (kept under ~200 lines for quick scanning)
 2. **Check current status**: Read `PROJECT_STATUS.md` for real-time project state
 3. **Understand the system**: Review `TASK_MANAGEMENT.md` for the complete AI agent guide  
 4. **Validate automation**: Run `python scripts/automation.py status` to see exactly where we are
@@ -49,7 +49,8 @@
 ---
 
 ## Essential Context Files:
-- **`ISSUES.md`** - 🚨 **CHECK FIRST** - Blocking system problems requiring immediate attention
+- **`ISSUES.md`** - 🚨 **CHECK FIRST** - Active issues requiring immediate attention (recent history + archive system)
+- **`issues/archived/`** - 📁 Historical issue archive for deeper investigation when needed
 - **`PROJECT_STATUS.md`** - Real-time project state (auto-updated) **← START HERE**
 - **`tasks.json`** - Master task registry (MOST IMPORTANT)
 - **`TASK_MANAGEMENT.md`** - Complete AI agent guide and system documentation
