@@ -358,7 +358,10 @@ class RoundOver extends Phaser.Scene {
       navigator.share({
         title: 'XmasMM Score',
         text: shareText
-      }).catch(err => console.log('Share cancelled'));
+      }).catch(err => {
+        console.log('Share cancelled');
+        this.showShareCancelledFeedback();
+      });
     } else {
       // Fallback: copy to clipboard
       navigator.clipboard.writeText(shareText).then(() => {
@@ -386,6 +389,25 @@ class RoundOver extends Phaser.Scene {
       targets: feedback,
       alpha: 0,
       duration: 2000,
+      onComplete: () => feedback.destroy()
+    });
+  }
+
+  showShareCancelledFeedback() {
+    const { width, height } = this.cameras.main;
+    
+    const feedback = this.add.text(width / 2, height - 40, 'Share cancelled', {
+      font: '14px Arial',
+      fill: '#f39c12',
+      backgroundColor: '#000',
+      padding: { left: 10, right: 10, top: 5, bottom: 5 }
+    }).setOrigin(0.5);
+    
+    // Fade out after 1.5 seconds
+    this.tweens.add({
+      targets: feedback,
+      alpha: 0,
+      duration: 1500,
       onComplete: () => feedback.destroy()
     });
   }
@@ -520,9 +542,9 @@ class RoundOver extends Phaser.Scene {
         category: 'learning',
         label: 'Keep trying!',
         description: 'Every guess teaches us something!',
-        color: '#2196F3', // Blue
-        colorHex: 0x2196F3, // Blue for Phaser
-        bgColor: 'rgba(33, 150, 243, 0.1)'
+        color: '#00E5FF', // Bright cyan - much more visible on blue background
+        colorHex: 0x00E5FF, // Bright cyan for Phaser
+        bgColor: 'rgba(0, 229, 255, 0.1)'
       };
     }
   }
