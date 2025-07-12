@@ -65,8 +65,8 @@ class DocumentationUpdater:
         
         # Update current task file reference
         if state['current_task']:
-            task_file_pattern = r'- `tasks/Task_\d+_[^.]+\.md` - Current task details'
-            task_file_name = f"Task_{state['current_task']['id']}_{state['current_task']['name'].replace(' ', '')}.md"
+            task_file_pattern = r'- `tasks/[^.]+\.md` - Current task details'
+            task_file_name = f"{state['current_task']['id']}.md"
             new_task_file = f"- `tasks/{task_file_name}` - Current task details"
             content = re.sub(task_file_pattern, new_task_file, content)
         
@@ -147,8 +147,8 @@ class DocumentationUpdater:
         
         # Update current task
         if state['current_task']:
-            task_pattern = r'\*\*Current Task\*\*: Task \d+ - [^\n]+'
-            new_task = f"**Current Task**: Task {state['current_task']['id']} - {state['current_task']['name']}"
+            task_pattern = r'\*\*Current Task\*\*: [^\n]+'
+            new_task = f"**Current Task**: {state['current_task']['id']} - {state['current_task']['name']}"
             content = re.sub(task_pattern, new_task, content)
             
             # Update description

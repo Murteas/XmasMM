@@ -38,8 +38,8 @@ def update_readme_from_tasks():
 **Overall Progress**: {progress['percentage']}% complete ({progress['completed']}/{progress['total']} tasks)"""
     
     # Generate navigation section
-    next_link = f"[Task_{next_task['id']}_{next_task['name'].replace(' ', '')}.md](tasks/Task_{next_task['id']}_{next_task['name'].replace(' ', '')}.md)" if next_task else "Project Complete!"
-    current_link = f"[Task_{active_task['id']}_{active_task['name'].replace(' ', '')}.md](tasks/Task_{active_task['id']}_{active_task['name'].replace(' ', '')}.md)"
+    next_link = f"[{next_task['id']}.md](tasks/{next_task['id']}.md)" if next_task else "Project Complete!"
+    current_link = f"[{active_task['id']}.md](tasks/{active_task['id']}.md)"
     
     new_navigation = f"""## 📋 Quick Navigation
 - **✅ Complete**: All mobile foundation tasks (5A-5D) ✅
