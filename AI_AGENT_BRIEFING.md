@@ -8,10 +8,11 @@
 
 **ONBOARDING CHECKLIST - Before doing anything else, please:**
 
-1. **Check current status**: Read `PROJECT_STATUS.md` for real-time project state
-2. **Understand the system**: Review `TASK_MANAGEMENT.md` for the complete AI agent guide  
-3. **Validate automation**: Run `python scripts/automation.py status` to see exactly where we are
-4. **Review current task**: Run `python scripts/automation.py help` for detailed current task information
+1. **🚨 CHECK ISSUES FIRST**: Read `ISSUES.md` for any blocking system problems that need immediate attention
+2. **Check current status**: Read `PROJECT_STATUS.md` for real-time project state
+3. **Understand the system**: Review `TASK_MANAGEMENT.md` for the complete AI agent guide  
+4. **Validate automation**: Run `python scripts/automation.py status` to see exactly where we are
+5. **Review current task**: Run `python scripts/automation.py help` for detailed current task information
 
 **AUTOMATION SYSTEM OVERVIEW**:
 - **Single source of truth**: `tasks.json` contains all current project state
@@ -36,17 +37,19 @@
 *For terminal command syntax and technical details, see `TECHNICAL_GUIDELINES.md`*
 
 **VALIDATION CHECKLIST**:
-1. ✅ You can access and read `PROJECT_STATUS.md` for current state
-2. ✅ You can access and read `tasks.json` for task definitions
-3. ✅ The automation scripts work on your system (`python scripts/automation.py status`)
-4. ✅ Current task status matches between PROJECT_STATUS.md and automation.py status
-5. ✅ **TESTING REQUIREMENT**: Any code changes must be tested with local server (`python -m http.server 8000`) and comprehensive test suite
+1. ✅ **CRITICAL**: Read `ISSUES.md` for any blocking problems before starting work
+2. ✅ You can access and read `PROJECT_STATUS.md` for current state
+3. ✅ You can access and read `tasks.json` for task definitions
+4. ✅ The automation scripts work on your system (`python scripts/automation.py status`)
+5. ✅ Current task status matches between PROJECT_STATUS.md and automation.py status
+6. ✅ **TESTING REQUIREMENT**: Any code changes must be tested with local server (`python -m http.server 8000`) and comprehensive test suite
 
 **Only after confirming the task system is working should you proceed with actual development work.**
 
 ---
 
 ## Essential Context Files:
+- **`ISSUES.md`** - 🚨 **CHECK FIRST** - Blocking system problems requiring immediate attention
 - **`PROJECT_STATUS.md`** - Real-time project state (auto-updated) **← START HERE**
 - **`tasks.json`** - Master task registry (MOST IMPORTANT)
 - **`TASK_MANAGEMENT.md`** - Complete AI agent guide and system documentation
