@@ -221,14 +221,17 @@
     let testOverlayVisible = false;
 
     // Initialize game with mobile optimization
+    // Check if we should start with a specific device simulation
+    const defaultDevice = { width: 414, height: 896 }; // iPhone XR as default
+    
     const config = {
       type: Phaser.AUTO,
-      width: window.innerWidth,
-      height: window.innerHeight,
+      width: defaultDevice.width,
+      height: defaultDevice.height,
       parent: 'game-container',
       backgroundColor: '#1a1a2e',
       scale: {
-        mode: Phaser.Scale.RESIZE,
+        mode: Phaser.Scale.NONE, // Use NONE to prevent auto-scaling issues
         autoCenter: Phaser.Scale.CENTER_BOTH
       },
       scene: [MainMenu, DifficultySelection, GameScene, RoundOver],
@@ -734,7 +737,28 @@
       setTimeout(() => {
         try {
           console.log('Initializing game...');
+          
+          // Set up default device simulation BEFORE game initialization
+          if (typeof GameUtils !== 'undefined') {
+            GameUtils._simulatedViewport = {
+              width: defaultDevice.width,
+              height: defaultDevice.height,
+              devicePixelRatio: window.devicePixelRatio || 1,
+              aspectRatio: defaultDevice.width / defaultDevice.height,
+              isSmallDevice: defaultDevice.width <= 375,
+              isStandardDevice: defaultDevice.width >= 414 && defaultDevice.width <= 428,
+              orientation: defaultDevice.height > defaultDevice.width ? 'portrait' : 'landscape'
+            };
+            console.log(`🎯 Pre-initialized simulated viewport:`, GameUtils._simulatedViewport);
+          }
+          
           game = new Phaser.Game(config);
+          
+          // Set up device simulation UI after game loads
+          setTimeout(() => {
+            setDeviceSize(defaultDevice.width, defaultDevice.height);
+          }, 100);
+          
           updateFPS();
           updateDeviceMetrics();
           

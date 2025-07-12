@@ -18,7 +18,9 @@ class ActiveRowManager {
       this.removeActiveRow();
     }
 
-    const { width, height } = this.scene.cameras.main;
+    // Use mobile viewport for proper device simulation support
+    const viewport = GameUtils.getMobileViewport();
+    const { width, height } = viewport;
     const codeLength = this.scene.codeLength;
     
     // Initialize the active row guess array
@@ -43,7 +45,9 @@ class ActiveRowManager {
   }
 
   calculateActiveRowPosition() {
-    const { width, height } = this.scene.cameras.main;
+    // Use mobile viewport for proper device simulation support
+    const viewport = GameUtils.getMobileViewport();
+    const { width, height } = viewport;
     const isSmallScreen = width < 500;
     const isVerySmallScreen = width < 400;
     

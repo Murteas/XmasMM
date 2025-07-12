@@ -59,7 +59,7 @@ class RoundOver extends Phaser.Scene {
   }
 
   createScoreDisplay() {
-    const { width } = this.cameras.main;
+    const { width, height } = this.cameras.main;
     const scoreY = 140;
     
     const breakdown = this.gameData.scoreManager.getScoreBreakdown();
@@ -86,10 +86,10 @@ class RoundOver extends Phaser.Scene {
     
     let pointsExplanation = [];
     if (perfectCount > 0) {
-      pointsExplanation.push(`${perfectCount} Gold Star${perfectCount > 1 ? 's' : ''} (${perfectCount}×200)`);
+      pointsExplanation.push(`${perfectCount} Star${perfectCount > 1 ? 's' : ''} (${perfectCount}×200)`);
     }
     if (closeCount > 0) {
-      pointsExplanation.push(`${closeCount} Silver Bell${closeCount > 1 ? 's' : ''} (${closeCount}×100)`);
+      pointsExplanation.push(`${closeCount} Bell${closeCount > 1 ? 's' : ''} (${closeCount}×100)`);
     }
     
     if (pointsExplanation.length === 0) {

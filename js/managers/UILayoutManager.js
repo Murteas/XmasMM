@@ -10,7 +10,9 @@ class UILayoutManager {
   }
 
   setupUI() {
-    const { width, height } = this.scene.cameras.main;
+    // Use mobile viewport for proper device simulation support
+    const viewport = GameUtils.getMobileViewport();
+    const { width, height } = viewport;
     
     // Title
     this.scene.add.text(width / 2, 30, 'XmasMM', {
@@ -24,7 +26,9 @@ class UILayoutManager {
   }
 
   setupHeaderLayout() {
-    const { width } = this.scene.cameras.main;
+    // Use mobile viewport for proper device simulation support
+    const viewport = GameUtils.getMobileViewport();
+    const { width } = viewport;
     
     // Determine layout based on screen width
     const isSmallScreen = width < 400;
@@ -37,7 +41,9 @@ class UILayoutManager {
   }
 
   setupStackedHeader() {
-    const { width, height } = this.scene.cameras.main;
+    // Use mobile viewport for proper device simulation support
+    const viewport = GameUtils.getMobileViewport();
+    const { width, height } = viewport;
     
     // Expert mobile responsive layout with consolidated display
     const layout = GameUtils.getResponsiveLayout(width, height);
@@ -119,7 +125,9 @@ class UILayoutManager {
   }
 
   setupButtons() {
-    const { width, height } = this.scene.cameras.main;
+    // Use mobile viewport for proper device simulation support
+    const viewport = GameUtils.getMobileViewport();
+    const { width, height } = viewport;
     
     // Submit button (hidden since we're using integrated button in active row)
     this.submitBtn = this.scene.add.text(width - 70, 300, 'Submit', {

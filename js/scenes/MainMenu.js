@@ -149,6 +149,7 @@ class MainMenu extends Phaser.Scene {
 
   showHelpOverlay() {
     const { width, height } = this.cameras.main;
+    const layout = GameUtils.getResponsiveLayout(width, height);
     
     // Create help overlay container
     this.helpOverlay = this.add.container(0, 0);
@@ -156,14 +157,15 @@ class MainMenu extends Phaser.Scene {
     // Background
     const helpBg = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.9);
     
-    // Title
-    const helpTitle = this.add.text(width / 2, height * 0.15, '🎄 How to Play XmasMM 🎄', {
-      font: '28px Arial',
+    // Title with responsive sizing
+    const helpTitle = this.add.text(width / 2, height * 0.08, '🎄 How to Play XmasMM 🎄', {
+      font: `${Math.round(24 * layout.fontScale)}px Arial`,
       fill: '#fff',
       fontStyle: 'bold',
       align: 'center'
     }).setOrigin(0.5);
-      // Instructions with emojis for family-friendly appeal
+
+    // Instructions with mobile-optimized spacing
     const instructions = [
       '🎯 Goal: Guess Santa\'s secret Christmas code!',
       '',
@@ -174,8 +176,8 @@ class MainMenu extends Phaser.Scene {
       '• Tap Submit when your guess is complete',
       '',
       '💡 Christmas Feedback Symbols:',
-      '• ★ Gold Star = Perfect! Right element, right spot',
-      '• 🔔 Gold Bell = Close! Right element, wrong spot', 
+      '• ★ Star = Perfect! Right element, right spot',
+      '• 🔔 Bell = Close! Right element, wrong spot', 
       '• (No symbol) = Element not in the secret code',
       '',
       '📝 Example: If secret is [🎅🎁🎄🪴] and you guess [🎅🪴🎄🌟]:',
@@ -186,20 +188,25 @@ class MainMenu extends Phaser.Scene {
       '🏆 Win by guessing the complete code!'
     ];
 
-    const instructionText = this.add.text(width / 2, height * 0.48, instructions.join('\n'), {
-      font: '14px Arial',
+    const instructionText = this.add.text(width / 2, height * 0.38, instructions.join('\n'), {
+      font: `${Math.round(12 * layout.fontScale)}px Arial`,
       fill: '#fff',
       align: 'left',
-      lineSpacing: 5,
-      wordWrap: { width: width * 0.9 }
+      lineSpacing: Math.round(2 * layout.fontScale),
+      wordWrap: { width: width * 0.85 }
     }).setOrigin(0.5);
 
-    // Close button - moved higher for mobile accessibility
-    const closeBtn = this.add.text(width / 2, height * 0.82, 'Got it! Let\'s Play! 🎄', {
-      font: '18px Arial',
+    // Close button - positioned to avoid overlap
+    const closeBtn = this.add.text(width / 2, height * 0.88, 'Got it! Let\'s Play! 🎄', {
+      font: `${Math.round(16 * layout.fontScale)}px Arial`,
       fill: '#fff',
       backgroundColor: '#c0392b',
-      padding: { left: 20, right: 20, top: 10, bottom: 10 },
+      padding: { 
+        left: Math.round(16 * layout.fontScale), 
+        right: Math.round(16 * layout.fontScale), 
+        top: Math.round(8 * layout.fontScale), 
+        bottom: Math.round(8 * layout.fontScale) 
+      },
       borderRadius: 8
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     
