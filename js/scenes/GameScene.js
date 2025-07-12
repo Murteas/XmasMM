@@ -25,6 +25,14 @@ class GameScene extends Phaser.Scene {
     this.load.image('tree_1x', `${assetPath}tree_1x.png`);
     this.load.image('snowflake_1x', `${assetPath}snowflake_1x.png`);
     
+    // Load base images as fallbacks (Present.png, Star.png, Tree.png, etc.)
+    this.load.image('santa', `${assetPath}Santa.png`);
+    this.load.image('present', `${assetPath}Present.png`);
+    this.load.image('mistletoe', `${assetPath}mistletoe.png`);
+    this.load.image('star', `${assetPath}Star.png`);
+    this.load.image('tree', `${assetPath}Tree.png`);
+    this.load.image('snowflake', `${assetPath}snowflake.png`);
+    
     // Christmas feedback symbols (1x resolution)
     this.load.image('feedback_perfect_star_1x', `${assetPath}feedback_perfect_star_1x.png`);
     this.load.image('feedback_close_bell_1x', `${assetPath}feedback_close_bell_1x.png`);
@@ -174,27 +182,12 @@ class GameScene extends Phaser.Scene {
     // Map element names to the exact asset keys loaded in preload()
     const normalizedName = elementName.toLowerCase();
     
-    // MOBILE FIX: Force 1x images for now to ensure compatibility
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
-    let suffix;
-    if (isMobile) {
-      // Force 1x for mobile devices to ensure loading
-      suffix = '_1x';
-    } else {
-      // Use device pixel ratio for desktop
-      if (pixelRatio >= 3) {
-        suffix = '_3x';
-      } else if (pixelRatio >= 2) {
-        suffix = '_2x';
-      } else {
-        suffix = '_1x';
-      }
-    }
-    
+    // For now, use only 1x images to ensure compatibility across all platforms
+    // This avoids 404 errors on GitHub Pages where some asset files might be missing
+    const suffix = '_1x';
     const imageKey = `${normalizedName}${suffix}`;
     
-    // Enhanced debugging for asset loading (only show in test environments)
+    // Enhanced debugging for asset loading
     if (TestConfig.shouldShowDebugLogs()) {
       console.log(`Asset Debug: Looking for element '${elementName}' -> normalized '${normalizedName}' -> key '${imageKey}'`);
     }
@@ -210,13 +203,14 @@ class GameScene extends Phaser.Scene {
       }
     }
     
-    if (TestConfig.shouldShowDebugLogs()) console.warn(`Asset Debug: Texture not found: ${imageKey}, trying fallback`);
-    const fallbackKey = `${normalizedName}_1x`;
-    if (this.textures.exists(fallbackKey)) {
-      const fallbackTexture = this.textures.get(fallbackKey);
-      if (fallbackTexture && fallbackTexture.source && fallbackTexture.source[0]) {
-        if (TestConfig.shouldShowDebugLogs()) console.log(`Asset Debug: Using valid fallback ${fallbackKey}`);
-        return fallbackKey;
+    // Try fallback to base image without suffix (e.g., Present.png, Star.png, Tree.png)
+    if (TestConfig.shouldShowDebugLogs()) console.warn(`Asset Debug: Texture not found: ${imageKey}, trying base image fallback`);
+    const baseKey = normalizedName;
+    if (this.textures.exists(baseKey)) {
+      const baseTexture = this.textures.get(baseKey);
+      if (baseTexture && baseTexture.source && baseTexture.source[0]) {
+        if (TestConfig.shouldShowDebugLogs()) console.log(`Asset Debug: Using valid base fallback ${baseKey}`);
+        return baseKey;
       }
     }
     

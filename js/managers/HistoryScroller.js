@@ -30,7 +30,8 @@ class HistoryScroller {
       historyEndY - historyStartY, 
       0x000000, 
       0
-    ).setDepth(GameUtils.getDepthLayers().TOUCH_AREA);
+    ).setDepth(GameUtils.getDepthLayers().TOUCH_AREA)
+     .setInteractive(); // Make it interactive to receive pointer events
     
     this.setupTouchEvents();
   }
