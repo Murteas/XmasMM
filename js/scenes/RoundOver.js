@@ -26,7 +26,7 @@ class RoundOver extends Phaser.Scene {
     const { width, height } = this.cameras.main;
     
     // Set background
-    this.add.image(width / 2, height / 2, 'background')
+    this.add.image(width / 2, height / 2, 'bg')
       .setDisplaySize(width, height);
 
     // Create main content container
@@ -74,14 +74,15 @@ class RoundOver extends Phaser.Scene {
     // Score breakdown
     let breakdownParts = [];
     if (breakdown.elementPoints > 0) breakdownParts.push(`Elements: ${breakdown.elementPoints}`);
-    if (breakdown.completeBonus > 0) breakdownParts.push(`Complete: ${breakdown.completeBonus}`);
+    if (breakdown.completeBonus > 0) breakdownParts.push(`Complete: +${breakdown.completeBonus}`);
     if (breakdown.speedBonus !== 0) {
       const speedLabel = breakdown.speedBonus > 0 ? 'Speed Bonus' : 'Speed Penalty';
-      breakdownParts.push(`${speedLabel}: ${breakdown.speedBonus}`);
+      const speedSign = breakdown.speedBonus > 0 ? '+' : '';
+      breakdownParts.push(`${speedLabel}: ${speedSign}${breakdown.speedBonus}`);
     }
     if (breakdown.hintPenalty !== 0) breakdownParts.push(`Hint: ${breakdown.hintPenalty}`);
     
-    const breakdownText = this.add.text(width / 2, scoreY + 35, breakdownParts.join(' + '), {
+    const breakdownText = this.add.text(width / 2, scoreY + 35, breakdownParts.join('  '), {
       font: '14px Arial',
       fill: '#ccc'
     }).setOrigin(0.5);
