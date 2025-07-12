@@ -1,6 +1,6 @@
 # Task 7: Create Round Over Screen
 
-**Status**: 📋 PENDING (blocked by 6)  
+**Status**: 🚀 READY (depends on 6)  
 **Objective**: Create a simple end-game screen showing final score, guess history, and replay option.
 > 📊 **Note**: Status managed in [tasks.json](../tasks.json). Use `python scripts/automation.py status` for current state.
 

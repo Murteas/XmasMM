@@ -28,6 +28,11 @@
 - `python scripts/automation.py regen-docs` - Regenerate scripts documentation
 - `python scripts/sync_task_files.py` - Sync all documentation
 
+**COMMUNICATION GUIDELINES**:
+- **Default to concise summaries** - Use commit-ready messages unless details needed
+- **Check TECHNICAL_GUIDELINES.md** - Critical terminal and development rules
+- **Never use `isBackground: true`** for servers or long-running processes
+
 *For terminal command syntax and technical details, see `TECHNICAL_GUIDELINES.md`*
 
 **VALIDATION CHECKLIST**:

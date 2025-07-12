@@ -16,8 +16,25 @@ class HistoryRenderer {
     
     const { width, height } = this.scene.cameras.main;
     const isSmallScreen = width < 500;
+    const isVerySmallScreen = width < 400;
+    
+    // Calculate consistent positioning with ActiveRowManager and UILayoutManager
     const baseHeaderHeight = isSmallScreen ? 140 : 120;
-    const startY = Math.max(baseHeaderHeight, height * 0.22);
+    const headerBottomY = isVerySmallScreen ? 145 : (isSmallScreen ? 120 : 95);
+    
+    // Account for Christmas legend space
+    const legendItemHeight = 20;
+    const legendItems = 2; // perfect and close feedback symbols
+    const legendHeight = (legendItems * legendItemHeight) + 25;
+    const legendSpacing = 10;
+    
+    // History starts below header and legend
+    const startY = Math.max(
+      baseHeaderHeight, 
+      height * 0.22,
+      headerBottomY + legendSpacing + legendHeight + 10 // Consistent with legend positioning
+    );
+    
     const rowHeight = 60;
     const bottomMargin = isSmallScreen ? 60 : 80;
     const maxVisibleRows = Math.floor((height - startY - bottomMargin) / rowHeight);

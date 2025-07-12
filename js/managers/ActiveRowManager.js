@@ -45,8 +45,25 @@ class ActiveRowManager {
   calculateActiveRowPosition() {
     const { width, height } = this.scene.cameras.main;
     const isSmallScreen = width < 500;
+    const isVerySmallScreen = width < 400;
+    
+    // Calculate header layout (same as UILayoutManager)
     const baseHeaderHeight = isSmallScreen ? 140 : 120;
-    const historyStartY = Math.max(baseHeaderHeight, height * 0.22);
+    const headerBottomY = isVerySmallScreen ? 145 : (isSmallScreen ? 120 : 95);
+    
+    // Account for Christmas legend space
+    const legendItemHeight = 20;
+    const legendItems = 2; // perfect and close feedback symbols
+    const legendHeight = (legendItems * legendItemHeight) + 25;
+    const legendSpacing = 10;
+    
+    // History starts below header and legend
+    const historyStartY = Math.max(
+      baseHeaderHeight, 
+      height * 0.22,
+      headerBottomY + legendSpacing + legendHeight + 15 // Extra padding for active row
+    );
+    
     const rowHeight = 60;
     const guessHistory = this.historyManager.getGuessHistory();
     const scrollOffset = this.historyManager.getScrollOffset();

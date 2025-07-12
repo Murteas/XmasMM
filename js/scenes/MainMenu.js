@@ -175,12 +175,12 @@ class MainMenu extends Phaser.Scene {
       '• Tap Submit when your guess is complete',
       '',
       '💡 Christmas Feedback Symbols:',
-      '• ⭐ Gold Star = Perfect! Right element, right spot',
+      '• ★ Gold Star = Perfect! Right element, right spot',
       '• 🔔 Gold Bell = Close! Right element, wrong spot', 
       '• (No symbol) = Element not in the secret code',
       '',
       '📝 Example: If secret is [🎅🎁🎄🪴] and you guess [🎅🪴🎄🌟]:',
-      '   🎅⭐ 🪴🔔 🎄🔔 🌟(no symbol)',
+      '   🎅★ 🪴🔔 🎄🔔 🌟(no symbol)',
       '',
       '🎁 Santa\'s Hint: Available after a few guesses!',
       '',
@@ -226,6 +226,11 @@ class MainMenu extends Phaser.Scene {
       duration: 300,
       ease: 'Back.easeOut'
     });
+    
+    // Create feedback legend
+    const legendX = width * 0.1;
+    const legendY = height * 0.3;
+    this.createFeedbackLegend(legendX, legendY, this.helpOverlay);
   }
   
   hideHelpOverlay() {
@@ -243,5 +248,64 @@ class MainMenu extends Phaser.Scene {
         }
       });
     }
+  }
+  
+  /**
+   * Create visual feedback legend using actual game assets when available
+   * @param {number} x - X position for legend
+   * @param {number} y - Y position for legend  
+   * @param {object} container - Container to add elements to
+   */
+  createFeedbackLegend(x, y, container) {
+    const legendItems = [
+      { type: 'perfect', label: 'Perfect Match!', description: 'Right element, right spot' },
+      { type: 'close', label: 'Close Match!', description: 'Right element, wrong spot' }
+    ];
+    
+    legendItems.forEach((item, index) => {
+      const itemY = y + (index * 30);
+      
+      try {
+        // Try to use actual game assets
+        const symbolKey = this.getFeedbackImageKey ? this.getFeedbackImageKey(item.type) : null;
+        
+        if (symbolKey && this.textures.exists(symbolKey)) {
+          // Use actual game feedback symbol
+          const symbol = this.add.image(x, itemY, symbolKey)
+            .setOrigin(0, 0.5)
+            .setDisplaySize(20, 20);
+          container.add(symbol);
+          
+          const text = this.add.text(x + 30, itemY, `${item.label} - ${item.description}`, {
+            font: '14px Arial',
+            fill: '#fff'
+          }).setOrigin(0, 0.5);
+          container.add(text);
+        } else {
+          // Fallback to emoji/text
+          const fallbackSymbols = { 'perfect': '★', 'close': '🔔' };
+          const symbolText = this.add.text(x, itemY, fallbackSymbols[item.type], {
+            font: '18px Arial',
+            fill: '#FFD700'
+          }).setOrigin(0, 0.5);
+          container.add(symbolText);
+          
+          const text = this.add.text(x + 25, itemY, `${item.label} - ${item.description}`, {
+            font: '14px Arial',
+            fill: '#fff'
+          }).setOrigin(0, 0.5);
+          container.add(text);
+        }
+      } catch (error) {
+        console.warn('Could not create feedback legend item:', error);
+        // Simple fallback
+        const fallbackSymbols = { 'perfect': '★', 'close': '🔔' };
+        const text = this.add.text(x, itemY, `${fallbackSymbols[item.type]} ${item.label}`, {
+          font: '14px Arial',
+          fill: '#fff'
+        }).setOrigin(0, 0.5);
+        container.add(text);
+      }
+    });
   }
 }
