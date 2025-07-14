@@ -3,7 +3,7 @@
 ## Task ID: GSM-001
 **Priority**: Medium  
 **Assigned to**: Expert Mobile Developer + Phaser Expert  
-**Status**: 📋 PENDING (blocked by MobileLayoutOptimization)  
+**Status**: 🚀 READY (depends on MobileLayoutOptimization)  
 **Estimated Effort**: 3-4 hours  
 > 📊 **Note**: Status managed in [tasks.json](../tasks.json). Use `python scripts/automation.py status` for current state.
 
