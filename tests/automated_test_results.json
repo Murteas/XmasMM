@@ -1,0 +1,42 @@
+{
+  "timestamp": "2025-07-14T23:23:14.592Z",
+  "tests": [
+    {
+      "name": "ModuleLoader Accessibility",
+      "url": "http://localhost:8000/js/utils/ModuleLoader.js",
+      "passed": true,
+      "status": "PASS",
+      "details": "HTTP 200",
+      "httpCode": "200"
+    },
+    {
+      "name": "Comprehensive Test Page",
+      "url": "http://localhost:8000/tests/test_comprehensive.html",
+      "passed": true,
+      "status": "PASS",
+      "details": "HTTP 200",
+      "httpCode": "200"
+    },
+    {
+      "name": "Mobile Expert Test Page",
+      "url": "http://localhost:8000/tests/test_mobile_expert.html",
+      "passed": true,
+      "status": "PASS",
+      "details": "HTTP 200",
+      "httpCode": "200"
+    },
+    {
+      "name": "Debug Test Page",
+      "url": "http://localhost:8000/tests/test_module_loader_debug.html",
+      "passed": true,
+      "status": "PASS",
+      "details": "HTTP 200",
+      "httpCode": "200"
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4
+  }
+}

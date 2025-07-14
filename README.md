@@ -1,4 +1,7 @@
-# 🎄 XmasMM - Christmas Mastermind
+# 🎄 XmasMM - Christmas Ma### **Development Resources**  
+- **🧪 Testing Suite**: [`tests/README.md`](tests/README.md) - Complete testing documentation
+- **🎨 Graphics Assets**: [Graphics_Asset_Requirements.md](Graphics_Asset_Requirements.md) - Asset specifications
+- **📋 Original Requirements**: [XmasMM_PRD.md](XmasMM_PRD.md) - Historical project definitionmind
 
 **A mobile-optimized Christmas puzzle game for family fun!**
 
@@ -79,14 +82,22 @@ See [Graphics_Asset_Requirements.md](Graphics_Asset_Requirements.md) for detaile
 **Current Progress**: See [PROJECT_STATUS.md](PROJECT_STATUS.md) for real-time completion status.
 
 ## Testing & Quality Assurance
-The project includes a comprehensive test suite accessible at `/tests/`:
-- **Comprehensive Integration Test:** Validates refactored modular architecture and manager classes
-- **Canvas Optimization Test:** Validates mobile viewport improvements
-- **Responsive Layout Test:** Tests adaptation across different device sizes
-- **Touch Interaction Test:** Monitors touch events and modal behavior
-- **Debug & Performance Test:** Real-time metrics and console monitoring
-- **Device Comparison Test:** Cross-device optimization analysis
-- **Asset Loading Test:** Image loading validation with retina display support
+**AI-Agent Optimized Testing System** - Complete testing documentation available in [`tests/README.md`](tests/README.md)
+
+### Quick Start
+```bash
+cd tests && bash run_tests.sh  # Comprehensive verification
+cd tests && bash verify_tests.sh  # Quick verification
+```
+
+### Key Features
+- ✅ **Automated Verification**: Prevents false positive results for AI agents
+- ✅ **Mobile-First Testing**: Expert mobile design validation (375x667+ viewports)  
+- ✅ **Phaser.js Expert**: Advanced game framework testing with proper patterns
+- ✅ **Integration Testing**: Complete modular architecture verification
+- ✅ **Best Practices**: Clean file organization, proper dependencies, no root clutter
+
+📖 **Complete Documentation**: See [`tests/README.md`](tests/README.md) for detailed test modules, protocols, and AI agent workflows.
 
 ## Task Management System
 This project uses a machine-readable task management system optimized for agentic AI development:

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ModuleLoader Debug Test</title>
+  
+  <!-- Load Phaser first -->
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+  
+  <!-- Then load our centralized module loader -->
+  <script src="../js/utils/ModuleLoader.js"></script>
+  
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #1a1a2e;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+    .log { 
+      background: #2a2a3e; 
+      padding: 10px; 
+      margin: 5px 0; 
+      border-radius: 4px; 
+    }
+    .success { background: #2d5a2d; }
+    .error { background: #5a2d2d; }
+    .info { background: #2d4a5a; }
+  </style>
+</head>
+<body>
+  <h1>🔍 ModuleLoader Debug Test</h1>
+  <div id="log-container"></div>
+
+  <script>
+    function log(message, type = 'info') {
+      const container = document.getElementById('log-container');
+      const div = document.createElement('div');
+      div.className = `log ${type}`;
+      div.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+      container.appendChild(div);
+      console.log(`[${type.toUpperCase()}] ${message}`);
+    }
+
+    // Test ModuleLoader step by step
+    window.addEventListener('load', async () => {
+      try {
+        log('🚀 Starting ModuleLoader debug test...', 'info');
+        
+        // Check if Phaser is available
+        if (typeof Phaser !== 'undefined') {
+          log('✅ Phaser is loaded and available', 'success');
+        } else {
+          log('❌ Phaser is not available', 'error');
+        }
+        
+        // Check if ModuleLoader is available
+        if (window.ModuleLoader) {
+          log('✅ ModuleLoader is available', 'success');
+        } else {
+          log('❌ ModuleLoader is not available', 'error');
+          return;
+        }
+        
+        // Test individual module loading with detailed error reporting
+        log('📋 Testing module loading...', 'info');
+        
+        // Override the loadScript method to get detailed feedback
+        const originalLoadScript = window.ModuleLoader.loadScript;
+        window.ModuleLoader.loadScript = function(src, basePath = '') {
+          const fullPath = basePath + src;
+          log(`Attempting to load: ${fullPath}`, 'info');
+          
+          return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = fullPath;
+            script.onload = () => {
+              log(`✅ Successfully loaded: ${fullPath}`, 'success');
+              resolve();
+            };
+            script.onerror = (error) => {
+              log(`❌ Failed to load: ${fullPath} - ${error.message || 'Script error'}`, 'error');
+              reject(new Error(`Failed to load ${fullPath}`));
+            };
+            document.head.appendChild(script);
+          });
+        };
+        
+        // Now try to load modules
+        await window.ModuleLoader.initializeGame('../');
+        log('🎉 All modules loaded successfully!', 'success');
+        
+      } catch (error) {
+        log(`💥 Critical error: ${error.message}`, 'error');
+        log(`Stack trace: ${error.stack}`, 'error');
+      }
+    });
+  </script>
+</body>
+</html>

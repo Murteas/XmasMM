@@ -28,26 +28,8 @@
     <div id="results-output"></div>
   </div>
 
-  <!-- Load utility classes first -->
-  <script src="../js/utils/TestConfig.js"></script>
-  <script src="../js/utils/GameUtils.js"></script>
-  
-  <!-- Load manager classes in dependency order -->
-  <script src="../js/managers/ScoreManager.js"></script>
-  <script src="../js/managers/HistoryRenderer.js"></script>
-  <script src="../js/managers/HistoryScroller.js"></script>
-  <script src="../js/managers/ElementPicker.js"></script>
-  <script src="../js/managers/ActiveRowManager.js"></script>
-  <script src="../js/managers/HistoryManager.js"></script>
-  <script src="../js/managers/GameStateManager.js"></script>
-  <script src="../js/managers/UILayoutManager.js"></script>
-  <script src="../js/managers/GameInputHandler.js"></script>
-  
-  <!-- Load scene classes -->
-  <script src="../js/scenes/MainMenu.js"></script>
-  <script src="../js/scenes/DifficultySelection.js"></script>
-  <script src="../js/scenes/GameScene.js"></script>
-  <script src="../js/scenes/RoundOver.js"></script>
+  <!-- Load our centralized module loader -->
+  <script src="../js/utils/ModuleLoader.js"></script>
   
   <!-- Mobile Evaluation Framework -->
   <script>
@@ -373,12 +355,19 @@
     }
     
     // Initialize evaluation framework when page loads
-    window.addEventListener('load', () => {
-      new MobileEvaluationFramework();
+    window.addEventListener('load', async () => {
+      try {
+        // Load all modules using centralized ModuleLoader
+        await window.ModuleLoader.initializeGame();
+        console.log('✅ ModuleLoader completed for mobile evaluation');
+        
+        // Start evaluation framework
+        new MobileEvaluationFramework();
+      } catch (error) {
+        console.error('❌ Module loading failed:', error);
+        document.getElementById('test-status').textContent = `Status: Module Loading Failed - ${error.message}`;
+      }
     });
   </script>
-
-  <!-- Load main configuration last -->
-  <script src="../js/main.js"></script>
 </body>
 </html>
