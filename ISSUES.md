@@ -7,38 +7,42 @@
 
 ## 🚨 Open Issues
 
-### **MOBILE-001: Round Over Scene Space Utilization** 🔧 NEEDS IMPROVEMENT
+### **MOBILE-001: Round Over Scene Space Utilization & Layout** 🔧 CRITICAL
 
 **Issue ID**: MOBILE-001  
 **Date Reported**: July 12, 2025  
-**Severity**: Medium  
+**Updated**: July 14, 2025 - Consolidated with MOBILE-003  
+**Severity**: HIGH - Multiple critical mobile UX problems  
 **Status**: 🔧 Open  
 **Related Task**: GameScreenMobileOptimization
 
 ## Problem Description
-Round over scene doesn't utilize available vertical space effectively, especially on larger mobile screens like iPhone XR. Score display appears to use only ~60% of available screen height.
+Round over scene doesn't utilize available vertical space effectively (75% unused) and has critical layout issues, especially on larger mobile screens like iPhone XR.
 
-## Current State
-- Score breakdown displays correctly but with minimal spacing
-- Large amount of unused vertical space below score elements
-- Font sizes appropriate but could be larger for better readability
-- Visual hierarchy could be improved with better spacing ratios
+## Critical Issues Identified
+1. **Massive Wasted Space** - 75% of screen unused, content concentrated in top third
+2. **Touch Target Problems** - "TAP" labels unclear, input slots cramped, submit button poorly positioned
+3. **Modal Design Issues** - Feedback modal blocks interaction, no clear dismissal
+4. **Poor Visual Hierarchy** - Score elements lack visual impact, minimal spacing
 
 ## Expected Behavior
-- Better utilization of available vertical space for improved readability
-- Larger spacing between score elements for cleaner visual hierarchy
-- Optimized font sizes and element positioning for mobile screens
-- Enhanced visual presentation while maintaining functionality
+- Better vertical space utilization for improved readability
+- Larger, more prominent score and answer icons
+- Larger, bolder fonts for key labels ("Game Over", "Score", "The answer was:")
+- Optimized touch targets (44px minimum) and thumb-friendly layout
+- Bottom sheet modal design with clear dismiss gestures
+- Consider celebratory effects and motivational feedback messages
 
 ## Impact
-- Suboptimal mobile user experience
-- Missed opportunity for better readability and visual appeal
-- Screen real estate not effectively utilized for family gaming
+- Suboptimal mobile user experience and accessibility issues
+- Inefficient space usage for family gaming
+- Final score lacks visual impact, reducing user satisfaction
 
-## Evidence
-- Screenshot feedback showing significant unused vertical space
-- Mobile evaluation framework identifies poor space utilization
-- Current implementation focuses on functionality over mobile UX optimization
+## Files to Modify
+- `js/scenes/GameScene.js` - Layout restructuring and modal positioning
+- `js/managers/UILayoutManager.js` - Touch target sizing
+- `js/scenes/RoundOver.js` - Space utilization and visual enhancements
+- `styles.css` - Mobile-first responsive rules
 
 ### **MOBILE-002: Score Messaging Clarity** 🔧 NEEDS IMPROVEMENT
 
@@ -78,34 +82,35 @@ Score breakdown uses unclear messaging ("Complete: +300") and provides minimal e
 - Reduced educational value of the feedback
 - Missed opportunity to teach strategy and time management
 
-### **UI-002: Quality Indicator Border Visibility Still Poor** 🔧 NEEDS FIX
+### **UI-002: Quality Indicator Visibility & History Display** 🔧 HIGH PRIORITY
 
 **Issue ID**: UI-002  
 **Date Reported**: July 12, 2025  
-**Updated**: July 14, 2025 - **CONFIRMED in Screenshot 2**  
-**Severity**: Medium → **HIGH** (accessibility impact)  
+**Updated**: July 14, 2025 - Consolidated with MOBILE-005, confirmed critical accessibility issue  
+**Severity**: HIGH - Accessibility and usability impact  
 **Status**: 🔧 Open  
-**Related Task**: Quality Indicators display  
-**Related Issues**: MOBILE-005 (quality indicators in history view)
+**Related Task**: Quality Indicators display
 
 ## Problem Description
-Despite changing cyan color (#00E5FF), quality indicator borders are still too muted to see clearly against the blue Christmas background in the history view. **Screenshot 2 confirms this is a critical accessibility issue.**
+Quality indicator borders are barely visible against blue Christmas background, affecting entire game history readability and accessibility.
 
-## Current State
-- Cyan color improved visibility slightly
-- Borders still blend into blue background making Perfect/Close matches hard to distinguish
-- Quality text labels are visible and working well
-- **CONFIRMED**: Issue affects entire game history readability
+## Critical Issues
+1. **Border Visibility** - Cyan borders (#00E5FF) blend into background, making Perfect/Close matches hard to distinguish
+2. **History Row Spacing** - Cramped rows with minimal vertical spacing, poor touch targets
+3. **Element Size Inconsistency** - Game elements smaller in history than active row
+4. **Missing Solution Display** - No correct answer shown for post-game comparison
 
 ## Proposed Solution
-**Updated Priority Solutions** (based on Screenshot 2 analysis):
 - **PRIMARY**: White borders (#FFFFFF) with 2px minimum width
 - **SECONDARY**: Bright yellow borders (#FFD700) for maximum contrast
-- **ACCESSIBILITY**: Add background colors to quality indicators
-- **WCAG COMPLIANCE**: Ensure 4.5:1 contrast ratio minimum
+- Add background colors to quality indicators for better contrast
+- Increase vertical padding between history rows (8-12px minimum)
+- Ensure history row touch targets meet 44px minimum
+- Display correct solution at top/bottom of Guess History screen
 
 ## Files to Fix
-- `js/managers/HistoryRenderer.js` - Border styling and contrast
+- `js/managers/HistoryRenderer.js` - Border styling, contrast, and solution display
+- `js/managers/HistoryScroller.js` - Row spacing optimization
 - `styles.css` - Color definitions and accessibility standards
 
 ### **ASSET-001: Asset Cleanup and Optimization Needed** 🔧 NEEDS CLEANUP
@@ -244,75 +249,7 @@ TestRunner.runTest('score-breakdown', {
 - **Code Quality**: Better test coverage leads to more reliable game experience
 - **Workflow Improvement**: Reduces manual testing burden on developers
 
-### **MOBILE-003: Round Over Scene Space Utilization & Layout Critical Issues**
 
-**Date**: July 14, 2025  
-**Source**: Mobile developer expert screenshot analysis  
-**Severity**: 🔴 HIGH - Multiple critical mobile UX problems  
-**Status**: 🆕 NEW  
-
-**Critical Issues Identified:**
-
-1. **Massive Wasted Space** (75% of screen unused)
-   - Huge empty blue area below active game row
-   - Poor vertical space utilization on mobile viewport  
-   - Content concentrated in top third of screen
-
-2. **Touch Target & Layout Problems**
-   - "TAP" labels on input slots unclear and potentially too small
-   - Input slots appear cramped horizontally
-   - Submit button placement not optimized for thumb reach
-
-3. **Content Hierarchy Issues**
-   - "Christmas Feedback" modal obscures critical game information
-   - "Perfect Match!" feedback takes prime screen real estate
-   - Game state info (Guesses: 15, 0/15) positioning suboptimal
-
-4. **Modal Design Problems**
-   - Feedback modal blocks interaction with game
-   - No clear dismissal affordance visible
-   - Modal positioning doesn't follow mobile best practices
-
-5. **Navigation & Flow Issues**
-   - "Back" button in hard-to-reach bottom-left corner
-   - No clear indication of next action
-   - Potential dead-end state after round completion
-
-**Impact**: Poor mobile user experience, accessibility issues, inefficient space usage
-
-**Recommended Solutions**:
-- Compact layout redesign with portrait-first approach
-- Touch target optimization (minimum 44px)
-- Bottom sheet modal design with clear dismiss gestures
-- Mobile-first responsive breakpoints implementation
-
-**Specific Implementation Steps**:
-
-1. **Space Utilization Fix** - Priority: HIGH
-   - Move game history display above active input row
-   - Reduce vertical padding/margins by 60-70%
-   - Implement CSS Grid with `grid-template-rows: auto 1fr auto`
-   - Add `max-height: 80vh` to prevent excessive spacing
-
-2. **Touch Target Optimization** - Priority: HIGH
-   - Increase input slot minimum size to 44px × 44px
-   - Replace "TAP" text with intuitive icons or visual cues
-   - Add 8px minimum spacing between touch targets
-   - Move Submit button to right thumb zone (bottom-right)
-
-3. **Modal Redesign** - Priority: MEDIUM
-   - Convert feedback modal to bottom sheet design
-   - Add swipe-down dismiss gesture
-   - Position modal to preserve game state visibility
-   - Implement backdrop blur instead of full overlay
-
-4. **Files to Modify**:
-   - `js/scenes/GameScene.js` - Layout restructuring
-   - `js/managers/UILayoutManager.js` - Touch target sizing
-   - `styles.css` - Mobile-first responsive rules
-   - `js/scenes/RoundOver.js` - Modal positioning
-
----
 
 ## MOBILE-004: Performance & Rendering Optimization Needs
 
@@ -454,69 +391,6 @@ TestRunner.runTest('score-breakdown', {
 
 ---
 
-## MOBILE-005: Quality Indicator Visibility & History Display Issues
-
-**Date**: July 14, 2025  
-**Source**: Mobile developer expert screenshot analysis (Screenshot 2 - Game History)  
-**Severity**: 🟡 MEDIUM - Usability and visual clarity problems  
-**Status**: 🆕 NEW  
-
-**Critical Issues Identified:**
-
-1. **Quality Indicator Border Problems** (Confirms UI-002)
-   - Cyan borders barely visible against blue Christmas background
-   - Quality indicators difficult to distinguish between Perfect/Close matches
-   - Poor contrast ratio fails accessibility standards
-
-2. **History Row Spacing Issues**
-   - Rows appear cramped with minimal vertical spacing
-   - Touch targets for history rows may be too small for easy interaction
-   - Difficult to scan through multiple guess attempts
-
-3. **Element Size Consistency**
-   - Game elements appear smaller in history than in active row
-   - Size inconsistency creates visual hierarchy confusion
-   - May impact readability of Christmas element details
-
-4. **Modal Overlay Design Problems** (Confirms MOBILE-003)
-   - "Christmas Feedback" modal still blocks critical game information
-   - Modal positioned over game history disrupts user flow
-   - No clear visual indication of how to dismiss modal
-
-**Impact**: Reduced accessibility, difficult history review, poor visual hierarchy
-
-**Specific Implementation Steps**:
-
-1. **Quality Indicator Enhancement** - Priority: HIGH
-   - Change border color to white or bright yellow (#FFD700)
-   - Increase border width from 1px to 2px minimum
-   - Add background color to quality indicators for better contrast
-   - Implement proper WCAG 2.1 contrast ratios (4.5:1 minimum)
-
-2. **History Layout Optimization** - Priority: MEDIUM
-   - Increase vertical padding between history rows (8-12px minimum)
-   - Ensure history row touch targets meet 44px minimum
-   - Add subtle hover/tap states for interactive elements
-   - Optimize element sizing consistency across all views
-
-3. **Modal UX Improvements** - Priority: MEDIUM
-   - Reposition modal to bottom 30% of screen
-   - Add semi-transparent backdrop instead of full overlay
-   - Implement tap-outside-to-dismiss functionality
-   - Add visual dismiss affordance (X button or swipe indicator)
-
-4. **Files to Modify**:
-   - `js/managers/HistoryRenderer.js` - Quality indicator styling
-   - `js/managers/HistoryScroller.js` - Row spacing optimization
-   - `styles.css` - Contrast and accessibility improvements
-   - `js/scenes/GameScene.js` - Modal positioning logic
-
----
-
-*No open issues currently*
-
----
-
 ## 📋 Closed Issues
 
 ### **UI-003: Misleading Live Score During Gameplay** ✅ RESOLVED
@@ -640,7 +514,7 @@ This meant if a player scored 0 element points, the breakdown would be empty or 
 
 ## 🚀 Priority Recommendations for Next Work Session
 
-**Based on Screenshot Analysis (July 14, 2025) - UPDATED with Screenshot 3**
+**Based on Screenshot Analysis (July 14, 2025) - Consolidated Issues**
 
 ### **🚨 CRITICAL - GAME-BREAKING ISSUE**
 1. **MOBILE-006**: Browser UI Overlap (CRITICAL)
@@ -648,37 +522,33 @@ This meant if a player scored 0 element points, the breakdown would be empty or 
    - Must be fixed FIRST before any other work
    - Requires viewport safe area implementation
 
-### **IMMEDIATE PRIORITY** - Critical Mobile UX Issues  
-2. **UI-002** + **MOBILE-005**: Quality Indicator Visibility (HIGH)
-   - Confirmed accessibility failure across multiple screenshots
+### **HIGH PRIORITY** - Critical Mobile UX Issues  
+2. **UI-002**: Quality Indicator Visibility & History Display (HIGH)
+   - Consolidated accessibility and usability issues
    - Affects entire game history readability
    - Quick fix with high user impact
 
-3. **MOBILE-006**: Horizontal Layout Rebalancing (HIGH)
-   - Poor visual balance confirmed in Screenshot 3
-   - Professional appearance impact
-   - Feedback panel space optimization needed
+3. **MOBILE-001**: Round Over Scene Space Utilization & Layout (HIGH)
+   - Consolidated space utilization and layout issues
+   - 75% screen waste and critical touch target problems
+   - Core mobile experience blocker
 
-### **HIGH PRIORITY** - Core Mobile Experience
-4. **MOBILE-003**: Space Utilization in Round Over Scene (HIGH)  
-   - 75% screen waste confirmed in Screenshot 1
-   - Critical mobile experience issue
-   - Blocks effective mobile optimization
+### **MEDIUM PRIORITY** - Performance and Polish
+4. **MOBILE-004**: Performance Optimization (MEDIUM)
+   - Background rendering efficiency
+   - Texture management and mobile performance
 
-### **MEDIUM PRIORITY** - Polish and Performance
-5. **MOBILE-005**: History Display Improvements (MEDIUM)
-   - Row spacing and touch targets
-   - Element size consistency
-   - Modal positioning improvements
+5. **ASSET-001**: Asset Cleanup (MEDIUM)
+   - Performance optimization through asset management
 
-6. **MOBILE-004**: Performance Optimization (MEDIUM)
-   - Background rendering efficiency after layout fixes
-   - Texture management
-   - Mobile performance monitoring
-
-### **🎯 UPDATED TASK SEQUENCE RECOMMENDATION**
+### **🎯 RECOMMENDED TASK SEQUENCE**
 1. **EMERGENCY FIX**: MOBILE-006 browser overlap (CRITICAL - game breaking)
-2. **Complete Current**: MobileLayoutOptimization task (44% done) 
+2. **Complete Current**: MobileLayoutOptimization task (44% done)
+3. **Visual/UX**: UI-002 quality indicators and history display
+4. **Layout**: MOBILE-001 space utilization and touch targets
+5. **Performance**: MOBILE-004 optimizations
+
+**⚠️ Why This Order**: Browser overlap makes the game unplayable on iOS Safari. Fix blocking issues first, then core UX problems, then performance optimization. 
 3. **Visual Polish**: UI-002 + MOBILE-005 quality indicators
 4. **Layout Optimization**: MOBILE-003 space utilization  
 5. **Continue Sequence**: GameScreenMobileOptimization task

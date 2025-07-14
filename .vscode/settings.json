@@ -4,6 +4,22 @@
   "github.copilot.chat.welcomeMessage": "custom",
   "github.copilot.chat.customWelcomeMessage": "Please read AI_AGENT_BRIEFING.md before starting any work on this project.",
   "github.copilot.chat.localeOverride": "en",
+  "terminal.integrated.defaultProfile.windows": "Git Bash",
+  "terminal.integrated.shellIntegration.enabled": false,
+  "terminal.integrated.smoothScrolling": false,
+  "terminal.integrated.fastScrollSensitivity": 5,
+  "terminal.integrated.renderer": "canvas",
+  "terminal.integrated.profiles.windows": {
+    "Git Bash": {
+      "path": "C:\\Program Files\\Git\\bin\\bash.exe",
+      "args": ["--login", "-i"],
+      "env": {
+        "TERM": "xterm-256color"
+      }
+    }
+  },
+  "terminal.integrated.enablePersistentSessions": false,
+  "terminal.integrated.tabs.enabled": false,
   "github.copilot.enable": {
     "*": true,
     "plaintext": false,
