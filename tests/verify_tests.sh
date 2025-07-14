@@ -3,17 +3,6 @@
 
 echo "🧪 Verifying test results..."
 
-# Test the debug page and extract results
-echo "📋 Testing module loader debug page..."
-curl -s "http://localhost:8000/tests/test_module_loader_debug.html" > /tmp/debug_test.html
-
-# Check for success indicators in the HTML
-if grep -q "Successfully loaded" /tmp/debug_test.html; then
-    echo "✅ Debug test contains success indicators"
-else
-    echo "❌ Debug test missing success indicators"
-fi
-
 # Test the comprehensive page
 echo "📋 Testing comprehensive test page..."
 curl -s "http://localhost:8000/tests/test_comprehensive.html" > /tmp/comprehensive_test.html

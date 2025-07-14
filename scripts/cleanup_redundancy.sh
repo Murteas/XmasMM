@@ -12,15 +12,15 @@ if [ ! -f "README.md" ] || [ ! -d "tests" ]; then
     exit 1
 fi
 
-# Check for test files in wrong locations (exclude TESTING.md redirect)
+# Check for test files in wrong locations
 echo "📁 Checking for test files in root directory..."
-test_files_in_root=$(find . -maxdepth 1 -name "*test*" -type f ! -name "TESTING.md" | wc -l)
+test_files_in_root=$(find . -maxdepth 1 -name "*test*" -type f | wc -l)
 if [ "$test_files_in_root" -gt 0 ]; then
     echo "❌ Found test files in root directory:"
-    find . -maxdepth 1 -name "*test*" -type f ! -name "TESTING.md"
+    find . -maxdepth 1 -name "*test*" -type f
     echo "   These should be moved to tests/ directory"
 else
-    echo "✅ No test files in root directory (TESTING.md redirect is OK)"
+    echo "✅ No test files in root directory"
 fi
 
 # Check for duplicate documentation
@@ -29,10 +29,10 @@ echo "📚 Checking for documentation redundancy..."
 
 # Check for multiple testing docs
 testing_docs=$(find . -name "*test*" -name "*.md" | wc -l)
-if [ "$testing_docs" -gt 2 ]; then  # Allow TESTING.md + tests/README.md
+if [ "$testing_docs" -gt 1 ]; then  # Allow only tests/README.md
     echo "❌ Multiple testing documentation files found:"
     find . -name "*test*" -name "*.md"
-    echo "   Consider consolidating into tests/README.md"
+    echo "   Should only have tests/README.md"
 else
     echo "✅ Testing documentation properly consolidated"
 fi
@@ -40,10 +40,10 @@ fi
 # Check for temporary files
 echo ""
 echo "🗑️ Checking for temporary files..."
-temp_files=$(find . -name "*tmp*" -o -name "*temp*" -o -name "*debug*.html" -o -name "*backup*" | grep -v tests/ | wc -l)
+temp_files=$(find . -name "*tmp*" -o -name "*temp*" -o -name "*debug*.html" -o -name "*backup*" | grep -v tests/ | grep -v .venv | wc -l)
 if [ "$temp_files" -gt 0 ]; then
     echo "❌ Found temporary files that should be cleaned up:"
-    find . -name "*tmp*" -o -name "*temp*" -o -name "*debug*.html" -o -name "*backup*" | grep -v tests/
+    find . -name "*tmp*" -o -name "*temp*" -o -name "*debug*.html" -o -name "*backup*" | grep -v tests/ | grep -v .venv
 else
     echo "✅ No temporary files found"
 fi
@@ -63,7 +63,7 @@ fi
 echo ""
 echo "🎯 Cleanup Summary"
 echo "=================="
-if [ "$test_files_in_root" -le 1 ] && [ "$testing_docs" -le 2 ] && [ "$temp_files" -eq 0 ] && [ "$result_files" -eq 0 ]; then
+if [ "$test_files_in_root" -eq 0 ] && [ "$testing_docs" -le 1 ] && [ "$temp_files" -eq 0 ] && [ "$result_files" -eq 0 ]; then
     echo "✅ Project is clean - no redundancy detected"
     echo "✅ Following best practices for file organization"
 else

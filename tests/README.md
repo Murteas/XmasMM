@@ -6,15 +6,14 @@
 
 ### Core Test Files
 - `test_comprehensive.html` - **PRIMARY**: Integration testing of modular architecture
-- `test_mobile_expert.html` - **MOBILE**: Expert mobile optimization validation  
-- `test_module_loader_debug.html` - ModuleLoader debugging and verification
+- `test_mobile_expert.html` - **MOBILE**: MOBILE-006 ScrollableHistoryManager testing  
+- `test_mobile_evaluation.html` - **MOBILE**: Mobile device evaluation and viewport testing
 - `index.html` - Test suite navigation hub
 
-### Legacy Test Files (For Reference)
-- `test_asset_loading.html` - Asset loading verification
-- `test_canvas_optimization.html` - Canvas performance testing
-- `test_debug_performance.html` - Performance debugging
-- `test_mobile_evaluation.html` - Mobile evaluation suite
+### Specialized Test Files  
+- `test_canvas_optimization.html` - Canvas performance and mobile optimization
+- `test_asset_loading.html` - Christmas asset loading verification
+- `test_debug_performance.html` - Performance debugging and FPS monitoring
 
 ### Automation & Verification Scripts
 - `run_tests.sh` - **COMPREHENSIVE**: Full test suite with verification

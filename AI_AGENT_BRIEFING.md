@@ -34,6 +34,7 @@
 
 ### Testing & Verification (CRITICAL)
 - `cd tests && bash verify_tests.sh` - **RUN AFTER EVERY CHANGE**
+- `bash scripts/cleanup_redundancy.sh` - **PROJECT ORGANIZATION CHECK**
 - `cd tests && node automated_test_verifier.js` - Deep verification
 - `python scripts/dev_server.py` - Development server (auto-restart)
 
@@ -53,6 +54,7 @@ python scripts/dev_server.py
 
 ### Testing System (AI-Agent Optimized)
 - `tests/verify_tests.sh` - **Primary verification tool**
+- `scripts/cleanup_redundancy.sh` - **Project organization verification**
 - `tests/automated_test_verifier.js` - Deep verification
 - `tests/test_comprehensive.html` - Integration testing
 - `tests/test_mobile_expert.html` - Mobile-specific testing
@@ -98,6 +100,9 @@ class MyScene extends Phaser.Scene {
 
 ### After Making Changes
 1. **MANDATORY**: Run `cd tests && bash verify_tests.sh`
+2. **RECOMMENDED**: Run `bash scripts/cleanup_redundancy.sh` to maintain organization
+3. Update automation status: `python scripts/automation.py update-docs`
+4. Document any new patterns or lessons learned
 2. Check console for errors in browser tests
 3. Test mobile responsiveness
 4. Update documentation if architecture changed
