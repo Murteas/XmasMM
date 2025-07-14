@@ -395,6 +395,16 @@ TestRunner.runTest('score-breakdown', {
 - **Testing Instructions**: Use existing test framework button "🔧 MOBILE-006 Fix" to verify browser UI overlap protection
 - **Verification**: Test at `http://localhost:8000/tests/test_mobile_expert.html` on mobile devices
 
+**✅ ADDITIONAL FIX (July 14, 2025)**: **Active Row Overlap Issue Resolved**
+- **PROBLEM DISCOVERED**: Using "Populate 9 guesses" test revealed active row (row 10) overlapping with completed guesses
+- **ROOT CAUSE**: Insufficient spacing calculation between completed guesses and active input row
+- **CRITICAL FIX APPLIED**: 
+  - Modified `ActiveRowManager.js` - Added 15px separation between completed guesses and active row
+  - Modified `HistoryScroller.js` - Improved scroll positioning logic to prevent overlap
+  - Enhanced safe area boundary enforcement for active row positioning
+- **TESTING**: Use "🎯 Populate 9 Guesses" button in test framework to verify proper row separation
+- **RESULT**: Active row now displays with clear visual separation from completed guesses
+
 ---
 
 ## 📋 Closed Issues

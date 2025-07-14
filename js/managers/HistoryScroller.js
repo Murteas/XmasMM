@@ -124,21 +124,53 @@ class HistoryScroller {
     const hasActiveRow = this.historyManager.hasActiveRow;
     if (!hasActiveRow) return;
     
-    const { width, height } = this.scene.cameras.main;
+    // Use mobile viewport for proper device simulation support
+    const viewport = GameUtils.getMobileViewport();
+    const { width, height } = viewport;
+    const layout = GameUtils.getResponsiveLayout(width, height);
+    
     const isSmallScreen = width < 500;
+    const isVerySmallScreen = width < 400;
+    
+    // Calculate header layout (consistent with ActiveRowManager)
     const baseHeaderHeight = isSmallScreen ? 140 : 120;
-    const historyStartY = Math.max(baseHeaderHeight, height * 0.22);
-    const bottomMargin = isSmallScreen ? 60 : 80;
-    const historyEndY = height - bottomMargin;
+    const headerBottomY = isVerySmallScreen ? 145 : (isSmallScreen ? 120 : 95);
+    
+    // Account for Christmas legend space
+    const legendItemHeight = 20;
+    const legendItems = 2;
+    const legendHeight = (legendItems * legendItemHeight) + 25;
+    const legendSpacing = 10;
+    
+    // History starts below header and legend
+    const historyStartY = Math.max(
+      baseHeaderHeight, 
+      layout.contentStartY,
+      headerBottomY + legendSpacing + legendHeight + 15
+    );
+    
     const rowHeight = 60;
-    
     const guessHistory = this.historyManager.getGuessHistory();
-    const activeRowY = historyStartY + (guessHistory.length * rowHeight);
     
-    // Check if active row is below visible area
-    if (activeRowY > historyEndY - 50) {
-      const targetScroll = activeRowY - historyEndY + 100;
+    // CRITICAL FIX: Calculate active row position AFTER the last completed guess
+    const completedGuessesHeight = guessHistory.length * rowHeight;
+    const lastCompletedGuessY = historyStartY + completedGuessesHeight;
+    const activeRowSeparation = 15; // Extra space between completed guesses and active row
+    const activeRowY = lastCompletedGuessY + activeRowSeparation;
+    
+    // Use safe area aware bottom boundary
+    const historyEndY = layout.contentEndY - 30; // Respect safe area bottom
+    
+    // Check if active row needs scrolling with better logic
+    const activeRowBottomY = activeRowY + 30; // Account for active row height
+    
+    if (activeRowBottomY > historyEndY) {
+      // Calculate scroll needed to fit active row properly in safe area
+      const targetScroll = activeRowBottomY - historyEndY + 20; // Extra margin
       this.historyScrollOffset = Math.max(0, targetScroll);
+      
+      console.log(`🔄 Mobile scroll adjustment: activeRowY=${activeRowY}, historyEndY=${historyEndY}, scroll=${this.historyScrollOffset}`);
+      
       this.historyManager.refreshDisplay();
       this.historyManager.updateActiveRowPosition();
     }

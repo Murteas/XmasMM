@@ -75,13 +75,42 @@ class ActiveRowManager {
     const guessHistory = this.historyManager.getGuessHistory();
     const scrollOffset = this.historyManager.getScrollOffset();
     
-    // Calculate active row position with safe area consideration
-    let activeRowY = historyStartY + (guessHistory.length * rowHeight) - scrollOffset;
+    // CRITICAL FIX: Calculate active row position AFTER the last completed guess
+    // Position active row below the last visible completed guess
+    const completedGuessesHeight = guessHistory.length * rowHeight;
+    const lastCompletedGuessY = historyStartY + completedGuessesHeight - scrollOffset;
     
-    // CRITICAL: Ensure active row stays within safe area bounds
-    // Don't let it go below safe area (where browser UI can overlap)
-    const maxActiveRowY = layout.contentEndY - 30; // Extra margin for submit button
-    activeRowY = Math.min(activeRowY, maxActiveRowY);
+    // Add proper spacing AFTER the last completed guess
+    const activeRowSeparation = 15; // Extra space to prevent overlap
+    let activeRowY = lastCompletedGuessY + activeRowSeparation;
+    
+    // CRITICAL FIX: Don't constrain active row by contentEndY when there are many guesses
+    // The content area needs to expand to accommodate all guesses
+    const guessCount = guessHistory.length;
+    
+    if (guessCount >= 7) {
+      // For games with many guesses, allow active row to go beyond normal content area
+      // but still respect absolute safe area (browser UI)
+      const absoluteMaxY = height - 100; // Leave space for browser UI and submit button
+      activeRowY = Math.min(activeRowY, absoluteMaxY);
+      
+      console.log(`🎯 ActiveRowManager: Many guesses (${guessCount}), using extended layout`);
+      console.log(`  - Calculated activeRowY: ${lastCompletedGuessY + activeRowSeparation}`);
+      console.log(`  - Absolute max Y: ${absoluteMaxY}`);
+      console.log(`  - Final activeRowY: ${activeRowY}`);
+    } else {
+      // For normal games, use standard content area constraints
+      const maxActiveRowY = layout.contentEndY - 30; // Extra margin for submit button
+      activeRowY = Math.min(activeRowY, maxActiveRowY);
+      
+      console.log(`🎯 ActiveRowManager: Normal game (${guessCount} guesses), using standard layout`);
+      console.log(`  - Content end Y: ${layout.contentEndY}`);
+      console.log(`  - Max active row Y: ${maxActiveRowY}`);
+    }
+    
+    // Ensure it doesn't go above the content area (this constraint is always valid)
+    const minActiveRowY = layout.contentStartY + 50;
+    activeRowY = Math.max(activeRowY, minActiveRowY);
     
     return activeRowY;
   }

@@ -127,7 +127,19 @@ class GameScene extends Phaser.Scene {
     // Initialize all specialized managers
     this.gameStateManager = new GameStateManager(this);
     this.scoreManager = new ScoreManager(this);
-    this.historyManager = new HistoryManager(this);
+    
+    // Use ScrollableHistoryManager for mobile (fixes MOBILE-006 overlap issue)
+    const viewport = GameUtils.getMobileViewport();
+    const isMobile = viewport.width <= 768; // Consider mobile if width <= 768px
+    
+    if (isMobile) {
+      console.log('🔄 Using ScrollableHistoryManager for mobile device');
+      this.historyManager = new ScrollableHistoryManager(this);
+    } else {
+      console.log('🖥️ Using standard HistoryManager for desktop');
+      this.historyManager = new HistoryManager(this);
+    }
+    
     this.gameInputHandler = new GameInputHandler(this);
     
     // Initialize game state

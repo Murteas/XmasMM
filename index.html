@@ -11,32 +11,23 @@
   <link rel="icon" type="image/png" href="assets/icon.png">
   <link rel="apple-touch-icon" href="assets/icon.png">
   <link rel="stylesheet" href="styles.css">
-  <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+  
+  <!-- Centralized Module Loader -->
+  <script src="js/utils/ModuleLoader.js"></script>
 </head>
 <body>
   <div id="game-container"></div>
-  <!-- Load utility classes first -->
-  <script src="js/utils/TestConfig.js"></script>
-  <script src="js/utils/GameUtils.js"></script>
   
-  <!-- Load manager classes in dependency order -->
-  <script src="js/managers/ScoreManager.js"></script>
-  <script src="js/managers/HistoryRenderer.js"></script>
-  <script src="js/managers/HistoryScroller.js"></script>
-  <script src="js/managers/ElementPicker.js"></script>
-  <script src="js/managers/ActiveRowManager.js"></script>
-  <script src="js/managers/HistoryManager.js"></script>
-  <script src="js/managers/GameStateManager.js"></script>
-  <script src="js/managers/UILayoutManager.js"></script>
-  <script src="js/managers/GameInputHandler.js"></script>
-  
-  <!-- Load scene classes -->
-  <script src="js/scenes/MainMenu.js"></script>
-  <script src="js/scenes/DifficultySelection.js"></script>
-  <script src="js/scenes/GameScene.js"></script>
-  <script src="js/scenes/RoundOver.js"></script>
-  
-  <!-- Load main configuration last -->
-  <script src="js/main.js"></script>
+  <!-- Initialize game with centralized loading -->
+  <script>
+    // Use centralized module loading system
+    ModuleLoader.initializeGame().then(success => {
+      if (success) {
+        console.log('🎮 XmasMM ready to play!');
+      } else {
+        console.error('🚨 Failed to initialize XmasMM');
+      }
+    });
+  </script>
 </body>
 </html>
