@@ -389,6 +389,12 @@ TestRunner.runTest('score-breakdown', {
 
 **Priority**: This issue should be fixed BEFORE any other mobile work as it makes the game unplayable on iOS Safari.
 
+**✅ UPDATE (July 14, 2025)**: 
+- **CRITICAL FIX IMPLEMENTED**: Safe area support added to `ActiveRowManager.js` and `styles.css`
+- **TEST FRAMEWORK ENHANCED**: Added MOBILE-006 specific test to `tests/test_mobile_expert.html`
+- **Testing Instructions**: Use existing test framework button "🔧 MOBILE-006 Fix" to verify browser UI overlap protection
+- **Verification**: Test at `http://localhost:8000/tests/test_mobile_expert.html` on mobile devices
+
 ---
 
 ## 📋 Closed Issues

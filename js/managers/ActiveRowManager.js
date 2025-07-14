@@ -51,6 +51,9 @@ class ActiveRowManager {
     const isSmallScreen = width < 500;
     const isVerySmallScreen = width < 400;
     
+    // Get responsive layout with safe area consideration
+    const layout = GameUtils.getResponsiveLayout(width, height);
+    
     // Calculate header layout (same as UILayoutManager)
     const baseHeaderHeight = isSmallScreen ? 140 : 120;
     const headerBottomY = isVerySmallScreen ? 145 : (isSmallScreen ? 120 : 95);
@@ -64,7 +67,7 @@ class ActiveRowManager {
     // History starts below header and legend
     const historyStartY = Math.max(
       baseHeaderHeight, 
-      height * 0.22,
+      layout.contentStartY, // Use safe area aware content start
       headerBottomY + legendSpacing + legendHeight + 15 // Extra padding for active row
     );
     
@@ -72,7 +75,15 @@ class ActiveRowManager {
     const guessHistory = this.historyManager.getGuessHistory();
     const scrollOffset = this.historyManager.getScrollOffset();
     
-    return historyStartY + (guessHistory.length * rowHeight) - scrollOffset;
+    // Calculate active row position with safe area consideration
+    let activeRowY = historyStartY + (guessHistory.length * rowHeight) - scrollOffset;
+    
+    // CRITICAL: Ensure active row stays within safe area bounds
+    // Don't let it go below safe area (where browser UI can overlap)
+    const maxActiveRowY = layout.contentEndY - 30; // Extra margin for submit button
+    activeRowY = Math.min(activeRowY, maxActiveRowY);
+    
+    return activeRowY;
   }
 
   createActiveRowVisuals(activeRowY) {

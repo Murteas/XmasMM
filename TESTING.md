@@ -18,6 +18,8 @@ Central testing interface with device detection and metrics.
 - **Advanced Device Simulation**: Accurate viewport override with GameUtils integration
 - **Enhanced Scene Refresh**: Automatic scene restart for proper UI repositioning
 - **Detailed Debug Logging**: Console monitoring of viewport changes and scene updates
+- **🆕 Gameplay Simulation**: Auto-navigate to game screen with multiple guesses for MOBILE-006 testing
+- **🆕 MOBILE-006 Specific Testing**: Browser UI overlap prevention validation in real game state
 - Real-time FPS monitoring and performance validation
 - Device simulation (iPhone SE, XR, Pro Max) with pixel-perfect accuracy
 - Safe area detection and CSS env() validation
@@ -41,6 +43,55 @@ Real-time FPS and memory monitoring
 
 ### 6. **Asset Loading Test** (`test_asset_loading.html`)
 Christmas graphics loading validation
+
+---
+
+## 📋 Manual vs Automated Testing
+
+### 🤖 **Automated Testing** (Available in test framework):
+- **Device Simulation**: Button-click device switching (SE/XR/Pro Max)
+- **Performance Monitoring**: Real-time FPS and memory tracking
+- **Safe Area Detection**: CSS env() support validation
+- **Gameplay Simulation**: Auto-navigate to game screen with multiple guesses
+- **MOBILE-006 Metrics**: Submit button position and browser UI overlap calculations
+- **Touch Target Validation**: 44px minimum size compliance checking
+- **Layout Measurements**: Responsive viewport and element positioning
+
+### 👆 **Manual Testing Required** (Cannot be automated):
+- **Physical Device Testing**: Real mobile browser behavior (iOS Safari, Android Chrome)
+- **Address Bar Interaction**: Manually scroll to show/hide browser UI
+- **Touch Accuracy**: Actual finger tapping of submit button with browser UI visible
+- **Orientation Changes**: Portrait/landscape switching
+- **Real Network Conditions**: Loading performance on mobile data
+- **Accessibility**: Screen reader compatibility and voice control
+- **Real User Gestures**: Swipe, pinch-zoom, long press behaviors
+
+### 🎯 **MOBILE-006 Specific Manual Tests**:
+1. **Critical Browser UI Test**:
+   - Use `🎮 Simulate Game` button to reach game screen with multiple guesses
+   - Manually scroll up to reveal iOS Safari address bar or Android Chrome toolbar
+   - Make element selections in the game
+   - Attempt to tap submit button while browser UI is visible
+   - **Expected**: Submit button remains accessible and tappable
+   
+2. **Cross-Device Validation**:
+   - Test on iPhone with notch/Dynamic Island (safe area critical)
+   - Test on Android with gesture navigation bar
+   - Test on older devices with physical home button
+   - Verify consistent submit button accessibility across all devices
+
+3. **Browser Variation Testing**:
+   - iOS Safari (primary concern for MOBILE-006)
+   - Android Chrome
+   - Samsung Internet
+   - Firefox Mobile
+
+### 📱 **Test Workflow Recommendation**:
+1. **Start with Automated**: Use `test_mobile_expert.html` to verify metrics and simulate scenarios
+2. **Device Simulation**: Test different screen sizes using device buttons
+3. **Gameplay Simulation**: Use `🎮 Simulate Game` to reach critical game state
+4. **MOBILE-006 Validation**: Use `🔧 MOBILE-006 Fix` button to check metrics
+5. **Manual Verification**: Test on actual mobile devices with real browser UI behavior
 
 ---
 
@@ -139,18 +190,29 @@ Christmas graphics loading validation
 **Expert Mobile Test (`test_mobile_expert.html`)**:
 - [ ] FPS counter shows 55+ FPS consistently
 - [ ] Device simulation works (SE/XR/Pro Max buttons)
+- [ ] 🆕 Gameplay simulation completes (🎮 Simulate Game button)
+- [ ] 🆕 MOBILE-006 test shows submit button protection
 - [ ] Performance test completes successfully
 - [ ] Layout validation passes all checks
 - [ ] Touch target info displays correctly
 - [ ] Safe area indicators visible on supported devices
 
-**Game Flow Testing**:
+**Game Flow Testing** (Enhanced with simulation):
+- [ ] 🆕 Automated game navigation reaches multiple-guess state
+- [ ] 🆕 Submit button accessibility verified in simulated gameplay
 - [ ] Main menu buttons scale responsively
 - [ ] Difficulty selection confirm button positioned correctly (not cut off)
 - [ ] Game UI shows single progress display (not redundant counters)
 - [ ] Score explanation text wraps properly on game over
 - [ ] All buttons positioned safely within viewport
 - [ ] Touch targets feel comfortable (44px minimum)
+
+**MOBILE-006 Specific Testing** (Manual verification required):
+- [ ] 🆕 Browser address bar scrolling test completed on mobile device
+- [ ] 🆕 Submit button remains tappable with browser UI visible
+- [ ] 🆕 Safe area padding prevents button overlap
+- [ ] iOS Safari compatibility verified
+- [ ] Android Chrome compatibility verified
 
 **Cross-Device Validation**:
 - [ ] Tested on iPhone SE (375px) or similar small device
