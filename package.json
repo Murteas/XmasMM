@@ -1,0 +1,19 @@
+{
+  "name": "xmasmm-debug-tools",
+  "version": "1.0.0",
+  "description": "Debugging and testing tools for XmasMM Christmas Mastermind game",
+  "scripts": {
+    "debug-interactions": "node scripts/debug-interactions.js",
+    "test-game-structure": "node scripts/test-game-structure.js",
+    "verify-assets": "node scripts/verify-assets.js",
+    "check-mobile-layout": "node scripts/check-mobile-layout.js",
+    "start-dev": "python scripts/dev_server.py",
+    "test": "npm run verify-assets && npm run test-game-structure"
+  },
+  "devDependencies": {
+    "puppeteer": "^21.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

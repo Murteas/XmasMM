@@ -79,6 +79,23 @@
 
 ---
 
+## 🔧 Enhanced Development Tools (NEW)
+
+### **Node.js Testing Architecture** (v22.17.0)
+- **✅ Professional Debugging**: `scripts/debug-interactions.js` with JSON reports
+- **✅ Asset Verification**: `scripts/verify-assets.js` with size analysis  
+- **✅ Enhanced npm Scripts**: `npm test`, `npm run verify-assets`, `npm run debug-interactions`
+- **✅ File-based Output**: Reliable terminal output capture for AI agents
+- **✅ JSON Reporting**: Machine-readable test results in `test-results/`
+
+### **Dual Testing System**
+- **🔧 Node.js Tools**: Professional debugging and verification (Primary)
+- **🌐 HTML Suite**: Visual testing and integration verification (Legacy)
+- **📊 Comprehensive**: Both manual and automated testing workflows
+- **🤖 AI-Optimized**: File-based output for reliable automation
+
+---
+
 ## 🤖 For AI Agents
 
 **Current Task Details**: Run `python scripts/automation.py help`

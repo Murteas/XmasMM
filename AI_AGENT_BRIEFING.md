@@ -1,4 +1,3 @@
-
 # 🤖 AI Agent Onboarding - XmasMM Project
 
 **CONTEXT**: Christmas Mastermind mobile-first game with expert Phaser.js architecture and automated testing.
@@ -84,7 +83,12 @@ python scripts/automation.py update-docs 2>&1 | tee test-results/docs_update.log
 
 ### Testing & Verification (CRITICAL - use file-based output)
 ```bash
-# Primary verification (capture complete output):
+# Enhanced Node.js testing (NEW - professional tools):
+npm run verify-assets 2>&1 | tee test-results/asset_verification.log
+npm run debug-interactions 2>&1 | tee test-results/interaction_debug.log
+npm test 2>&1 | tee test-results/enhanced_testing.log
+
+# Traditional HTML testing (capture complete output):
 cd tests && bash verify_tests.sh 2>&1 | tee test-results/verification.log
 
 # Project organization check:
@@ -102,6 +106,10 @@ python scripts/dev_server.py 2>&1 | tee test-results/dev_server.log &
 # Always use the proper dev server for testing
 python scripts/dev_server.py
 # Access tests at: http://localhost:8000/tests/
+
+# Node.js tools now available:
+node --version  # v22.17.0
+npm --version   # v10.9.2
 ```
 
 ## 📁 Critical Files
@@ -218,3 +226,34 @@ When passing work to the next AI agent:
 5. No temporary files in root directory
 
 **System designed for seamless AI agent handoffs - all context preserved in automation and testing.**
+
+## 🔧 Enhanced Testing Tools (Node.js v22.17.0)
+
+### **Professional Debugging System**
+New Node.js-based testing tools provide comprehensive analysis:
+
+```bash
+# Asset verification with detailed reporting
+npm run verify-assets
+
+# Interaction debugging with JSON reports
+npm run debug-interactions  
+
+# Combined test suite
+npm test
+
+# Review detailed JSON reports
+cat test-results/asset_verification_report.json
+cat test-results/interaction_debug_report.json
+```
+
+### **Testing Workflow Integration**
+1. **Traditional**: `cd tests && bash verify_tests.sh` (HTML-based)
+2. **Enhanced**: `npm run debug-interactions` (Node.js analysis)
+3. **Asset Check**: `npm run verify-assets` (Professional reporting)
+4. **Combined**: `npm test` (Full verification suite)
+
+### **Report Analysis** 
+- **Status**: `PASSED` (0 issues) or `ISSUES_FOUND` (with details)
+- **JSON Structure**: timestamp, summary, issues array, detailed checks
+- **File Location**: `test-results/` directory (git-ignored)

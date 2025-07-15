@@ -36,7 +36,6 @@ class GameScene extends Phaser.Scene {
     // Christmas feedback symbols (1x resolution)
     this.load.image('feedback_perfect_star_1x', `${assetPath}feedback_perfect_star_1x.png`);
     this.load.image('feedback_close_bell_1x', `${assetPath}feedback_close_bell_1x.png`);
-    this.load.image('feedback_wrong_x_1x', `${assetPath}candycane_1x.png`); // Use candycane for wrong feedback
     
     // Retina (2x) images
     this.load.image('santa_2x', `${assetPath}santa_2x.png`);
@@ -49,7 +48,6 @@ class GameScene extends Phaser.Scene {
     // Christmas feedback symbols (2x resolution)
     this.load.image('feedback_perfect_star_2x', `${assetPath}feedback_perfect_star_2x.png`);
     this.load.image('feedback_close_bell_2x', `${assetPath}feedback_close_bell_2x.png`);
-    this.load.image('feedback_wrong_x_2x', `${assetPath}candycane_2x.png`); // Use candycane for wrong feedback
     
     // Super Retina (3x) images  
     this.load.image('santa_3x', `${assetPath}santa_3x.png`);
@@ -62,7 +60,6 @@ class GameScene extends Phaser.Scene {
     // Christmas feedback symbols (3x resolution)
     this.load.image('feedback_perfect_star_3x', `${assetPath}feedback_perfect_star_3x.png`);
     this.load.image('feedback_close_bell_3x', `${assetPath}feedback_close_bell_3x.png`);
-    this.load.image('feedback_wrong_x_3x', `${assetPath}candycane_3x.png`); // Use candycane for wrong feedback
     
     // Show loading progress
     this.load.on('progress', (value) => {
@@ -257,17 +254,16 @@ class GameScene extends Phaser.Scene {
       }
     }
     
-    // Map feedback types to Christmas symbols
+    // Map feedback types to Christmas symbols (Mastermind only uses perfect and close)
     const symbolMap = {
       'perfect': 'feedback_perfect_star',
-      'close': 'feedback_close_bell', 
-      'wrong': 'feedback_wrong_x'
+      'close': 'feedback_close_bell'
     };
     
     const baseKey = symbolMap[symbolType];
     if (!baseKey) {
-      console.warn(`Unknown feedback symbol type: ${symbolType}`);
-      return 'feedback_wrong_x_1x'; // fallback
+      console.warn(`Unknown feedback symbol type: ${symbolType}. Mastermind only uses 'perfect' and 'close'.`);
+      return null; // No symbol for invalid types
     }
     
     return `${baseKey}${suffix}`;

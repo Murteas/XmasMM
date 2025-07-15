@@ -556,11 +556,12 @@ class RoundOver extends Phaser.Scene {
     
     const feedbackMap = {
       'perfect': 'feedback_perfect_star',
-      'close': 'feedback_close_bell',
-      'wrong': 'feedback_wrong_x'
+      'close': 'feedback_close_bell'
+      // No 'wrong' symbol needed in Mastermind - empty space indicates no match
     };
     
-    return feedbackMap[symbolType] + suffix;
+    const mappedSymbol = feedbackMap[symbolType];
+    return mappedSymbol ? mappedSymbol + suffix : null;
   }
 
   // Quality assessment methods for family-friendly feedback

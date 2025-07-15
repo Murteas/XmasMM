@@ -22,13 +22,32 @@
 - `cleanup_redundancy.sh` - **REDUNDANCY CHECK**: Prevents duplicate files and documentation
 - `package.json` - Node.js dependencies for automation
 
+### Enhanced Node.js Testing (Root Level)
+- **📦 Main `package.json`** - Professional debugging tools and scripts
+- **🔧 `scripts/debug-interactions.js`** - Interaction debugging with JSON reports
+- **🔍 `scripts/verify-assets.js`** - Asset verification and size analysis
+- **📊 `test-results/`** - JSON reports from enhanced debugging tools
+
 ### Test Results & Data
 - `automated_test_results.json` - Verification results
 - `test_results.json` - Legacy test results
 
 ## 🚀 Quick Test Commands (Essential for AI Agents)
 
-### Primary Workflows
+### Enhanced Node.js Testing (NEW - Requires Node.js v22.17.0+)
+```bash
+# From project root - professional debugging tools
+npm run verify-assets        # Asset verification with size analysis
+npm run debug-interactions   # Interaction debugging with JSON reports  
+npm test                     # Combined verification suite
+npm run start-dev            # Start Python dev server via npm
+
+# Check JSON reports
+cat test-results/asset_verification_report.json
+cat test-results/interaction_debug_report.json
+```
+
+### Traditional HTML Testing (Legacy)
 ```bash
 # MANDATORY after every change
 cd tests && bash run_tests.sh

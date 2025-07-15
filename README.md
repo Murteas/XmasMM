@@ -78,23 +78,28 @@ See [Graphics_Asset_Requirements.md](Graphics_Asset_Requirements.md) for detaile
 
 **Current Progress**: See [PROJECT_STATUS.md](PROJECT_STATUS.md) for real-time completion status.
 
-## Testing & Quality Assurance
-**AI-Agent Optimized Testing System** - Complete testing documentation available in [`tests/README.md`](tests/README.md)
+## 🔧 Testing & Debugging
 
-### Quick Start
+### **Enhanced Testing Tools** (Node.js v22.17.0)
+Professional debugging system with JSON reporting:
+
 ```bash
-cd tests && bash run_tests.sh  # Comprehensive verification
-cd tests && bash verify_tests.sh  # Quick verification
+npm run verify-assets        # Asset verification and size analysis
+npm run debug-interactions   # Interaction debugging with detailed reports
+npm test                     # Combined verification suite
+npm run start-dev            # Development server
 ```
 
-### Key Features
-- ✅ **Automated Verification**: Prevents false positive results for AI agents
-- ✅ **Mobile-First Testing**: Expert mobile design validation (375x667+ viewports)  
-- ✅ **Phaser.js Expert**: Advanced game framework testing with proper patterns
-- ✅ **Integration Testing**: Complete modular architecture verification
-- ✅ **Best Practices**: Clean file organization, proper dependencies, no root clutter
+### **Traditional Testing** (HTML-based)
+```bash
+cd tests && bash verify_tests.sh    # Quick HTML test verification
+cd tests && bash run_tests.sh       # Full HTML test suite
+```
 
-📖 **Complete Documentation**: See [`tests/README.md`](tests/README.md) for detailed test modules, protocols, and AI agent workflows.
+### **Test Reports**
+- **📊 JSON Reports**: `test-results/` directory (detailed analysis)
+- **📋 HTML Results**: `tests/` directory (visual testing)
+- **🔍 Debug Guides**: `DEBUG_INTERACTION_GUIDE.md` (troubleshooting)
 
 ## Task Management System
 This project uses a machine-readable task management system optimized for agentic AI development:

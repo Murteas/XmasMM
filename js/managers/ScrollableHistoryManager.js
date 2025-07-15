@@ -42,10 +42,9 @@ class ScrollableHistoryManager {
     // Move existing history to scrollable content
     this.migrateHistoryElements();
     
-    // Move active row and submit button to footer
-    this.migrateFooterElements();
+    // Note: Footer migration (active row) will happen when createActiveRow is called
     
-    console.log('🔄 UI elements migrated to Phaser container system');
+    console.log('🔄 UI elements migrated to Phaser container system (footer elements will migrate when active row is created)');
   }
   
   migrateHeaderElements() {
@@ -77,15 +76,14 @@ class ScrollableHistoryManager {
     
     console.log(`📜 Migrated ${this.rowContainers.length} history rows to scrollable container`);
   }
-  
-  migrateFooterElements() {
+    migrateFooterElements() {
     const footerContainer = this.scrollService.getFooterContainer();
     
-    // Move active row to footer (always visible)
-    if (this.historyManager.activeRowManager) {
+    // Move active row to footer (only if it exists)
+    if (this.historyManager.activeRowManager && this.historyManager.activeRowManager.hasActiveRow) {
       this.createActiveRowInFooter();
     }
-    
+
     // Move submit button and other controls to footer
     this.moveControlsToFooter();
     
@@ -260,34 +258,11 @@ class ScrollableHistoryManager {
     console.log('� Scrollable content refreshed');
   }
   
-  // === ACTIVE ROW MANAGEMENT (No More Position Calculations!) ===
-  
-  updateActiveRowPosition() {
-    // No complex calculations needed! Active row is in fixed footer
-    console.log('🎯 Active row position update: Using fixed footer (no calculations needed)');
-    
-    // Just ensure active row is visible and properly styled
-    if (this.activeRowContainer) {
-      this.activeRowContainer.setVisible(true);
-      this.activeRowContainer.setAlpha(1.0);
-    }
-  }
-  
-  calculateActiveRowPosition() {
-    // Return footer position (for compatibility with existing code)
-    const footerContainer = this.scrollService.getFooterContainer();
-    return footerContainer.y + 20; // 20px offset within footer
-  }
-  
   // === SCROLL CONTROL METHODS ===
   
   scrollToActiveRow() {
     // Active row is in fixed footer, so just scroll to show last completed guess
     this.scrollService.scrollToBottom(true);
-  }
-  
-  getScrollOffset() {
-    return this.scrollService.scrollY;
   }
   
   // === EVENT HANDLERS ===
@@ -313,11 +288,44 @@ class ScrollableHistoryManager {
       this.scrollService.destroy();
     }
     
+    // Destroy embedded history manager
+    if (this.historyManager) {
+      this.historyManager.destroy();
+    }
+    
     console.log('🧹 ScrollableHistoryManager destroyed');
   }
   
-  // === HISTORYMANAGER API DELEGATION ===
-  // Make ScrollableHistoryManager a drop-in replacement for HistoryManager
+  // === ACTIVE ROW MANAGER DELEGATION ===
+  get activeRowManager() {
+    return this.historyManager.activeRowManager;
+  }
+
+  get hasActiveRow() {
+    return this.historyManager.hasActiveRow;
+  }
+
+  submitActiveRowGuess() {
+    return this.historyManager.submitActiveRowGuess();
+  }
+
+  getActiveRowGuess() {
+    return this.historyManager.getActiveRowGuess();
+  }
+
+  removeActiveRow() {
+    this.historyManager.removeActiveRow();
+  }
+
+  selectElement(slotIndex, element) {
+    this.historyManager.selectElement(slotIndex, element);
+  }
+
+  scrollHistory(delta) {
+    this.historyManager.scrollHistory(delta);
+  }
+
+  // === CORE HISTORYMANAGER API DELEGATION ===
   
   getGuessHistory() {
     return this.historyManager.getGuessHistory();
@@ -335,8 +343,16 @@ class ScrollableHistoryManager {
     // Delegate to internal HistoryManager first
     this.historyManager.createActiveRow(lastGuess);
     
-    // Then move to our footer container
-    this.createActiveRowInFooter();
+    // Now move active row to our footer container (elements will exist)
+    this.migrateFooterElements();
+    
+    return this.activeRowContainer;
+  }
+  
+  calculateActiveRowPosition() {
+    // Return footer position (for compatibility with existing code)
+    const footerContainer = this.scrollService.getFooterContainer();
+    return footerContainer.y + 20; // 20px offset within footer
   }
   
   updateActiveRowPosition() {

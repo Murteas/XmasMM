@@ -256,6 +256,9 @@ class ActiveRowManager {
       padding: { left: 6, right: 6, top: 3, bottom: 3 }
     }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(GameUtils.getDepthLayers().TOUCH_AREA + 1.2);
     
+    // Add data tag for ScrollableHistoryManager to find
+    this.activeRowSubmitBtn.setData('uiType', 'submitButton');
+    
     this.activeRowSubmitBtn.on('pointerdown', () => {
       this.scene.submitGuess();
     });

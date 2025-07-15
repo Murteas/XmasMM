@@ -138,3 +138,15 @@ No such file or directory: d:\path\to\file
 ---
 
 **📌 Remember**: This file should be checked by any AI agent before making terminal commands or file operations.
+
+### **Enhanced Testing Commands (Node.js v22.17.0)**
+```bash
+# Professional debugging and verification
+npm run verify-assets           # Asset verification with size analysis
+npm run debug-interactions      # Interaction debugging with JSON reports
+npm test                        # Combined verification suite
+npm run start-dev               # Start development server
+
+# Command chaining with enhanced tools
+npm run verify-assets && npm run debug-interactions
+```
