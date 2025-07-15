@@ -21,6 +21,8 @@
 - **NEVER** assume tests pass without verification
 - **ALWAYS** use `isBackground=false` (never true)
 - **ALWAYS** run `cd tests && bash verify_tests.sh` after making changes
+- **MOBILE-FIRST**: Check `docs/phaser-mobile-architecture.md` for mobile solutions
+- **MOBILE-006 CRITICAL**: Use container-based UI patterns from docs/
 - Use Git Bash terminal only
 - Never update status manually - use automation scripts
 - **Mobile-First**: Test on mobile viewport (375x667) minimum
@@ -52,6 +54,10 @@ python scripts/dev_server.py
 - `tests/README.md` - **Complete testing documentation**
 - `TECHNICAL_GUIDELINES.md` - Architecture patterns
 
+### Mobile Architecture & Best Practices (ESSENTIAL)
+- `docs/phaser-mobile-architecture.md` - **MOBILE-006 solution with Phaser containers**
+- `docs/mobile-best-practices.md` - **Mobile UI patterns and implementation**
+
 ### Testing System (AI-Agent Optimized)
 - `tests/verify_tests.sh` - **Primary verification tool**
 - `scripts/cleanup_redundancy.sh` - **Project organization verification**
@@ -65,6 +71,20 @@ python scripts/dev_server.py
 - `js/scenes/` - Phaser scene implementations
 
 ## 🎮 Phaser.js Best Practices for AI Agents
+### Mobile Architecture (CRITICAL for MOBILE-006)
+```javascript
+// Use container-based UI from docs/phaser-mobile-architecture.md
+// Three-zone layout: Header + Scrollable Content + Footer
+this.headerContainer = this.add.container(0, 0);
+this.scrollableContainer = this.add.container(0, headerHeight);
+this.footerContainer = this.add.container(0, height - footerHeight);
+
+// Proper masking for scroll boundaries
+const mask = this.make.graphics();
+mask.fillRect(x, y, width, height);
+scrollableContainer.setMask(mask.createGeometryMask());
+```
+
 ### Scene Management
 ```javascript
 // Always use proper scene lifecycle
@@ -107,7 +127,32 @@ class MyScene extends Phaser.Scene {
 3. Test mobile responsiveness
 4. Update documentation if architecture changed
 
-## 🔄 AI Agent Handoff Protocol
+## � URGENT HANDOFF ISSUE - MOBILE-006
+
+**CRITICAL BUG DISCOVERED**: `ScrollableHistoryManager` not loading in ModuleLoader system
+
+**Error**: `ScrollableHistoryManager not found after module loading` in `test_mobile_expert.html:190`
+
+**Root Cause**: Missing ModuleLoader registration for:
+- `ScrollableHistoryManager.js` 
+- `MobileScrollService.js`
+
+**IMMEDIATE FIX REQUIRED**:
+1. Check `js/utils/ModuleLoader.js` - add missing managers to module registry
+2. Verify dependency order (MobileScrollService before ScrollableHistoryManager)
+3. Test `test_mobile_expert.html` loads without errors
+4. Update MOBILE-006 status in `ISSUES.md` after fix
+
+**Files to Check**:
+- `js/utils/ModuleLoader.js` (add missing modules)
+- `test_mobile_expert.html` (verify loading)
+- `js/managers/ScrollableHistoryManager.js` (ensure proper class export)
+
+**Priority**: CRITICAL - Mobile game is broken without this fix
+
+---
+
+## �🔄 AI Agent Handoff Protocol
 When passing work to the next AI agent:
 1. Run full test suite verification
 2. Update `PROJECT_STATUS.md` with current state

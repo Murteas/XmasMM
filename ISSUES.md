@@ -309,7 +309,13 @@ TestRunner.runTest('score-breakdown', {
 **Date**: July 14, 2025  
 **Source**: Mobile developer expert screenshot analysis (Screenshot 3 - Browser Overlap)  
 **Severity**: 🔴 CRITICAL - Blocks game interaction  
-**Status**: 🆕 NEW  
+**Status**: 🔧 **CRITICAL MODULE LOADING BUG DISCOVERED**
+
+**URGENT**: `ScrollableHistoryManager not found after module loading` error in test_mobile_expert.html:190
+
+**Root Cause**: ModuleLoader missing registration for ScrollableHistoryManager and MobileScrollService
+
+**Immediate Fix Required**: Add missing modules to `js/utils/ModuleLoader.js` registry  
 
 **Critical Issues Identified:**
 
