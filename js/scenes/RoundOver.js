@@ -282,10 +282,10 @@ class RoundOver extends Phaser.Scene {
     // Add quality summary for learning encouragement
     this.createQualitySummary(width, 70);
     
-    // Scrollable history area
+    // Scrollable history area with improved spacing (UI-002 fix)
     const historyArea = this.add.container(0, 0);
     const startY = 140;
-    const rowHeight = 50;
+    const rowHeight = 60; // Increased from 50 to 60 for better touch targets and spacing
     const maxVisibleRows = Math.floor((height - 220) / rowHeight);
     
     this.gameData.guessHistory.forEach((guess, index) => {
@@ -315,9 +315,9 @@ class RoundOver extends Phaser.Scene {
     // Calculate guess quality for this row
     const quality = this.calculateGuessQuality(guess, this.gameData.secretCode);
     
-    // Add subtle background highlight for quality
-    const rowBackground = this.add.rectangle(width / 2, y, width - 40, 35, 0x000000, 0.3)
-      .setStrokeStyle(1, quality.colorHex, 0.5);
+    // Add subtle background highlight for quality with improved visibility (UI-002 fix)
+    const rowBackground = this.add.rectangle(width / 2, y, width - 40, 45, 0x000000, 0.3)
+      .setStrokeStyle(2, quality.colorHex, 0.8); // Increased border width and opacity for better visibility
     container.add(rowBackground);
     
     // Row number
@@ -615,9 +615,9 @@ class RoundOver extends Phaser.Scene {
         category: 'learning',
         label: 'Keep trying!',
         description: 'Every guess teaches us something!',
-        color: '#00E5FF', // Bright cyan - much more visible on blue background
-        colorHex: 0x00E5FF, // Bright cyan for Phaser
-        bgColor: 'rgba(0, 229, 255, 0.1)'
+        color: '#FFFFFF', // WHITE - Maximum contrast against blue background (UI-002 fix)
+        colorHex: 0xFFFFFF, // WHITE for Phaser - High visibility border
+        bgColor: 'rgba(255, 255, 255, 0.1)'
       };
     }
   }

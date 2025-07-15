@@ -1,6 +1,9 @@
 # 🧪 XmasMM Testing Documentation
 
-**AI-Agent Optimized Testing System** - Complete testing infrastructure for mobile-first Phaser.js development.
+**AI-Agent Optimized Testing System** - Complete testing infrastructure for mobile-first Pha### Before Making Changes
+1. Establish baseline: `cd tests && bash run_tests.sh`
+2. Note any existing failures
+3. Ensure HTTP server is running on port 8000 (any HTTP server)js development.
 
 ## 📁 Directory Structure
 
@@ -64,8 +67,11 @@ bash scripts/cleanup_redundancy.sh
 
 ### Development Server
 ```bash
-# From project root - use the proper dev server
-python scripts/dev_server.py
+# From project root - Manual HTTP server setup required
+# Use any HTTP server of your choice, such as:
+# python -m http.server 8000  (Python 3)
+# npx serve .                 (Node.js)
+# php -S localhost:8000       (PHP)
 ```
 
 ## 🔍 **AI Agent Terminal Best Practices**
@@ -127,7 +133,7 @@ Central testing interface with device detection and comprehensive metrics.
 ### Before Making Changes
 1. Establish baseline: `cd tests && bash run_tests.sh`
 2. Note any existing failures
-3. Ensure dev server running: `python scripts/dev_server.py`
+3. Ensure HTTP server running on port 8000 (any HTTP server)
 
 ### After Making Changes  
 1. **MANDATORY**: `cd tests && bash run_tests.sh`
@@ -199,7 +205,7 @@ All tests must verify:
 ### Before Making Changes
 1. Establish baseline: `cd tests && bash verify_tests.sh`
 2. Note any existing failures
-3. Ensure dev server is running: `python scripts/dev_server.py`
+3. Ensure HTTP server is running on port 8000 (any HTTP server)
 
 ### After Making Changes
 1. **MANDATORY**: `cd tests && bash verify_tests.sh`

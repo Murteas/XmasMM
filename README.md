@@ -87,7 +87,7 @@ Professional debugging system with JSON reporting:
 npm run verify-assets        # Asset verification and size analysis
 npm run debug-interactions   # Interaction debugging with detailed reports
 npm test                     # Combined verification suite
-npm run start-dev            # Development server
+npm run start-dev            # Starts Python HTTP server via npm
 ```
 
 ### **Traditional Testing** (HTML-based)
@@ -108,21 +108,23 @@ This project uses a machine-readable task management system optimized for agenti
 - **AI Agent Guide**: [AI_AGENT_BRIEFING.md](AI_AGENT_BRIEFING.md) - New agent onboarding
 - **Complete Documentation**: [TASK_MANAGEMENT.md](TASK_MANAGEMENT.md) - Full system guide
 
-## 🖥️ Development Server Management
+## 🖥️ Development Server Setup
 
-**Quick Start**:
+**HTTP Server Required** (Use any HTTP server):
 ```bash
-# Check server status
-python scripts/dev_server.py status
+# Python 3 (Recommended)
+python -m http.server 8000
 
-# Start development server
-python scripts/dev_server.py start
+# Node.js alternative
+npx serve . --port 8000
 
-# Stop development server
-python scripts/dev_server.py stop
+# PHP alternative  
+php -S localhost:8000
 ```
 
-**Manual Commands**:
+**Access Points**:
+- Game: http://localhost:8000/
+- Tests: http://localhost:8000/tests/
 ```bash
 # Traditional approach
 python -m http.server 8000
