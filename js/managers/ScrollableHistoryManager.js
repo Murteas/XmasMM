@@ -118,9 +118,14 @@ class ScrollableHistoryManager {
   
   createActiveRowInFooter() {
     const footerContainer = this.scrollService.getFooterContainer();
+    const safeArea = this.scrollService.safeAreaManager.getInsets();
+    
+    // Calculate responsive positioning within footer using Phaser-native safe area
+    const footerContentTop = 15; // Top margin within footer
+    const activeRowY = footerContentTop; // Safe positioning from footer top
     
     // Create active row container in footer (always visible)
-    this.activeRowContainer = this.scene.add.container(0, 20);
+    this.activeRowContainer = this.scene.add.container(0, activeRowY);
     
     // Move existing active row elements to footer container
     if (this.historyManager.activeRowManager.activeRowElements) {
@@ -140,11 +145,15 @@ class ScrollableHistoryManager {
     
     footerContainer.add(this.activeRowContainer);
     
-    console.log('🎯 Active row created in fixed footer container');
+    console.log(`🎯 Active row created in footer at Y:${activeRowY} (Phaser-native safe area bottom: ${safeArea.bottom}px)`);
   }
   
   moveControlsToFooter() {
     const footerContainer = this.scrollService.getFooterContainer();
+    const safeArea = this.scrollService.safeAreaManager.getInsets();
+    
+    // Calculate responsive button position within footer using Phaser-native safe area
+    const buttonY = 65; // Position below active row, above safe area
     
     // Find submit button and other controls
     const controls = this.scene.children.list.filter(child => 
@@ -155,11 +164,11 @@ class ScrollableHistoryManager {
     );
     
     controls.forEach(control => {
-      control.y = 70; // Position in footer
+      control.y = buttonY; // Responsive position in footer
       footerContainer.add(control);
     });
     
-    console.log(`🎮 Moved ${controls.length} controls to footer container`);
+    console.log(`🎮 Moved ${controls.length} controls to footer at Y:${buttonY} (Phaser-native safe from ${safeArea.bottom}px bottom inset)`);
   }
   
   // === HISTORY MANAGEMENT (Replaces complex positioning) ===

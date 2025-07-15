@@ -15,6 +15,9 @@ class MobileScrollService extends Phaser.Events.EventEmitter {
       ...config
     };
     
+    // Phaser-native safe area management
+    this.safeAreaManager = new SafeAreaManager(scene);
+    
     // Containers (Phaser best practice)
     this.gameContainer = null;
     this.headerContainer = null;
@@ -41,19 +44,25 @@ class MobileScrollService extends Phaser.Events.EventEmitter {
   
   createContainers() {
     const { width, height } = this.scene.cameras.main;
-    const safeArea = GameUtils.getSafeAreaInsets();
+    const safeArea = this.safeAreaManager.getInsets();
+    
+    // Enhanced footer height calculation using Phaser-native safe area manager
+    const baseFooterHeight = this.config.footerHeight;
+    const responsiveFooterHeight = baseFooterHeight + Math.max(0, safeArea.bottom - 10);
+    
+    console.log(`📱 Phaser-native responsive footer: base=${baseFooterHeight}px + safe=${safeArea.bottom}px = ${responsiveFooterHeight}px`);
     
     // === MAIN GAME CONTAINER ===
     this.gameContainer = this.scene.add.container(0, 0);
     this.gameContainer.setDepth(GameUtils.getDepthLayers().UI_BASE);
     
-    // === FIXED HEADER CONTAINER ===
-    this.headerContainer = this.scene.add.container(0, safeArea.top);
+    // === FIXED HEADER CONTAINER (Phaser-native safe positioning) ===
+    this.headerContainer = this.safeAreaManager.createSafeContainer(0, 0);
     this.headerContainer.setDepth(GameUtils.getDepthLayers().UI);
     
     // === SCROLLABLE AREA SETUP ===
     const scrollableY = safeArea.top + this.config.headerHeight;
-    const scrollableHeight = height - this.config.headerHeight - this.config.footerHeight - safeArea.top - safeArea.bottom;
+    const scrollableHeight = height - this.config.headerHeight - responsiveFooterHeight - safeArea.top;
     
     // Scrollable container (moves with scroll)
     this.scrollableContainer = this.scene.add.container(0, scrollableY);
@@ -63,8 +72,9 @@ class MobileScrollService extends Phaser.Events.EventEmitter {
     this.contentContainer = this.scene.add.container(0, 0);
     this.scrollableContainer.add(this.contentContainer);
     
-    // === FIXED FOOTER CONTAINER ===
-    this.footerContainer = this.scene.add.container(0, height - this.config.footerHeight - safeArea.bottom);
+    // === FIXED FOOTER CONTAINER (Phaser-native safe positioning) ===
+    this.footerContainer = this.scene.add.container(0, height - responsiveFooterHeight);
+    this.safeAreaManager.positionFooter(this.footerContainer, height - responsiveFooterHeight);
     this.footerContainer.setDepth(GameUtils.getDepthLayers().UI);
     
     // === SCROLLABLE AREA BOUNDARIES ===
@@ -88,7 +98,7 @@ class MobileScrollService extends Phaser.Events.EventEmitter {
     console.log('🎮 Phaser containers created:', {
       header: { y: safeArea.top, height: this.config.headerHeight },
       scrollable: { y: scrollableY, height: scrollableHeight },
-      footer: { y: height - this.config.footerHeight - safeArea.bottom, height: this.config.footerHeight }
+      footer: { y: height - responsiveFooterHeight, height: responsiveFooterHeight }
     });
   }
   

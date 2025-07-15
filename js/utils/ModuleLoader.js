@@ -8,6 +8,7 @@ class ModuleLoader {
       // Core utilities (no dependencies)
       'js/utils/TestConfig.js',
       'js/utils/GameUtils.js',
+      'js/utils/SafeAreaManager.js',
       
       // Services (depend on utilities)
       'js/services/MobileScrollService.js',

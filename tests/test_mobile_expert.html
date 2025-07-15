@@ -310,18 +310,25 @@
 
     function testScrollingBehavior() {
       updateTestResults(`
-        🔧 <strong>MOBILE-006 Manual Test:</strong><br>
+        🔧 <strong>MOBILE-006 Manual Test (Enhanced Safe Area):</strong><br>
         1. ✅ Look at the game screen<br>
         2. 📱 You should see 9 completed guess rows<br>
         3. 🎯 The active input row (row 10) should be visible<br>
         4. 📜 Try scrolling up/down to see all guesses<br>
         5. ✅ Submit button should remain accessible<br>
+        6. 🔍 <strong>Check browser console for safe area values</strong><br>
         <br>
         <strong>Expected Results:</strong><br>
         • ScrollableHistoryManager properly handles layout<br>
-        • No overlap with browser UI<br>
+        • No overlap with Safari home indicator or navigation<br>
+        • Footer positioned above safe area bottom<br>
         • Smooth scrolling behavior<br>
-        • Active row positioned correctly after 9 guesses
+        • Active row positioned correctly after 9 guesses<br>
+        <br>
+        <strong>Safari Testing:</strong><br>
+        • Open dev tools and check console for safe area insets<br>
+        • Try rotating device to test orientation changes<br>
+        • Verify active row stays above home indicator
       `);
     }
 

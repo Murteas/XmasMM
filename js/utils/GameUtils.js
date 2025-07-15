@@ -125,15 +125,40 @@ class GameUtils {
   }
 
   static getSafeAreaInsets() {
-    // Hybrid approach: CSS env() with Phaser.js fallback
+    // Enhanced safe area detection for mobile Safari
     const style = getComputedStyle(document.documentElement);
     
-    return {
-      top: parseInt(style.getPropertyValue('--sat') || '0', 10),
-      right: parseInt(style.getPropertyValue('--sar') || '0', 10),
-      bottom: parseInt(style.getPropertyValue('--sab') || '0', 10),
-      left: parseInt(style.getPropertyValue('--sal') || '0', 10)
+    // Get CSS custom properties with better parsing
+    const getInsetValue = (property) => {
+      const value = style.getPropertyValue(property).trim();
+      if (value && value !== '0px') {
+        const parsed = parseFloat(value);
+        return isNaN(parsed) ? 0 : parsed;
+      }
+      return 0;
     };
+    
+    const insets = {
+      top: getInsetValue('--sat'),
+      right: getInsetValue('--sar'),
+      bottom: getInsetValue('--sab'),
+      left: getInsetValue('--sal')
+    };
+    
+    // Fallback detection for mobile Safari if CSS env() isn't working
+    if (insets.bottom === 0 && this.isMobileSafari()) {
+      // Conservative fallback for home indicator area
+      insets.bottom = 34;
+      console.log('📱 Applied Safari home indicator fallback: 34px bottom inset');
+    }
+    
+    console.log('📱 Safe area insets:', insets);
+    return insets;
+  }
+  
+  static isMobileSafari() {
+    const userAgent = navigator.userAgent;
+    return /iPad|iPhone|iPod/.test(userAgent) && /Safari/.test(userAgent) && !/CriOS|FxiOS/.test(userAgent);
   }
 
   static createResponsiveText(scene, x, y, text, baseStyle, layoutKey = null) {
