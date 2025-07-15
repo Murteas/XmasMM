@@ -139,16 +139,24 @@ class ScrollableHistoryManager {
       });
     }
     
+    // Add active row glow effect to footer (if it exists)
+    if (this.historyManager.activeRowManager.activeRowGlowEffect) {
+      this.historyManager.activeRowManager.activeRowGlowEffect.y = 0;
+      this.activeRowContainer.add(this.historyManager.activeRowManager.activeRowGlowEffect);
+    }
+    
     // Add active row background to footer
     if (this.historyManager.activeRowManager.activeRowBackground) {
       this.historyManager.activeRowManager.activeRowBackground.y = 0;
       this.activeRowContainer.add(this.historyManager.activeRowManager.activeRowBackground);
     }
     
-    // Add submit button to footer container
+    // Add submit button to active row container (preserve relative positioning)
     if (this.historyManager.activeRowManager.activeRowSubmitBtn) {
+      // Keep the submit button at the same Y as slots (all are at Y=0 within container)
       this.historyManager.activeRowManager.activeRowSubmitBtn.y = 0;
       this.activeRowContainer.add(this.historyManager.activeRowManager.activeRowSubmitBtn);
+      console.log('📤 Submit button added to active row container at X:', this.historyManager.activeRowManager.activeRowSubmitBtn.x);
     }
     
     footerContainer.add(this.activeRowContainer);
@@ -163,12 +171,9 @@ class ScrollableHistoryManager {
     // Calculate responsive button position within footer using Phaser-native safe area
     const buttonY = 65; // Position below active row, above safe area
     
-    // Find submit button and other controls
+    // Find other game controls in scene children (NOT submit button - that's in activeRowContainer)
     const controls = this.scene.children.list.filter(child => 
-      child.getData && (
-        child.getData('uiType') === 'submitButton' ||
-        child.getData('uiType') === 'gameControl'
-      )
+      child.getData && child.getData('uiType') === 'gameControl'
     );
     
     controls.forEach(control => {
@@ -176,7 +181,7 @@ class ScrollableHistoryManager {
       footerContainer.add(control);
     });
     
-    console.log(`🎮 Moved ${controls.length} controls to footer at Y:${buttonY} (Phaser-native safe from ${safeArea.bottom}px bottom inset)`);
+    console.log(`🎮 Moved ${controls.length} controls to footer at Y:${buttonY} (Submit button already in active row container)`);
   }
   
   // === HISTORY MANAGEMENT (Replaces complex positioning) ===
