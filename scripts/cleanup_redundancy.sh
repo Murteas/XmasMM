@@ -51,13 +51,35 @@ fi
 # Check for orphaned result files
 echo ""
 echo "📊 Checking for orphaned result files..."
-result_files=$(find . -maxdepth 1 -name "*results*.json" -o -name "*test*.json" | wc -l)
+result_files=$(find . -maxdepth 1 -name "*results*.json" -o -name "*test*.json" -o -name "*.log" | wc -l)
 if [ "$result_files" -gt 0 ]; then
     echo "❌ Found result files in root directory:"
-    find . -maxdepth 1 -name "*results*.json" -o -name "*test*.json"
-    echo "   These should be in tests/ directory"
+    find . -maxdepth 1 -name "*results*.json" -o -name "*test*.json" -o -name "*.log"
+    echo "   These should be in test-results/ directory"
 else
     echo "✅ No orphaned result files in root"
+fi
+
+# Clean up old test-results files (older than 7 days)
+echo ""
+echo "🧽 Cleaning up old test-results files..."
+if [ -d "test-results" ]; then
+    old_files=$(find test-results/ -name "*.log" -mtime +7 2>/dev/null | wc -l)
+    if [ "$old_files" -gt 0 ]; then
+        echo "🗑️ Removing $old_files old log files..."
+        find test-results/ -name "*.log" -mtime +7 -delete 2>/dev/null
+        echo "✅ Old log files cleaned up"
+    else
+        echo "✅ No old log files to clean up"
+    fi
+    
+    # Keep only essential recent files
+    recent_count=$(find test-results/ -name "*.log" | wc -l)
+    if [ "$recent_count" -gt 10 ]; then
+        echo "⚠️ Many recent log files ($recent_count) - consider manual cleanup"
+    fi
+else
+    echo "ℹ️ No test-results directory found"
 fi
 
 echo ""

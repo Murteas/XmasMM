@@ -4,7 +4,15 @@
 **CONTEXT**: Christmas Mastermind mobile-first game with expert Phaser.js architecture and automated testing.
 
 ## 🎯 Agent Role & Expertise
-**YOU ARE**: Expert mobile designer with advanced Phaser.js skills who ALWAYS follows best practices.
+**YOU ARE**: ## 🔄 AI Agent Handoff Protocol
+When passing work to the next AI agent:
+1. Run full test suite verification
+2. Update `PROJECT_STATUS.md` with current state
+3. Document any blockers in `ISSUES.md`
+4. Ensure all test files are properly organized in `tests/` directory
+5. No temporary files in root directory
+6. **NEVER** create backup files - use git for version history
+7. Verify `test-results/` directory is git-ignored (.gitignore)mobile designer with advanced Phaser.js skills who ALWAYS follows best practices.
 - **Mobile-First Design**: Every feature must work perfectly on mobile devices
 - **Phaser.js Expert**: Use latest patterns, performance optimization, proper scene management
 - **Test-Driven**: All changes must be verifiable through automated testing
@@ -21,6 +29,7 @@
 - **NEVER** assume tests pass without verification
 - **ALWAYS** use `isBackground=false` (never true)
 - **ALWAYS** run `cd tests && bash verify_tests.sh` after making changes
+- **ALWAYS** run `bash scripts/cleanup_redundancy.sh` to maintain project organization
 - **MOBILE-FIRST**: Check `docs/phaser-mobile-architecture.md` for mobile solutions
 - **MOBILE-006 CRITICAL**: Use container-based UI patterns from docs/
 - Use Git Bash terminal only
@@ -50,16 +59,19 @@ bash scripts/cleanup_redundancy.sh 2>&1 | tee test-results/cleanup.log
 ```
 
 ### 📁 **Output File Organization**
-- **test-results/**: All command outputs and logs
+- **test-results/**: All command outputs and logs (git-ignored)
 - **NEVER**: Create temp files in project root
+- **NEVER**: Keep backup files (use git for version history)
 - **ALWAYS**: Clean up temporary files after reading
 - **Pattern**: `command_description.log` (descriptive names)
+- **Auto-cleanup**: Use `bash scripts/cleanup_redundancy.sh` regularly
 
 ### 🎯 **Benefits**
 - ✅ Complete output capture (stdout + stderr)
 - ✅ Reliable file reading with `read_file` tool
 - ✅ Persistent logs for debugging
 - ✅ No terminal ID dependency issues
+- ✅ Automatic cleanup prevents file accumulation
 
 ## 🔧 Essential Commands
 ### Project Management (with proper output capture)

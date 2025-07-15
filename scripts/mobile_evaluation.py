@@ -8,7 +8,19 @@ import subprocess
 import time
 import json
 import os
+import sys
 from datetime import datetime
+
+# Fix Unicode encoding for Windows
+if sys.platform.startswith('win'):
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+        sys.stderr.reconfigure(encoding='utf-8')
+    except AttributeError:
+        # Fallback for older Python versions
+        import codecs
+        sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer)
+        sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer)
 
 class MobileEvaluationRunner:
     def __init__(self):
