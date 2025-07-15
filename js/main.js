@@ -52,7 +52,7 @@ const config = {
     pixelArt: false,
     transparent: false
   },
-  scene: [MainMenu, DifficultySelection, GameScene, RoundOver, SimpleGameScene]
+  scene: [MainMenu, DifficultySelection, GameScene, RoundOver]
 };
 
 let game;

@@ -14,12 +14,19 @@ class UILayoutManager {
     const viewport = GameUtils.getMobileViewport();
     const { width, height } = viewport;
     
-    // Title
-    this.scene.add.text(width / 2, 30, 'XmasMM', {
+    // SIMPLIFIED: Place title in header container if available
+    const titleY = this.scene.headerContainer ? 30 : 30; // Relative positioning in container
+    const title = this.scene.add.text(width / 2, titleY, 'XmasMM', {
       font: '24px Arial',
       fill: '#fff',
       fontStyle: 'bold'
     }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
+    
+    // Add to header container if available
+    if (this.scene.headerContainer) {
+      this.scene.headerContainer.add(title);
+      console.log('📱 Title added to header container');
+    }
     
     // Create responsive header layout for game state info
     this.setupHeaderLayout();
@@ -93,6 +100,12 @@ class UILayoutManager {
         }
       }
     ).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
+    
+    // SIMPLIFIED: Add header elements to header container if available
+    if (this.scene.headerContainer) {
+      this.scene.headerContainer.add([this.progressText, this.hintText, this.hintBtn]);
+      console.log('📱 Header elements added to header container');
+    }
   }
 
   setupHorizontalHeader() {

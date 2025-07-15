@@ -33,15 +33,78 @@ class ActiveRowManager {
       }
     }
     
-    const activeRowY = this.calculateActiveRowPosition();
-    this.createActiveRowVisuals(activeRowY);
-    this.createActiveRowSlots(activeRowY);
-    this.createSubmitButton(activeRowY);
+    // SIMPLIFIED: Use footer container if available, otherwise use calculated position
+    if (this.scene.footerContainer) {
+      console.log('📱 Using simple footer container for active row');
+      this.createActiveRowInFooter();
+    } else {
+      console.log('🖥️ Using calculated position for active row');
+      const activeRowY = this.calculateActiveRowPosition();
+      this.createActiveRowVisuals(activeRowY);
+      this.createActiveRowSlots(activeRowY);
+      this.createSubmitButton(activeRowY);
+    }
     
     this.hasActiveRow = true;
-    this.scrollToActiveRow();
     
-    return activeRowY;
+    return this.scene.footerContainer ? 60 : this.calculateActiveRowPosition(); // Return relative position
+  }
+
+  createActiveRowInFooter() {
+    // Simple approach: Create active row elements in footer container
+    const { width } = this.scene.cameras.main;
+    const codeLength = this.scene.codeLength;
+    
+    // Create background in footer container (relative positioning)
+    this.activeRowBackground = this.scene.add.rectangle(
+      width / 2,
+      60, // Relative Y position within footer
+      width - 20,
+      50,
+      0x4a4a4a,
+      0.8
+    )
+      .setStrokeStyle(3, 0xffd700);
+    
+    this.scene.footerContainer.add(this.activeRowBackground);
+    
+    // Create slots in footer container
+    this.activeRowElements = [];
+    const slotSize = Math.min(40, (width - 100) / codeLength);
+    const totalWidth = codeLength * slotSize + (codeLength - 1) * 8;
+    const startX = (width - totalWidth) / 2;
+    
+    for (let i = 0; i < codeLength; i++) {
+      const slotX = startX + i * (slotSize + 8);
+      const slot = this.scene.add.rectangle(slotX + slotSize/2, 60, slotSize, slotSize, 0x666666)
+        .setStrokeStyle(2, 0xcccccc)
+        .setInteractive()
+        .on('pointerdown', () => this.elementPicker.showElementPicker(i, this.activeRowGuess));
+      
+      // Create display element based on current guess state (handles pre-filled guesses)
+      const displayElement = this.createSlotDisplay(slotX + slotSize/2, 60, i);
+      
+      this.scene.footerContainer.add([slot, displayElement]);
+      
+      // Structure expected by updateSlotDisplay method
+      this.activeRowElements.push({ slot, displayElement });
+    }
+    
+    // Create submit button in footer container
+    this.activeRowSubmitBtn = this.scene.add.rectangle(width - 40, 60, 60, 40, 0x4CAF50)
+      .setStrokeStyle(2, 0x45a049)
+      .setInteractive()
+      .on('pointerdown', () => this.scene.submitGuess());
+    
+    const submitText = this.scene.add.text(width - 40, 60, 'GO', {
+      fontSize: '16px',
+      fill: '#ffffff',
+      fontFamily: 'Arial'
+    }).setOrigin(0.5);
+    
+    this.scene.footerContainer.add([this.activeRowSubmitBtn, submitText]);
+    
+    console.log('📱 Active row created in footer container with relative positioning');
   }
 
   calculateActiveRowPosition() {
@@ -297,6 +360,11 @@ class ActiveRowManager {
     // Create new display
     const newDisplay = this.createElementDisplay(element, x, y);
     elementData.displayElement = newDisplay;
+    
+    // Add to footer container if using footer layout
+    if (this.scene.footerContainer) {
+      this.scene.footerContainer.add(newDisplay);
+    }
   }
 
   addSlotTouchFeedback(slot, slotIndex) {

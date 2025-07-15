@@ -125,18 +125,11 @@ class GameScene extends Phaser.Scene {
     this.gameStateManager = new GameStateManager(this);
     this.scoreManager = new ScoreManager(this);
     
-    // Use ScrollableHistoryManager for mobile (fixes MOBILE-006 overlap issue)
-    const viewport = GameUtils.getMobileViewport();
-    const isMobile = viewport.width <= 768; // Consider mobile if width <= 768px
+    // SIMPLIFIED: Always use standard HistoryManager with Phaser containers
+    // Create simple three-zone layout using pure Phaser containers
+    this.createSimplePhaserLayout();
     
-    if (isMobile) {
-      console.log('🔄 Using ScrollableHistoryManager for mobile device');
-      this.historyManager = new ScrollableHistoryManager(this);
-    } else {
-      console.log('🖥️ Using standard HistoryManager for desktop');
-      this.historyManager = new HistoryManager(this);
-    }
-    
+    this.historyManager = new HistoryManager(this);
     this.gameInputHandler = new GameInputHandler(this);
     
     // Initialize game state
@@ -146,6 +139,31 @@ class GameScene extends Phaser.Scene {
     this.elements = this.gameStateManager.getGameElements();
     this.codeLength = this.gameStateManager.getGameStats().codeLength;
     this.secretCode = this.gameStateManager.getSecretCode();
+  }
+
+  createSimplePhaserLayout() {
+    // Simplified three-zone layout using pure Phaser containers
+    const { width, height } = this.cameras.main;
+    
+    // === SIMPLE THREE-ZONE LAYOUT ===
+    // Header container (fixed at top)
+    this.headerContainer = this.add.container(0, 0);
+    this.headerContainer.setDepth(1000);
+    
+    // Scrollable content container (middle area)
+    const headerHeight = 140;
+    const footerHeight = 120;
+    this.scrollableContainer = this.add.container(0, headerHeight);
+    this.scrollableContainer.setDepth(500);
+    
+    // Footer container (fixed at bottom)
+    this.footerContainer = this.add.container(0, height - footerHeight);
+    this.footerContainer.setDepth(1000);
+    
+    console.log('📱 Simple Phaser three-zone layout created');
+    console.log(`  - Header: y=0, depth=1000`);
+    console.log(`  - Scrollable: y=${headerHeight}, depth=500`);
+    console.log(`  - Footer: y=${height - footerHeight}, depth=1000`);
   }
 
   setupGameComponents() {

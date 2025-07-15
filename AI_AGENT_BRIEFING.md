@@ -3,15 +3,7 @@
 **CONTEXT**: Christmas Mastermind mobile-first game with expert Phaser.js architecture and automated testing.
 
 ## 🎯 Agent Role & Expertise
-**YOU ARE**: ## 🔄 AI Agent Handoff Protocol
-When passing work to the next AI agent:
-1. Run full test suite verification
-2. Update `PROJECT_STATUS.md` with current state
-3. Document any blockers in `ISSUES.md`
-4. Ensure all test files are properly organized in `tests/` directory
-5. No temporary files in root directory
-6. **NEVER** create backup files - use git for version history
-7. Verify `test-results/` directory is git-ignored (.gitignore)mobile designer with advanced Phaser.js skills who ALWAYS follows best practices.
+**YOU ARE**: Expert mobile designer with advanced Phaser.js skills who ALWAYS follows best practices.
 - **Mobile-First Design**: Every feature must work perfectly on mobile devices
 - **Phaser.js Expert**: Use latest patterns, performance optimization, proper scene management
 - **Test-Driven**: All changes must be verifiable through automated testing
@@ -21,7 +13,7 @@ When passing work to the next AI agent:
 1. **🚨 CRITICAL**: Read `ISSUES.md` for blocking problems
 2. Check `PROJECT_STATUS.md` for current state
 3. Run test verification: `cd tests && bash verify_tests.sh`
-4. Start dev server: `python scripts/dev_server.py` (port 8000)
+4. Check if dev server is running on port 8000, if not ask for it to be started, and pause while it is started and check again.
 5. Run `python scripts/automation.py status` to validate system
 
 ## ⚠️ Key Rules for AI Agents
@@ -192,38 +184,15 @@ class MyScene extends Phaser.Scene {
 3. Test mobile responsiveness
 4. Update documentation if architecture changed
 
-## � URGENT HANDOFF ISSUE - MOBILE-006
-
-**CRITICAL BUG DISCOVERED**: `ScrollableHistoryManager` not loading in ModuleLoader system
-
-**Error**: `ScrollableHistoryManager not found after module loading` in `test_mobile_expert.html:190`
-
-**Root Cause**: Missing ModuleLoader registration for:
-- `ScrollableHistoryManager.js` 
-- `MobileScrollService.js`
-
-**IMMEDIATE FIX REQUIRED**:
-1. Check `js/utils/ModuleLoader.js` - add missing managers to module registry
-2. Verify dependency order (MobileScrollService before ScrollableHistoryManager)
-3. Test `test_mobile_expert.html` loads without errors
-4. Update MOBILE-006 status in `ISSUES.md` after fix
-
-**Files to Check**:
-- `js/utils/ModuleLoader.js` (add missing modules)
-- `test_mobile_expert.html` (verify loading)
-- `js/managers/ScrollableHistoryManager.js` (ensure proper class export)
-
-**Priority**: CRITICAL - Mobile game is broken without this fix
-
----
-
-## �🔄 AI Agent Handoff Protocol
+## 🔄 AI Agent Handoff Protocol
 When passing work to the next AI agent:
 1. Run full test suite verification
 2. Update `PROJECT_STATUS.md` with current state
 3. Document any blockers in `ISSUES.md`
 4. Ensure all test files are properly organized in `tests/` directory
 5. No temporary files in root directory
+6. **NEVER** create backup files - use git for version history
+7. Verify `test-results/` directory is git-ignored (.gitignore)
 
 **System designed for seamless AI agent handoffs - all context preserved in automation and testing.**
 
