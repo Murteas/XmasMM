@@ -55,36 +55,19 @@ function initializeGame() {
   
   console.log('✅ All scene classes available - creating Phaser config...');
 
-  // Ensure the game container is ready and has proper dimensions
-  const gameContainer = document.getElementById('game-container');
-  if (!gameContainer) {
-    console.error('🚨 game-container element not found!');
-    return false;
-  }
-  
-  // Force a layout recalculation to ensure proper dimensions
-  const containerRect = gameContainer.getBoundingClientRect();
-  console.log('📐 Container dimensions:', containerRect.width, 'x', containerRect.height);
-  
-  if (containerRect.width === 0 || containerRect.height === 0) {
-    console.error('🚨 Container has zero dimensions!', containerRect);
-    return false;
-  }
-
   // Create Phaser config with loaded scene classes
   const config = {
     type: Phaser.AUTO,
     scale: {
       mode: Phaser.Scale.RESIZE,
       parent: 'game-container',
-      width: Math.max(containerRect.width, 320),
-      height: Math.max(containerRect.height, 480),
+      width: '100%',
+      height: '100%',
       min: {
         width: 320,
         height: 480
-      },
-      // Add explicit autoCenter for better mobile handling
-      autoCenter: Phaser.Scale.CENTER_BOTH
+      }
+      // Let Phaser handle responsive scaling properly
     },
     backgroundColor: '#1a1a2e',
     render: {
@@ -140,19 +123,12 @@ function initializeGame() {
     } else {
       console.warn('⚠️ No active scenes found - this might be the problem!');
     }
-  });
-  
-  // Add resize event listener for orientation changes
-  window.addEventListener('resize', handleResize);
-  
-  // Set willReadFrequently on the canvas after it's created (for performance optimization)
-  game.events.once('ready', () => {
+    
+    // Set willReadFrequently on the canvas for performance optimization
     if (game.canvas) {
       const context = game.canvas.getContext('2d');
       if (context && typeof context.getImageData === 'function') {
-        // Canvas is ready and supports getImageData
         try {
-          // This helps with performance for frequent canvas reads
           game.canvas.style.willReadFrequently = 'true';
         } catch (e) {
           // Silently ignore if not supported
@@ -160,6 +136,9 @@ function initializeGame() {
       }
     }
   });
+  
+  // Add resize event listener for orientation changes
+  window.addEventListener('resize', handleResize);
   
   return true;
 }

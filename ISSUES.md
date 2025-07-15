@@ -11,10 +11,33 @@
 
 **Issue ID**: GAME-001  
 **Date Reported**: July 15, 2025  
-**Resolved**: July 15, 2025 - Fixed race condition in module loading  
+**Resolved**: July 15, 2025 - Fixed race condition and UI layout issues  
 **Severity**: CRITICAL - Game completely unplayable from root index.html  
 **Status**: ✅ RESOLVED  
 **Priority**: P0 - IMMEDIATE FIX REQUIRED
+
+## Problem Description
+The main game (`index.html`) showed only a blue screen without displaying the main menu. Additional UI layout issues were discovered during testing.
+
+## Root Cause Analysis & Resolution
+**Primary Issue**: Race condition between `window.onload` in `main.js` and `ModuleLoader.initializeGame()`:
+- Fixed by moving Phaser config creation inside `initializeGame()` after all modules are loaded
+- Removed `window.onload` dependency in favor of ModuleLoader-controlled initialization
+
+**Secondary Issues**: UI Layout problems caused by hardcoded dimensions:
+- Learn to play screen: Title obscured by top of screen
+- Final screen: Score/explanation overlap, Share button obscured
+- Fixed by reverting to proper Phaser responsive scaling (`width: '100%', height: '100%'`)
+
+## Technical Solution
+1. **Module Loading**: ModuleLoader now properly calls `window.initializeGame()` after all dependencies are loaded
+2. **Responsive Design**: Restored Phaser best practices for responsive scaling
+3. **Code Cleanup**: Removed duplicate event handlers and unused validation code
+
+## Lessons Learned
+- Always follow Phaser best practices for responsive design
+- Avoid hardcoded dimensions that interfere with mobile-first layouts
+- Race conditions in module loading require careful initialization sequencing
 
 ## Problem Description
 The main game (`index.html`) shows only a blue screen without displaying the main menu. The issue occurs on both mobile devices and desktop browsers. Opening developer tools on desktop "fixes" the problem temporarily, suggesting a race condition or initialization timing issue.
