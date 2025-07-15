@@ -49,6 +49,29 @@ bash scripts/cleanup_redundancy.sh
 python scripts/dev_server.py
 ```
 
+## 🔍 **AI Agent Terminal Best Practices**
+**For reliable command output capture:**
+
+### ✅ **Recommended Pattern**
+```bash
+# ALWAYS capture output to test-results/ directory:
+cd tests && bash verify_tests.sh 2>&1 | tee ../test-results/verification.log
+bash run_tests.sh 2>&1 | tee ../test-results/full_test_run.log
+
+# Then read the complete results reliably:
+read_file("test-results/verification.log")
+```
+
+### ❌ **Avoid**
+- Relying on `get_terminal_output` (often fails with "Invalid terminal ID")
+- Creating temp files in project root (triggers cleanup warnings)
+- Assuming truncated `run_in_terminal` results are complete
+
+### 📁 **Output Organization**
+- **test-results/**: All command outputs and logs
+- **Descriptive names**: `verification.log`, `full_test_run.log`, `status_check.log`
+- **Clean up**: Remove temporary files after reading
+
 ### Access Test Suite
 - Test hub: http://localhost:8000/tests/
 - Comprehensive: http://localhost:8000/tests/test_comprehensive.html

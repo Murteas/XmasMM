@@ -28,17 +28,62 @@
 - **Mobile-First**: Test on mobile viewport (375x667) minimum
 - **Phaser Best Practices**: Use proper scene lifecycle, memory management, responsive scaling
 
-## 🔧 Essential Commands
-### Project Management
-- `python scripts/automation.py status` - Current state
-- `python scripts/automation.py help` - Task details
-- `python scripts/automation.py update-docs` - Refresh docs
+## 🔍 Terminal Output Best Practices (CRITICAL)
+**AI Agents must use file-based terminal output for reliability:**
 
-### Testing & Verification (CRITICAL)
-- `cd tests && bash verify_tests.sh` - **RUN AFTER EVERY CHANGE**
-- `bash scripts/cleanup_redundancy.sh` - **PROJECT ORGANIZATION CHECK**
-- `cd tests && node automated_test_verifier.js` - Deep verification
-- `python scripts/dev_server.py` - Development server (auto-restart)
+### ❌ **AVOID**: Unreliable terminal tools
+- `get_terminal_output` - Often returns "Invalid terminal ID" errors
+- Relying on `run_in_terminal` truncated results
+
+### ✅ **USE**: File-based output capture
+```bash
+# ALWAYS redirect complex command output to test-results/ directory:
+command 2>&1 | tee test-results/command_output.log
+
+# Then read the complete results:
+read_file("test-results/command_output.log")
+
+# Examples:
+cd tests && bash verify_tests.sh 2>&1 | tee test-results/verification.log
+python scripts/automation.py status 2>&1 | tee test-results/status.log  
+bash scripts/cleanup_redundancy.sh 2>&1 | tee test-results/cleanup.log
+```
+
+### 📁 **Output File Organization**
+- **test-results/**: All command outputs and logs
+- **NEVER**: Create temp files in project root
+- **ALWAYS**: Clean up temporary files after reading
+- **Pattern**: `command_description.log` (descriptive names)
+
+### 🎯 **Benefits**
+- ✅ Complete output capture (stdout + stderr)
+- ✅ Reliable file reading with `read_file` tool
+- ✅ Persistent logs for debugging
+- ✅ No terminal ID dependency issues
+
+## 🔧 Essential Commands
+### Project Management (with proper output capture)
+```bash
+# ALWAYS capture output to test-results/ directory:
+python scripts/automation.py status 2>&1 | tee test-results/project_status.log
+python scripts/automation.py help 2>&1 | tee test-results/task_help.log
+python scripts/automation.py update-docs 2>&1 | tee test-results/docs_update.log
+```
+
+### Testing & Verification (CRITICAL - use file-based output)
+```bash
+# Primary verification (capture complete output):
+cd tests && bash verify_tests.sh 2>&1 | tee test-results/verification.log
+
+# Project organization check:
+bash scripts/cleanup_redundancy.sh 2>&1 | tee test-results/cleanup_check.log
+
+# Deep verification (if Node.js available):
+cd tests && node automated_test_verifier.js 2>&1 | tee test-results/deep_verification.log
+
+# Development server with logging:
+python scripts/dev_server.py 2>&1 | tee test-results/dev_server.log &
+```
 
 ### Development Server
 ```bash
