@@ -12,8 +12,9 @@
 **Issue ID**: MOBILE-001  
 **Date Reported**: July 12, 2025  
 **Updated**: July 14, 2025 - Consolidated with MOBILE-003  
+**Resolved**: December 19, 2024 - Mobile UI improvements implemented  
 **Severity**: HIGH - Multiple critical mobile UX problems  
-**Status**: 🔧 Open  
+**Status**: ✅ RESOLVED  
 **Related Task**: GameScreenMobileOptimization
 
 ## Problem Description
@@ -48,8 +49,9 @@ Round over scene doesn't utilize available vertical space effectively (75% unuse
 
 **Issue ID**: MOBILE-002  
 **Date Reported**: July 12, 2025  
+**Resolved**: December 19, 2024 - Score messaging clarity improvements implemented  
 **Severity**: Medium  
-**Status**: 🔧 Open  
+**Status**: ✅ RESOLVED  
 **Related Task**: GameScreenMobileOptimization
 
 ## Problem Description

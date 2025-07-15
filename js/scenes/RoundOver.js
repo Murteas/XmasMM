@@ -43,14 +43,16 @@ class RoundOver extends Phaser.Scene {
   }
 
   createGameOverHeader() {
-    const { width } = this.cameras.main;
-    const headerY = 80;
+    const { width, height } = this.cameras.main;
+    // Use mobile-responsive positioning - start higher for better space utilization
+    const headerY = Math.min(80, height * 0.12);
     
     const gameOverText = this.gameData.won ? 'Success!' : 'Game Over';
     const headerColor = this.gameData.won ? '#27ae60' : '#e74c3c';
     
+    // Larger, more prominent header for mobile
     const header = this.add.text(width / 2, headerY, gameOverText, {
-      font: '32px Arial',
+      font: `${Math.max(28, Math.min(36, width * 0.08))}px Arial`,
       fill: headerColor,
       fontStyle: 'bold'
     }).setOrigin(0.5);
@@ -60,13 +62,14 @@ class RoundOver extends Phaser.Scene {
 
   createScoreDisplay() {
     const { width, height } = this.cameras.main;
-    const scoreY = 140;
+    // Better vertical distribution - place score after header with proper spacing
+    const scoreY = Math.min(140, height * 0.25);
     
     const breakdown = this.gameData.scoreManager.getScoreBreakdown();
     
-    // Main score
+    // Larger, more prominent main score for mobile
     const scoreText = this.add.text(width / 2, scoreY, `Score: ${breakdown.total} points`, {
-      font: '24px Arial',
+      font: `${Math.max(22, Math.min(28, width * 0.06))}px Arial`,
       fill: '#fff',
       fontStyle: 'bold'
     }).setOrigin(0.5);
@@ -100,15 +103,16 @@ class RoundOver extends Phaser.Scene {
     
     // Show bonuses and penalties (can be 0 but still informative)
     if (breakdown.completeBonus !== 0) {
-      breakdownParts.push(`Complete: +${breakdown.completeBonus}`);
+      breakdownParts.push(`Puzzle Solved: +${breakdown.completeBonus}`);
     }
     if (breakdown.speedBonus !== 0) {
-      const speedLabel = breakdown.speedBonus > 0 ? 'Speed Bonus' : 'Speed Penalty';
+      const speedLabel = breakdown.speedBonus > 0 ? 'Speed Bonus' : 'Time Penalty';
       const speedSign = breakdown.speedBonus > 0 ? '+' : '';
-      breakdownParts.push(`${speedLabel}: ${speedSign}${breakdown.speedBonus}`);
+      const timeContext = breakdown.speedBonus > 0 ? ' (Great timing!)' : ' (Take your time next game)';
+      breakdownParts.push(`${speedLabel}: ${speedSign}${breakdown.speedBonus}${timeContext}`);
     }
     if (breakdown.hintPenalty !== 0) {
-      breakdownParts.push(`Hint: ${breakdown.hintPenalty}`);
+      breakdownParts.push(`Santa's Hints: ${breakdown.hintPenalty} (Learning bonus!)`);
     }
     
     // If no breakdown parts exist (all zeros), show encouraging basic calculation  
@@ -116,21 +120,21 @@ class RoundOver extends Phaser.Scene {
       breakdownParts = [`Pattern Points: ${breakdown.elementPoints} (No matches yet - try again!)  Total: ${breakdown.total}`];
     }
     
-    // Expert mobile responsive text with proper wrapping
+    // Expert mobile responsive text with better spacing and larger fonts
     const layout = GameUtils.getResponsiveLayout(width, height);
     const breakdownText = GameUtils.createResponsiveText(
       this,
       width / 2, 
-      scoreY + Math.round(35 * layout.fontScale),
+      scoreY + Math.round(45 * layout.fontScale), // More space after main score
       breakdownParts.join('\n'), // Use line breaks instead of spaces for mobile
       {
-        fontSize: `${Math.round(14 * layout.fontScale)}px`,
+        fontSize: `${Math.round(Math.max(15, 16 * layout.fontScale))}px`, // Larger text for mobile readability
         fontFamily: 'Arial',
-        fill: '#ccc',
+        fill: '#ddd', // Slightly brighter for better mobile visibility
         align: 'center',
-        lineSpacing: Math.round(4 * layout.fontScale),
+        lineSpacing: Math.round(8 * layout.fontScale), // More line spacing for mobile
         wordWrap: { 
-          width: Math.min(width * 0.9, 400),
+          width: Math.min(width * 0.9, 450), // Wider text area for mobile
           useAdvancedWrap: true 
         }
       }
@@ -140,20 +144,23 @@ class RoundOver extends Phaser.Scene {
   }
 
   createSolutionDisplay() {
-    const { width } = this.cameras.main;
-    const solutionY = 220;
+    const { width, height } = this.cameras.main;
+    // Better vertical spacing - place solution display after score breakdown
+    const solutionY = Math.min(220, height * 0.45);
     
-    // "The answer was:" label
+    // Larger, more prominent "The answer was:" label for mobile readability
     const labelText = this.add.text(width / 2, solutionY, 'The answer was:', {
-      font: '18px Arial',
-      fill: '#fff'
+      font: `${Math.max(16, Math.min(20, width * 0.045))}px Arial`,
+      fill: '#fff',
+      fontStyle: 'bold'
     }).setOrigin(0.5);
     
-    // Solution elements container
-    const solutionContainer = this.add.container(width / 2, solutionY + 40);
+    // Solution elements container with better mobile spacing
+    const solutionContainer = this.add.container(width / 2, solutionY + Math.max(40, height * 0.08));
     
-    const elementSize = 30;
-    const elementSpacing = 40;
+    // Responsive element sizing for mobile
+    const elementSize = Math.max(30, Math.min(40, width * 0.08));
+    const elementSpacing = Math.max(40, elementSize + 15);
     const totalWidth = (this.gameData.secretCode.length - 1) * elementSpacing;
     const startX = -totalWidth / 2;
     
@@ -194,16 +201,17 @@ class RoundOver extends Phaser.Scene {
   createActionButtons() {
     const { width, height } = this.cameras.main;
     
-    // Expert mobile responsive positioning
+    // Better mobile responsive positioning - use more vertical space
     const layout = GameUtils.getResponsiveLayout(width, height);
-    const buttonY = layout.secondaryButtonY;
-    const buttonSpacing = Math.max(layout.minTouchSize + layout.touchSpacing, 80);
+    // Start buttons lower to use more space, but ensure they fit
+    const buttonStartY = Math.max(layout.secondaryButtonY, height * 0.65);
+    const buttonSpacing = Math.max(layout.minTouchSize + layout.touchSpacing, Math.min(60, height * 0.08));
     
-    // View History Button with responsive design
+    // View History Button with responsive design and larger touch targets
     const historyBtn = GameUtils.createResponsiveText(
       this,
       width / 2, 
-      buttonY,
+      buttonStartY,
       'View History',
       {
         fontSize: `${Math.round(16 * layout.fontScale)}px`,
@@ -211,10 +219,10 @@ class RoundOver extends Phaser.Scene {
         fill: '#fff',
         backgroundColor: '#3498db',
         padding: { 
-          left: Math.round(15 * layout.fontScale), 
-          right: Math.round(15 * layout.fontScale), 
-          top: Math.round(8 * layout.fontScale), 
-          bottom: Math.round(8 * layout.fontScale) 
+          left: Math.round(18 * layout.fontScale), 
+          right: Math.round(18 * layout.fontScale), 
+          top: Math.round(12 * layout.fontScale), 
+          bottom: Math.round(12 * layout.fontScale) 
         }
       }
     ).setOrigin(0.5).setInteractive({ useHandCursor: true });
@@ -222,12 +230,12 @@ class RoundOver extends Phaser.Scene {
     historyBtn.on('pointerdown', () => this.showHistory());
     this.addButtonFeedback(historyBtn);
     
-    // Play Again Button
-    const playAgainBtn = this.add.text(width / 2, buttonY + buttonSpacing, 'Play Again', {
-      font: '18px Arial',
+    // Play Again Button - larger and more prominent for mobile
+    const playAgainBtn = this.add.text(width / 2, buttonStartY + buttonSpacing, 'Play Again', {
+      font: `${Math.max(16, Math.min(20, width * 0.045))}px Arial`,
       fill: '#fff',
       backgroundColor: '#27ae60',
-      padding: { left: 20, right: 20, top: 10, bottom: 10 }
+      padding: { left: 22, right: 22, top: 12, bottom: 12 }
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     
     playAgainBtn.on('pointerdown', () => {
@@ -235,12 +243,12 @@ class RoundOver extends Phaser.Scene {
     });
     this.addButtonFeedback(playAgainBtn);
     
-    // Share Button
-    const shareBtn = this.add.text(width / 2, buttonY + (buttonSpacing * 1.5), 'Share Score', {
-      font: '14px Arial',
+    // Share Button - improved spacing for mobile
+    const shareBtn = this.add.text(width / 2, buttonStartY + (buttonSpacing * 2), 'Share Score', {
+      font: `${Math.max(14, Math.min(16, width * 0.035))}px Arial`,
       fill: '#fff',
       backgroundColor: '#9b59b6',
-      padding: { left: 12, right: 12, top: 6, bottom: 6 }
+      padding: { left: 15, right: 15, top: 8, bottom: 8 }
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     
     shareBtn.on('pointerdown', () => this.shareScore());
