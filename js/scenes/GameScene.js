@@ -36,7 +36,7 @@ class GameScene extends Phaser.Scene {
     // Christmas feedback symbols (1x resolution)
     this.load.image('feedback_perfect_star_1x', `${assetPath}feedback_perfect_star_1x.png`);
     this.load.image('feedback_close_bell_1x', `${assetPath}feedback_close_bell_1x.png`);
-    this.load.image('feedback_wrong_x_1x', `${assetPath}feedback_wrong_x_1x.png`);
+    this.load.image('feedback_wrong_x_1x', `${assetPath}candycane_1x.png`); // Use candycane for wrong feedback
     
     // Retina (2x) images
     this.load.image('santa_2x', `${assetPath}santa_2x.png`);
@@ -49,7 +49,7 @@ class GameScene extends Phaser.Scene {
     // Christmas feedback symbols (2x resolution)
     this.load.image('feedback_perfect_star_2x', `${assetPath}feedback_perfect_star_2x.png`);
     this.load.image('feedback_close_bell_2x', `${assetPath}feedback_close_bell_2x.png`);
-    this.load.image('feedback_wrong_x_2x', `${assetPath}feedback_wrong_x_2x.png`);
+    this.load.image('feedback_wrong_x_2x', `${assetPath}candycane_2x.png`); // Use candycane for wrong feedback
     
     // Super Retina (3x) images  
     this.load.image('santa_3x', `${assetPath}santa_3x.png`);
@@ -62,7 +62,7 @@ class GameScene extends Phaser.Scene {
     // Christmas feedback symbols (3x resolution)
     this.load.image('feedback_perfect_star_3x', `${assetPath}feedback_perfect_star_3x.png`);
     this.load.image('feedback_close_bell_3x', `${assetPath}feedback_close_bell_3x.png`);
-    this.load.image('feedback_wrong_x_3x', `${assetPath}feedback_wrong_x_3x.png`);
+    this.load.image('feedback_wrong_x_3x', `${assetPath}candycane_3x.png`); // Use candycane for wrong feedback
     
     // Show loading progress
     this.load.on('progress', (value) => {

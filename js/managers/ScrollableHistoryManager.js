@@ -134,6 +134,10 @@ class ScrollableHistoryManager {
           element.slot.y = 0; // Reset Y since container handles positioning
           this.activeRowContainer.add(element.slot);
         }
+        if (element.displayElement) {
+          element.displayElement.y = 0; // Reset Y since container handles positioning
+          this.activeRowContainer.add(element.displayElement);
+        }
       });
     }
     
@@ -141,6 +145,12 @@ class ScrollableHistoryManager {
     if (this.historyManager.activeRowManager.activeRowBackground) {
       this.historyManager.activeRowManager.activeRowBackground.y = 0;
       this.activeRowContainer.add(this.historyManager.activeRowManager.activeRowBackground);
+    }
+    
+    // Add submit button to footer container
+    if (this.historyManager.activeRowManager.activeRowSubmitBtn) {
+      this.historyManager.activeRowManager.activeRowSubmitBtn.y = 0;
+      this.activeRowContainer.add(this.historyManager.activeRowManager.activeRowSubmitBtn);
     }
     
     footerContainer.add(this.activeRowContainer);
