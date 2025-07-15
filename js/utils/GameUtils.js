@@ -39,7 +39,7 @@ class GameUtils {
   }
 
   static getGameElements() {
-    return ['Santa', 'Present', 'Mistletoe', 'Star', 'Tree', 'Snowflake'];
+    return ['Santa', 'Present', 'Candy Cane', 'Star', 'Tree', 'Snowflake'];
   }
 
   static getDepthLayers() {

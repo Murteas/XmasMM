@@ -20,17 +20,17 @@ class GameScene extends Phaser.Scene {
     // Base resolution (1x) images
     this.load.image('santa_1x', `${assetPath}santa_1x.png`);
     this.load.image('present_1x', `${assetPath}present_1x.png`);
-    this.load.image('mistletoe_1x', `${assetPath}mistletoe_1x.png`);
+    this.load.image('candycane_1x', `${assetPath}candycane_1x.png`);
     this.load.image('star_1x', `${assetPath}star_1x.png`);
     this.load.image('tree_1x', `${assetPath}tree_1x.png`);
     this.load.image('snowflake_1x', `${assetPath}snowflake_1x.png`);
     
-    // Load base images as fallbacks (Present.png, Star.png, Tree.png, etc.)
-    this.load.image('santa', `${assetPath}Santa.png`);
-    this.load.image('present', `${assetPath}Present.png`);
-    this.load.image('mistletoe', `${assetPath}mistletoe.png`);
-    this.load.image('star', `${assetPath}Star.png`);
-    this.load.image('tree', `${assetPath}Tree.png`);
+    // Load base images as fallbacks (present.png, star.png, tree.png, etc.)
+    this.load.image('santa', `${assetPath}santa.png`);
+    this.load.image('present', `${assetPath}present.png`);
+    this.load.image('candycane', `${assetPath}candycane.png`);
+    this.load.image('star', `${assetPath}star.png`);
+    this.load.image('tree', `${assetPath}tree.png`);
     this.load.image('snowflake', `${assetPath}snowflake.png`);
     
     // Christmas feedback symbols (1x resolution)
@@ -40,7 +40,7 @@ class GameScene extends Phaser.Scene {
     // Retina (2x) images
     this.load.image('santa_2x', `${assetPath}santa_2x.png`);
     this.load.image('present_2x', `${assetPath}present_2x.png`);
-    this.load.image('mistletoe_2x', `${assetPath}mistletoe_2x.png`);
+    this.load.image('candycane_2x', `${assetPath}candycane_2x.png`);
     this.load.image('star_2x', `${assetPath}star_2x.png`);
     this.load.image('tree_2x', `${assetPath}tree_2x.png`);
     this.load.image('snowflake_2x', `${assetPath}snowflake_2x.png`);
@@ -52,7 +52,7 @@ class GameScene extends Phaser.Scene {
     // Super Retina (3x) images  
     this.load.image('santa_3x', `${assetPath}santa_3x.png`);
     this.load.image('present_3x', `${assetPath}present_3x.png`);
-    this.load.image('mistletoe_3x', `${assetPath}mistletoe_3x.png`);
+    this.load.image('candycane_3x', `${assetPath}candycane_3x.png`);
     this.load.image('star_3x', `${assetPath}star_3x.png`);
     this.load.image('tree_3x', `${assetPath}tree_3x.png`);
     this.load.image('snowflake_3x', `${assetPath}snowflake_3x.png`);
@@ -84,7 +84,7 @@ class GameScene extends Phaser.Scene {
     this.load.on('complete', () => {
       if (TestConfig.shouldShowDebugLogs()) {
         console.log('🎄 Asset loading complete. Verifying textures...');
-        const elements = ['santa', 'present', 'mistletoe', 'star', 'tree', 'snowflake'];
+        const elements = ['santa', 'present', 'candycane', 'star', 'tree', 'snowflake'];
         elements.forEach(element => {
           const key1x = `${element}_1x`;
           const key2x = `${element}_2x`;
@@ -207,7 +207,7 @@ class GameScene extends Phaser.Scene {
     const pixelRatio = window.devicePixelRatio || 1;
     
     // Map element names to the exact asset keys loaded in preload()
-    const normalizedName = elementName.toLowerCase();
+    const normalizedName = elementName.toLowerCase().replace(/\s+/g, ''); // Remove spaces
     
     // For now, use only 1x images to ensure compatibility across all platforms
     // This avoids 404 errors on GitHub Pages where some asset files might be missing

@@ -172,7 +172,7 @@ class MainMenu extends Phaser.Scene {
       '📱 How to Play:',
       '• Tap empty slots to select Christmas elements',
       '• Use the element picker to choose from:',
-      '  🎅 Santa, 🎁 Presents, 🌟 Stars, 🎄 Trees, ❄️ Snowflakes, 🪴 Mistletoe',
+      '  🎅 Santa, 🎁 Presents, 🌟 Stars, 🎄 Trees, ❄️ Snowflakes, 🍭 Candy Canes',
       '• Tap Submit when your guess is complete',
       '',
       '💡 Christmas Feedback Symbols:',

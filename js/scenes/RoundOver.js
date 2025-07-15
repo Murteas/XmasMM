@@ -535,7 +535,7 @@ class RoundOver extends Phaser.Scene {
     const elementMap = {
       'Santa': 'santa',
       'Present': 'present', 
-      'Mistletoe': 'mistletoe',
+      'Candy Cane': 'candycane',
       'Star': 'star',
       'Tree': 'tree',
       'Snowflake': 'snowflake'
