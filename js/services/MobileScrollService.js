@@ -73,9 +73,17 @@ class MobileScrollService extends Phaser.Events.EventEmitter {
     this.scrollableContainer.add(this.contentContainer);
     
     // === FIXED FOOTER CONTAINER (Phaser-native safe positioning) ===
-    this.footerContainer = this.scene.add.container(0, height - responsiveFooterHeight);
-    this.safeAreaManager.positionFooter(this.footerContainer, height - responsiveFooterHeight);
+    // Calculate final footer Y position including safe area
+    // Use Math.min to ensure footer is always visible on screen
+    const finalFooterY = Math.min(height - responsiveFooterHeight, height - 100);
+    this.footerContainer = this.scene.add.container(0, finalFooterY);
     this.footerContainer.setDepth(GameUtils.getDepthLayers().UI);
+    
+    console.log(`📱 Footer positioned at Y:${finalFooterY} (height:${height} - footer:${responsiveFooterHeight}, clamped to -100)`);
+    
+    // Force footer to be visible and at UI depth
+    this.footerContainer.setVisible(true);
+    this.footerContainer.setAlpha(1.0);
     
     // === SCROLLABLE AREA BOUNDARIES ===
     this.scrollBounds = {

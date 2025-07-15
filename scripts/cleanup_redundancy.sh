@@ -60,14 +60,14 @@ else
     echo "✅ No orphaned result files in root"
 fi
 
-# Clean up old test-results files (older than 7 days)
+# Clean up old test-results files (older than 1 days)
 echo ""
 echo "🧽 Cleaning up old test-results files..."
 if [ -d "test-results" ]; then
     old_files=$(find test-results/ -name "*.log" -mtime +7 2>/dev/null | wc -l)
     if [ "$old_files" -gt 0 ]; then
         echo "🗑️ Removing $old_files old log files..."
-        find test-results/ -name "*.log" -mtime +7 -delete 2>/dev/null
+        find test-results/ -name "*.log" -mtime +1 -delete 2>/dev/null
         echo "✅ Old log files cleaned up"
     else
         echo "✅ No old log files to clean up"

@@ -52,7 +52,7 @@ const config = {
     pixelArt: false,
     transparent: false
   },
-  scene: [MainMenu, DifficultySelection, GameScene, RoundOver]
+  scene: [MainMenu, DifficultySelection, GameScene, RoundOver, SimpleGameScene]
 };
 
 let game;
@@ -78,6 +78,9 @@ window.onload = function() {
   });
   
   game = new Phaser.Game(config);
+  
+  // Make game globally accessible for debugging
+  window.game = game;
   
   // Add resize event listener for orientation changes
   window.addEventListener('resize', handleResize);

@@ -19,11 +19,10 @@ class ScrollableHistoryManager {
     
     // Row containers for efficient management
     this.rowContainers = [];
-    this.activeRowContainer = null;
     
     this.setupIntegration();
     
-    console.log('🎯 ScrollableHistoryManager initialized with Phaser containers');
+    console.log('🎯 ScrollableHistoryManager initialized with direct Phaser containers');
   }
   
   setupIntegration() {
@@ -79,15 +78,90 @@ class ScrollableHistoryManager {
     migrateFooterElements() {
     const footerContainer = this.scrollService.getFooterContainer();
     
-    // Move active row to footer (only if it exists)
+    console.log('🔍 migrateFooterElements DEBUG:');
+    console.log('  - activeRowManager exists:', !!this.historyManager.activeRowManager);
+    console.log('  - hasActiveRow:', this.historyManager.activeRowManager?.hasActiveRow);
+    console.log('  - activeRowBackground:', !!this.historyManager.activeRowManager?.activeRowBackground);
+    console.log('  - activeRowElements:', this.historyManager.activeRowManager?.activeRowElements?.length);
+    
+    // Direct Phaser container usage - add active row elements to footer
     if (this.historyManager.activeRowManager && this.historyManager.activeRowManager.hasActiveRow) {
-      this.createActiveRowInFooter();
+      console.log('✅ Adding active row directly to footer container');
+      this.addActiveRowToFooter(footerContainer);
+    } else {
+      console.log('❌ NOT adding active row - conditions not met');
     }
 
-    // Move submit button and other controls to footer
-    this.moveControlsToFooter();
+    // Add other controls directly to footer
+    this.addControlsToFooter(footerContainer);
     
-    console.log('⬇️ Active row and controls moved to fixed footer');
+    console.log('⬇️ Active row and controls added directly to footer container');
+  }
+  
+  addActiveRowToFooter(footerContainer) {
+    const activeRowMgr = this.historyManager.activeRowManager;
+    
+    // Create a container for active row elements (for compatibility with debug scripts)
+    this.activeRowContainer = this.scene.add.container(0, 0);
+    
+    // Direct addition to footer container - position elements at top of footer for visibility
+    const activeRowY = 10; // Position near top of footer container
+    
+    if (activeRowMgr.activeRowBackground) {
+      activeRowMgr.activeRowBackground.y = activeRowY;
+      footerContainer.add(activeRowMgr.activeRowBackground);
+      console.log('📦 Added background to footer at Y:', activeRowY);
+    }
+    
+    if (activeRowMgr.activeRowGlowEffect) {
+      activeRowMgr.activeRowGlowEffect.y = activeRowY;
+      footerContainer.add(activeRowMgr.activeRowGlowEffect);
+      console.log('✨ Added glow to footer at Y:', activeRowY);
+    }
+    
+    if (activeRowMgr.activeRowElements) {
+      activeRowMgr.activeRowElements.forEach(element => {
+        if (element.slot) {
+          element.slot.y = activeRowY;
+          footerContainer.add(element.slot);
+        }
+        if (element.displayElement) {
+          element.displayElement.y = activeRowY;
+          footerContainer.add(element.displayElement);
+        }
+      });
+      console.log(`🎰 Added ${activeRowMgr.activeRowElements.length} slots to footer at Y:`, activeRowY);
+    }
+    
+    if (activeRowMgr.activeRowSubmitBtn) {
+      activeRowMgr.activeRowSubmitBtn.y = activeRowY;
+      footerContainer.add(activeRowMgr.activeRowSubmitBtn);
+      console.log('📤 Added submit button to footer at Y:', activeRowY);
+    }
+    
+    // Force footer and all children to be visible
+    footerContainer.setVisible(true);
+    footerContainer.setAlpha(1.0);
+    
+    // Set activeRowContainer visibility to match footer
+    this.activeRowContainer.setVisible(true);
+    this.activeRowContainer.setAlpha(1.0);
+    
+    console.log('🎯 Active row added directly to footer container at Y:', activeRowY);
+  }
+  
+  addControlsToFooter(footerContainer) {
+    // Find other game controls and add directly to footer
+    const controls = this.scene.children.list.filter(child => 
+      child.getData && child.getData('uiType') === 'gameControl'
+    );
+    
+    controls.forEach(control => {
+      control.y = 65; // Position below active row
+      footerContainer.add(control);
+    });
+    
+    console.log(`🎮 Added ${controls.length} controls directly to footer`);
   }
   
   createRowContainer(rowData, index) {
@@ -112,76 +186,6 @@ class ScrollableHistoryManager {
     this.rowContainers[index] = rowContainer;
     
     return rowContainer;
-  }
-  
-  createActiveRowInFooter() {
-    const footerContainer = this.scrollService.getFooterContainer();
-    const safeArea = this.scrollService.safeAreaManager.getInsets();
-    
-    // Calculate responsive positioning within footer using Phaser-native safe area
-    const footerContentTop = 15; // Top margin within footer
-    const activeRowY = footerContentTop; // Safe positioning from footer top
-    
-    // Create active row container in footer (always visible)
-    this.activeRowContainer = this.scene.add.container(0, activeRowY);
-    
-    // Move existing active row elements to footer container
-    if (this.historyManager.activeRowManager.activeRowElements) {
-      this.historyManager.activeRowManager.activeRowElements.forEach(element => {
-        if (element.slot) {
-          element.slot.y = 0; // Reset Y since container handles positioning
-          this.activeRowContainer.add(element.slot);
-        }
-        if (element.displayElement) {
-          element.displayElement.y = 0; // Reset Y since container handles positioning
-          this.activeRowContainer.add(element.displayElement);
-        }
-      });
-    }
-    
-    // Add active row glow effect to footer (if it exists)
-    if (this.historyManager.activeRowManager.activeRowGlowEffect) {
-      this.historyManager.activeRowManager.activeRowGlowEffect.y = 0;
-      this.activeRowContainer.add(this.historyManager.activeRowManager.activeRowGlowEffect);
-    }
-    
-    // Add active row background to footer
-    if (this.historyManager.activeRowManager.activeRowBackground) {
-      this.historyManager.activeRowManager.activeRowBackground.y = 0;
-      this.activeRowContainer.add(this.historyManager.activeRowManager.activeRowBackground);
-    }
-    
-    // Add submit button to active row container (preserve relative positioning)
-    if (this.historyManager.activeRowManager.activeRowSubmitBtn) {
-      // Keep the submit button at the same Y as slots (all are at Y=0 within container)
-      this.historyManager.activeRowManager.activeRowSubmitBtn.y = 0;
-      this.activeRowContainer.add(this.historyManager.activeRowManager.activeRowSubmitBtn);
-      console.log('📤 Submit button added to active row container at X:', this.historyManager.activeRowManager.activeRowSubmitBtn.x);
-    }
-    
-    footerContainer.add(this.activeRowContainer);
-    
-    console.log(`🎯 Active row created in footer at Y:${activeRowY} (Phaser-native safe area bottom: ${safeArea.bottom}px)`);
-  }
-  
-  moveControlsToFooter() {
-    const footerContainer = this.scrollService.getFooterContainer();
-    const safeArea = this.scrollService.safeAreaManager.getInsets();
-    
-    // Calculate responsive button position within footer using Phaser-native safe area
-    const buttonY = 65; // Position below active row, above safe area
-    
-    // Find other game controls in scene children (NOT submit button - that's in activeRowContainer)
-    const controls = this.scene.children.list.filter(child => 
-      child.getData && child.getData('uiType') === 'gameControl'
-    );
-    
-    controls.forEach(control => {
-      control.y = buttonY; // Responsive position in footer
-      footerContainer.add(control);
-    });
-    
-    console.log(`🎮 Moved ${controls.length} controls to footer at Y:${buttonY} (Submit button already in active row container)`);
   }
   
   // === HISTORY MANAGEMENT (Replaces complex positioning) ===
@@ -345,13 +349,19 @@ class ScrollableHistoryManager {
   }
   
   createActiveRow(lastGuess = null) {
+    console.log('🎯 ScrollableHistoryManager.createActiveRow() called');
+    
     // Delegate to internal HistoryManager first
     this.historyManager.createActiveRow(lastGuess);
     
-    // Now move active row to our footer container (elements will exist)
+    console.log('🎯 After historyManager.createActiveRow() - hasActiveRow:', this.historyManager.activeRowManager?.hasActiveRow);
+    
+    // Now add active row directly to footer container
     this.migrateFooterElements();
     
-    return this.activeRowContainer;
+    console.log('🎯 After migrateFooterElements() - using direct Phaser containers');
+    
+    return this.scrollService.getFooterContainer();
   }
   
   calculateActiveRowPosition() {

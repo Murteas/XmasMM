@@ -52,8 +52,8 @@ body {
   will-change: auto;
 }
 
-/* Force portrait orientation */
-@media screen and (orientation: landscape) {
+/* Force portrait orientation (mobile devices only) */
+@media screen and (orientation: landscape) and (max-width: 900px) {
   body {
     transform: rotate(90deg);
     transform-origin: left top;

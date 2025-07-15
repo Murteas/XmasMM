@@ -35,17 +35,66 @@ class ModuleLoader {
       'js/main.js'
     ];
     
-    console.log('🔄 Loading XmasMM modules...');
+    console.log('🔄 Loading XmasMM modules in optimized groups...');
     
-    // Load modules sequentially to respect dependencies
-    for (const module of modules) {
-      try {
-        await this.loadScript(`${basePath}${module}`);
-        console.log(`✅ Loaded: ${module}`);
-      } catch (error) {
-        console.error(`❌ Failed to load ${module}:`, error);
-        throw new Error(`Module loading failed: ${module}`);
-      }
+    // Group 1: Core utilities (load in parallel - no dependencies)
+    const coreModules = [
+      'js/utils/TestConfig.js',
+      'js/utils/GameUtils.js',
+      'js/utils/SafeAreaManager.js'
+    ];
+    
+    // Group 2: Services and independent managers (load in parallel)
+    const serviceModules = [
+      'js/services/MobileScrollService.js',
+      'js/managers/ScoreManager.js',
+      'js/managers/HistoryRenderer.js',
+      'js/managers/HistoryScroller.js',
+      'js/managers/ElementPicker.js'
+    ];
+    
+    // Group 3: Dependent managers (sequential)
+    const managerModules = [
+      'js/managers/ActiveRowManager.js',
+      'js/managers/ScrollableHistoryManager.js',
+      'js/managers/HistoryManager.js',
+      'js/managers/GameStateManager.js',
+      'js/managers/UILayoutManager.js',
+      'js/managers/GameInputHandler.js'
+    ];
+    
+    // Group 4: Scenes (load in parallel)
+    const sceneModules = [
+      'js/scenes/MainMenu.js',
+      'js/scenes/DifficultySelection.js',
+      'js/scenes/GameScene.js',
+      'js/scenes/RoundOver.js'
+    ];
+    
+    // Group 5: Main initialization
+    const mainModules = ['js/main.js'];
+    
+    // Load groups sequentially, but modules within groups in parallel
+    const loadGroup = async (modules, groupName) => {
+      console.log(`🚀 Loading ${groupName} (${modules.length} modules in parallel)...`);
+      const promises = modules.map(module => 
+        this.loadScript(`${basePath}${module}`).then(() => 
+          console.log(`✅ ${module}`)
+        )
+      );
+      await Promise.all(promises);
+      console.log(`✅ ${groupName} complete`);
+    };
+    
+    try {
+      await loadGroup(coreModules, 'Core Utilities');
+      await loadGroup(serviceModules, 'Services & Independent Managers');
+      await loadGroup(managerModules, 'Dependent Managers');
+      await loadGroup(sceneModules, 'Scenes');
+      await loadGroup(mainModules, 'Main Game');
+    } catch (error) {
+      console.error('❌ Module loading failed:', error);
+      throw error;
     }
     
     console.log('🎮 All XmasMM modules loaded successfully!');
