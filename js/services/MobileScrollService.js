@@ -342,4 +342,7 @@ class MobileScrollService extends Phaser.Events.EventEmitter {
 // Export for use
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = MobileScrollService;
+} else {
+  // Ensure global availability in browser
+  window.MobileScrollService = MobileScrollService;
 }

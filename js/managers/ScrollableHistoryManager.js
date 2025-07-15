@@ -338,4 +338,10 @@ class ScrollableHistoryManager {
   // === END DELEGATION ===
 }
 
-export default ScrollableHistoryManager;
+// Export for browser use (like other manager classes)
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = ScrollableHistoryManager;
+} else {
+  // Ensure global availability in browser
+  window.ScrollableHistoryManager = ScrollableHistoryManager;
+}
