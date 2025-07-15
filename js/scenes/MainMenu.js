@@ -172,16 +172,17 @@ class MainMenu extends Phaser.Scene {
       '📱 How to Play:',
       '• Tap empty slots to select Christmas elements',
       '• Use the element picker to choose from:',
-      '  🎅 Santa, 🎁 Presents, 🌟 Stars, 🎄 Trees, ❄️ Snowflakes, 🍭 Candy Canes',
+      '',
       '• Tap Submit when your guess is complete',
       '',
       '💡 Christmas Feedback Symbols:',
-      '• ★ Star = Perfect! Right element, right spot',
-      '• 🔔 Bell = Close! Right element, wrong spot', 
+      '',
+      '',
       '• (No symbol) = Element not in the secret code',
       '',
-      '📝 Example: If secret is [🎅🎁🎄🪴] and you guess [🎅🪴🎄🌟]:',
-      '   🎅★ 🪴🔔 🎄🔔 🌟(no symbol)',
+      '📝 Example: If secret code contains Santa and you guess Santa in the right spot:',
+      '   You\'ll see the perfect star! If Santa is in your guess but wrong spot,',
+      '   you\'ll see the close bell. Elements not in the code get no symbol.',
       '',
       '🎁 Santa\'s Hint: Available after a few guesses!',
       '',
@@ -195,6 +196,56 @@ class MainMenu extends Phaser.Scene {
       lineSpacing: Math.round(3 * layout.fontScale), // Increased line spacing
       wordWrap: { width: width * 0.85 }
     }).setOrigin(0.5);
+
+    // Create actual game element images to replace emoji
+    const elementContainer = this.add.container(width / 2, height * 0.25);
+    const elementSize = Math.round(24 * layout.fontScale);
+    const elementSpacing = Math.round(32 * layout.fontScale);
+    
+    // Game elements in order: Santa, Presents, Stars, Trees, Snowflakes, Candy Canes
+    const gameElements = ['santa', 'present', 'star', 'tree', 'snowflake', 'candycane'];
+    const elementNames = ['Santa', 'Presents', 'Stars', 'Trees', 'Snowflakes', 'Candy Canes'];
+    
+    gameElements.forEach((element, index) => {
+      const x = (index - 2.5) * elementSpacing; // Center 6 elements
+      
+      // Create element image
+      const elementImg = this.add.image(x, -5, `${element}_1x`)
+        .setScale(elementSize / 64) // Assuming source images are ~64px
+        .setOrigin(0.5);
+      
+      // Create element label
+      const elementLabel = this.add.text(x, 15, elementNames[index], {
+        font: `${Math.round(10 * layout.fontScale)}px Arial`,
+        fill: '#fff',
+        align: 'center'
+      }).setOrigin(0.5);
+      
+      elementContainer.add([elementImg, elementLabel]);
+    });
+
+    // Create feedback symbol images
+    const feedbackContainer = this.add.container(width / 2, height * 0.43);
+    
+    // Perfect feedback (star)
+    const perfectStar = this.add.image(-60, 0, 'feedback_perfect_star_1x')
+      .setScale(Math.round(20 * layout.fontScale) / 64)
+      .setOrigin(0.5);
+    const perfectText = this.add.text(-20, 0, '= Perfect! Right element, right spot', {
+      font: `${Math.round(14 * layout.fontScale)}px Arial`,
+      fill: '#fff'
+    }).setOrigin(0, 0.5);
+    
+    // Close feedback (bell)
+    const closeBell = this.add.image(-60, 25, 'feedback_close_bell_1x')
+      .setScale(Math.round(20 * layout.fontScale) / 64)
+      .setOrigin(0.5);
+    const closeText = this.add.text(-20, 25, '= Close! Right element, wrong spot', {
+      font: `${Math.round(14 * layout.fontScale)}px Arial`,
+      fill: '#fff'
+    }).setOrigin(0, 0.5);
+    
+    feedbackContainer.add([perfectStar, perfectText, closeBell, closeText]);
 
     // Close button - positioned higher to avoid Safari footer
     const closeBtn = this.add.text(width / 2, height * 0.82, 'Got it! Let\'s Play! 🎄', {
@@ -217,7 +268,7 @@ class MainMenu extends Phaser.Scene {
     // Add touch feedback to close button
     this.addButtonTouchFeedback(closeBtn, { colorTint: 0xe74c3c });
       // Add to container
-    this.helpOverlay.add([helpBg, helpTitle, instructionText, closeBtn]);
+    this.helpOverlay.add([helpBg, helpTitle, instructionText, elementContainer, feedbackContainer, closeBtn]);
     this.helpOverlay.setDepth(1000);
 
     // Smooth entrance animation
