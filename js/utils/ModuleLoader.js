@@ -71,6 +71,8 @@ class ModuleLoader {
       'js/scenes/RoundOver.js'
     ];
     
+    console.log('🎬 Loading scene modules...');
+    
     // Group 5: Main initialization
     const mainModules = ['js/main.js'];
     
@@ -140,8 +142,21 @@ class ModuleLoader {
       // Then load all game modules
       await this.loadGameModules(basePath);
       
-      console.log('🎯 Game initialization complete!');
-      return true;
+      // Finally, initialize the game after all modules are loaded
+      if (typeof window.initializeGame === 'function') {
+        console.log('🎮 Starting game initialization...');
+        const success = window.initializeGame();
+        if (success) {
+          console.log('🎯 Game initialization complete!');
+          return true;
+        } else {
+          console.error('🚨 Game initialization failed - scene classes not available');
+          return false;
+        }
+      } else {
+        console.error('🚨 initializeGame function not found - main.js may not be loaded');
+        return false;
+      }
     } catch (error) {
       console.error('🚨 Game initialization failed:', error);
       return false;

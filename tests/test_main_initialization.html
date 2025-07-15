@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Main Game Initialization Test</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #1a1a2e;
+      color: white;
+    }
+    
+    #status {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.8);
+      padding: 15px;
+      border-radius: 8px;
+      z-index: 1000;
+      font-size: 12px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    
+    #game-container {
+      margin-top: 250px;
+      width: 100%;
+      height: calc(100vh - 270px);
+      border: 2px solid #333;
+      border-radius: 8px;
+    }
+    
+    .step {
+      margin: 5px 0;
+      padding: 3px 6px;
+      border-radius: 3px;
+    }
+    
+    .pending { background: #666; }
+    .success { background: #4CAF50; }
+    .error { background: #f44336; }
+    .warning { background: #FF9800; }
+  </style>
+</head>
+<body>
+  <div id="status">
+    <div class="step pending" id="step-start">🔄 Starting initialization test...</div>
+    <div class="step pending" id="step-moduleloader">⏳ Loading ModuleLoader...</div>
+    <div class="step pending" id="step-phaser">⏳ Loading Phaser...</div>
+    <div class="step pending" id="step-modules">⏳ Loading game modules...</div>
+    <div class="step pending" id="step-scenes">⏳ Checking scene classes...</div>
+    <div class="step pending" id="step-game">⏳ Creating Phaser game...</div>
+    <div class="step pending" id="step-complete">⏳ Initialization complete...</div>
+  </div>
+  
+  <div id="game-container"></div>
+  
+  <!-- Load ModuleLoader -->
+  <script src="../js/utils/ModuleLoader.js"></script>
+  
+  <script>
+    // Override console methods to capture output
+    const statusDiv = document.getElementById('status');
+    const originalConsoleLog = console.log;
+    const originalConsoleError = console.error;
+    
+    function updateStep(stepId, status, message) {
+      const step = document.getElementById(stepId);
+      step.className = `step ${status}`;
+      step.textContent = message;
+    }
+    
+    function addLogEntry(type, message) {
+      const logEntry = document.createElement('div');
+      logEntry.className = `step ${type}`;
+      logEntry.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+      statusDiv.appendChild(logEntry);
+      statusDiv.scrollTop = statusDiv.scrollHeight;
+    }
+    
+    console.log = function(...args) {
+      originalConsoleLog.apply(console, args);
+      addLogEntry('success', args.join(' '));
+    };
+    
+    console.error = function(...args) {
+      originalConsoleError.apply(console, args);
+      addLogEntry('error', args.join(' '));
+    };
+    
+    // Test initialization
+    updateStep('step-start', 'success', '✅ Test started');
+    
+    if (typeof ModuleLoader !== 'undefined') {
+      updateStep('step-moduleloader', 'success', '✅ ModuleLoader available');
+      
+      // Start game initialization
+      ModuleLoader.initializeGame().then(success => {
+        if (success) {
+          updateStep('step-complete', 'success', '✅ Game initialization succeeded!');
+          
+          // Check if game object was created
+          setTimeout(() => {
+            if (window.game && window.game.scene) {
+              addLogEntry('success', `🎮 Game created with ${window.game.scene.scenes.length} scenes`);
+              
+              // Check active scene
+              const activeScenes = window.game.scene.getScenes(true);
+              if (activeScenes.length > 0) {
+                addLogEntry('success', `🎬 Active scene: ${activeScenes[0].scene.key}`);
+              } else {
+                addLogEntry('warning', '⚠️ No active scenes found');
+              }
+            } else {
+              addLogEntry('error', '🚨 Game object not found');
+            }
+          }, 1000);
+          
+        } else {
+          updateStep('step-complete', 'error', '🚨 Game initialization FAILED!');
+        }
+      }).catch(error => {
+        updateStep('step-complete', 'error', `🚨 Error: ${error.message}`);
+        console.error('Initialization error:', error);
+      });
+      
+    } else {
+      updateStep('step-moduleloader', 'error', '🚨 ModuleLoader not found!');
+    }
+  </script>
+</body>
+</html>

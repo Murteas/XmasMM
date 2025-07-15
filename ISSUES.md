@@ -7,7 +7,41 @@
 
 ## 🚨 Open Issues
 
-### **MOBILE-001: Round Over Scene Space Utilization & Layout** 🔧 CRITICAL
+### **GAME-001: Main Game Initialization Failure** ✅ RESOLVED
+
+**Issue ID**: GAME-001  
+**Date Reported**: July 15, 2025  
+**Resolved**: July 15, 2025 - Fixed race condition in module loading  
+**Severity**: CRITICAL - Game completely unplayable from root index.html  
+**Status**: ✅ RESOLVED  
+**Priority**: P0 - IMMEDIATE FIX REQUIRED
+
+## Problem Description
+The main game (`index.html`) shows only a blue screen without displaying the main menu. The issue occurs on both mobile devices and desktop browsers. Opening developer tools on desktop "fixes" the problem temporarily, suggesting a race condition or initialization timing issue.
+
+## Symptoms
+- Root `index.html` loads but shows only blue background (#1a1a2e)
+- Main menu never appears
+- No way to progress on mobile devices
+- Test HTML files work correctly (they load Phaser differently)
+- Desktop: Opening dev tools makes game suddenly work
+
+## Root Cause Analysis
+Race condition between `window.onload` in `main.js` and `ModuleLoader.initializeGame()`:
+1. `index.html` calls `ModuleLoader.initializeGame()` asynchronously  
+2. `main.js` registers `window.onload` handler that creates Phaser.Game
+3. `window.onload` fires before scene classes are loaded by ModuleLoader
+4. Phaser.Game tries to initialize with undefined scene classes
+5. Game fails silently, shows only background color
+
+## Expected Behavior
+- Game should initialize properly and show main menu
+- Should work consistently across all devices and browsers
+- Should not require developer tools to function
+
+---
+
+### **MOBILE-001: Round Over Scene Space Utilization & Layout** ✅ RESOLVED
 
 **Issue ID**: MOBILE-001  
 **Date Reported**: July 12, 2025  
