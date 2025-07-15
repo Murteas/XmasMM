@@ -64,68 +64,56 @@ bash scripts/cleanup_redundancy.sh 2>&1 | tee test-results/cleanup.log
 - ✅ No terminal ID dependency issues
 - ✅ Automatic cleanup prevents file accumulation
 
-## 🔧 Essential Commands
-### Project Management (with proper output capture)
+## 🔧 Essential Commands & Testing
+
+### **Quick Status Check**
 ```bash
-# ALWAYS capture output to test-results/ directory:
-python scripts/automation.py status 2>&1 | tee test-results/project_status.log
-python scripts/automation.py help 2>&1 | tee test-results/task_help.log
-python scripts/automation.py update-docs 2>&1 | tee test-results/docs_update.log
+cd "/c/djs.projects/XmasMM"
+cat PROJECT_STATUS.md                     # Live project status
+python scripts/automation.py status       # Current task details
+cd tests && bash verify_tests.sh          # Verify all systems working
 ```
 
-### Testing & Verification (CRITICAL - use file-based output)
+### **Development Server** 
 ```bash
-# Enhanced Node.js testing (NEW - professional tools):
-npm run verify-assets 2>&1 | tee test-results/asset_verification.log
-npm run debug-interactions 2>&1 | tee test-results/interaction_debug.log
-npm test 2>&1 | tee test-results/enhanced_testing.log
-
-# Traditional HTML testing (capture complete output):
-cd tests && bash verify_tests.sh 2>&1 | tee test-results/verification.log
-
-# Project organization check:
-bash scripts/cleanup_redundancy.sh 2>&1 | tee test-results/cleanup_check.log
-
-# Deep verification (if Node.js available):
-cd tests && node automated_test_verifier.js 2>&1 | tee test-results/deep_verification.log
-
-# Development server with logging:
-python scripts/dev_server.py 2>&1 | tee test-results/dev_server.log &
-```
-
-### Development Server
-```bash
-# Always use the proper dev server for testing
-python scripts/dev_server.py
+python scripts/dev_server.py              # Start dev server (recommended)
+# OR python -m http.server 8000           # Manual server (blocks terminal)
 # Access tests at: http://localhost:8000/tests/
-
-# Node.js tools now available:
-node --version  # v22.17.0
-npm --version   # v10.9.2
 ```
+
+### **File-Based Command Output** (CRITICAL)
+Always capture command output to files for reliability:
+```bash
+# Capture output to test-results/ directory:
+cd tests && bash verify_tests.sh 2>&1 | tee ../test-results/verification.log
+python scripts/automation.py status 2>&1 | tee test-results/status.log
+```
+
+### **Testing System**
+- **Primary**: `cd tests && bash verify_tests.sh` - HTML-based verification
+- **Enhanced**: `npm test` - Node.js tools (if available)
+- **Mobile**: `tests/test_mobile_expert.html` - Mobile-specific testing
 
 ## 📁 Critical Files
-### Core Documentation
-- `ISSUES.md` - 🚨 Blocking problems (check first)
-- `PROJECT_STATUS.md` - Real-time progress
-- `tests/README.md` - **Complete testing documentation**
-- `TECHNICAL_GUIDELINES.md` - Architecture patterns
 
-### Mobile Architecture & Best Practices (ESSENTIAL)
-- `docs/phaser-mobile-architecture.md` - **MOBILE-006 solution with Phaser containers**
-- `docs/mobile-best-practices.md` - **Mobile UI patterns and implementation**
+### **Core Documentation**
+- `ISSUES.md` - 🚨 Active issues only (cleaned up)
+- `PROJECT_STATUS.md` - Real-time progress (auto-updated)
+- `README.md` - Project overview
 
-### Testing System (AI-Agent Optimized)
+### **Mobile Architecture** (ESSENTIAL)
+- `docs/phaser-mobile-architecture.md` - **MOBILE-006 solution patterns**
+- `docs/mobile-best-practices.md` - **Mobile UI implementation**
+
+### **Testing & Code**
 - `tests/verify_tests.sh` - **Primary verification tool**
-- `scripts/cleanup_redundancy.sh` - **Project organization verification**
-- `tests/automated_test_verifier.js` - Deep verification
-- `tests/test_comprehensive.html` - Integration testing
 - `tests/test_mobile_expert.html` - Mobile-specific testing
-
-### Code Architecture
-- `js/utils/ModuleLoader.js` - Centralized dependency management
 - `js/managers/` - Game state management
 - `js/scenes/` - Phaser scene implementations
+
+### **Task System**
+- `tasks/` - Individual task documentation
+- `tasks.json` - Machine-readable task registry
 
 ## 🎮 Phaser.js Best Practices for AI Agents
 ### Mobile Architecture (CRITICAL for MOBILE-006)
@@ -169,60 +157,41 @@ class MyScene extends Phaser.Scene {
 - Use proper event delegation for mobile performance
 
 ## 🧪 Test-First Development for AI Agents
-### Before Making Changes
-1. Run `cd tests && bash verify_tests.sh` to establish baseline
-2. Document expected behavior in test cases
-3. Make incremental changes
-4. Verify each change with automated tests
 
-### After Making Changes
+### **Before Making Changes**
+1. Run `cd tests && bash verify_tests.sh` to establish baseline
+2. Check `ISSUES.md` for any blocking problems
+3. Review `PROJECT_STATUS.md` for current task context
+
+### **After Making Changes**
 1. **MANDATORY**: Run `cd tests && bash verify_tests.sh`
-2. **RECOMMENDED**: Run `bash scripts/cleanup_redundancy.sh` to maintain organization
-3. Update automation status: `python scripts/automation.py update-docs`
-4. Document any new patterns or lessons learned
 2. Check console for errors in browser tests
-3. Test mobile responsiveness
-4. Update documentation if architecture changed
+3. Test mobile responsiveness if mobile changes made
+4. Update `ISSUES.md` if bugs resolved
 
 ## 🔄 AI Agent Handoff Protocol
 When passing work to the next AI agent:
-1. Run full test suite verification
-2. Update `PROJECT_STATUS.md` with current state
-3. Document any blockers in `ISSUES.md`
-4. Ensure all test files are properly organized in `tests/` directory
-5. No temporary files in root directory
-6. **NEVER** create backup files - use git for version history
-7. Verify `test-results/` directory is git-ignored (.gitignore)
+1. Run `cd tests && bash verify_tests.sh` for verification
+2. Update `ISSUES.md` with current state 
+3. Document any blockers or discoveries
+4. Ensure no temporary files in root directory
+5. Keep project clean and organized
 
 **System designed for seamless AI agent handoffs - all context preserved in automation and testing.**
 
-## 🔧 Enhanced Testing Tools (Node.js v22.17.0)
+---
 
-### **Professional Debugging System**
-New Node.js-based testing tools provide comprehensive analysis:
+## � Quick Reference
 
-```bash
-# Asset verification with detailed reporting
-npm run verify-assets
+### **Project Status**: Mobile game 100% functional ✅
+- Footer layout working, element selection working, mobile optimized
+- Current focus: Polish and architecture improvements
 
-# Interaction debugging with JSON reports
-npm run debug-interactions  
+### **Next Priorities**:
+1. `GameScreenMobileOptimization` - Visual polish (2-3 hours)
+2. `UsabilityImprovements` - Family UX (3-4 hours)  
+3. `CodeArchitectureRefactoring` - Technical foundation (16 hours)
 
-# Combined test suite
-npm test
-
-# Review detailed JSON reports
-cat test-results/asset_verification_report.json
-cat test-results/interaction_debug_report.json
-```
-
-### **Testing Workflow Integration**
-1. **Traditional**: `cd tests && bash verify_tests.sh` (HTML-based)
-2. **Enhanced**: `npm run debug-interactions` (Node.js analysis)
-3. **Asset Check**: `npm run verify-assets` (Professional reporting)
-4. **Combined**: `npm test` (Full verification suite)
-
-### **Report Analysis** 
-- **Status**: `PASSED` (0 issues) or `ISSUES_FOUND` (with details)
-- **JSON Structure**: timestamp, summary, issues array, detailed checks
-- **File Location**: `test-results/` directory (git-ignored)
+### **Architecture**: Three-zone Phaser containers (Header + Scrollable + Footer)
+### **Testing**: `cd tests && bash verify_tests.sh`
+### **Documentation**: Cleaned and consolidated for AI efficiency
