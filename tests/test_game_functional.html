@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="screen-orientation" content="portrait">
+  <title>XmasMM - Game Test</title>
+  <link rel="icon" type="image/png" href="../assets/icon.png">
+  <link rel="stylesheet" href="../styles.css">
+  
+  <!-- Phaser.js -->
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+  
+  <!-- Use SAME loading as main index.html -->
+  <script src="../js/utils/ModuleLoader.js"></script>
+  
+  <style>
+    .test-controls {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+      background: rgba(0,0,0,0.8);
+      padding: 10px;
+      border-radius: 5px;
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+    }
+    .test-controls button {
+      display: block;
+      margin: 5px 0;
+      padding: 5px 10px;
+      background: #c0392b;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .test-controls button:hover {
+      background: #a93226;
+    }
+    #test-results {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.8);
+      padding: 10px;
+      border-radius: 5px;
+      color: white;
+      font-family: monospace;
+      font-size: 11px;
+      max-width: 300px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container"></div>
+  
+  <!-- Test Controls -->
+  <div class="test-controls">
+    <h4>Game Test Controls</h4>
+    <button onclick="testGameInitialization()">Test: Game Init</button>
+    <button onclick="testSceneTransitions()">Test: Menu → Game</button>
+    <button onclick="testGameplayFlow()">Test: Full Game Flow</button>
+    <button onclick="testMobileUI()">Test: Mobile UI</button>
+    <button onclick="runAllTests()">Run All Tests</button>
+    <button onclick="clearResults()">Clear Results</button>
+  </div>
+  
+  <div id="test-results"></div>
+
+  <script>
+    let testResults = [];
+    let gameInstance = null;
+
+    // Test utilities
+    function log(message, type = 'info') {
+      const timestamp = new Date().toLocaleTimeString();
+      const entry = `[${timestamp}] ${type.toUpperCase()}: ${message}`;
+      testResults.push(entry);
+      updateResultsDisplay();
+      console.log(entry);
+    }
+
+    function updateResultsDisplay() {
+      const resultsDiv = document.getElementById('test-results');
+      resultsDiv.innerHTML = testResults.slice(-20).join('\n');
+      resultsDiv.scrollTop = resultsDiv.scrollHeight;
+    }
+
+    function clearResults() {
+      testResults = [];
+      updateResultsDisplay();
+    }
+
+    // Initialize with same pattern as main index.html
+    document.addEventListener('DOMContentLoaded', function() {
+      // Ensure ModuleLoader is available
+      if (typeof ModuleLoader !== 'undefined') {
+        ModuleLoader.initializeGame().then(success => {
+          if (success) {
+            log('Game modules loaded successfully', 'success');
+            gameInstance = window.game;
+            
+            // Auto-run basic test
+            setTimeout(() => {
+              testGameInitialization();
+            }, 1000);
+          } else {
+            log('Failed to initialize game modules', 'error');
+          }
+        }).catch(error => {
+          log(`Game initialization error: ${error.message}`, 'error');
+        });
+      } else {
+        log('ModuleLoader not available', 'error');
+      }
+    });
+
+    // Test Functions
+    async function testGameInitialization() {
+      log('Testing game initialization...', 'test');
+      
+      try {
+        // Check if Phaser game exists
+        if (!window.game) {
+          throw new Error('Phaser game instance not found');
+        }
+        log('✓ Phaser game instance exists', 'success');
+
+        // Check if game is running
+        if (!window.game.isRunning) {
+          throw new Error('Game is not running');
+        }
+        log('✓ Game is running', 'success');
+
+        // Check scene manager
+        if (!window.game.scene) {
+          throw new Error('Scene manager not found');
+        }
+        log('✓ Scene manager exists', 'success');
+
+        // Check if MainMenu scene is active
+        const mainMenuScene = window.game.scene.getScene('MainMenu');
+        if (!mainMenuScene) {
+          throw new Error('MainMenu scene not found');
+        }
+        log('✓ MainMenu scene exists', 'success');
+
+        log('Game initialization test PASSED', 'success');
+        return true;
+      } catch (error) {
+        log(`Game initialization test FAILED: ${error.message}`, 'error');
+        return false;
+      }
+    }
+
+    async function testSceneTransitions() {
+      log('Testing scene transitions...', 'test');
+      
+      try {
+        const game = window.game;
+        if (!game) throw new Error('Game not available');
+
+        // Get MainMenu scene
+        const mainMenu = game.scene.getScene('MainMenu');
+        if (!mainMenu) throw new Error('MainMenu scene not found');
+
+        // Test transition to DifficultySelection
+        log('Attempting transition to DifficultySelection...', 'test');
+        game.scene.start('DifficultySelection');
+        
+        // Wait for scene to start
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        const difficultyScene = game.scene.getScene('DifficultySelection');
+        if (!difficultyScene || !difficultyScene.scene.isActive()) {
+          throw new Error('DifficultySelection scene not active');
+        }
+        log('✓ Successfully transitioned to DifficultySelection', 'success');
+
+        // Return to main menu
+        game.scene.start('MainMenu');
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        log('Scene transition test PASSED', 'success');
+        return true;
+      } catch (error) {
+        log(`Scene transition test FAILED: ${error.message}`, 'error');
+        return false;
+      }
+    }
+
+    async function testGameplayFlow() {
+      log('Testing full gameplay flow...', 'test');
+      
+      try {
+        const game = window.game;
+        if (!game) throw new Error('Game not available');
+
+        // Start game with default settings
+        game.registry.set('codeLength', 4);
+        game.registry.set('maxGuesses', 10);
+        game.scene.start('GameScene');
+        
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        const gameScene = game.scene.getScene('GameScene');
+        if (!gameScene || !gameScene.scene.isActive()) {
+          throw new Error('GameScene not active');
+        }
+        log('✓ GameScene started successfully', 'success');
+
+        // Check if ScoreManager is working
+        if (!gameScene.scoreManager) {
+          throw new Error('ScoreManager not found in GameScene');
+        }
+        log('✓ ScoreManager exists in GameScene', 'success');
+
+        // Test ScoreManager methods
+        const score = gameScene.scoreManager.getCurrentScore();
+        if (typeof score !== 'number') {
+          throw new Error('ScoreManager.getCurrentScore() not working');
+        }
+        log('✓ ScoreManager.getCurrentScore() working', 'success');
+
+        log('Gameplay flow test PASSED', 'success');
+        
+        // Return to main menu
+        game.scene.start('MainMenu');
+        return true;
+      } catch (error) {
+        log(`Gameplay flow test FAILED: ${error.message}`, 'error');
+        // Try to return to main menu anyway
+        if (window.game) {
+          window.game.scene.start('MainMenu');
+        }
+        return false;
+      }
+    }
+
+    async function testMobileUI() {
+      log('Testing mobile UI...', 'test');
+      
+      try {
+        // Test viewport
+        const viewport = window.visualViewport || { width: window.innerWidth, height: window.innerHeight };
+        log(`Viewport: ${viewport.width}x${viewport.height}`, 'info');
+
+        // Check if game scales properly
+        const game = window.game;
+        if (!game) throw new Error('Game not available');
+
+        const gameWidth = game.config.width;
+        const gameHeight = game.config.height;
+        log(`Game dimensions: ${gameWidth}x${gameHeight}`, 'info');
+
+        // Test touch events (basic check)
+        const canvas = game.canvas;
+        if (!canvas) throw new Error('Game canvas not found');
+        
+        log('✓ Game canvas exists for touch interaction', 'success');
+        log('Mobile UI test PASSED', 'success');
+        return true;
+      } catch (error) {
+        log(`Mobile UI test FAILED: ${error.message}`, 'error');
+        return false;
+      }
+    }
+
+    async function runAllTests() {
+      log('=== Running All Tests ===', 'test');
+      clearResults();
+      
+      const tests = [
+        testGameInitialization,
+        testSceneTransitions,
+        testGameplayFlow,
+        testMobileUI
+      ];
+
+      let passed = 0;
+      let failed = 0;
+
+      for (const test of tests) {
+        const result = await test();
+        if (result) passed++;
+        else failed++;
+        
+        // Wait between tests
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+
+      log(`=== Test Summary: ${passed} passed, ${failed} failed ===`, 'test');
+      
+      if (failed === 0) {
+        log('🎉 ALL TESTS PASSED!', 'success');
+      } else {
+        log('❌ Some tests failed. Check results above.', 'error');
+      }
+    }
+
+    // Error handling
+    window.addEventListener('error', (event) => {
+      log(`JavaScript Error: ${event.error?.message || event.message}`, 'error');
+    });
+
+    window.addEventListener('unhandledrejection', (event) => {
+      log(`Unhandled Promise Rejection: ${event.reason}`, 'error');
+    });
+  </script>
+</body>
+</html>

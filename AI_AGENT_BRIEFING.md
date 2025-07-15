@@ -165,9 +165,42 @@ class MyScene extends Phaser.Scene {
 
 ### **After Making Changes**
 1. **MANDATORY**: Run `cd tests && bash verify_tests.sh`
-2. Check console for errors in browser tests
-3. Test mobile responsiveness if mobile changes made
-4. Update `ISSUES.md` if bugs resolved
+2. **MANDATORY**: Run `cd tests && bash console_test.sh` for loading order verification  
+3. **MANDATORY**: State "I cannot verify browser console - please test and report errors"
+4. **WAIT**: For user to test browser console and report actual errors
+5. **ITERATE**: Based on user's error reports until they confirm no errors
+6. Update `ISSUES.md` if bugs resolved
+
+## 🚨 **AI AGENT LIMITATIONS - NEVER FORGET**
+- **Cannot see browser console errors**
+- **Cannot verify JavaScript runtime behavior**  
+- **Cannot confirm actual game functionality**
+- **Must rely on USER for all browser verification**
+
+## 🚨 **CRITICAL: Browser Testing Reality Check**
+
+**AI AGENTS CANNOT SEE BROWSER CONSOLE OUTPUT FROM THIS ENVIRONMENT**
+
+### ❌ **What AI Agents CANNOT Do:**
+- See browser console errors in DevTools
+- Verify JavaScript runtime behavior  
+- Confirm game actually works (vs just loads)
+- Test actual user interactions
+
+### ✅ **What AI Agents CAN Do:**
+- Check file syntax with `node -c filename.js`
+- Verify HTTP status codes with `curl`
+- Check file loading order in HTML
+- Run server-side verification scripts
+
+### 🔄 **Mandatory Testing Protocol:**
+1. **AI Agent**: Makes changes and runs syntax/structure verification
+2. **AI Agent**: States "I cannot verify browser behavior - please test in browser"
+3. **USER**: Opens browser, checks console (F12), reports actual errors
+4. **AI Agent**: Fixes based on USER's error reports
+5. **Repeat until USER confirms no console errors**
+
+**NEVER claim browser testing is complete without USER verification**
 
 ## 🔄 AI Agent Handoff Protocol
 When passing work to the next AI agent:
@@ -190,8 +223,16 @@ When passing work to the next AI agent:
 ### **Next Priorities**:
 1. `GameScreenMobileOptimization` - Visual polish (2-3 hours)
 2. `UsabilityImprovements` - Family UX (3-4 hours)  
-3. `CodeArchitectureRefactoring` - Technical foundation (16 hours)
 
-### **Architecture**: Three-zone Phaser containers (Header + Scrollable + Footer)
-### **Testing**: `cd tests && bash verify_tests.sh`
-### **Documentation**: Cleaned and consolidated for AI efficiency
+### **Recent Completed**: ✅ Architecture simplified (July 15, 2025)
+- ScoreManager runtime error fixed through simplification
+- Complex event-driven architecture removed
+- Functional testing system implemented
+
+### **Archive Notes**: 
+- `tests/archive/` contains 7 old test files (auto-cleanup Jan 2026)
+- Use `test_game_functional.html` for runtime testing
+
+### **Architecture**: Simplified direct method calls, mobile-first Phaser
+### **Testing**: `cd tests && bash verify_tests.sh` → functional testing
+### **Status**: Fully functional, simple, maintainable codebase ✅

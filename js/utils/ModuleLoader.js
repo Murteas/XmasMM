@@ -8,12 +8,8 @@ class ModuleLoader {
       // Core utilities (no dependencies)
       'js/utils/TestConfig.js',
       'js/utils/GameUtils.js',
-      'js/utils/SafeAreaManager.js',
       
-      // Services (depend on utilities)
-      'js/services/MobileScrollService.js',
-      
-      // Managers (depend on utilities and services)
+      // Managers (depend on utilities)
       'js/managers/ScoreManager.js',
       'js/managers/HistoryRenderer.js',
       'js/managers/HistoryScroller.js',
@@ -40,13 +36,11 @@ class ModuleLoader {
     // Group 1: Core utilities (load in parallel - no dependencies)
     const coreModules = [
       'js/utils/TestConfig.js',
-      'js/utils/GameUtils.js',
-      'js/utils/SafeAreaManager.js'
+      'js/utils/GameUtils.js'
     ];
     
-    // Group 2: Services and independent managers (load in parallel)
-    const serviceModules = [
-      'js/services/MobileScrollService.js',
+    // Group 2: Managers (load in parallel)
+    const managerModules = [
       'js/managers/ScoreManager.js',
       'js/managers/HistoryRenderer.js',
       'js/managers/HistoryScroller.js',
@@ -54,7 +48,7 @@ class ModuleLoader {
     ];
     
     // Group 3: Dependent managers (sequential)
-    const managerModules = [
+    const dependentManagerModules = [
       'js/managers/ActiveRowManager.js',
       'js/managers/ScrollableHistoryManager.js',
       'js/managers/HistoryManager.js',
@@ -71,98 +65,118 @@ class ModuleLoader {
       'js/scenes/RoundOver.js'
     ];
     
-    console.log('🎬 Loading scene modules...');
-    
-    // Group 5: Main initialization
-    const mainModules = ['js/main.js'];
-    
-    // Load groups sequentially, but modules within groups in parallel
-    const loadGroup = async (modules, groupName) => {
-      console.log(`🚀 Loading ${groupName} (${modules.length} modules in parallel)...`);
-      const promises = modules.map(module => 
-        this.loadScript(`${basePath}${module}`).then(() => 
-          console.log(`✅ ${module}`)
-        )
-      );
-      await Promise.all(promises);
-      console.log(`✅ ${groupName} complete`);
-    };
+    // Group 5: Main initialization (must be last)
+    const mainModule = ['js/main.js'];
     
     try {
-      await loadGroup(coreModules, 'Core Utilities');
-      await loadGroup(serviceModules, 'Services & Independent Managers');
-      await loadGroup(managerModules, 'Dependent Managers');
-      await loadGroup(sceneModules, 'Scenes');
-      await loadGroup(mainModules, 'Main Game');
+      // Load core utilities first
+      console.log('📦 Loading core utilities...');
+      await ModuleLoader.loadScriptGroup(coreModules, basePath);
+      console.log('✅ Core utilities loaded');
+      
+      // Load managers in two groups
+      console.log('📦 Loading basic managers...');
+      await ModuleLoader.loadScriptGroup(managerModules, basePath);
+      console.log('✅ Basic managers loaded');
+      
+      console.log('📦 Loading dependent managers...');
+      await ModuleLoader.loadScriptSequence(dependentManagerModules, basePath);
+      console.log('✅ Dependent managers loaded');
+      
+      // Load scenes
+      console.log('📦 Loading scenes...');
+      await ModuleLoader.loadScriptGroup(sceneModules, basePath);
+      console.log('✅ Scenes loaded');
+      
+      // Finally load main.js
+      console.log('📦 Loading main game...');
+      await ModuleLoader.loadScriptGroup(mainModule, basePath);
+      console.log('✅ Main game loaded');
+      
+      console.log('🎉 All XmasMM modules loaded successfully!');
+      return true;
+      
     } catch (error) {
-      console.error('❌ Module loading failed:', error);
-      throw error;
+      console.error('🚨 Failed to load XmasMM modules:', error);
+      return false;
     }
-    
-    console.log('🎮 All XmasMM modules loaded successfully!');
+  }
+  
+  static async loadScriptGroup(scriptPaths, basePath = '') {
+    const promises = scriptPaths.map(path => 
+      ModuleLoader.loadScript(basePath + path)
+    );
+    await Promise.all(promises);
+  }
+  
+  static async loadScriptSequence(scriptPaths, basePath = '') {
+    for (const path of scriptPaths) {
+      await ModuleLoader.loadScript(basePath + path);
+    }
   }
   
   static loadScript(src) {
     return new Promise((resolve, reject) => {
-      // Check if script already loaded
-      if (document.querySelector(`script[src="${src}"]`)) {
-        console.log(`⚠️ Module already loaded: ${src}`);
+      // Check if script is already loaded
+      const existingScript = document.querySelector(`script[src="${src}"]`);
+      if (existingScript) {
         resolve();
         return;
       }
       
       const script = document.createElement('script');
       script.src = src;
-      script.onload = resolve;
-      script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+      script.onload = () => {
+        console.log(`✅ Loaded: ${src}`);
+        resolve();
+      };
+      script.onerror = () => {
+        console.warn(`⚠️ Could not load optional module: ${src}`);
+        // Don't reject - some modules might be optional
+        resolve();
+      };
       document.head.appendChild(script);
     });
   }
   
-  // Load Phaser.js from CDN
-  static async loadPhaser() {
-    const phaserScript = 'https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js';
+  // Initialize game after all modules are loaded
+  static async initializeGame() {
+    console.log('🚀 ModuleLoader.initializeGame() starting...');
     
-    if (typeof Phaser !== 'undefined') {
-      console.log('✅ Phaser already loaded');
-      return;
-    }
-    
-    console.log('🔄 Loading Phaser.js...');
-    await this.loadScript(phaserScript);
-    console.log('✅ Phaser.js loaded');
-  }
-  
-  // Initialize complete game loading
-  static async initializeGame(basePath = '') {
     try {
-      // Load Phaser first
-      await this.loadPhaser();
+      const success = await ModuleLoader.loadGameModules();
       
-      // Then load all game modules
-      await this.loadGameModules(basePath);
-      
-      // Finally, initialize the game after all modules are loaded
-      if (typeof window.initializeGame === 'function') {
-        console.log('🎮 Starting game initialization...');
-        const success = window.initializeGame();
-        if (success) {
-          console.log('🎯 Game initialization complete!');
-          return true;
-        } else {
-          console.error('🚨 Game initialization failed - scene classes not available');
-          return false;
-        }
-      } else {
-        console.error('🚨 initializeGame function not found - main.js may not be loaded');
+      if (!success) {
+        console.error('🚨 Module loading failed');
         return false;
       }
+      
+      // Wait a moment for all modules to fully initialize
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Check if initializeGame function exists (from main.js)
+      if (typeof window.initializeGame === 'function') {
+        console.log('🎮 Calling window.initializeGame()...');
+        const gameInitialized = window.initializeGame();
+        
+        if (gameInitialized === false) {
+          console.error('🚨 Game initialization returned false');
+          return false;
+        }
+        
+        console.log('✅ Game initialization completed');
+        return true;
+      } else {
+        console.error('🚨 window.initializeGame function not found - main.js may not have loaded properly');
+        return false;
+      }
+      
     } catch (error) {
-      console.error('🚨 Game initialization failed:', error);
+      console.error('🚨 ModuleLoader.initializeGame() failed:', error);
       return false;
     }
   }
 }
 
-// Make available globally
+// Make ModuleLoader globally available
 window.ModuleLoader = ModuleLoader;

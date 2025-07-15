@@ -1,16 +1,28 @@
 // ScoreManager.js - Handles element-based scoring and hint availability
+// Simplified for maintainability
 
 class ScoreManager {
   constructor(scene) {
     this.scene = scene;
     this.currentScore = 0;
     this.hintUsed = false;
-    this.hintThreshold = 500; // Keep for compatibility, but scoring will change
+    this.hintThreshold = 500; // Keep for compatibility
     this.scoreBreakdown = {
       elementPoints: 0,
       completeBonus: 0,
       speedBonus: 0,
       hintPenalty: 0
+    };
+
+    // Simple configuration - no complex dependencies
+    this.scoringConfig = {
+      perfectElementPoints: 200,
+      closeElementPoints: 100,
+      completeBonus: 300,
+      speedBonusPerGuess: 75,
+      speedPenaltyPerGuess: 25,
+      speedBonusThreshold: 10,
+      hintPenalty: 200
     };
   }
 
@@ -31,7 +43,7 @@ class ScoreManager {
 
     // Calculate element points from final guess
     const feedback = this.calculateElementFeedback(finalGuess, secretCode);
-    this.scoreBreakdown.elementPoints = (feedback.perfect * 200) + (feedback.close * 100);
+    this.scoreBreakdown.elementPoints = (feedback.perfect * this.scoringConfig.perfectElementPoints) + (feedback.close * this.scoringConfig.closeElementPoints);
 
     // For winning games, ensure we got credit for all elements
     if (gameWon && feedback.perfect !== secretCode.length) {
@@ -39,24 +51,24 @@ class ScoreManager {
         finalGuess, secretCode, feedback
       });
       // Force correct element points for winning game
-      this.scoreBreakdown.elementPoints = secretCode.length * 200;
+      this.scoreBreakdown.elementPoints = secretCode.length * this.scoringConfig.perfectElementPoints;
     }
 
     // Complete solution bonus (only if won)
     if (gameWon) {
-      this.scoreBreakdown.completeBonus = 300;
+      this.scoreBreakdown.completeBonus = this.scoringConfig.completeBonus;
     }
 
     // Speed bonus/penalty
-    if (guessesUsed < 10) {
-      this.scoreBreakdown.speedBonus = (10 - guessesUsed) * 75;
-    } else if (guessesUsed > 10) {
-      this.scoreBreakdown.speedBonus = (10 - guessesUsed) * 25; // This will be negative
+    if (guessesUsed < this.scoringConfig.speedBonusThreshold) {
+      this.scoreBreakdown.speedBonus = (this.scoringConfig.speedBonusThreshold - guessesUsed) * this.scoringConfig.speedBonusPerGuess;
+    } else if (guessesUsed > this.scoringConfig.speedBonusThreshold) {
+      this.scoreBreakdown.speedBonus = (this.scoringConfig.speedBonusThreshold - guessesUsed) * this.scoringConfig.speedPenaltyPerGuess; // This will be negative
     }
 
     // Hint penalty
     if (this.hintUsed) {
-      this.scoreBreakdown.hintPenalty = -200;
+      this.scoreBreakdown.hintPenalty = -this.scoringConfig.hintPenalty;
     }
 
     // Calculate final score
@@ -181,7 +193,7 @@ class ScoreManager {
     
     // Apply hint penalty if used
     if (this.hintUsed) {
-      this.currentScore -= 200;
+      this.currentScore -= this.scoringConfig.hintPenalty;
     }
     
     // Ensure score doesn't go negative
@@ -199,5 +211,9 @@ class ScoreManager {
 
   isHintUsed() {
     return this.hintUsed;
+  }
+
+  markHintUsed() {
+    this.hintUsed = true;
   }
 }

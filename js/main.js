@@ -116,14 +116,6 @@ function initializeGame() {
     console.log('🎯 Phaser game is ready!');
     console.log('🎬 Available scenes:', game.scene.scenes.map(s => s.scene.key));
     
-    // Check if any scenes are active
-    const activeScenes = game.scene.getScenes(true);
-    if (activeScenes.length > 0) {
-      console.log('✅ Active scenes:', activeScenes.map(s => s.scene.key));
-    } else {
-      console.warn('⚠️ No active scenes found - this might be the problem!');
-    }
-    
     // Set willReadFrequently on the canvas for performance optimization
     if (game.canvas) {
       const context = game.canvas.getContext('2d');
