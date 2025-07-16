@@ -89,15 +89,14 @@ class ActiveRowManager {
       // Structure expected by updateSlotDisplay method
       this.activeRowElements.push({ slot, displayElement });
     }
-    
-    // Create submit button in footer container
-    this.activeRowSubmitBtn = this.scene.add.rectangle(width - 40, 60, 60, 40, 0x4CAF50)
-      .setStrokeStyle(2, 0x45a049)
+      // Create Christmas-themed submit button in footer container (GameScreenMobileLayoutFix)
+    this.activeRowSubmitBtn = this.scene.add.rectangle(width - 40, 60, 70, 40, 0xc41e3a) // Christmas red
+      .setStrokeStyle(2, 0xa71729) // Darker red border
       .setInteractive()
       .on('pointerdown', () => this.scene.submitGuess());
-    
-    const submitText = this.scene.add.text(width - 40, 60, 'GO', {
-      fontSize: '16px',
+
+    const submitText = this.scene.add.text(width - 40, 60, '🎅 Ho!', {
+      fontSize: '14px',
       fill: '#ffffff',
       fontFamily: 'Arial'
     }).setOrigin(0.5);
@@ -181,26 +180,26 @@ class ActiveRowManager {
   createActiveRowVisuals(activeRowY) {
     const { width } = this.scene.cameras.main;
     
-    // Add subtle glow effect first (behind everything)
+    // Enhanced Christmas glow effect (GameScreenMobileLayoutFix: better prominence)
     this.activeRowGlowEffect = this.scene.add.rectangle(
       width / 2, 
       activeRowY, 
-      width - 20,
-      56, 
-      0xffd700, 
-      0.3
+      width - 15, // Wider glow for more prominence 
+      62, // Taller glow
+      0xffd700, // Gold Christmas glow
+      0.5 // Increased opacity for stronger effect
     ).setDepth(GameUtils.getDepthLayers().HISTORY);
     
-    // Create active row background with golden glow
+    // Create active row with stronger Christmas styling
     this.activeRowBackground = this.scene.add.rectangle(
       width / 2, 
       activeRowY, 
       width - 20,
       50, 
-      0x4a4a4a, 
-      0.8
+      0x0d3f1f, // Dark Christmas green background
+      0.9 // Higher opacity
     )
-      .setStrokeStyle(3, 0xffd700)
+      .setStrokeStyle(4, 0xffd700) // Thicker gold border
       .setDepth(GameUtils.getDepthLayers().HISTORY + 0.1);
   }
 

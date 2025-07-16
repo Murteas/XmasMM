@@ -156,6 +156,14 @@ class MyScene extends Phaser.Scene {
 - Implement touch-friendly UI (44px minimum touch targets)
 - Use proper event delegation for mobile performance
 
+### Game Screen Space Optimization (July 2025)
+Recent improvement: **History row compression** reduces mobile interface clutter:
+- Row height: 60px → 40px (33% space savings)
+- Feedback symbols: 16px → 14px for tighter packing  
+- Visual hierarchy: Opacity fade for older guesses (1.0 → 0.8)
+- Result: 9 guesses use 360px vs 540px (saves 180px on mobile)
+- Files: `js/managers/HistoryRenderer.js` - See `GameScreenHistoryCompression.md` task
+
 ## 🧪 Test-First Development for AI Agents
 
 ### **Before Making Changes**

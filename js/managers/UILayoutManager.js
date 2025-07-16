@@ -3,7 +3,7 @@
 class UILayoutManager {
   constructor(scene) {
     this.scene = scene;
-    this.guessesText = null;
+    this.progressText = null; // MOBILE OPTIMIZATION: Renamed from guessesText for clarity
     this.scoreText = null;
     this.hintText = null;
     this.hintBtn = null;
@@ -111,29 +111,31 @@ class UILayoutManager {
   setupHorizontalHeader() {
     const { width } = this.scene.cameras.main;
     
-    // Single row layout for larger screens
-    this.guessesText = this.scene.add.text(50, 70, `Guesses: ${this.scene.gameStateManager.guessesRemaining}`, {
+    // MOBILE OPTIMIZATION: Single consolidated progress counter (GameScreenMobileLayoutFix)
+    // Removed redundant "Guesses: #" display - now just shows clear progress
+    this.progressText = this.scene.add.text(50, 70, `Turn ${this.scene.gameStateManager.maxGuesses - this.scene.gameStateManager.guessesRemaining + 1} of ${this.scene.gameStateManager.maxGuesses}`, {
       font: '18px Arial',
       fill: '#fff'
     }).setDepth(GameUtils.getDepthLayers().UI);
     
-    this.scoreText = this.scene.add.text(width - 50, 70, `Guesses: ${this.scene.gameStateManager.maxGuesses - this.scene.gameStateManager.guessesRemaining}/${this.scene.gameStateManager.maxGuesses}`, {
+    // Score display (right aligned)
+    this.scoreText = this.scene.add.text(width - 50, 70, `Score: ${this.scene.scoreManager ? this.scene.scoreManager.getCurrentScore() : 0}`, {
       font: '18px Arial',
       fill: '#fff'
     }).setOrigin(1, 0).setDepth(GameUtils.getDepthLayers().UI);
     
-    // Hint status (smaller, above button)
-    this.hintText = this.scene.add.text(width / 2, 60, 'Hint: Locked', {
+    // Hint status (smaller, positioned safely below header text)
+    this.hintText = this.scene.add.text(width / 2, 105, 'Hint: Available', {
       font: '12px Arial',
       fill: '#888'
     }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
     
-    // Santa's Hint button in header (center)
-    this.hintBtn = this.scene.add.text(width / 2, 85, "Santa's Hint", {
-      font: '16px Arial',
-      fill: '#888',
-      backgroundColor: '#333',
-      padding: { left: 12, right: 12, top: 6, bottom: 6 }
+    // Santa's Hint button - positioned well below header to avoid overlap
+    this.hintBtn = this.scene.add.text(width / 2, 125, "🎅 Hint", {
+      font: '14px Arial',
+      fill: '#fff',
+      backgroundColor: '#c41e3a',
+      padding: { left: 10, right: 10, top: 4, bottom: 4 }
     }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
   }
 
@@ -431,8 +433,10 @@ class UILayoutManager {
   }
 
   updateGuessesDisplay(guessesRemaining) {
-    if (this.guessesText) {
-      this.guessesText.setText(`Guesses: ${guessesRemaining}`);
+    if (this.progressText) {
+      // MOBILE OPTIMIZATION: Clear progress display showing current turn
+      const currentTurn = this.scene.gameStateManager.maxGuesses - guessesRemaining + 1;
+      this.progressText.setText(`Turn ${currentTurn} of ${this.scene.gameStateManager.maxGuesses}`);
     }
   }
 
@@ -449,7 +453,7 @@ class UILayoutManager {
 
   getUIElements() {
     return {
-      guessesText: this.guessesText,
+      progressText: this.progressText,
       scoreText: this.scoreText,
       hintText: this.hintText,
       hintBtn: this.hintBtn,
@@ -468,87 +472,73 @@ class UILayoutManager {
     const legendItems = [
       { 
         symbolType: 'perfect', 
-        description: '★ Perfect Match!', 
-        explanation: 'Right element in right position'
+        description: 'Right symbol & spot', 
+        explanation: 'Right spot'
       },
       { 
         symbolType: 'close', 
-        description: '🔔 Close Match!', 
-        explanation: 'Right element in wrong position'
+        description: 'Right symbol, wrong spot', 
+        explanation: 'Wrong spot'
       }
     ];
     
-    // Calculate responsive legend positioning  
+    // MOBILE OPTIMIZATION: Compact horizontal legend at bottom of screen
     const isSmallScreen = width < 500;
-    const isVerySmallScreen = width < 400;
-    const legendWidth = isSmallScreen ? Math.min(width - 20, 250) : 220; // Reduced width
-    const itemHeight = 20; // Reduced from 24
-    const legendHeight = (legendItems.length * itemHeight) + 25; // Reduced padding
-    const padding = 10;
+    const legendHeight = 35;
+    const legendY = height - 150; // Position in empty space below history
     
-    // Position legend below all header UI elements
-    // Small screens: title=30, guesses/score=70, hint_text=100, hint_button=130
-    // Larger screens: title=30, guesses/score=70, hint=85
-    const headerBottomY = isVerySmallScreen ? 145 : (isSmallScreen ? 120 : 95); 
-    const legendX = width - legendWidth - padding;
-    const legendY = headerBottomY + 10; // 10px gap below header elements
+    // Horizontal layout for compactness
+    const totalWidth = isSmallScreen ? width - 40 : 300;
+    const itemWidth = totalWidth / 2;
+    const startX = (width - totalWidth) / 2;
     
-    // Create legend background
-    const legendBg = this.scene.add.rectangle(legendX, legendY, legendWidth, legendHeight, 0x000000, 0.8)
-      .setOrigin(0, 0)
-      .setStrokeStyle(2, 0xffffff, 0.3)
+    // Create compact legend background
+    const legendBg = this.scene.add.rectangle(width / 2, legendY, totalWidth + 20, legendHeight, 0x1a1a1a, 0.9)
+      .setStrokeStyle(1, 0xffd700, 0.4)
       .setDepth(GameUtils.getDepthLayers().UI);
     
-    // Legend title
-    const titleText = this.scene.add.text(legendX + legendWidth/2, legendY + 15, 'Christmas Feedback', {
-      font: `${isSmallScreen ? '14px' : '16px'} Arial`,
-      fill: '#ffffff',
-      fontStyle: 'bold'
-    }).setOrigin(0.5, 0.5).setDepth(GameUtils.getDepthLayers().UI + 0.1);
-    
-    // Create legend items
+    // Create legend items in horizontal layout
     legendItems.forEach((item, index) => {
-      const itemY = legendY + 35 + (index * itemHeight);
-      const symbolX = legendX + 20;
-      const textX = legendX + 45;
+      const itemX = startX + (index * itemWidth) + (itemWidth / 2);
+      const symbolX = itemX - 30;
+      const textX = itemX - 10;
       
       // Create Christmas symbol
       try {
         const symbolKey = this.scene.getFeedbackImageKey(item.symbolType);
         
         if (this.scene.textures.exists(symbolKey)) {
-          const symbol = this.scene.add.image(symbolX, itemY, symbolKey)
+          const symbol = this.scene.add.image(symbolX, legendY, symbolKey)
             .setOrigin(0.5, 0.5)
-            .setDisplaySize(18, 18)
+            .setDisplaySize(16, 16)
             .setDepth(GameUtils.getDepthLayers().UI + 0.1);
         } else {
           // Fallback to text symbols
           const fallbackSymbols = { 'perfect': '★', 'close': '🔔' };
-          this.scene.add.text(symbolX, itemY, fallbackSymbols[item.symbolType] || '?', {
-            font: '16px Arial',
+          this.scene.add.text(symbolX, legendY, fallbackSymbols[item.symbolType] || '?', {
+            font: '14px Arial',
             fill: '#FFD700'
           }).setOrigin(0.5, 0.5).setDepth(GameUtils.getDepthLayers().UI + 0.1);
         }
       } catch (error) {
         console.warn(`Could not create legend symbol for ${item.symbolType}:`, error);
         // Fallback text
-        this.scene.add.text(symbolX, itemY, item.symbolType === 'perfect' ? '★' : '🔔', {
-          font: '16px Arial',
+        this.scene.add.text(symbolX, legendY, item.symbolType === 'perfect' ? '★' : '🔔', {
+          font: '14px Arial',
           fill: '#FFD700'
         }).setOrigin(0.5, 0.5).setDepth(GameUtils.getDepthLayers().UI + 0.1);
       }
       
-      // Description text
-      this.scene.add.text(textX, itemY, item.description, {
-        font: `${isSmallScreen ? '11px' : '13px'} Arial`,
-        fill: '#ffffff'
+      // Description text (compact)
+      this.scene.add.text(textX, legendY, item.description, {
+        font: `${isSmallScreen ? '10px' : '12px'} Arial`,
+        fill: '#fff'
       }).setOrigin(0, 0.5).setDepth(GameUtils.getDepthLayers().UI + 0.1);
     });
     
     // Store legend elements for potential future updates
     this.legendElements = {
-      background: legendBg,
-      title: titleText
+      background: legendBg
     };
   }
 }

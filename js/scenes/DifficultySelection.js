@@ -36,35 +36,43 @@ class DifficultySelection extends Phaser.Scene {
   }
 
   createCodeLengthSelection(width, height) {
-    this.add.text(width / 2, height * 0.3, 'Difficulty Level:', {
-      font: '24px Arial',
-      fill: '#fff'
-    }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
+    // Remove redundant "Difficulty Level:" text since title already says "Select Difficulty"
     
     this.codeLength = 4; // Default to Easy
     this.codeLengthBtns = [];
     
-    // Simplified: Only Easy (4 elements) and Standard (5 elements)
+    // Vertical stack layout for better mobile experience
     const difficultyOptions = [
-      { length: 4, label: 'Easy', description: '4 Christmas Elements' },
-      { length: 5, label: 'Standard', description: '5 Christmas Elements' }
+      { length: 4, label: 'Easy 🎄', description: '4 Christmas Elements' },
+      { length: 5, label: 'Standard 🎅', description: '5 Christmas Elements' }
     ];
     
+    const centerX = width / 2;
+    const startY = height * 0.4;
+    const buttonSpacing = 80;
+    
     difficultyOptions.forEach((option, index) => {
-      const x = width / 2 + (index - 0.5) * 120;
-      const y = height * 0.4;
+      const y = startY + (index * buttonSpacing);
       
-      // Main button
-      const btn = this.add.text(x, y, option.label, {
-        font: '20px Arial',
-        fill: option.length === 4 ? '#000' : '#fff',
-        backgroundColor: option.length === 4 ? '#fff' : '#444',
-        padding: { left: 16, right: 16, top: 10, bottom: 10 }
+      // Christmas-themed buttons with clear selection indicators
+      const isSelected = option.length === 4;
+      const btn = this.add.text(centerX, y, option.label + (isSelected ? ' ✓' : ''), {
+        font: '24px Arial', // Keep normal weight for readability
+        fill: '#fff',
+        backgroundColor: isSelected ? '#c0392b' : '#27ae60', // Christmas red or green
+        padding: { left: 24, right: 24, top: 12, bottom: 12 }
       }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(GameUtils.getDepthLayers().UI);
       
-      // Description text
-      const desc = this.add.text(x, y + 35, option.description, {
-        font: '12px Arial',
+      // Add a visible border using a background rectangle for selected button
+      if (isSelected) {
+        const borderRect = this.add.rectangle(centerX, y, btn.width + 8, btn.height + 8, 0xffffff, 0)
+          .setStrokeStyle(3, 0xffffff)
+          .setDepth(GameUtils.getDepthLayers().UI - 1);
+      }
+      
+      // Description text positioned further below with better spacing
+      const desc = this.add.text(centerX, y + 40, option.description, {
+        font: '14px Arial',
         fill: '#ccc'
       }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
       
@@ -73,23 +81,23 @@ class DifficultySelection extends Phaser.Scene {
         this.updateCodeLengthButtons();
       });
       
-      this.codeLengthBtns.push({ btn, desc, length: option.length, label: option.label });
+      this.codeLengthBtns.push({ 
+        btn, 
+        desc, 
+        length: option.length, 
+        label: option.label,
+        borderRect: isSelected ? this.children.list[this.children.list.length - 2] : null // Get the border rect if it exists
+      });
     });
   }
 
   createGuessCountSelection(width, height) {
-    // Fixed at 10 guesses - no user selection needed
+    // Simplified messaging - confident rather than defensive
     this.maxGuesses = 10;
     
-    this.add.text(width / 2, height * 0.55, 'Maximum Guesses: 10', {
-      font: '20px Arial',
-      fill: '#fff',
-      fontStyle: 'bold'
-    }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
-    
-    this.add.text(width / 2, height * 0.62, '(Fixed for optimal family gameplay)', {
-      font: '14px Arial',
-      fill: '#aaa'
+    this.add.text(width / 2, height * 0.65, 'Maximum Guesses: 10', {
+      font: '18px Arial',
+      fill: '#fff'
     }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
   }
 
@@ -97,11 +105,11 @@ class DifficultySelection extends Phaser.Scene {
     // Expert mobile responsive positioning
     const layout = GameUtils.getResponsiveLayout(width, height);
     
-    // Confirm button with responsive positioning
+    // Confirm button with responsive positioning - moved down for vertical layout
     const confirmBtn = GameUtils.createResponsiveText(
       this,
       width / 2, 
-      layout.primaryButtonY, 
+      height * 0.75, // Moved down to accommodate vertical difficulty buttons
       'Confirm',
       {
         fontSize: `${Math.round(28 * layout.fontScale)}px`,
@@ -143,13 +151,40 @@ class DifficultySelection extends Phaser.Scene {
   }
   
   updateCodeLengthButtons() {
-    this.codeLengthBtns.forEach(({ btn, desc, length, label }) => {
+    this.codeLengthBtns.forEach(({ btn, desc, length, label, borderRect }) => {
       if (length === this.codeLength) {
-        btn.setStyle({ fill: '#000', backgroundColor: '#fff' });
+        // Selected button: Christmas red + checkmark + white border
+        btn.setText(label + ' ✓');
+        btn.setStyle({ 
+          font: '24px Arial',
+          fill: '#fff', 
+          backgroundColor: '#c0392b'
+        });
         desc.setStyle({ fill: '#fff' });
+        
+        // Create or show border
+        if (!borderRect) {
+          const newBorder = this.add.rectangle(btn.x, btn.y, btn.width + 8, btn.height + 8, 0xffffff, 0)
+            .setStrokeStyle(3, 0xffffff)
+            .setDepth(GameUtils.getDepthLayers().UI - 1);
+          this.codeLengthBtns.find(item => item.length === length).borderRect = newBorder;
+        } else {
+          borderRect.setVisible(true);
+        }
       } else {
-        btn.setStyle({ fill: '#fff', backgroundColor: '#444' });
+        // Unselected button: Christmas green + no checkmark + no border
+        btn.setText(label);
+        btn.setStyle({ 
+          font: '24px Arial',
+          fill: '#fff', 
+          backgroundColor: '#27ae60'
+        });
         desc.setStyle({ fill: '#ccc' });
+        
+        // Hide border if it exists
+        if (borderRect) {
+          borderRect.setVisible(false);
+        }
       }
     });
   }

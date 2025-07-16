@@ -11,6 +11,25 @@
 
 ## 🚨 Open Issues
 
+### UI-009: Game Screen History Space Optimization  
+**Issue ID**: UI-009  
+**Date Created**: July 16, 2025  
+**Severity**: Medium - Mobile UX improvement  
+**Status**: ✅ COMPLETED  
+**Related Task**: GameScreenHistoryCompression
+
+**Problem Description**:
+Based on user screenshot testing with 9 guesses, the game history section consumes excessive vertical space (76% of mobile screen), making the interface feel cramped and reducing visibility of current actions.
+
+**Solution Implemented**:
+- **Row Height Compression**: Reduced from 60px to 40px (33% space savings)
+- **Symbol Optimization**: Feedback symbols reduced to 14px with tighter 16px spacing  
+- **Visual Hierarchy**: Newest 2 rows stay full opacity, older rows fade to 80%
+- **Result**: 9 guesses now use 360px vs 540px (saves 180px vertical space)
+
+**Files Modified**: `js/managers/HistoryRenderer.js`  
+**Testing**: ✅ Syntax validation passed, ready for browser testing
+
 ### UI-004: History Screen Missing Solution Display
 **Issue ID**: UI-004  
 **Date Created**: July 15, 2025  

@@ -171,6 +171,8 @@ class GameScene extends Phaser.Scene {
     this.uiLayoutManager.setupBackground();
     this.uiLayoutManager.setupUI();
     this.uiLayoutManager.setupButtons();
+    // MOBILE OPTIMIZATION: Christmas legend moved to bottom empty space (GameScreenMobileLayoutFix)
+    // Compact horizontal layout preserves space while helping new players
     this.uiLayoutManager.setupChristmasLegend();
     this.setupInlineGuessing();
   }
