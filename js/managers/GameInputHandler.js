@@ -164,29 +164,30 @@ class GameInputHandler {
     });
     
     if (targetSlot && targetSlot.slot) {
-      // Get the actual world position of the slot (accounting for footer container)
-      const worldPosition = this.scene.footerContainer.getWorldTransformMatrix().transformPoint(
-        targetSlot.slot.x, 
-        targetSlot.slot.y
-      );
-      
       console.log('🎅 Creating glow effect at slot coords:', targetSlot.slot.x, targetSlot.slot.y);
-      console.log('🎅 Creating glow effect at world coords:', worldPosition.x, worldPosition.y);
       
-      // Add pulsing green glow to the suggested slot using world coordinates
+      // Try adding the glow directly to the footer container (same coordinate space as the slot)
       glowEffect = this.scene.add.rectangle(
-        worldPosition.x, 
-        worldPosition.y, 
+        targetSlot.slot.x, 
+        targetSlot.slot.y, 
         targetSlot.slot.width + 8, 
         targetSlot.slot.height + 8, 
         0x00ff00, 
-        0.5
-      ).setDepth(GameUtils.getDepthLayers().UI + 5);
+        0.7  // Increased opacity for better visibility
+      );
+      
+      // Add to footer container so it uses the same coordinate space
+      this.scene.footerContainer.add(glowEffect);
+      
+      // Set depth relative to other footer elements
+      glowEffect.setDepth(targetSlot.slot.depth + 1);
+      
+      console.log('🎅 Glow added to footer container at:', glowEffect.x, glowEffect.y);
       
       // Pulsing animation
       this.scene.tweens.add({
         targets: glowEffect,
-        alpha: { from: 0.5, to: 0.9 },
+        alpha: { from: 0.4, to: 0.9 },
         duration: 800,
         yoyo: true,
         repeat: -1
