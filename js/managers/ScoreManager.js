@@ -155,21 +155,16 @@ class ScoreManager {
       hintBtn.setStyle({ fill: '#888', backgroundColor: '#444' });
       hintText.setText('Hint: Used').setStyle({ fill: '#888' });
       return false;
-    } else if (this.currentScore < this.hintThreshold) {
-      // Not enough score yet
-      hintBtn.setStyle({ fill: '#888', backgroundColor: '#444' });
-      hintText.setText(`Hint: Need ${this.hintThreshold} pts (${this.currentScore} pts)`).setStyle({ fill: '#888' });
-      return false;
     } else {
-      // Available to use
+      // Always available (with penalty warning)
       hintBtn.setStyle({ fill: '#fff', backgroundColor: '#0d5016' }); // Forest green when available
-      hintText.setText('🎅 Hint: Ready!').setStyle({ fill: '#fff' });
+      hintText.setText(`🎅 Hint (-${this.scoringConfig.hintPenalty} pts)`).setStyle({ fill: '#fff' });
       return true;
     }
   }
 
   useSantasHint(secretCode, currentGuess, hintBtn, hintText) {
-    if (this.hintUsed || this.currentScore < this.hintThreshold) return null;
+    if (this.hintUsed) return null;
     
     this.hintUsed = true;
     

@@ -91,13 +91,6 @@ class GameInputHandler {
       return false;
     }
     
-    if (this.scene.scoreManager.getCurrentScore() < this.scene.scoreManager.hintThreshold) {
-      const needed = this.scene.scoreManager.hintThreshold;
-      const current = this.scene.scoreManager.getCurrentScore();
-      this.showHintUnavailableMessage(`🎅 Need ${needed} points for hints! (Currently: ${current})`);
-      return false;
-    }
-    
     const hintResult = this.scene.scoreManager.useSantasHint(
       secretCode, 
       currentGuess, 
@@ -109,7 +102,7 @@ class GameInputHandler {
       // Apply the hint to the active row
       this.scene.historyManager.selectElement(hintResult.position, hintResult.element);
       
-      // Show visual feedback
+      // Show visual feedback with penalty warning
       this.showHintFeedback(hintResult);
       return true;
     }
@@ -152,7 +145,7 @@ class GameInputHandler {
     
     // Create persistent hint that can be clicked to dismiss
     const hintText = this.scene.add.text(width / 2, hintY, 
-      `🎅 Hint: Position ${hintResult.position + 1} should be ${hintResult.element}! (tap to dismiss)`, {
+      `🎅 Hint: Position ${hintResult.position + 1} should be ${hintResult.element}! (-${this.scene.scoreManager.scoringConfig.hintPenalty} pts) (tap to dismiss)`, {
       font: '14px Arial',
       fill: '#ffd700',
       backgroundColor: '#0d5016', // Forest green background
