@@ -333,95 +333,9 @@ class UILayoutManager {
     });
   }
 
-  showGameWon() {
-    this.scene.add.text(this.scene.cameras.main.width / 2, this.scene.cameras.main.height / 2, 'YOU WON!', {
-      font: '36px Arial',
-      fill: '#27ae60',
-      fontStyle: 'bold'
-    }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().GAME_OVER);
-  }
-
-  showGameLost(secretCode) {
-    const { width, height } = this.scene.cameras.main;
-    
-    // Create game over container for better organization
-    this.gameOverContainer = this.scene.add.container(0, 0);
-    
-    // Semi-transparent background overlay
-    const overlay = this.scene.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.8);
-    
-    // Game Over title
-    const gameOverText = this.scene.add.text(width / 2, height * 0.3, 'GAME OVER', {
-      font: '32px Arial',
-      fill: '#e74c3c',
-      fontStyle: 'bold'
-    }).setOrigin(0.5);
-    
-    // Solution label
-    const solutionLabel = this.scene.add.text(width / 2, height * 0.45, '🎯 The Solution Was:', {
-      font: '20px Arial',
-      fill: '#fff',
-      fontStyle: 'bold'
-    }).setOrigin(0.5);
-    
-    // Visual solution display using actual game images
-    const solutionY = height * 0.55;
-    const elementSize = Math.min(50, (width - 100) / secretCode.length);
-    const totalWidth = secretCode.length * elementSize + (secretCode.length - 1) * 8;
-    const startX = (width - totalWidth) / 2;
-    
-    // Create solution elements visually
-    secretCode.forEach((element, index) => {
-      const x = startX + index * (elementSize + 8) + elementSize / 2;
-      
-      // Background slot (golden for solution)
-      const slot = this.scene.add.rectangle(x, solutionY, elementSize, elementSize, 0x444444)
-        .setStrokeStyle(3, 0xffd700); // Gold border for solution
-      
-      // Element image
-      try {
-        const imageKey = this.scene.getElementImageKey ? this.scene.getElementImageKey(element) : `${element.toLowerCase()}_1x`;
-        if (this.scene.textures.exists(imageKey)) {
-          const elementImage = this.scene.add.image(x, solutionY, imageKey)
-            .setDisplaySize(elementSize * 0.8, elementSize * 0.8);
-          this.gameOverContainer.add([slot, elementImage]);
-        } else {
-          // Fallback to text
-          const elementText = this.scene.add.text(x, solutionY, element, {
-            font: `${Math.round(elementSize * 0.3)}px Arial`,
-            fill: '#fff'
-          }).setOrigin(0.5);
-          this.gameOverContainer.add([slot, elementText]);
-        }
-      } catch (error) {
-        console.warn('Could not display solution element:', element, error);
-        const elementText = this.scene.add.text(x, solutionY, element, {
-          font: `${Math.round(elementSize * 0.3)}px Arial`,
-          fill: '#fff'
-        }).setOrigin(0.5);
-        this.gameOverContainer.add([slot, elementText]);
-      }
-    });
-    
-    // Encouraging message
-    const encouragementText = this.scene.add.text(width / 2, height * 0.72, 'Try again and use the hints! 🎄', {
-      font: '16px Arial',
-      fill: '#f39c12'
-    }).setOrigin(0.5);
-    
-    // Add all elements to container
-    this.gameOverContainer.add([overlay, gameOverText, solutionLabel, encouragementText]);
-    this.gameOverContainer.setDepth(GameUtils.getDepthLayers().GAME_OVER);
-    
-    // Smooth entrance animation
-    this.gameOverContainer.setAlpha(0);
-    this.scene.tweens.add({
-      targets: this.gameOverContainer,
-      alpha: 1,
-      duration: 500,
-      ease: 'Power2'
-    });
-  }
+  // REMOVED: Game over overlays - now handled by RoundOver scene for consistency
+  // showGameWon() and showGameLost() methods removed to eliminate redundant UI
+  // All win/loss states now properly handled in RoundOver.js scene
 
   showRestartButton() {
     this.scene.time.delayedCall(2000, () => {
