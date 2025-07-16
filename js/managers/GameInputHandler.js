@@ -124,7 +124,7 @@ class GameInputHandler {
       });
     
     // Also highlight the suggested position with a pulsing glow
-    const targetSlot = this.scene.activeRowManager.activeRowElements[hintResult.position];
+    const targetSlot = this.scene.historyManager.activeRowManager.activeRowElements[hintResult.position];
     if (targetSlot && targetSlot.slot) {
       // Add pulsing green glow to the suggested slot
       const glowEffect = this.scene.add.rectangle(
