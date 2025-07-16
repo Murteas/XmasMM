@@ -125,7 +125,14 @@ class GameInputHandler {
     
     // Also highlight the suggested position with a pulsing glow
     const targetSlot = this.scene.historyManager.activeRowManager.activeRowElements[hintResult.position];
+    console.log('🎅 Hint Debug:', {
+      position: hintResult.position,
+      activeRowElements: this.scene.historyManager.activeRowManager.activeRowElements,
+      targetSlot: targetSlot
+    });
+    
     if (targetSlot && targetSlot.slot) {
+      console.log('🎅 Creating glow effect at:', targetSlot.slot.x, targetSlot.slot.y);
       // Add pulsing green glow to the suggested slot
       const glowEffect = this.scene.add.rectangle(
         targetSlot.slot.x, 
@@ -154,6 +161,8 @@ class GameInputHandler {
       
       hintText.on('destroy', cleanupGlow);
       this.scene.time.delayedCall(15000, cleanupGlow);
+    } else {
+      console.log('🎅 No target slot found for glow effect');
     }
     
     // Auto-remove hint text after 15 seconds if not manually dismissed
