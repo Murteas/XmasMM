@@ -157,23 +157,16 @@ class GameInputHandler {
     
     // Also highlight the suggested position with a pulsing glow
     const targetSlot = this.scene.historyManager.activeRowManager.activeRowElements[hintResult.position];
-    console.log('🎅 Hint Debug:', {
-      position: hintResult.position,
-      activeRowElements: this.scene.historyManager.activeRowManager.activeRowElements,
-      targetSlot: targetSlot
-    });
     
     if (targetSlot && targetSlot.slot) {
-      console.log('🎅 Creating glow effect at slot coords:', targetSlot.slot.x, targetSlot.slot.y);
-      
-      // Try adding the glow directly to the footer container (same coordinate space as the slot)
+      // Add glow directly to footer container (same coordinate space as the slot)
       glowEffect = this.scene.add.rectangle(
         targetSlot.slot.x, 
         targetSlot.slot.y, 
         targetSlot.slot.width + 8, 
         targetSlot.slot.height + 8, 
         0x00ff00, 
-        0.7  // Increased opacity for better visibility
+        0.7
       );
       
       // Add to footer container so it uses the same coordinate space
@@ -181,8 +174,6 @@ class GameInputHandler {
       
       // Set depth relative to other footer elements
       glowEffect.setDepth(targetSlot.slot.depth + 1);
-      
-      console.log('🎅 Glow added to footer container at:', glowEffect.x, glowEffect.y);
       
       // Pulsing animation
       this.scene.tweens.add({
@@ -192,8 +183,6 @@ class GameInputHandler {
         yoyo: true,
         repeat: -1
       });
-    } else {
-      console.log('🎅 No target slot found for glow effect');
     }
     
     // Create cleanup function

@@ -205,13 +205,6 @@ class ScoreManager {
     hintBtn.setStyle({ fill: '#888', backgroundColor: '#444' }); // Gray when used
     hintText.setText('Hint: Used').setStyle({ fill: '#888' });
     
-    console.log('🎅 Hint Strategy:', {
-      wrongPositions,
-      emptyPositions,
-      selectedPosition: targetPosition,
-      revealedElement
-    });
-    
     return {
       position: targetPosition,
       element: revealedElement
