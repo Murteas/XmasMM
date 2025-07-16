@@ -47,6 +47,31 @@
 
 See [Graphics_Asset_Requirements.md](Graphics_Asset_Requirements.md) for detailed asset specifications and status.
 
+## 🧪 Testing & Development
+
+### **🚨 CRITICAL: Server Requirements**
+This Phaser.js game **REQUIRES** a proper HTTP server to function. File:// URLs will only show a white screen.
+
+**Start Development Server:**
+```bash
+# Navigate to project directory
+cd /c/djs.projects/XmasMM
+
+# Start server (choose one):
+python -m http.server 8000        # Simple Python server
+python scripts/dev_server.py      # Enhanced dev server (if available)
+```
+
+**Access Game:**
+- 🌐 **Game**: http://localhost:8000
+- 🧪 **Tests**: http://localhost:8000/tests/
+- 📱 **Mobile Test**: http://localhost:8000/tests/test_mobile_expert.html
+
+### **For AI Agents**
+❌ **Agents CANNOT start servers reliably** - always ask the user to start the server  
+❌ **Never use file:// URLs** - they don't work with Phaser.js games  
+✅ **Always coordinate testing with user** - provide clear instructions and wait for feedback
+
 ## 🎮 How to Play
 1. Access the game via the provided GitHub Pages URL.
 2. Select difficulty settings (code length and number of guesses).

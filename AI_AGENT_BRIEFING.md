@@ -16,6 +16,58 @@
 4. Check if dev server is running on port 8000, if not ask for it to be started, and pause while it is started and check again.
 5. Run `python scripts/automation.py status` to validate system
 
+## 🚨 CRITICAL TESTING LIMITATIONS FOR AI AGENTS
+
+### **Server Management - AGENTS CANNOT START SERVERS**
+**❌ NEVER ATTEMPT**: 
+```bash
+# These commands FAIL for AI agents:
+python scripts/dev_server.py              # Unreliable in AI context
+python -m http.server 8000                # Cannot be managed by agents
+run_in_terminal(..., isBackground=true)   # Background processes fail
+```
+
+**✅ INSTEAD**: 
+1. **ASK USER**: "Please start the development server on port 8000"
+2. **WAIT**: Until user confirms server is running
+3. **VERIFY**: Ask user to confirm `http://localhost:8000` works
+4. **PROCEED**: Only after confirmation
+
+### **Browser Testing - file:// URLs DON'T WORK**
+**❌ NEVER USE**:
+```javascript
+// This FAILS with Phaser.js games:
+open_simple_browser("file:///c:/path/to/index.html")  // White screen only
+```
+
+**✅ INSTEAD**:
+1. **ENSURE**: Server is running on port 8000 first
+2. **ASK USER**: "Please open http://localhost:8000 in your browser"
+3. **PROVIDE**: Specific testing instructions
+4. **COORDINATE**: User-driven testing with agent analysis
+
+### **Testing Protocol for AI Agents**
+```markdown
+1. 🚨 **NEVER** try to start servers yourself
+2. 🚨 **NEVER** use file:// URLs for game testing  
+3. ✅ **ALWAYS** ask user to start server on port 8000
+4. ✅ **ALWAYS** provide clear testing instructions
+5. ✅ **WAIT** for user feedback before proceeding
+```
+
+### **Communication Pattern**
+```markdown
+Agent: "To test the changes, please:
+1. Start the development server: `python -m http.server 8000`
+2. Open http://localhost:8000 in your browser
+3. Navigate to the game and test [specific features]
+4. Report back what you observe"
+
+User: [provides testing feedback]
+
+Agent: [analyzes feedback and suggests next steps]
+```
+
 ## ⚠️ Key Rules for AI Agents
 - **NEVER** assume tests pass without verification
 - **ALWAYS** use `isBackground=false` (never true)
