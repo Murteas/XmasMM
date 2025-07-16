@@ -40,13 +40,12 @@ class GameInputHandler {
   }
 
   handleGameWon() {
-    this.scene.uiLayoutManager.showGameWon();
+    // Game won - transition to RoundOver scene (no more overlay)
     this.endGame();
   }
 
   handleGameLost() {
-    const secretCode = this.scene.gameStateManager.getSecretCode();
-    this.scene.uiLayoutManager.showGameLost(secretCode);
+    // Game lost - transition to RoundOver scene (no more overlay) 
     this.endGame();
   }
 
