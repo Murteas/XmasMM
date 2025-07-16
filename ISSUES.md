@@ -18,10 +18,10 @@
 **Status**: 🔧 Open  
 **Related Task**: UsabilityImprovements
 
-### UI-006: Guess Screen Bugs - Active Row & Hint
+### UI-006: Guess Screen Bugs & Layout/UX Enhancements
 **Issue ID**: UI-006  
 **Date Created**: July 15, 2025  
-**Severity**: Medium - Usability bugs  
+**Severity**: CRITICAL - Usability bugs & layout issues  
 **Status**: 🔧 Open  
 **Related Task**: GameScreenMobileOptimization
 
@@ -29,22 +29,38 @@
 1. If the user scrolls up, the active guess row (where the player makes their current guess) disappears and is no longer accessible. This makes it impossible to continue playing without scrolling all the way down again.
 2. The "Santa's Hint" button no longer provides a hint when pressed. No feedback or hint is given to the player.
 
+**Additional UI/UX Issues from Screenshot Analysis:**
+- The "Santa's Hint" button overlaps the "Hint: Available" label, making the UI cluttered. These should be visually separated.
+- The "Christmas Feedback" legend box is large and pushes the guess rows down, reducing visible space for guesses. Consider making it collapsible, smaller, or floating.
+- Guess rows and feedback columns are tightly packed; spacing and alignment could be improved for readability.
+- The "Back" and "GO" buttons are at opposite corners and may be hard to reach on mobile—consider grouping or making them more prominent.
+- The scrollable area is not visually distinct from the rest of the UI, which may confuse users about what can be scrolled.
+- Feedback symbols (stars, bells) could be larger or have more padding for clarity.
+
 **Expected Behavior**:
 - The active guess row should always remain visible or easily accessible, regardless of scroll position (e.g., sticky/fixed at the bottom, or a quick-jump button).
 - Pressing "Santa's Hint" should provide a hint to the player, as described in the game instructions.
+- UI elements should be visually clear, well-spaced, and optimized for mobile usability.
 
 **Proposed Implementation**:
 - Refactor the guess screen layout so the active guess row is always accessible (consider sticky/fixed positioning or a floating action button to jump to it).
 - Debug and restore the Santa's Hint functionality so it reliably provides a hint and gives user feedback.
+- Separate the hint button and label for clarity.
+- Make the feedback legend collapsible, smaller, or floating.
+- Improve spacing and alignment of guess rows and feedback columns.
+- Group or reposition "Back" and "GO" buttons for easier access.
+- Visually distinguish the scrollable area.
+- Increase size/padding of feedback symbols for clarity.
 
 **Files to Modify**:
-- `js/scenes/GameScene.js` - Guess row rendering, scroll/active row logic, hint button handler
+- `js/scenes/GameScene.js` - Guess row rendering, scroll/active row logic, hint button handler, layout
 - `js/managers/ActiveRowManager.js` - Active row positioning and state
 - `js/managers/HintManager.js` or related logic - Hint functionality
 
 **Success Criteria**:
 - Active guess row is always accessible, regardless of scroll position
 - Santa's Hint button provides a hint and user feedback
+- UI is visually clear, well-spaced, and mobile-optimized
 - No regression in mobile usability or layout
 
 **Problem Description**: The game history/guess review screen does not display the correct solution for post-game comparison. Players cannot easily compare their guesses against the actual solution when reviewing their game performance.
