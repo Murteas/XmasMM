@@ -140,13 +140,13 @@ class GameInputHandler {
         targetSlot.slot.width + 8, 
         targetSlot.slot.height + 8, 
         0x00ff00, 
-        0.3
-      ).setDepth(targetSlot.slot.depth - 0.1);
+        0.5
+      ).setDepth(GameUtils.getDepthLayers().UI + 5); // Use high UI depth instead of relative depth
       
       // Pulsing animation
       this.scene.tweens.add({
         targets: glowEffect,
-        alpha: { from: 0.3, to: 0.7 },
+        alpha: { from: 0.5, to: 0.9 },
         duration: 800,
         yoyo: true,
         repeat: -1
