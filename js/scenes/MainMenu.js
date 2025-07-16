@@ -11,6 +11,18 @@ class MainMenu extends Phaser.Scene {
     const assetPath = isTestEnvironment ? '../assets/' : 'assets/';
     
     this.load.image('bg', `${assetPath}bg_mobile2.png`);
+    
+    // Preload game element images for help overlay
+    this.load.image('santa_1x', `${assetPath}santa_1x.png`);
+    this.load.image('present_1x', `${assetPath}present_1x.png`);
+    this.load.image('star_1x', `${assetPath}star_1x.png`);
+    this.load.image('tree_1x', `${assetPath}tree_1x.png`);
+    this.load.image('snowflake_1x', `${assetPath}snowflake_1x.png`);
+    this.load.image('candycane_1x', `${assetPath}candycane_1x.png`);
+    
+    // Preload feedback images for help overlay
+    this.load.image('feedback_perfect_star_1x', `${assetPath}feedback_perfect_star_1x.png`);
+    this.load.image('feedback_close_bell_1x', `${assetPath}feedback_close_bell_1x.png`);
   }
 
   create() {
@@ -165,89 +177,121 @@ class MainMenu extends Phaser.Scene {
       align: 'center'
     }).setOrigin(0.5);
 
-    // Instructions with mobile-optimized spacing
-    const instructions = [
-      '🎯 Goal: Guess Santa\'s secret Christmas code!',
-      '',
-      '📱 How to Play:',
-      '• Tap empty slots to select Christmas elements',
-      '• Use the element picker to choose from:',
-      '',
-      '• Tap Submit when your guess is complete',
-      '',
-      '💡 Christmas Feedback Symbols:',
-      '',
-      '',
-      '• (No symbol) = Element not in the secret code',
-      '',
-      '📝 Example: If secret code contains Santa and you guess Santa in the right spot:',
-      '   You\'ll see the perfect star! If Santa is in your guess but wrong spot,',
-      '   you\'ll see the close bell. Elements not in the code get no symbol.',
-      '',
-      '🎁 Santa\'s Hint: Available after a few guesses!',
-      '',
-      '🏆 Win by guessing the complete code!'
-    ];
+    // Part 1: Instructions up to element list
+    const instructionsPart1 = this.add.text(width / 2, height * 0.15, 
+      '🎯 Goal: Guess Santa\'s secret Christmas code!\n\n' +
+      '📱 How to Play:\n' +
+      '• Tap empty slots to select Christmas elements\n' +
+      '• Choose from 6 elements:\n', 
+      {
+        font: `${Math.round(13 * layout.fontScale)}px Arial`,
+        fill: '#fff',
+        align: 'left',
+        lineSpacing: Math.round(3 * layout.fontScale),
+        wordWrap: { width: width * 0.85 }
+      }
+    ).setOrigin(0.5);
 
-    const instructionText = this.add.text(width / 2, height * 0.38, instructions.join('\n'), {
-      font: `${Math.round(15 * layout.fontScale)}px Arial`, // Increased from 12 to 15
-      fill: '#fff',
-      align: 'left',
-      lineSpacing: Math.round(3 * layout.fontScale), // Increased line spacing
-      wordWrap: { width: width * 0.85 }
-    }).setOrigin(0.5);
-
-    // Create actual game element images to replace emoji
-    const elementContainer = this.add.container(width / 2, height * 0.25);
-    const elementSize = Math.round(24 * layout.fontScale);
-    const elementSpacing = Math.round(32 * layout.fontScale);
+    // Element images positioned closer to text in 2 rows of 3
+    const elementStartY = height * 0.28; // Moved closer to text (was 0.32)
+    const elementSize = Math.round(40 * layout.fontScale); // Much bigger images (was 32)
+    const horizontalSpacing = Math.round(45 * layout.fontScale); // Spacing between columns
+    const verticalSpacing = Math.round(48 * layout.fontScale); // Spacing between rows
     
-    // Game elements in order: Santa, Presents, Stars, Trees, Snowflakes, Candy Canes
     const gameElements = ['santa', 'present', 'star', 'tree', 'snowflake', 'candycane'];
-    const elementNames = ['Santa', 'Presents', 'Stars', 'Trees', 'Snowflakes', 'Candy Canes'];
+    
+    // Store images separately to add to container later
+    const elementImages = [];
     
     gameElements.forEach((element, index) => {
-      const x = (index - 2.5) * elementSpacing; // Center 6 elements
+      const row = Math.floor(index / 3); // 0 for first row, 1 for second row
+      const col = index % 3; // 0, 1, 2 for columns
       
-      // Create element image
-      const elementImg = this.add.image(x, -5, `${element}_1x`)
-        .setScale(elementSize / 64) // Assuming source images are ~64px
-        .setOrigin(0.5);
+      // Calculate position for 2 rows of 3
+      const x = width / 2 - horizontalSpacing + (col * horizontalSpacing);
+      const y = elementStartY + (row * verticalSpacing);
       
-      // Create element label
-      const elementLabel = this.add.text(x, 15, elementNames[index], {
+      const textureKey = `${element}_1x`;
+      
+      if (!this.textures.exists(textureKey)) {
+        console.error(`Missing texture: ${textureKey}`);
+        return;
+      }
+      
+      const img = this.add.image(x, y, textureKey)
+        .setDisplaySize(elementSize, elementSize)
+        .setOrigin(0.5)
+        .setVisible(true)
+        .setDepth(1002); // Higher depth than container
+      
+      elementImages.push(img);
+    });
+
+    // Part 2: Instructions up to feedback symbols - adjusted position for 2-row layout
+    const instructionsPart2 = this.add.text(width / 2, height * 0.52,
+      '• Tap Submit when your guess is complete\n\n' +
+      '💡 Feedback Symbols:', 
+      {
+        font: `${Math.round(13 * layout.fontScale)}px Arial`,
+        fill: '#fff',
+        align: 'left',
+        lineSpacing: Math.round(3 * layout.fontScale),
+        wordWrap: { width: width * 0.85 }
+      }
+    ).setOrigin(0.5);
+
+    // Feedback symbol images positioned after part 2 - adjusted for new layout
+    const feedbackY = height * 0.62; // Moved down to accommodate 2-row element layout
+    const feedbackSize = Math.round(28 * layout.fontScale); // Even bigger feedback images (was 24)
+    const feedbackSpacing = Math.round(120 * layout.fontScale); // Closer together (was 140)
+    
+    // Create feedback images with labels
+    const feedbackElements = [
+      { key: 'feedback_perfect_star_1x', label: 'Perfect Match!' },
+      { key: 'feedback_close_bell_1x', label: 'Close Match!' }
+    ];
+    
+    const feedbackStartX = width / 2 - feedbackSpacing / 2;
+    const feedbackImages = [];
+    
+    feedbackElements.forEach((feedback, index) => {
+      const x = feedbackStartX + (index * feedbackSpacing);
+      
+      if (!this.textures.exists(feedback.key)) {
+        console.error(`Missing feedback texture: ${feedback.key}`);
+        return;
+      }
+      
+      const img = this.add.image(x, feedbackY, feedback.key)
+        .setDisplaySize(feedbackSize, feedbackSize)
+        .setOrigin(0.5)
+        .setVisible(true)
+        .setDepth(1002);
+      
+      const label = this.add.text(x, feedbackY + feedbackSize/2 + 8, feedback.label, {
         font: `${Math.round(10 * layout.fontScale)}px Arial`,
         fill: '#fff',
         align: 'center'
-      }).setOrigin(0.5);
+      }).setOrigin(0.5).setDepth(1002);
       
-      elementContainer.add([elementImg, elementLabel]);
+      feedbackImages.push(img, label);
     });
 
-    // Create feedback symbol images
-    const feedbackContainer = this.add.container(width / 2, height * 0.43);
-    
-    // Perfect feedback (star)
-    const perfectStar = this.add.image(-60, 0, 'feedback_perfect_star_1x')
-      .setScale(Math.round(20 * layout.fontScale) / 64)
-      .setOrigin(0.5);
-    const perfectText = this.add.text(-20, 0, '= Perfect! Right element, right spot', {
-      font: `${Math.round(14 * layout.fontScale)}px Arial`,
-      fill: '#fff'
-    }).setOrigin(0, 0.5);
-    
-    // Close feedback (bell)
-    const closeBell = this.add.image(-60, 25, 'feedback_close_bell_1x')
-      .setScale(Math.round(20 * layout.fontScale) / 64)
-      .setOrigin(0.5);
-    const closeText = this.add.text(-20, 25, '= Close! Right element, wrong spot', {
-      font: `${Math.round(14 * layout.fontScale)}px Arial`,
-      fill: '#fff'
-    }).setOrigin(0, 0.5);
-    
-    feedbackContainer.add([perfectStar, perfectText, closeBell, closeText]);
+    // Part 3: Remaining instructions positioned after feedback images
+    const instructionsPart3 = this.add.text(width / 2, height * 0.72,
+      '• (No symbol) = Element not in the secret code\n\n' +
+      '🎁 Santa\'s Hint: Available after a few guesses!\n' +
+      '🏆 Win by guessing the complete code!', 
+      {
+        font: `${Math.round(13 * layout.fontScale)}px Arial`,
+        fill: '#fff',
+        align: 'left',
+        lineSpacing: Math.round(3 * layout.fontScale),
+        wordWrap: { width: width * 0.85 }
+      }
+    ).setOrigin(0.5);
 
-    // Close button - positioned higher to avoid Safari footer
+    // Close button - adjusted for new layout
     const closeBtn = this.add.text(width / 2, height * 0.82, 'Got it! Let\'s Play! 🎄', {
       font: `${Math.round(16 * layout.fontScale)}px Arial`,
       fill: '#fff',
@@ -267,8 +311,11 @@ class MainMenu extends Phaser.Scene {
     
     // Add touch feedback to close button
     this.addButtonTouchFeedback(closeBtn, { colorTint: 0xe74c3c });
-      // Add to container
-    this.helpOverlay.add([helpBg, helpTitle, instructionText, elementContainer, feedbackContainer, closeBtn]);
+    // Add all elements to container
+    this.helpOverlay.add([helpBg, helpTitle, instructionsPart1, instructionsPart2, instructionsPart3, closeBtn]);
+    
+    // Store element images and feedback images for cleanup
+    this.helpElementImages = elementImages.concat(feedbackImages);
     this.helpOverlay.setDepth(1000);
 
     // Smooth entrance animation
@@ -296,6 +343,12 @@ class MainMenu extends Phaser.Scene {
         onComplete: () => {
           this.helpOverlay.destroy();
           this.helpOverlay = null;
+          
+          // Clean up element images
+          if (this.helpElementImages) {
+            this.helpElementImages.forEach(img => img.destroy());
+            this.helpElementImages = null;
+          }
         }
       });
     }
