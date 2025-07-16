@@ -150,34 +150,75 @@ class ScoreManager {
   }
 
   checkHintAvailability(hintBtn, hintText) {
-    if (!this.hintUsed && this.currentScore >= this.hintThreshold) {
-      hintBtn.setStyle({ fill: '#fff', backgroundColor: '#0d5016' }); // Forest green when available
-      hintText.setText('Hint: Available').setStyle({ fill: '#fff' });
-      return true;
-    } else {
-      // Gray when not available
+    if (this.hintUsed) {
+      // Already used hint this round
       hintBtn.setStyle({ fill: '#888', backgroundColor: '#444' });
-      hintText.setText('Hint: Locked').setStyle({ fill: '#888' });
+      hintText.setText('Hint: Used').setStyle({ fill: '#888' });
+      return false;
+    } else if (this.currentScore < this.hintThreshold) {
+      // Not enough score yet
+      hintBtn.setStyle({ fill: '#888', backgroundColor: '#444' });
+      hintText.setText(`Hint: Need ${this.hintThreshold} pts (${this.currentScore} pts)`).setStyle({ fill: '#888' });
+      return false;
+    } else {
+      // Available to use
+      hintBtn.setStyle({ fill: '#fff', backgroundColor: '#0d5016' }); // Forest green when available
+      hintText.setText('🎅 Hint: Ready!').setStyle({ fill: '#fff' });
+      return true;
     }
-    return false;
   }
 
   useSantasHint(secretCode, currentGuess, hintBtn, hintText) {
     if (this.hintUsed || this.currentScore < this.hintThreshold) return null;
     
     this.hintUsed = true;
-    const randomPosition = Math.floor(Math.random() * secretCode.length);
-    const revealedElement = secretCode[randomPosition];
+    
+    // Strategic hint selection: prioritize positions that are wrong or empty
+    const wrongPositions = [];
+    const emptyPositions = [];
+    
+    for (let i = 0; i < secretCode.length; i++) {
+      if (!currentGuess[i] || currentGuess[i] === null) {
+        emptyPositions.push(i);
+      } else if (currentGuess[i] !== secretCode[i]) {
+        wrongPositions.push(i);
+      }
+    }
+    
+    // Hint strategy:
+    // 1. First priority: Fix wrong guesses
+    // 2. Second priority: Fill empty slots
+    // 3. Last resort: Random position (shouldn't happen in normal gameplay)
+    let targetPosition;
+    if (wrongPositions.length > 0) {
+      // Pick random wrong position to fix
+      targetPosition = wrongPositions[Math.floor(Math.random() * wrongPositions.length)];
+    } else if (emptyPositions.length > 0) {
+      // Pick random empty position to fill
+      targetPosition = emptyPositions[Math.floor(Math.random() * emptyPositions.length)];
+    } else {
+      // Fallback: random position (all correct already?)
+      targetPosition = Math.floor(Math.random() * secretCode.length);
+    }
+    
+    const revealedElement = secretCode[targetPosition];
     
     // Update current guess with the hint
-    currentGuess[randomPosition] = revealedElement;
+    currentGuess[targetPosition] = revealedElement;
     
     // Update UI to show hint used
     hintBtn.setStyle({ fill: '#888', backgroundColor: '#444' }); // Gray when used
     hintText.setText('Hint: Used').setStyle({ fill: '#888' });
     
+    console.log('🎅 Hint Strategy:', {
+      wrongPositions,
+      emptyPositions,
+      selectedPosition: targetPosition,
+      revealedElement
+    });
+    
     return {
-      position: randomPosition,
+      position: targetPosition,
       element: revealedElement
     };
   }

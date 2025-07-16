@@ -3,6 +3,7 @@
 class GameInputHandler {
   constructor(scene) {
     this.scene = scene;
+    this.activeHint = null; // Track active hint to prevent multiple hints
   }
 
   processGuessSubmission() {
@@ -84,6 +85,19 @@ class GameInputHandler {
     const secretCode = this.scene.gameStateManager.getSecretCode();
     const uiElements = this.scene.uiLayoutManager.getUIElements();
     
+    // Check if hint is available first and show feedback if not
+    if (this.scene.scoreManager.isHintUsed()) {
+      this.showHintUnavailableMessage("🎅 You've already used your hint this round!");
+      return false;
+    }
+    
+    if (this.scene.scoreManager.getCurrentScore() < this.scene.scoreManager.hintThreshold) {
+      const needed = this.scene.scoreManager.hintThreshold;
+      const current = this.scene.scoreManager.getCurrentScore();
+      this.showHintUnavailableMessage(`🎅 Need ${needed} points for hints! (Currently: ${current})`);
+      return false;
+    }
+    
     const hintResult = this.scene.scoreManager.useSantasHint(
       secretCode, 
       currentGuess, 
@@ -103,7 +117,33 @@ class GameInputHandler {
     return false;
   }
 
+  showHintUnavailableMessage(message) {
+    const { width } = this.scene.cameras.main;
+    const isSmallScreen = width < 400;
+    const messageY = isSmallScreen ? 140 : 110;
+    
+    // Create temporary message
+    const messageText = this.scene.add.text(width / 2, messageY, message, {
+      font: '14px Arial',
+      fill: '#ff6b6b',
+      backgroundColor: '#4a1a1a',
+      padding: { left: 12, right: 12, top: 6, bottom: 6 }
+    }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI + 10);
+    
+    // Auto-remove after 3 seconds
+    this.scene.time.delayedCall(3000, () => {
+      if (messageText) {
+        messageText.destroy();
+      }
+    });
+  }
+
   showHintFeedback(hintResult) {
+    // Clear any existing hint first
+    if (this.activeHint) {
+      this.activeHint.cleanup();
+    }
+
     const { width, height } = this.scene.cameras.main;
     
     // Position hint text in a safe area (top of screen, below header)
@@ -118,10 +158,9 @@ class GameInputHandler {
       backgroundColor: '#0d5016', // Forest green background
       padding: { left: 12, right: 12, top: 6, bottom: 6 }
     }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI + 10)
-      .setInteractive({ useHandCursor: true })
-      .on('pointerdown', () => {
-        hintText.destroy();
-      });
+      .setInteractive({ useHandCursor: true });
+    
+    let glowEffect = null;
     
     // Also highlight the suggested position with a pulsing glow
     const targetSlot = this.scene.historyManager.activeRowManager.activeRowElements[hintResult.position];
@@ -132,16 +171,24 @@ class GameInputHandler {
     });
     
     if (targetSlot && targetSlot.slot) {
-      console.log('🎅 Creating glow effect at:', targetSlot.slot.x, targetSlot.slot.y);
-      // Add pulsing green glow to the suggested slot
-      const glowEffect = this.scene.add.rectangle(
+      // Get the actual world position of the slot (accounting for footer container)
+      const worldPosition = this.scene.footerContainer.getWorldTransformMatrix().transformPoint(
         targetSlot.slot.x, 
-        targetSlot.slot.y, 
+        targetSlot.slot.y
+      );
+      
+      console.log('🎅 Creating glow effect at slot coords:', targetSlot.slot.x, targetSlot.slot.y);
+      console.log('🎅 Creating glow effect at world coords:', worldPosition.x, worldPosition.y);
+      
+      // Add pulsing green glow to the suggested slot using world coordinates
+      glowEffect = this.scene.add.rectangle(
+        worldPosition.x, 
+        worldPosition.y, 
         targetSlot.slot.width + 8, 
         targetSlot.slot.height + 8, 
         0x00ff00, 
         0.5
-      ).setDepth(GameUtils.getDepthLayers().UI + 5); // Use high UI depth instead of relative depth
+      ).setDepth(GameUtils.getDepthLayers().UI + 5);
       
       // Pulsing animation
       this.scene.tweens.add({
@@ -151,29 +198,38 @@ class GameInputHandler {
         yoyo: true,
         repeat: -1
       });
-      
-      // Remove glow when hint text is dismissed or after 15 seconds
-      const cleanupGlow = () => {
-        if (glowEffect) {
-          glowEffect.destroy();
-        }
-      };
-      
-      hintText.on('destroy', cleanupGlow);
-      this.scene.time.delayedCall(15000, cleanupGlow);
     } else {
       console.log('🎅 No target slot found for glow effect');
     }
     
-    // Auto-remove hint text after 15 seconds if not manually dismissed
-    this.scene.time.delayedCall(15000, () => {
+    // Create cleanup function
+    const cleanup = () => {
       if (hintText) {
         hintText.destroy();
       }
-    });
+      if (glowEffect) {
+        glowEffect.destroy();
+      }
+      this.activeHint = null;
+    };
+    
+    // Set up hint object to track this hint
+    this.activeHint = {
+      hintText: hintText,
+      glowEffect: glowEffect,
+      cleanup: cleanup
+    };
+    
+    // Only manual dismiss - no auto-dismiss timer
+    hintText.on('pointerdown', cleanup);
   }
 
   endGame() {
+    // Clean up any active hint
+    if (this.activeHint) {
+      this.activeHint.cleanup();
+    }
+
     const uiElements = this.scene.uiLayoutManager.getUIElements();
     
     // Disable interactions
