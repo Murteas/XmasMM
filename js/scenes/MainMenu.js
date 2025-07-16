@@ -182,7 +182,7 @@ class MainMenu extends Phaser.Scene {
       '🎯 Goal: Guess Santa\'s secret Christmas code!\n\n' +
       '📱 How to Play:\n' +
       '• Tap empty slots to select Christmas elements\n' +
-      '• Choose from 6 elements:\n', 
+      '• Choose from these Christmas elements:\n', 
       {
         font: `${Math.round(13 * layout.fontScale)}px Arial`,
         fill: '#fff',

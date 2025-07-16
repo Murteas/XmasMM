@@ -36,77 +36,61 @@ class DifficultySelection extends Phaser.Scene {
   }
 
   createCodeLengthSelection(width, height) {
-    this.add.text(width / 2, height * 0.3, 'Code Length:', {
+    this.add.text(width / 2, height * 0.3, 'Difficulty Level:', {
       font: '24px Arial',
       fill: '#fff'
     }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
     
-    this.codeLength = 4; // Default
+    this.codeLength = 4; // Default to Easy
     this.codeLengthBtns = [];
-    const lengthOptions = [4, 5, 6];
     
-    lengthOptions.forEach((length, index) => {
-      const x = width / 2 + (index - 1) * 80;
+    // Simplified: Only Easy (4 elements) and Standard (5 elements)
+    const difficultyOptions = [
+      { length: 4, label: 'Easy', description: '4 Christmas Elements' },
+      { length: 5, label: 'Standard', description: '5 Christmas Elements' }
+    ];
+    
+    difficultyOptions.forEach((option, index) => {
+      const x = width / 2 + (index - 0.5) * 120;
       const y = height * 0.4;
-      const btn = this.add.text(x, y, length.toString(), {
-        font: '24px Arial',
-        fill: length === 4 ? '#000' : '#fff',
-        backgroundColor: length === 4 ? '#fff' : '#444',
-        padding: { left: 12, right: 12, top: 8, bottom: 8 }
+      
+      // Main button
+      const btn = this.add.text(x, y, option.label, {
+        font: '20px Arial',
+        fill: option.length === 4 ? '#000' : '#fff',
+        backgroundColor: option.length === 4 ? '#fff' : '#444',
+        padding: { left: 16, right: 16, top: 10, bottom: 10 }
       }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(GameUtils.getDepthLayers().UI);
       
+      // Description text
+      const desc = this.add.text(x, y + 35, option.description, {
+        font: '12px Arial',
+        fill: '#ccc'
+      }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
+      
       btn.on('pointerdown', () => {
-        this.codeLength = length;
+        this.codeLength = option.length;
         this.updateCodeLengthButtons();
       });
       
-      this.codeLengthBtns.push({ btn, length });
+      this.codeLengthBtns.push({ btn, desc, length: option.length, label: option.label });
     });
   }
 
   createGuessCountSelection(width, height) {
-    this.add.text(width / 2, height * 0.55, 'Number of Guesses:', {
-      font: '24px Arial',
-      fill: '#fff'
+    // Fixed at 10 guesses - no user selection needed
+    this.maxGuesses = 10;
+    
+    this.add.text(width / 2, height * 0.55, 'Maximum Guesses: 10', {
+      font: '20px Arial',
+      fill: '#fff',
+      fontStyle: 'bold'
     }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
     
-    this.maxGuesses = 10; // Default
-    this.guessText = this.add.text(width / 2, height * 0.65, this.maxGuesses.toString(), {
-      font: '24px Arial',
-      fill: '#fff',
-      backgroundColor: '#444',
-      padding: { left: 16, right: 16, top: 8, bottom: 8 }
+    this.add.text(width / 2, height * 0.62, '(Fixed for optimal family gameplay)', {
+      font: '14px Arial',
+      fill: '#aaa'
     }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
-    
-    // Decrease button
-    const decreaseBtn = this.add.text(width / 2 - 80, height * 0.65, '-', {
-      font: '24px Arial',
-      fill: '#fff',
-      backgroundColor: '#c0392b',
-      padding: { left: 16, right: 16, top: 8, bottom: 8 }
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(GameUtils.getDepthLayers().UI);
-    
-    decreaseBtn.on('pointerdown', () => {
-      if (this.maxGuesses > 8) {
-        this.maxGuesses--;
-        this.guessText.setText(this.maxGuesses.toString());
-      }
-    });
-    
-    // Increase button
-    const increaseBtn = this.add.text(width / 2 + 80, height * 0.65, '+', {
-      font: '24px Arial',
-      fill: '#fff',
-      backgroundColor: '#27ae60',
-      padding: { left: 16, right: 16, top: 8, bottom: 8 }
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(GameUtils.getDepthLayers().UI);
-    
-    increaseBtn.on('pointerdown', () => {
-      if (this.maxGuesses < 15) {
-        this.maxGuesses++;
-        this.guessText.setText(this.maxGuesses.toString());
-      }
-    });
   }
 
   createNavigationButtons(width, height) {
@@ -159,11 +143,13 @@ class DifficultySelection extends Phaser.Scene {
   }
   
   updateCodeLengthButtons() {
-    this.codeLengthBtns.forEach(({ btn, length }) => {
+    this.codeLengthBtns.forEach(({ btn, desc, length, label }) => {
       if (length === this.codeLength) {
         btn.setStyle({ fill: '#000', backgroundColor: '#fff' });
+        desc.setStyle({ fill: '#fff' });
       } else {
         btn.setStyle({ fill: '#fff', backgroundColor: '#444' });
+        desc.setStyle({ fill: '#ccc' });
       }
     });
   }
