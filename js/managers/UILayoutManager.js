@@ -125,16 +125,16 @@ class UILayoutManager {
     }).setOrigin(1, 0).setDepth(GameUtils.getDepthLayers().UI);
     
     // Hint status (smaller, positioned safely below header text)
-    this.hintText = this.scene.add.text(width / 2, 105, 'Hint: Available', {
+    this.hintText = this.scene.add.text(width / 2, 105, 'Hint: Locked', {
       font: '12px Arial',
-      fill: '#888'
+      fill: '#888' // Gray when locked
     }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
     
-    // Santa's Hint button - positioned well below header to avoid overlap
+    // Santa's Hint button - proper color coding (green=available, gray=unavailable)
     this.hintBtn = this.scene.add.text(width / 2, 125, "🎅 Hint", {
       font: '14px Arial',
-      fill: '#fff',
-      backgroundColor: '#c41e3a',
+      fill: '#888', // Start gray (locked)
+      backgroundColor: '#444', // Start gray background
       padding: { left: 10, right: 10, top: 4, bottom: 4 }
     }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
   }
@@ -171,12 +171,12 @@ class UILayoutManager {
     // Add touch feedback to hint button
     this.addButtonTouchFeedback(this.hintBtn, { colorTint: 0xe67e22 });
     
-    // Expert mobile responsive back button
+    // Back button in top-left header (proper UX pattern) - GameScreenFooterLayoutFix
     const layout = GameUtils.getResponsiveLayout(width, height);
     const backBtn = GameUtils.createResponsiveText(
       this.scene,
-      50,
-      height - layout.marginBottom,
+      60, // Left margin
+      50, // Top header position - much better than floating mid-screen
       'Back',
       {
         fontSize: `${Math.round(16 * layout.fontScale)}px`,
@@ -344,23 +344,83 @@ class UILayoutManager {
   showGameLost(secretCode) {
     const { width, height } = this.scene.cameras.main;
     
-    // Position GAME OVER at bottom to not cover game history
-    this.scene.add.text(width / 2, height - 100, 'GAME OVER', {
-      font: '28px Arial',
-      fill: '#e74c3c',
-      fontStyle: 'bold',
-      backgroundColor: '#000000',
-      padding: { left: 20, right: 20, top: 10, bottom: 10 }
-    }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().GAME_OVER);
+    // Create game over container for better organization
+    this.gameOverContainer = this.scene.add.container(0, 0);
     
-    // Show solution below GAME OVER
-    this.scene.add.text(width / 2, height - 60, 
-      `Solution: ${secretCode.join(', ')}`, {
-      font: '16px Arial',
+    // Semi-transparent background overlay
+    const overlay = this.scene.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.8);
+    
+    // Game Over title
+    const gameOverText = this.scene.add.text(width / 2, height * 0.3, 'GAME OVER', {
+      font: '32px Arial',
+      fill: '#e74c3c',
+      fontStyle: 'bold'
+    }).setOrigin(0.5);
+    
+    // Solution label
+    const solutionLabel = this.scene.add.text(width / 2, height * 0.45, '🎯 The Solution Was:', {
+      font: '20px Arial',
       fill: '#fff',
-      backgroundColor: '#000000',
-      padding: { left: 15, right: 15, top: 5, bottom: 5 }
-    }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().GAME_OVER);
+      fontStyle: 'bold'
+    }).setOrigin(0.5);
+    
+    // Visual solution display using actual game images
+    const solutionY = height * 0.55;
+    const elementSize = Math.min(50, (width - 100) / secretCode.length);
+    const totalWidth = secretCode.length * elementSize + (secretCode.length - 1) * 8;
+    const startX = (width - totalWidth) / 2;
+    
+    // Create solution elements visually
+    secretCode.forEach((element, index) => {
+      const x = startX + index * (elementSize + 8) + elementSize / 2;
+      
+      // Background slot (golden for solution)
+      const slot = this.scene.add.rectangle(x, solutionY, elementSize, elementSize, 0x444444)
+        .setStrokeStyle(3, 0xffd700); // Gold border for solution
+      
+      // Element image
+      try {
+        const imageKey = this.scene.getElementImageKey ? this.scene.getElementImageKey(element) : `${element.toLowerCase()}_1x`;
+        if (this.scene.textures.exists(imageKey)) {
+          const elementImage = this.scene.add.image(x, solutionY, imageKey)
+            .setDisplaySize(elementSize * 0.8, elementSize * 0.8);
+          this.gameOverContainer.add([slot, elementImage]);
+        } else {
+          // Fallback to text
+          const elementText = this.scene.add.text(x, solutionY, element, {
+            font: `${Math.round(elementSize * 0.3)}px Arial`,
+            fill: '#fff'
+          }).setOrigin(0.5);
+          this.gameOverContainer.add([slot, elementText]);
+        }
+      } catch (error) {
+        console.warn('Could not display solution element:', element, error);
+        const elementText = this.scene.add.text(x, solutionY, element, {
+          font: `${Math.round(elementSize * 0.3)}px Arial`,
+          fill: '#fff'
+        }).setOrigin(0.5);
+        this.gameOverContainer.add([slot, elementText]);
+      }
+    });
+    
+    // Encouraging message
+    const encouragementText = this.scene.add.text(width / 2, height * 0.72, 'Try again and use the hints! 🎄', {
+      font: '16px Arial',
+      fill: '#f39c12'
+    }).setOrigin(0.5);
+    
+    // Add all elements to container
+    this.gameOverContainer.add([overlay, gameOverText, solutionLabel, encouragementText]);
+    this.gameOverContainer.setDepth(GameUtils.getDepthLayers().GAME_OVER);
+    
+    // Smooth entrance animation
+    this.gameOverContainer.setAlpha(0);
+    this.scene.tweens.add({
+      targets: this.gameOverContainer,
+      alpha: 1,
+      duration: 500,
+      ease: 'Power2'
+    });
   }
 
   showRestartButton() {
@@ -484,7 +544,7 @@ class UILayoutManager {
     
     // MOBILE OPTIMIZATION: Compact horizontal legend at bottom of screen
     const isSmallScreen = width < 500;
-    const legendHeight = 35;
+    const legendHeight = 40; // Increased from 35px
     const legendY = height - 150; // Position in empty space below history
     
     // Horizontal layout for compactness
@@ -492,16 +552,16 @@ class UILayoutManager {
     const itemWidth = totalWidth / 2;
     const startX = (width - totalWidth) / 2;
     
-    // Create compact legend background
+    // Create compact legend background (properly centered)
     const legendBg = this.scene.add.rectangle(width / 2, legendY, totalWidth + 20, legendHeight, 0x1a1a1a, 0.9)
       .setStrokeStyle(1, 0xffd700, 0.4)
       .setDepth(GameUtils.getDepthLayers().UI);
     
-    // Create legend items in horizontal layout
+    // Create legend items in horizontal layout (better alignment)
     legendItems.forEach((item, index) => {
-      const itemX = startX + (index * itemWidth) + (itemWidth / 2);
-      const symbolX = itemX - 30;
-      const textX = itemX - 10;
+      // Better balanced positioning
+      const itemCenterX = startX + 30 + (index * (totalWidth / 2));
+      const symbolX = itemCenterX - 30;        const textX = itemCenterX + 10; // Slightly more to the right for better alignment// Aligned better with symbols
       
       // Create Christmas symbol
       try {
@@ -529,9 +589,9 @@ class UILayoutManager {
         }).setOrigin(0.5, 0.5).setDepth(GameUtils.getDepthLayers().UI + 0.1);
       }
       
-      // Description text (compact)
+      // Description text (larger and better positioned)
       this.scene.add.text(textX, legendY, item.description, {
-        font: `${isSmallScreen ? '10px' : '12px'} Arial`,
+        font: `${isSmallScreen ? '12px' : '14px'} Arial`, // Increased from 10px/12px
         fill: '#fff'
       }).setOrigin(0, 0.5).setDepth(GameUtils.getDepthLayers().UI + 0.1);
     });

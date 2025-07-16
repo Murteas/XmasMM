@@ -36,9 +36,9 @@ class HistoryRenderer {
       headerBottomY + 10 // Reduced spacing since no legend
     );
     
-    // Mobile-optimized row height for better space utilization
-    // Reduced from 60px to 40px for 33% space savings (GameScreenHistoryCompression task)
-    const rowHeight = 40;
+    // Mobile-optimized row height for better space utilization  
+    // Balanced compromise: 45px (25% smaller than 60px, but more readable than 40px)
+    const rowHeight = 45;
     const bottomMargin = isSmallScreen ? 60 : 80;
     const maxVisibleRows = Math.floor((height - startY - bottomMargin) / rowHeight);
     
@@ -316,11 +316,11 @@ class HistoryRenderer {
   }
 
   renderRowNumber(rowIndex, startX, y, depth, opacity = 1.0) {
-    const rowNumberX = Math.max(15, startX - 20);
+    const rowNumberX = Math.max(20, startX - 35); // More spacing from guess boxes
     const rowNumberText = this.scene.add.text(rowNumberX, y, `${rowIndex + 1}`, {
-      font: '12px Arial', // Slightly larger font for better readability
-      fill: '#fff',       // Changed from #aaa to #fff for much better contrast (GameScreenMobileLayoutFix)
-      fontStyle: 'bold'   // Added bold for better visibility on mobile
+      font: '14px Arial', // Larger font (was 12px)
+      fill: '#fff',       
+      fontStyle: 'bold'   
     }).setOrigin(0.5).setDepth(depth).setAlpha(opacity);
     
     this.historyGroup.add(rowNumberText);

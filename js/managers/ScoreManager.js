@@ -151,9 +151,13 @@ class ScoreManager {
 
   checkHintAvailability(hintBtn, hintText) {
     if (!this.hintUsed && this.currentScore >= this.hintThreshold) {
-      hintBtn.setStyle({ fill: '#fff', backgroundColor: '#e74c3c' });
+      hintBtn.setStyle({ fill: '#fff', backgroundColor: '#0d5016' }); // Forest green when available
       hintText.setText('Hint: Available').setStyle({ fill: '#fff' });
       return true;
+    } else {
+      // Gray when not available
+      hintBtn.setStyle({ fill: '#888', backgroundColor: '#444' });
+      hintText.setText('Hint: Locked').setStyle({ fill: '#888' });
     }
     return false;
   }
@@ -168,8 +172,8 @@ class ScoreManager {
     // Update current guess with the hint
     currentGuess[randomPosition] = revealedElement;
     
-    // Update UI
-    hintBtn.setStyle({ fill: '#888', backgroundColor: '#333' });
+    // Update UI to show hint used
+    hintBtn.setStyle({ fill: '#888', backgroundColor: '#444' }); // Gray when used
     hintText.setText('Hint: Used').setStyle({ fill: '#888' });
     
     return {

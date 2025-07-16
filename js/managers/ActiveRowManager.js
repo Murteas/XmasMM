@@ -70,9 +70,11 @@ class ActiveRowManager {
     
     // Create slots in footer container
     this.activeRowElements = [];
-    const slotSize = Math.min(40, (width - 100) / codeLength);
-    const totalWidth = codeLength * slotSize + (codeLength - 1) * 8;
-    const startX = (width - totalWidth) / 2;
+    const slotSize = Math.min(40, (width - 140) / codeLength); // More space for submit button
+    const totalSlotsWidth = codeLength * slotSize + (codeLength - 1) * 8;
+    const submitButtonWidth = 80; // Wider for better text fit
+    const totalRowWidth = totalSlotsWidth + submitButtonWidth + 20; // 20px gap between slots and button
+    const startX = (width - totalRowWidth) / 2;
     
     for (let i = 0; i < codeLength; i++) {
       const slotX = startX + i * (slotSize + 8);
@@ -89,14 +91,16 @@ class ActiveRowManager {
       // Structure expected by updateSlotDisplay method
       this.activeRowElements.push({ slot, displayElement });
     }
-      // Create Christmas-themed submit button in footer container (GameScreenMobileLayoutFix)
-    this.activeRowSubmitBtn = this.scene.add.rectangle(width - 40, 60, 70, 40, 0xc41e3a) // Christmas red
-      .setStrokeStyle(2, 0xa71729) // Darker red border
+    
+    // Create Christmas-themed submit button properly aligned (GameScreenMobileLayoutFix)
+    const submitButtonX = startX + totalSlotsWidth + 50; // Positioned after slots with gap
+    this.activeRowSubmitBtn = this.scene.add.rectangle(submitButtonX, 60, submitButtonWidth, 40, 0x0d5016) // Forest green
+      .setStrokeStyle(2, 0x0a4012) // Darker green border
       .setInteractive()
       .on('pointerdown', () => this.scene.submitGuess());
 
-    const submitText = this.scene.add.text(width - 40, 60, '🎅 Ho!', {
-      fontSize: '14px',
+    const submitText = this.scene.add.text(submitButtonX, 60, '🎁 Submit', { // Better text!
+      fontSize: '13px',
       fill: '#ffffff',
       fontFamily: 'Arial'
     }).setOrigin(0.5);
@@ -196,8 +200,8 @@ class ActiveRowManager {
       activeRowY, 
       width - 20,
       50, 
-      0x0d3f1f, // Dark Christmas green background
-      0.9 // Higher opacity
+      0x0f4f1a, // Stronger Christmas green background
+      0.95 // Higher opacity for more prominence
     )
       .setStrokeStyle(4, 0xffd700) // Thicker gold border
       .setDepth(GameUtils.getDepthLayers().HISTORY + 0.1);

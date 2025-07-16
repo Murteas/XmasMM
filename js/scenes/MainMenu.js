@@ -59,13 +59,17 @@ class MainMenu extends Phaser.Scene {
     });
 
     // How to Play button
-    const helpBtn = this.add.text(width / 2, height * 0.48, 'How to Play', {
-      font: '24px Arial',
-      fill: '#fff',
-      backgroundColor: '#2c3e50',
-      padding: { left: 20, right: 20, top: 10, bottom: 10 },
-      borderRadius: 6
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(GameUtils.getDepthLayers().UI);
+    const helpBtn = this.add
+      .text(width / 2, height * 0.48, "How to Play", {
+        font: "24px Arial",
+        fill: "#fff",
+        backgroundColor: "#27ae60",
+        padding: { left: 20, right: 20, top: 10, bottom: 10 },
+        borderRadius: 6,
+      })
+      .setOrigin(0.5)
+      .setInteractive({ useHandCursor: true })
+      .setDepth(GameUtils.getDepthLayers().UI);
     
     helpBtn.on('pointerdown', () => {
       this.showHelpOverlay();
