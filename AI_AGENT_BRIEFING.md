@@ -31,22 +31,23 @@
   - Persistent hints (user dismisses manually)
   - Perfect mobile UX
 
-### 🎯 **IMMEDIATE NEXT PRIORITY: RoundOver Scene Mobile Optimization**
-The user specifically wants to focus on the RoundOver scene next. This scene handles game completion (win/lose) and needs mobile optimization attention.
+### 🎯 **IMMEDIATE NEXT PRIORITY: GameScreenHistoryCompression**
+The highest-value remaining optimization: reducing row height from 60px to 45px will save 135px of mobile space (9 rows × 15px savings).
 
-**Key Areas to Investigate:**
-1. **Layout Issues**: Check if RoundOver scene properly adapts to mobile viewports
-2. **Button Placement**: Ensure navigation buttons are touch-friendly  
-3. **Content Flow**: Score display, game summary, and action buttons should work on small screens
-4. **Transition Smoothness**: Clean entry/exit from game scene
+**Key Benefits:**
+1. **Mobile Space Savings**: 135px reclaimed space for better UX flow
+2. **Visual Density**: More history visible without scrolling
+3. **Touch Optimization**: Maintain touch targets while improving layout
+4. **Performance**: Better rendering with optimized row spacing
 
 **Files to Focus On:**
-- `js/scenes/RoundOver.js` - Main scene implementation
-- Test the complete game flow: Play → Win/Lose → RoundOver → Back to menu
+- `js/managers/HistoryRenderer.js` - Row height calculations and spacing
+- `js/managers/HistoryManager.js` - History layout management
+- Test mobile viewport to ensure 44px touch targets maintained
 
 ### 🔧 **OTHER POTENTIAL PRIORITIES** (Lower Priority)
-- **GameScreenHistoryCompression**: Reduce row height from 60px to 45px for mobile space savings
 - **Audio Implementation**: Add Christmas-themed sound effects
+- **Final Testing**: Comprehensive QA across devices and browsers
 - **Performance Optimization**: Canvas rendering improvements for mobile devices
 
 ### 🧪 **TESTING FOCUS**
