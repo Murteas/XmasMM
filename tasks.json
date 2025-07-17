@@ -28,7 +28,7 @@
       "name": "Finalization",
       "status": "CURRENT",
       "tasks": [
-        "GameScreenHistoryCompression",
+        "RoundOverScenePolish",
         "AudioImplementation", 
         "FinalTesting"
       ]

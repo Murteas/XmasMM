@@ -31,18 +31,17 @@
   - Persistent hints (user dismisses manually)
   - Perfect mobile UX
 
-### 🎯 **IMMEDIATE NEXT PRIORITY: GameScreenHistoryCompression**
-The highest-value remaining optimization: reducing row height from 60px to 45px will save 135px of mobile space (9 rows × 15px savings).
+### 🎯 **IMMEDIATE NEXT PRIORITY: RoundOverScenePolish**
+Polish the RoundOver scene and optimize its history view feature for better mobile UX.
 
 **Key Benefits:**
-1. **Mobile Space Savings**: 135px reclaimed space for better UX flow
-2. **Visual Density**: More history visible without scrolling
-3. **Touch Optimization**: Maintain touch targets while improving layout
-4. **Performance**: Better rendering with optimized row spacing
+1. **Mobile UX**: Optimize the "View History" feature within RoundOver scene
+2. **Visual Polish**: Final refinements to the game completion experience
+3. **Touch Optimization**: Ensure all RoundOver interactions are mobile-friendly
+4. **Consistency**: Complete the mobile optimization story
 
 **Files to Focus On:**
-- `js/managers/HistoryRenderer.js` - Row height calculations and spacing
-- `js/managers/HistoryManager.js` - History layout management
+- `js/scenes/RoundOver.js` - Focus on createHistoryView() method and mobile UX
 - Test mobile viewport to ensure 44px touch targets maintained
 
 ### 🔧 **OTHER POTENTIAL PRIORITIES** (Lower Priority)
