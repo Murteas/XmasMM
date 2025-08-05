@@ -109,7 +109,7 @@ class RoundOver extends Phaser.Scene {
         parts.push(`${breakdown.hintPenalty} for hints`);
       }
       
-      scoreInfo = parts.join(' • ');
+      scoreInfo = parts.join(' + ');
     } else {
       scoreInfo = 'Keep practicing!';
     }
