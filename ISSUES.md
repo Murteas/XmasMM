@@ -2,21 +2,56 @@
 
 ## 📊 Current Status Summary
 
-**Total Active Issues**: 0 (All resolved or merged into active tasks)
+**Total Active Issues**: 2 (New UI enhancements identified)
 
 **Overall Project Health**: 🟢 **Excellent**
-- All critical and high-priority issues resolved
-- Game fully functional and mobile-optimized  
-- Issue tracker synchronized with task management
-- Focus on final polish phase
+- Core functionality complete and mobile-optimized  
+- RoundOver consolidation in progress
+- New enhancement opportunities identified
+- Focus on user experience polish
 
-**Last Updated**: July 16, 2025
+**Last Updated**: August 5, 2025
 
 ---
 
 ## 🚨 Open Issues
 
-*No active issues - all resolved or merged into tasks*
+### UI-010: Current Score Display in Game Header 🔴
+**Priority**: Medium  
+**Category**: UX Enhancement  
+**Status**: Open
+
+**Problem**: Game header shows "Guesses: 1/10" instead of current score, missing valuable real-time feedback
+**Impact**: Players don't see scoring progress during gameplay, reducing engagement
+**Location**: `js/scenes/GameScene.js` - header display area
+**Solution**: Replace guess counter with live score display that updates after each guess
+
+**Acceptance Criteria**:
+- [ ] Header displays "Score: XXX" instead of guess count  
+- [ ] Score updates in real-time after each guess submission
+- [ ] Maintains mobile readability and responsive design
+- [ ] Consistent formatting with RoundOver scene
+
+### UI-011: Christmas Title Theming Enhancement 🟡
+**Priority**: Low-Medium  
+**Category**: Visual Polish  
+**Status**: Open
+
+**Problem**: "XmasMM" title appears as plain white text, lacks festive Christmas theming
+**Impact**: Misses opportunity for brand personality and Christmas atmosphere  
+**Location**: Game header across scenes
+**Solution**: Add Christmas-themed styling (colors, effects, or decorative elements)
+
+**Design Options**:
+- Green-to-gold gradient text matching Christmas colors (#0d5016, #ffd700)
+- Decorative Christmas elements (🎄 ❄️ ★)
+- Text effects (shadow, outline, subtle glow)
+
+**Acceptance Criteria**:
+- [ ] Title has festive Christmas-themed styling
+- [ ] Maintains readability across all screen sizes  
+- [ ] Complements existing Christmas color scheme
+- [ ] No performance impact
 
 ---
 
