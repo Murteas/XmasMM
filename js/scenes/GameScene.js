@@ -104,6 +104,10 @@ class GameScene extends Phaser.Scene {
     this.uiLayoutManager = new UILayoutManager(this);
     this.uiLayoutManager.showLoadingState();
     
+    // Initialize debug mode
+    this.debugMode = false;
+    this.setupDebugKeys();
+    
     // Small delay to ensure loading screen is visible
     this.time.delayedCall(100, () => {
       this.initializeGame();
@@ -180,6 +184,59 @@ class GameScene extends Phaser.Scene {
   setupInlineGuessing() {
     // Create the first active row for inline editing
     this.createNewActiveRow();
+  }
+
+  setupDebugKeys() {
+    // Set up keyboard input for debug mode
+    this.input.keyboard.on('keydown', (event) => {
+      // Only process debug keys if we have game managers ready
+      if (!this.gameInputHandler || !this.gameStateManager) return;
+      
+      const key = event.key.toUpperCase();
+      
+      switch (key) {
+        case 'D':
+          this.toggleDebugMode();
+          break;
+        case 'R':
+          if (this.debugMode) this.gameInputHandler.fillRandomGuess();
+          break;
+        case 'W':
+          if (this.debugMode) this.gameInputHandler.autoWin();
+          break;
+        case 'F':
+          if (this.debugMode) this.gameInputHandler.fastForward();
+          break;
+        case 'L':
+          if (this.debugMode) this.gameInputHandler.jumpToLastRound();
+          break;
+      }
+    });
+  }
+
+  toggleDebugMode() {
+    this.debugMode = !this.debugMode;
+    
+    // Visual indicator
+    if (this.debugMode) {
+      console.log('🔧 DEBUG MODE ENABLED');
+      console.log('  R - Random guess | W - Auto win | F - Fast forward | L - Last round | D - Toggle debug');
+      
+      // Show debug indicator on screen
+      if (this.debugIndicator) this.debugIndicator.destroy();
+      this.debugIndicator = this.add.text(10, 10, 'DEBUG', {
+        font: '12px Arial',
+        fill: '#ff0000',
+        backgroundColor: '#000000',
+        padding: { left: 4, right: 4, top: 2, bottom: 2 }
+      }).setDepth(9999);
+    } else {
+      console.log('🔧 DEBUG MODE DISABLED');
+      if (this.debugIndicator) {
+        this.debugIndicator.destroy();
+        this.debugIndicator = null;
+      }
+    }
   }
 
   createNewActiveRow() {

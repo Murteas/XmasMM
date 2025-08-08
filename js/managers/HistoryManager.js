@@ -49,6 +49,12 @@ class HistoryManager {
     this.activeRowManager.selectElement(slotIndex, element);
   }
 
+  // === DEBUG HELPER METHODS ===
+  
+  fillActiveRowWithElements(elements) {
+    this.activeRowManager.fillAllElements(elements);
+  }
+
   get hasActiveRow() {
     return this.activeRowManager.hasActiveRow;
   }

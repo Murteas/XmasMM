@@ -91,6 +91,29 @@
 - [ ] Decide on enhancement approach or keep current
 - [ ] If changing: implement new background with A/B comparison
 
+### UI-015: Random Guess Feature for Players 🟡
+**Priority**: Low  
+**Category**: Feature Enhancement  
+**Status**: Open
+
+**Problem**: Players may get stuck and need inspiration when unable to think of next guess
+**Impact**: Opportunity to improve accessibility and reduce player frustration
+**Location**: Game screen - additional button next to Submit and Hint
+**Consideration**: Needs careful balance to maintain game integrity
+
+**Design Options**:
+- "Need Inspiration?" button with point penalty (-50 points)
+- Cooldown system (once per game or once per 3 guesses)
+- Progressive cost (first free, subsequent guesses cost more)
+- Educational framing to maintain learning value
+
+**Acceptance Criteria**:
+- [ ] Research player feedback on random guess utility
+- [ ] Design penalty system that maintains game balance
+- [ ] Implement with clear educational messaging
+- [ ] Ensure doesn't undermine strategic thinking aspect
+- [ ] Test with family users for appropriateness
+
 ### UI-011: Christmas Title Theming Enhancement 🟡
 **Priority**: Low-Medium  
 **Category**: Visual Polish  

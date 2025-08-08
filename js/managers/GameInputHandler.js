@@ -264,4 +264,105 @@ class GameInputHandler {
     
     this.scene.scene.start('RoundOver', gameData);
   }
+
+  // === DEBUG METHODS ===
+  
+  fillRandomGuess() {
+    // Check if we have an active row to fill
+    if (!this.scene.historyManager.hasActiveRow) {
+      console.log('🔧 DEBUG: No active row to fill');
+      return;
+    }
+
+    // Generate random guess using existing utility
+    const gameStats = this.scene.gameStateManager.getGameStats();
+    const elements = this.scene.gameStateManager.getGameElements();
+    const randomGuess = GameUtils.generateRandomCode(elements, gameStats.codeLength);
+    
+    // Fill the active row with random elements
+    this.scene.historyManager.fillActiveRowWithElements(randomGuess);
+    
+    console.log('🔧 DEBUG: Filled random guess:', randomGuess);
+  }
+
+  autoWin() {
+    // Fill active row with the secret code (guaranteed win)
+    if (!this.scene.historyManager.hasActiveRow) {
+      console.log('🔧 DEBUG: No active row to fill');
+      return;
+    }
+
+    const secretCode = this.scene.gameStateManager.getSecretCode();
+    this.scene.historyManager.fillActiveRowWithElements(secretCode);
+    
+    console.log('🔧 DEBUG: Filled winning guess:', secretCode);
+  }
+
+  fastForward() {
+    // Auto-play several random guesses to speed up testing
+    console.log('🔧 DEBUG: Fast-forwarding with random guesses...');
+    
+    let guessesAdded = 0;
+    const maxAutoGuesses = 5;
+    
+    const autoGuessInterval = this.scene.time.addEvent({
+      delay: 200, // 200ms between auto-guesses
+      repeat: maxAutoGuesses - 1,
+      callback: () => {
+        // Stop if game is over or no active row
+        if (!this.scene.historyManager.hasActiveRow) {
+          autoGuessInterval.destroy();
+          return;
+        }
+
+        // Fill and submit random guess
+        this.fillRandomGuess();
+        
+        // Submit after a small delay
+        this.scene.time.delayedCall(100, () => {
+          if (this.scene.historyManager.hasActiveRow) {
+            this.processGuessSubmission();
+            guessesAdded++;
+          }
+        });
+      }
+    });
+  }
+
+  jumpToLastRound() {
+    // Auto-play until we're at the last guess
+    console.log('🔧 DEBUG: Jumping to last round...');
+    
+    const gameStats = this.scene.gameStateManager.getGameStats();
+    const currentGuessCount = this.scene.historyManager.getGuessHistory().length;
+    const targetGuessCount = Math.max(0, gameStats.maxGuesses - 2); // Leave 2 guesses remaining
+    
+    if (currentGuessCount >= targetGuessCount) {
+      console.log('🔧 DEBUG: Already at or past target round');
+      return;
+    }
+
+    const guessesNeeded = targetGuessCount - currentGuessCount;
+    console.log(`🔧 DEBUG: Adding ${guessesNeeded} auto-guesses...`);
+    
+    let guessesAdded = 0;
+    const autoGuessInterval = this.scene.time.addEvent({
+      delay: 150,
+      repeat: guessesNeeded - 1,
+      callback: () => {
+        if (!this.scene.historyManager.hasActiveRow || guessesAdded >= guessesNeeded) {
+          autoGuessInterval.destroy();
+          return;
+        }
+
+        this.fillRandomGuess();
+        this.scene.time.delayedCall(50, () => {
+          if (this.scene.historyManager.hasActiveRow) {
+            this.processGuessSubmission();
+            guessesAdded++;
+          }
+        });
+      }
+    });
+  }
 }

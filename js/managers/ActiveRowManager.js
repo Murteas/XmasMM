@@ -528,6 +528,31 @@ class ActiveRowManager {
     this.activeRowGuess = [];
   }
 
+  // === DEBUG HELPER METHODS ===
+  
+  fillAllElements(elements) {
+    // Fill all slots with the provided elements array
+    if (!this.hasActiveRow) {
+      console.warn('No active row to fill');
+      return;
+    }
+    
+    if (!Array.isArray(elements)) {
+      console.warn('Elements must be an array');
+      return;
+    }
+    
+    const maxSlots = Math.min(elements.length, this.activeRowGuess.length);
+    
+    for (let i = 0; i < maxSlots; i++) {
+      if (elements[i]) {
+        this.selectElement(i, elements[i]);
+      }
+    }
+    
+    console.log('🔧 DEBUG: Filled active row with:', elements.slice(0, maxSlots));
+  }
+
   reset() {
     this.removeActiveRow();
     this.elementPicker.destroy();
