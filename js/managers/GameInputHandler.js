@@ -231,8 +231,9 @@ class GameInputHandler {
       this.scene.historyManager.removeActiveRow();
     }
     
-    // Transition to Round Over screen after a brief delay
-    this.scene.time.delayedCall(2000, () => {
+    // PERF-001: Reduce transition delay from 2000ms to 100ms for better mobile UX
+    // This minimal delay allows users to see the final guess result before transition
+    this.scene.time.delayedCall(100, () => {
       this.transitionToRoundOver();
     });
   }
@@ -250,7 +251,7 @@ class GameInputHandler {
       guessesUsed,
       gameStats.isWon
     );
-    
+
     const gameData = {
       won: gameStats.isWon,
       finalGuess: finalGuess,
