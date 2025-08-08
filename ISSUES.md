@@ -2,35 +2,87 @@
 
 ## 📊 Current Status Summary
 
-**Total Active Issues**: 2 (New UI enhancements identified)
+**Total Active Issues**: 5 (Performance investigation + UI enhancements + design research)
 
 **Overall Project Health**: 🟢 **Excellent**
 - Core functionality complete and mobile-optimized  
-- RoundOver consolidation in progress
-- New enhancement opportunities identified
-- Focus on user experience polish
+- RoundOver consolidation completed
+- UI-010 score display enhancement completed
+- Focus on final visual polish
 
-**Last Updated**: August 5, 2025
+**Last Updated**: August 8, 2025
 
 ---
 
 ## 🚨 Open Issues
 
-### UI-010: Current Score Display in Game Header 🔴
+### PERF-001: Game End Transition Delay 🔴
 **Priority**: Medium  
-**Category**: UX Enhancement  
+**Category**: Performance  
 **Status**: Open
 
-**Problem**: Game header shows "Guesses: 1/10" instead of current score, missing valuable real-time feedback
-**Impact**: Players don't see scoring progress during gameplay, reducing engagement
-**Location**: `js/scenes/GameScene.js` - header display area
-**Solution**: Replace guess counter with live score display that updates after each guess
+**Problem**: Noticeable delay after game ends before transitioning to RoundOver scene, especially on mobile devices
+**Impact**: Poor user experience, perceived sluggishness on mobile
+**Location**: Game completion flow - transition from GameScene to RoundOver
+**Investigation Needed**: 
+- Profile scene transition timing
+- Check for blocking operations during game end
+- Compare mobile vs desktop performance
+- Identify potential asset loading or calculation bottlenecks
 
 **Acceptance Criteria**:
-- [ ] Header displays "Score: XXX" instead of guess count  
-- [ ] Score updates in real-time after each guess submission
-- [ ] Maintains mobile readability and responsive design
-- [ ] Consistent formatting with RoundOver scene
+- [ ] Identify root cause of delay
+- [ ] Reduce transition time to <500ms on mobile
+- [ ] Maintain smooth user experience across devices
+
+### UI-012: Button Graphics Enhancement 🟡
+**Priority**: Low  
+**Category**: Visual Polish  
+**Status**: Open
+
+**Problem**: Current buttons use text-only styling, could benefit from custom graphics or enhanced visual design
+**Impact**: Opportunity for improved visual appeal and Christmas theming consistency
+**Location**: All button elements across scenes (Submit, Play Again, Share Score, etc.)
+**Decision Needed**: Evaluate if custom button graphics add value or if current styling is sufficient
+
+**Design Options**:
+- Custom Christmas-themed button backgrounds
+- Icon integration (🎄 for Play Again, 📤 for Share, etc.)
+- Enhanced CSS-style effects (gradients, shadows, borders)
+- Keep current minimalist approach
+
+**Acceptance Criteria**:
+- [ ] Evaluate current button design effectiveness
+- [ ] Decide on enhancement approach or keep as-is
+- [ ] If enhancing: implement consistent button theming
+
+### UI-013: Background Image Research & Enhancement 🟡
+**Priority**: Low  
+**Category**: Visual Design Research  
+**Status**: Open
+
+**Problem**: Current background image (bg_mobile2.png) may be visually unengaging or too plain for Christmas theme
+**Impact**: Missed opportunity for enhanced atmosphere and visual appeal
+**Location**: Background across all scenes
+**Research Needed**: 
+- Evaluate current background effectiveness
+- Research Christmas-themed background options
+- Consider mobile performance implications
+- Assess user experience impact
+
+**Design Research Options**:
+- Subtle Christmas patterns (snowflakes, stars, pine trees)
+- Gradient backgrounds with Christmas colors
+- Textured backgrounds (wood, fabric, winter scenes)
+- Keep current minimalist approach for better readability
+- Dynamic/animated backgrounds (with performance considerations)
+
+**Acceptance Criteria**:
+- [ ] Research and document background design options
+- [ ] Evaluate visual impact vs game readability
+- [ ] Consider mobile performance and file size
+- [ ] Decide on enhancement approach or keep current
+- [ ] If changing: implement new background with A/B comparison
 
 ### UI-011: Christmas Title Theming Enhancement 🟡
 **Priority**: Low-Medium  
@@ -56,6 +108,10 @@
 ---
 
 ## ✅ Recently Resolved Issues
+
+### UI-010: Current Score Display in Game Header ✅
+**Status**: RESOLVED (August 8, 2025)  
+**Solution**: Replaced "Turn X of Y" counter with live "Score: XXX" display that updates in real-time after each guess submission
 
 ### UI-009: Game Screen History Space Optimization ✅ 
 **Status**: COMPLETED - ARCHIVED  

@@ -72,6 +72,9 @@ class GameInputHandler {
     
     const uiElements = this.scene.uiLayoutManager.getUIElements();
     this.scene.scoreManager.updateScoreDisplay(uiElements.scoreText);
+    
+    // UI-010: Update the main header score display
+    this.scene.uiLayoutManager.updateGuessesDisplay(gameStats.guessesRemaining);
   }
 
   processSantasHint() {

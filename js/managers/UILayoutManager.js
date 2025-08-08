@@ -111,18 +111,18 @@ class UILayoutManager {
   setupHorizontalHeader() {
     const { width } = this.scene.cameras.main;
     
-    // MOBILE OPTIMIZATION: Single consolidated progress counter (GameScreenMobileLayoutFix)
-    // Removed redundant "Guesses: #" display - now just shows clear progress
-    this.progressText = this.scene.add.text(50, 70, `Turn ${this.scene.gameStateManager.maxGuesses - this.scene.gameStateManager.guessesRemaining + 1} of ${this.scene.gameStateManager.maxGuesses}`, {
+    // UI-010: Replace turn counter with live score display for better engagement
+    // Show current score instead of "Turn X of Y" to give real-time feedback
+    this.progressText = this.scene.add.text(50, 70, `Score: ${this.scene.scoreManager ? this.scene.scoreManager.getCurrentScore() : 0}`, {
       font: '18px Arial',
       fill: '#fff'
     }).setDepth(GameUtils.getDepthLayers().UI);
     
-    // Score display (right aligned)
+    // Keep the right-aligned score as backup (will be hidden in favor of left score)
     this.scoreText = this.scene.add.text(width - 50, 70, `Score: ${this.scene.scoreManager ? this.scene.scoreManager.getCurrentScore() : 0}`, {
       font: '18px Arial',
       fill: '#fff'
-    }).setOrigin(1, 0).setDepth(GameUtils.getDepthLayers().UI);
+    }).setOrigin(1, 0).setDepth(GameUtils.getDepthLayers().UI).setVisible(false);
     
     // Hint status (smaller, positioned safely below header text)
     this.hintText = this.scene.add.text(width / 2, 105, 'Hint: Locked', {
@@ -407,10 +407,10 @@ class UILayoutManager {
   }
 
   updateGuessesDisplay(guessesRemaining) {
-    if (this.progressText) {
-      // MOBILE OPTIMIZATION: Clear progress display showing current turn
-      const currentTurn = this.scene.gameStateManager.maxGuesses - guessesRemaining + 1;
-      this.progressText.setText(`Turn ${currentTurn} of ${this.scene.gameStateManager.maxGuesses}`);
+    // UI-010: Update score display in real-time instead of turn counter
+    if (this.progressText && this.scene.scoreManager) {
+      const currentScore = this.scene.scoreManager.getCurrentScore();
+      this.progressText.setText(`Score: ${currentScore}`);
     }
   }
 
