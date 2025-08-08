@@ -65,6 +65,24 @@ See [AI_AGENT_BRIEFING.md](AI_AGENT_BRIEFING.md) for complete development setup,
 - 🧪 **Testing suite**: See AI briefing for detailed testing procedures
 - 📋 **Task management**: Machine-readable system for AI agents
 
+### **🔧 Debug Mode (Development)**
+For rapid testing and development, the game includes a debug mode:
+
+**Activation:** Press `D` key in the game screen to toggle debug mode
+
+**Debug Commands:**
+- **`R`** - Fill current row with random guess
+- **`W`** - Auto-win (fill with secret solution)
+- **`F`** - Fast-forward (auto-play 5 random guesses)
+- **`L`** - Jump to last round (leaves 2 guesses remaining)
+- **`D`** - Toggle debug mode on/off
+
+**Benefits:**
+- ✅ No more manual 10-round testing
+- ✅ Test end-game scenarios in seconds  
+- ✅ Rapid performance and bug testing
+- ✅ Zero impact on normal gameplay
+
 ## 🎮 How to Play
 1. Access the game via the provided GitHub Pages URL.
 2. Select difficulty settings (code length and number of guesses).

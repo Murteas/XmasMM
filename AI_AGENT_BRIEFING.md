@@ -55,6 +55,27 @@ Polish the RoundOver scene and optimize its history view feature for better mobi
 - Touch interaction testing on all screens
 - Visual consistency across all scenes
 
+### 🔧 **DEBUG MODE FOR RAPID TESTING**
+**Critical for Development Efficiency!** Use debug mode to speed up testing:
+
+**Activation:** In GameScene, press `D` key to toggle debug mode
+**Visual Indicator:** "DEBUG" appears in top-left corner
+
+**Debug Commands:**
+- **`R`** - Fill current row with random guess (no more manual element selection!)
+- **`W`** - Auto-win: Fill with secret solution for immediate game end testing
+- **`F`** - Fast-forward: Auto-play 5 random guesses for mid-game testing
+- **`L`** - Jump to last round: Auto-play until 2 guesses remain for end-game testing
+- **`D`** - Toggle debug mode on/off
+
+**Development Benefits:**
+- ✅ **No manual 10-round testing** - saves significant time
+- ✅ **Test end-game scenarios in seconds** - perfect for RoundOver testing
+- ✅ **Rapid performance validation** - ideal for PERF issues
+- ✅ **Zero production impact** - invisible to normal users
+
+**Usage Example:** `D` → `L` → test final rounds → `W` → test game completion → validate RoundOver scene
+
 ### 💡 **CRITICAL HINTS FOR NEXT AI AGENT**
 - **Hint System Architecture**: Glow effects must be added to `footerContainer` (not world coordinates) for proper positioning
 - **Container Pattern**: Three-zone layout (header/scrollable/footer) established - follow this pattern in RoundOver
