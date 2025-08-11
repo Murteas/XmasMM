@@ -68,26 +68,13 @@ class UILayoutManager {
       }
     ).setDepth(GameUtils.getDepthLayers().UI);
     
-    // Hint status (right aligned for balance)
-    this.hintText = GameUtils.createResponsiveText(
-      this.scene,
-      width - 50,
-      layout.headerY,
-      'Hint: Locked',
-      {
-        fontSize: `${Math.round(14 * layout.fontScale)}px`,
-        fontFamily: 'Arial',
-        fill: '#888'
-      }
-    ).setOrigin(1, 0).setDepth(GameUtils.getDepthLayers().UI);
-    
-    // Santa's Hint button positioned safely below header
+    // Santa's Hint button positioned below header (penalty inline; green primary variant)
     this.hintBtn = ButtonFactory.createButton(
       this.scene,
       width / 2,
       layout.headerY + Math.round(38 * layout.fontScale),
-      "Santa's Hint",
-      'accent',
+      `Hint (-${this.scene.scoreManager ? this.scene.scoreManager.scoringConfig.hintPenalty : 220})`,
+      'primary',
       {
         icon: '🎅',
         onClick: () => this.scene.useSantasHint()
@@ -97,7 +84,7 @@ class UILayoutManager {
     
     // SIMPLIFIED: Add header elements to header container if available
     if (this.scene.headerContainer) {
-      this.scene.headerContainer.add([this.progressText, this.hintText, this.hintBtn]);
+      this.scene.headerContainer.add([this.progressText, this.hintBtn]);
       console.log('📱 Header elements added to header container');
     }
   }
@@ -118,19 +105,13 @@ class UILayoutManager {
       fill: '#fff'
     }).setOrigin(1, 0).setDepth(GameUtils.getDepthLayers().UI).setVisible(false);
     
-    // Hint status (smaller, positioned safely below header text)
-    this.hintText = this.scene.add.text(width / 2, 105, 'Hint: Locked', {
-      font: '12px Arial',
-      fill: '#888' // Gray when locked
-    }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
-    
-    // Santa's Hint button - proper color coding (green=available, gray=unavailable)
+    // Santa's Hint button (penalty inline; primary variant for Christmas green)
     this.hintBtn = ButtonFactory.createButton(
       this.scene,
       width / 2,
       125,
-      'Hint',
-      'accent',
+      `Hint (-${this.scene.scoreManager ? this.scene.scoreManager.scoringConfig.hintPenalty : 220})`,
+      'primary',
       {
         icon: '🎅',
         onClick: () => this.scene.useSantasHint()

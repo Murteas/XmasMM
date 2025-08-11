@@ -165,19 +165,21 @@ class ScoreManager {
       // Already used hint this round
       if (hintBtn && hintBtn.disableButton) {
         hintBtn.disableButton();
+        if (hintBtn.setLabel) hintBtn.setLabel('Hint Used');
       } else if (hintBtn && hintBtn.setStyle) {
         hintBtn.setStyle({ fill: '#888', backgroundColor: '#444' });
       }
-      hintText.setText('Hint: Used').setStyle({ fill: '#888' });
+      if (hintText) hintText.setText('Hint: Used').setStyle({ fill: '#888' });
       return false;
     } else {
       // Available (with penalty warning)
       if (hintBtn && hintBtn.enableButton) {
         hintBtn.enableButton();
+        if (hintBtn.setLabel) hintBtn.setLabel(`Hint (-${this.scoringConfig.hintPenalty})`);
       } else if (hintBtn && hintBtn.setStyle) {
         hintBtn.setStyle({ fill: '#fff', backgroundColor: '#0d5016' });
       }
-      hintText.setText(`🎅 Hint (-${this.scoringConfig.hintPenalty} pts)`).setStyle({ fill: '#fff' });
+      if (hintText) hintText.setText(`🎅 Hint (-${this.scoringConfig.hintPenalty} pts)`).setStyle({ fill: '#fff' });
       return true;
     }
   }
@@ -223,10 +225,11 @@ class ScoreManager {
     // Update UI to show hint used
     if (hintBtn && hintBtn.disableButton) {
       hintBtn.disableButton();
+      if (hintBtn.setLabel) hintBtn.setLabel('Hint Used');
     } else if (hintBtn && hintBtn.setStyle) {
       hintBtn.setStyle({ fill: '#888', backgroundColor: '#444' });
     }
-    hintText.setText('Hint: Used').setStyle({ fill: '#888' });
+    if (hintText) hintText.setText('Hint: Used').setStyle({ fill: '#888' });
     
     return {
       position: targetPosition,
