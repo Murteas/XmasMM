@@ -108,8 +108,8 @@ class DifficultySelection extends Phaser.Scene {
 
     const backBtn = ButtonFactory.createButton(
       this,
+      90,
       70,
-      60,
       'Back',
       'danger',
       { icon: '↩️', pattern: 'candycane', onClick: () => this.scene.start('MainMenu') }

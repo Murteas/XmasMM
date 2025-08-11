@@ -105,24 +105,24 @@ class ButtonFactory {
 
   static _drawButtonBackground(g, width, height, radius, colorHex, shadowColor, shadowOffsetY, shadowAlpha, opts = {}) {
     if (shadowAlpha > 0) { g.fillStyle(shadowColor, shadowAlpha); g.fillRoundedRect(0, shadowOffsetY, width, height, radius); }
+    const baseColorInt = Phaser.Display.Color.HexStringToColor(colorHex).color;
+    g.fillStyle(baseColorInt, 1);
+    g.fillRoundedRect(0, 0, width, height, radius);
     if (opts.gradient) {
-      const baseColorInt = Phaser.Display.Color.HexStringToColor(colorHex).color;
+      // Overlay a subtle vertical gradient inside padding (no repeated rounded corners to prevent artifacts)
       const base = Phaser.Display.Color.IntegerToColor(baseColorInt);
       const lighter = { r: Math.min(255, base.red + 35), g: Math.min(255, base.green + 35), b: Math.min(255, base.blue + 35) };
-      const darker = { r: Math.max(0, base.red - 35), g: Math.max(0, base.green - 35), b: Math.max(0, base.blue - 35) };
-      const steps = 18;
+      const darker = { r: Math.max(0, base.red - 45), g: Math.max(0, base.green - 45), b: Math.max(0, base.blue - 45) };
+      const steps = 24;
       for (let i = 0; i < steps; i++) {
         const t = i / (steps - 1);
         const r = Phaser.Math.Linear(lighter.r, darker.r, t);
         const gCh = Phaser.Math.Linear(lighter.g, darker.g, t);
         const b = Phaser.Math.Linear(lighter.b, darker.b, t);
-        g.fillStyle(Phaser.Display.Color.GetColor(r, gCh, b), 1);
+        g.fillStyle(Phaser.Display.Color.GetColor(r, gCh, b), 0.65);
         const sliceY = (height / steps) * i;
-        g.fillRoundedRect(0, sliceY, width, height / steps + 1, radius);
+        g.fillRect(1, sliceY, width - 2, height / steps + 1); // inset 1px to avoid edge bleed
       }
-    } else {
-      g.fillStyle(Phaser.Display.Color.HexStringToColor(colorHex).color, 1);
-      g.fillRoundedRect(0, 0, width, height, radius);
     }
     if (opts.pattern === 'candycane') {
       const stripeWidth = 6;
@@ -149,7 +149,7 @@ class ButtonFactory {
       gradient: options.gradient !== false,
       pattern: options.pattern || (variant === 'danger' && options.pattern !== 'none' ? 'candycane' : null),
       border: options.border !== false,
-      borderColor: options.borderColor || (variant === 'primary' ? (cfg.BORDER_GOLD || '#ffd700') : variant === 'danger' ? '#ffffff' : '#0d5016')
+  borderColor: options.borderColor || (variant === 'primary' ? (cfg.BORDER_GOLD || '#ffd700') : variant === 'danger' ? (cfg.BORDER_GOLD || '#ffd700') : '#0d5016')
     });
     const texKey = `btn_${variant}_${btnWidth}_${btnHeight}_${Math.random().toString(36).slice(2,7)}`;
     g.generateTexture(texKey, btnWidth, btnHeight);
