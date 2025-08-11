@@ -1,7 +1,7 @@
 {
-  "name": "xmasmm-debug-tools",
+  "name": "christmas-mastermind-debug-tools",
   "version": "1.0.0",
-  "description": "Debugging and testing tools for XmasMM Christmas Mastermind game",
+  "description": "Debugging and testing tools for Christmas MasterMind puzzle game",
   "scripts": {
     "debug-interactions": "node scripts/debug-interactions.js",
     "test-game-structure": "node scripts/test-game-structure.js",

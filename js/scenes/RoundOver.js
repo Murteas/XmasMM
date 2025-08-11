@@ -344,7 +344,7 @@ class RoundOver extends Phaser.Scene {
     // Try to use native share API if available
     if (navigator.share) {
       navigator.share({
-        title: 'XmasMM Score',
+        title: 'Christmas MasterMind Score',
         text: shareText
       }).catch(err => {
         console.log('Share cancelled');

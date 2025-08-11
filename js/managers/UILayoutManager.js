@@ -18,16 +18,24 @@ class UILayoutManager {
     const titleY = this.scene.headerContainer ? 30 : 30; // Relative positioning in container
     
     // Add subtle background protection for title text visibility
-    const titleBg = this.scene.add.rectangle(width / 2, titleY, 160, 32, 0x000000, 0.4)
+    // Expanded width for longer "Christmas MasterMind" title
+    const titleBg = this.scene.add.rectangle(width / 2, titleY, 220, 36, 0x000000, 0.4)
       .setOrigin(0.5)
       .setDepth(GameUtils.getDepthLayers().UI - 0.1);
     
-    const title = this.scene.add.text(width / 2, titleY, 'XmasMM', {
-      font: '24px Arial',
-      fill: '#fff',
-      fontStyle: 'bold',
-      stroke: '#000000',
-      strokeThickness: 2
+    const title = this.scene.add.text(width / 2, titleY, 'Christmas MasterMind', {
+      font: 'bold 22px Arial',
+      fill: '#FFD700',           // Christmas gold
+      stroke: '#8B0000',         // Dark red stroke for Christmas feel
+      strokeThickness: 3,
+      shadow: {
+        offsetX: 2,
+        offsetY: 2,
+        color: '#000000',
+        blur: 4,
+        stroke: true,
+        fill: true
+      }
     }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
     
     // Add to header container if available

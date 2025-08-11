@@ -1,4 +1,4 @@
-# 🎄 XmasMM - Christmas Mastermind
+# 🎄 Christmas MasterMind
 
 **A mobile-optimized Christmas puzzle game for family fun!**
 

@@ -33,11 +33,20 @@ class MainMenu extends Phaser.Scene {
     bg.setDisplaySize(width, height);
     bg.setDepth(GameUtils.getDepthLayers().BACKGROUND);
 
-    // Title
-    this.add.text(width / 2, height * 0.18, 'XmasMM', {
-      font: '48px Arial',
-      fill: '#fff',
-      fontStyle: 'bold'
+    // Title with enhanced Christmas styling
+    this.add.text(width / 2, height * 0.18, 'Christmas MasterMind', {
+      font: 'bold 36px Arial',
+      fill: '#FFD700',           // Christmas gold
+      stroke: '#8B0000',         // Dark red stroke for Christmas feel
+      strokeThickness: 4,
+      shadow: {
+        offsetX: 3,
+        offsetY: 3,
+        color: '#000000',
+        blur: 6,
+        stroke: true,
+        fill: true
+      }
     }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
 
     this.createButtons(width, height);
@@ -158,7 +167,7 @@ class MainMenu extends Phaser.Scene {
     const content = this.add.container(0,0);
     this.helpOverlay.add(content);
 
-    const title = this.add.text(width/2, height*0.06, '🎄 How to Play XmasMM 🎄', {
+    const title = this.add.text(width/2, height*0.06, '🎄 How to Play Christmas MasterMind 🎄', {
       font: `${Math.round(26 * layout.fontScale)}px Arial`,
       fill: '#fff',
       fontStyle: 'bold'

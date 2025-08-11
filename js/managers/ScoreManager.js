@@ -150,7 +150,7 @@ class ScoreManager {
       this.scoreBreakdown.hintPenalty !== 0 ? ' ' + this.scoreBreakdown.hintPenalty : ''
     } = ${this.currentScore}pts)`;
     
-    return `XmasMM Score: ${this.currentScore}pts 🎄\n${codeLength} elements ${won}, ${guessesUsed} guesses${hintText}\n${breakdown}`;
+    return `Christmas MasterMind Score: ${this.currentScore}pts 🎄\n${codeLength} elements ${won}, ${guessesUsed} guesses${hintText}\n${breakdown}`;
   }
 
   updateScoreDisplay(scoreText) {
