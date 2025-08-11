@@ -16,15 +16,23 @@ class UILayoutManager {
     
     // SIMPLIFIED: Place title in header container if available
     const titleY = this.scene.headerContainer ? 30 : 30; // Relative positioning in container
+    
+    // Add subtle background protection for title text visibility
+    const titleBg = this.scene.add.rectangle(width / 2, titleY, 160, 32, 0x000000, 0.4)
+      .setOrigin(0.5)
+      .setDepth(GameUtils.getDepthLayers().UI - 0.1);
+    
     const title = this.scene.add.text(width / 2, titleY, 'XmasMM', {
       font: '24px Arial',
       fill: '#fff',
-      fontStyle: 'bold'
+      fontStyle: 'bold',
+      stroke: '#000000',
+      strokeThickness: 2
     }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
     
     // Add to header container if available
     if (this.scene.headerContainer) {
-      this.scene.headerContainer.add(title);
+      this.scene.headerContainer.add([titleBg, title]);
       console.log('📱 Title added to header container');
     }
     
@@ -96,10 +104,19 @@ class UILayoutManager {
     
     // UI-010: Replace turn counter with live score display for better engagement
     // Show current score instead of "Turn X of Y" to give real-time feedback
-    this.progressText = this.scene.add.text(50, 70, `Score: ${this.scene.scoreManager ? this.scene.scoreManager.getCurrentScore() : 0}`, {
+    
+    // Add subtle background protection for score text visibility
+    // Moved to right side to avoid Back button overlap
+    const scoreTextBg = this.scene.add.rectangle(width - 50, 70, 120, 28, 0x000000, 0.4)
+      .setOrigin(1, 0.5)
+      .setDepth(GameUtils.getDepthLayers().UI - 0.1);
+    
+    this.progressText = this.scene.add.text(width - 50, 70, `Score: ${this.scene.scoreManager ? this.scene.scoreManager.getCurrentScore() : 0}`, {
       font: '18px Arial',
-      fill: '#fff'
-    }).setDepth(GameUtils.getDepthLayers().UI);
+      fill: '#fff',
+      stroke: '#000000',
+      strokeThickness: 1
+    }).setOrigin(1, 0.5).setDepth(GameUtils.getDepthLayers().UI);
     
     // Keep the right-aligned score as backup (will be hidden in favor of left score)
     this.scoreText = this.scene.add.text(width - 50, 70, `Score: ${this.scene.scoreManager ? this.scene.scoreManager.getCurrentScore() : 0}`, {

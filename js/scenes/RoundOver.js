@@ -70,18 +70,31 @@ class RoundOver extends Phaser.Scene {
     const gameOverText = this.gameData.won ? 'Success!' : 'Game Over';
     const headerColor = this.gameData.won ? '#27ae60' : '#e74c3c';
     
+    // Background protection for game over text
+    const headerBg = this.add.rectangle(width / 2, 26, 180, 32, 0x000000, 0.4)
+      .setOrigin(0.5);
+    
   const header = this.add.text(width / 2, 26, gameOverText, {
       font: '28px Arial',
       fill: headerColor,
-      fontStyle: 'bold'
+      fontStyle: 'bold',
+      stroke: '#000000',
+      strokeThickness: 1
     }).setOrigin(0.5);
     
     // Compact score display
     const breakdown = this.gameData.scoreManager.getScoreBreakdown();
+    
+    // Background protection for score text
+    const scoreBg = this.add.rectangle(width / 2, 60, 200, 28, 0x000000, 0.4)
+      .setOrigin(0.5);
+      
   const scoreText = this.add.text(width / 2, 60, `Score: ${breakdown.total} points`, {
       font: '20px Arial',
       fill: '#fff',
-      fontStyle: 'bold'
+      fontStyle: 'bold',
+      stroke: '#000000',
+      strokeThickness: 1
     }).setOrigin(0.5);
     
     // Key score info in one line
@@ -118,12 +131,18 @@ class RoundOver extends Phaser.Scene {
       scoreInfo = 'Keep practicing!';
     }
     
+    // Background protection for score details text
+    const scoreDetailsBg = this.add.rectangle(width / 2, 90, Math.min(width - 40, scoreInfo.length * 8 + 20), 22, 0x000000, 0.4)
+      .setOrigin(0.5);
+    
   const scoreDetails = this.add.text(width / 2, 90, scoreInfo, {
       font: '14px Arial',
-      fill: '#ddd'
+      fill: '#ddd',
+      stroke: '#000000',
+      strokeThickness: 1
     }).setOrigin(0.5);
 
-  this.headerContainer.add([header, scoreText, scoreDetails]);
+  this.headerContainer.add([headerBg, header, scoreBg, scoreText, scoreDetailsBg, scoreDetails]);
 
     // Info button (small circle i) to open scoring modal
     const infoBtn = this.add.text(width - 28, 18, 'ⓘ', {
@@ -139,10 +158,16 @@ class RoundOver extends Phaser.Scene {
     let currentY = 20;
     
     // Solution display - educational reference at top
+    // Background protection for solution label
+    const solutionLabelBg = this.add.rectangle(width / 2, currentY, 100, 24, 0x000000, 0.4)
+      .setOrigin(0.5);
+    
     const solutionLabel = this.add.text(width / 2, currentY, 'Solution:', {
       font: '18px Arial',
       fill: '#ffd700',
-      fontStyle: 'bold'
+      fontStyle: 'bold',
+      stroke: '#000000',
+      strokeThickness: 1
     }).setOrigin(0.5);
     currentY += 35;
     
@@ -183,10 +208,16 @@ class RoundOver extends Phaser.Scene {
     currentY += 50;
     
     // History section
+    // Background protection for history label
+    const historyLabelBg = this.add.rectangle(width / 2, currentY, 140, 22, 0x000000, 0.4)
+      .setOrigin(0.5);
+    
     const historyLabel = this.add.text(width / 2, currentY, 'Your Guesses:', {
       font: '16px Arial',
       fill: '#fff',
-      fontStyle: 'bold'
+      fontStyle: 'bold',
+      stroke: '#000000',
+      strokeThickness: 1
     }).setOrigin(0.5);
     currentY += 30;
     
@@ -202,7 +233,7 @@ class RoundOver extends Phaser.Scene {
     this.totalScrollableContentHeight = currentY + 10; // padding tail
     this.visibleScrollableHeight = contentHeight;
     
-    this.scrollableContainer.add([solutionLabel, solutionContainer, historyLabel]);
+    this.scrollableContainer.add([solutionLabelBg, solutionLabel, solutionContainer, historyLabelBg, historyLabel]);
   }
 
   createSolutionDisplay() {
