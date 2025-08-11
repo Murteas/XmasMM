@@ -14,9 +14,8 @@
 1. **🚨 CRITICAL**: Read `ISSUES.md` for blocking problems
 2. Check `PROJECT_STATUS.md` for current state
 3. Run test verification: `cd tests && bash verify_tests.sh 2>&1 | tee test-results/verification.log`
-4. **ASK USER** to start server on port 8000 if needed (agents cannot start servers)
-5. Run `python scripts/automation.py status 2>&1 | tee test-results/status.log`
-6. Run task registry validation: `npm run validate-tasks 2>&1 | tee test-results/task_validation.log` (Confirm no drift before adding/modifying tasks)
+4. **ASK USER** to start server: `python -m http.server 8000` (agents cannot start servers)
+5. Run task registry validation: `npm run validate-tasks 2>&1 | tee test-results/task_validation.log` (Confirm no drift before adding/modifying tasks)
 
 ## � CURRENT PROJECT STATUS (Updated July 16, 2025)
 
@@ -91,7 +90,7 @@ Polish the RoundOver scene and optimize its history view feature for better mobi
 ## �🚨 CRITICAL LIMITATIONS FOR AI AGENTS
 
 ### **🚫 What Agents CANNOT Do**
-- **Start servers** (python scripts/dev_server.py, http.server, etc.) - Always ask user
+- **Start servers** - Always ask user to run: `python -m http.server 8000`
 - **Test in browsers** - file:// URLs don't work with Phaser.js (white screen only)
 - **See browser console errors** - Must rely on user feedback
 - **Verify actual game functionality** - Can only check syntax and structure
@@ -107,7 +106,7 @@ Polish the RoundOver scene and optimize its history view feature for better mobi
 ### **🔄 Required Testing Protocol**
 ```markdown
 1. Agent: Makes changes and runs syntax verification
-2. Agent: "Please start server: python -m http.server 8000"
+2. Agent: "Please start server: `python -m http.server 8000`"
 3. Agent: "Please test at http://localhost:8000 and report issues"
 4. User: Provides testing feedback
 5. Agent: Fixes based on user feedback
@@ -126,14 +125,11 @@ Polish the RoundOver scene and optimize its history view feature for better mobi
 
 ### **Status & Verification**
 ```bash
-# Quick status check
-python scripts/automation.py status 2>&1 | tee test-results/status.log
-
 # Primary verification
 cd tests && bash verify_tests.sh 2>&1 | tee test-results/verification.log
 
-# Project cleanup
-bash scripts/cleanup_redundancy.sh 2>&1 | tee test-results/cleanup.log
+# Check if server responds
+curl -s http://localhost:8000/ > /dev/null && echo "✅ Server running" || echo "❌ Server not running"
 ```
 
 ### **Syntax Checking** (What agents CAN verify)
