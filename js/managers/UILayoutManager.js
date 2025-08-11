@@ -24,15 +24,17 @@ class UILayoutManager {
       .setDepth(GameUtils.getDepthLayers().UI - 0.1);
     
     const title = this.scene.add.text(width / 2, titleY, 'Christmas MasterMind', {
-      font: 'italic bold 20px serif',
-      fill: '#F5F5DC',           // Elegant cream/beige
-      stroke: '#2F4F2F',         // Deep forest green
-      strokeThickness: 1,
+      fontFamily: 'Dancing Script, cursive',
+      fontSize: '22px',
+      fontWeight: '600',
+      fill: '#F8F8FF',           // Ghost white for elegance
+      stroke: '#0F4C36',         // Deep emerald green
+      strokeThickness: 2,
       shadow: {
-        offsetX: 1,
-        offsetY: 1,
-        color: '#1A1A1A',
-        blur: 2,
+        offsetX: 2,
+        offsetY: 2,
+        color: '#1A1A1A',        // Deep shadow
+        blur: 3,
         stroke: true,
         fill: true
       }

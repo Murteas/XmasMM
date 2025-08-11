@@ -35,15 +35,17 @@ class MainMenu extends Phaser.Scene {
 
     // Title with elegant Christmas styling
     this.add.text(width / 2, height * 0.18, 'Christmas MasterMind', {
-      font: 'italic bold 38px serif',
-      fill: '#F5F5DC',           // Elegant cream/beige
-      stroke: '#2F4F2F',         // Deep forest green
-      strokeThickness: 2,
+      fontFamily: 'Dancing Script, cursive',
+      fontSize: '42px',
+      fontWeight: '600',
+      fill: '#F8F8FF',           // Ghost white for elegance
+      stroke: '#0F4C36',         // Deep emerald green
+      strokeThickness: 3,
       shadow: {
-        offsetX: 2,
-        offsetY: 2,
-        color: '#1A1A1A',
-        blur: 3,
+        offsetX: 3,
+        offsetY: 3,
+        color: '#1A1A1A',        // Deep shadow
+        blur: 4,
         stroke: true,
         fill: true
       }
