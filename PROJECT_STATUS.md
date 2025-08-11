@@ -1,14 +1,27 @@
 # 📊 Project Status Dashboard
 
-**Last updated**: August 5, 2025
+**Last updated**: August 11, 2025
 
 ## 🎯 Current State
 
-**Status**: ✅ Production ready, enhancement phase active  
-**Recent Achievement**: RoundOver scene consolidation completed with mobile UX optimization  
-**Next Priority**: UI-010 (score display), UI-011 (title theming)
+**Status**: ✅ Production ready, visual polish phase active  
+**Recent Achievement**: Mobile PWA safe area implementation completed + Issues management consolidated  
+**Next Priority**: UI-011 (Christmas title theming), then technical debt cleanup
 
 ## ✅ Major Completions
+
+### **Mobile PWA Safe Area Implementation** (August 11, 2025)
+- ✅ CSS safe area variables with env(safe-area-inset-*) support
+- ✅ Footer container positioning respects device safe zones
+- ✅ Submit button and active row no longer overlap safe areas
+- ✅ Auto-update positioning for orientation/device changes
+- ✅ SafeAreaDebugger tool for real device testing
+
+### **Issues Management Consolidation** (August 11, 2025)
+- ✅ Single source of truth: ISSUES.md contains all active issues
+- ✅ Historical issues archived to issues/archived/ by session
+- ✅ Clear AI agent workflow established
+- ✅ Christmas title theming issue properly tracked
 
 ### **RoundOver Scene Consolidation** (August 5, 2025)
 - ✅ Two-screen to single-screen mobile UX conversion
