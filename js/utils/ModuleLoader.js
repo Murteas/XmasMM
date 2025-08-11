@@ -36,7 +36,8 @@ class ModuleLoader {
     // Group 1: Core utilities (load in parallel - no dependencies)
     const coreModules = [
       'js/utils/TestConfig.js',
-      'js/utils/GameUtils.js'
+      'js/utils/GameUtils.js',
+      'js/config/LayoutConfig.js'
     ];
     
     // Group 2: Managers (load in parallel)

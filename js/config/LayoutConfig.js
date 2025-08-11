@@ -34,4 +34,5 @@ const LayoutConfig = {
   }
 };
 
-export default LayoutConfig;
+// Expose globally (project uses dynamic script loader, not ES module imports)
+window.LayoutConfig = LayoutConfig;

@@ -1,5 +1,5 @@
 // ActiveRowManager.js - Handles active row (inline editing) functionality
-import LayoutConfig from '../config/LayoutConfig.js';
+// Uses global LayoutConfig (loaded via ModuleLoader)
 
 class ActiveRowManager {
   constructor(scene, historyManager) {

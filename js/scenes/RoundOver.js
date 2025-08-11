@@ -1,5 +1,5 @@
 // RoundOver.js - End game screen with score breakdown and options
-import LayoutConfig from '../config/LayoutConfig.js';
+// Uses global LayoutConfig (loaded early by ModuleLoader)
 
 class RoundOver extends Phaser.Scene {
   constructor() {

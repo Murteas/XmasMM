@@ -1,5 +1,5 @@
 // GameScene.js - Main game scene (refactored for modular architecture)
-import LayoutConfig from '../config/LayoutConfig.js';
+// Uses global LayoutConfig (loaded via ModuleLoader)
 
 class GameScene extends Phaser.Scene {
   constructor() {
