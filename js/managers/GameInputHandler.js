@@ -116,14 +116,14 @@ class GameInputHandler {
   showHintUnavailableMessage(message) {
     const { width } = this.scene.cameras.main;
     const isSmallScreen = width < 400;
-    const messageY = isSmallScreen ? 140 : 110;
+    const messageY = isSmallScreen ? 180 : 160; // Match hint feedback positioning
     
     // Create temporary message
     const messageText = this.scene.add.text(width / 2, messageY, message, {
-      font: '14px Arial',
+      font: '13px Arial',         // Match hint feedback font size
       fill: '#ff6b6b',
       backgroundColor: '#4a1a1a',
-      padding: { left: 12, right: 12, top: 6, bottom: 6 }
+      padding: { left: 10, right: 10, top: 5, bottom: 5 }  // Match hint feedback padding
     }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI + 10);
     
     // Auto-remove after 3 seconds
@@ -142,17 +142,17 @@ class GameInputHandler {
 
     const { width, height } = this.scene.cameras.main;
     
-    // Position hint text in a safe area (top of screen, below header)
+    // Position hint text BELOW the header area to avoid overlapping
     const isSmallScreen = width < 400;
-    const hintY = isSmallScreen ? 140 : 110;
+    const hintY = isSmallScreen ? 180 : 160; // Moved further down to avoid header crowding
     
     // Create persistent hint that can be clicked to dismiss
     const hintText = this.scene.add.text(width / 2, hintY, 
       `🎅 Hint: Position ${hintResult.position + 1} should be ${hintResult.element}! (-${this.scene.scoreManager.scoringConfig.hintPenalty} pts) (tap to dismiss)`, {
-      font: '14px Arial',
+      font: '13px Arial',        // Slightly smaller to reduce visual weight
       fill: '#ffd700',
       backgroundColor: '#0d5016', // Forest green background
-      padding: { left: 12, right: 12, top: 6, bottom: 6 }
+      padding: { left: 10, right: 10, top: 5, bottom: 5 }  // Reduced padding
     }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI + 10)
       .setInteractive({ useHandCursor: true });
     

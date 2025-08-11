@@ -14,35 +14,45 @@ class UILayoutManager {
     const viewport = GameUtils.getMobileViewport();
     const { width, height } = viewport;
     
-    // SIMPLIFIED: Place title in header container if available
-    const titleY = this.scene.headerContainer ? 30 : 30; // Relative positioning in container
+    // COMPACT: Abbreviated title for game screen header (saves 60% space)
+    const titleY = this.scene.headerContainer ? 25 : 25; // Relative positioning in container
     
-    // Add subtle background protection for title text visibility
-    // Expanded width for longer "Christmas MasterMind" title
-    const titleBg = this.scene.add.rectangle(width / 2, titleY, 220, 36, 0x000000, 0.4)
+    // Smaller background for abbreviated title
+    const titleBg = this.scene.add.rectangle(width / 2, titleY, 80, 28, 0x000000, 0.3)
       .setOrigin(0.5)
       .setDepth(GameUtils.getDepthLayers().UI - 0.1);
     
-    const title = this.scene.add.text(width / 2, titleY, 'Christmas MasterMind', {
+    const title = this.scene.add.text(width / 2, titleY, '🎄 CM', {
       fontFamily: 'Dancing Script, cursive',
-      fontSize: '22px',
+      fontSize: '18px',
       fontWeight: '600',
-      fill: '#F8F8FF',           // Ghost white for elegance
-      stroke: '#0F4C36',         // Deep emerald green
+      fill: '#F5F5DC',           // Warm cream for elegance
+      stroke: '#0F4C36',         // Deep emerald green (matches buttons)
       strokeThickness: 2,
       shadow: {
-        offsetX: 2,
-        offsetY: 2,
+        offsetX: 1,
+        offsetY: 1,
         color: '#1A1A1A',        // Deep shadow
-        blur: 3,
+        blur: 2,
         stroke: true,
         fill: true
       }
     }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
+
+    // Subtle gold highlight for header title
+    const titleHighlight = this.scene.add.text(width / 2, titleY, '🎄 CM', {
+      fontFamily: 'Dancing Script, cursive',
+      fontSize: '18px',
+      fontWeight: '600',
+      fill: 'transparent',
+      stroke: '#DAA520',         // Sophisticated gold highlight
+      strokeThickness: 1,
+      alpha: 0.4
+    }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI + 0.1);
     
     // Add to header container if available
     if (this.scene.headerContainer) {
-      this.scene.headerContainer.add([titleBg, title]);
+      this.scene.headerContainer.add([titleBg, title, titleHighlight]);
       console.log('📱 Title added to header container');
     }
     
@@ -112,21 +122,19 @@ class UILayoutManager {
   setupHorizontalHeader() {
     const { width } = this.scene.cameras.main;
     
-    // UI-010: Replace turn counter with live score display for better engagement
-    // Show current score instead of "Turn X of Y" to give real-time feedback
+    // UI-010: Move score below header row to avoid hint button overlap
     
     // Add subtle background protection for score text visibility
-    // Moved to right side to avoid Back button overlap
-    const scoreTextBg = this.scene.add.rectangle(width - 50, 70, 120, 28, 0x000000, 0.4)
-      .setOrigin(1, 0.5)
+    const scoreTextBg = this.scene.add.rectangle(width / 2, 85, 120, 28, 0x000000, 0.4)
+      .setOrigin(0.5, 0.5)
       .setDepth(GameUtils.getDepthLayers().UI - 0.1);
     
-    this.progressText = this.scene.add.text(width - 50, 70, `Score: ${this.scene.scoreManager ? this.scene.scoreManager.getCurrentScore() : 0}`, {
-      font: '18px Arial',
+    this.progressText = this.scene.add.text(width / 2, 85, `Score: ${this.scene.scoreManager ? this.scene.scoreManager.getCurrentScore() : 0}`, {
+      font: '16px Arial',
       fill: '#fff',
       stroke: '#000000',
       strokeThickness: 1
-    }).setOrigin(1, 0.5).setDepth(GameUtils.getDepthLayers().UI);
+    }).setOrigin(0.5, 0.5).setDepth(GameUtils.getDepthLayers().UI);
     
     // Keep the right-aligned score as backup (will be hidden in favor of left score)
     this.scoreText = this.scene.add.text(width - 50, 70, `Score: ${this.scene.scoreManager ? this.scene.scoreManager.getCurrentScore() : 0}`, {
@@ -134,15 +142,17 @@ class UILayoutManager {
       fill: '#fff'
     }).setOrigin(1, 0).setDepth(GameUtils.getDepthLayers().UI).setVisible(false);
     
-    // Santa's Hint button (penalty inline; primary variant for Christmas green)
+    // Santa's Hint button (using fixed ButtonFactory icon positioning)
     this.hintBtn = ButtonFactory.createButton(
       this.scene,
-      width / 2,
-      125,
-      `Hint (-${this.scene.scoreManager ? this.scene.scoreManager.scoringConfig.hintPenalty : 220})`,
+      width - 90,  // Positioned to fit properly
+      50,  // Same level as back button for visual balance
+      `Hint (-${this.scene.scoreManager ? this.scene.scoreManager.scoringConfig.hintPenalty : 220})`,  // Text without emoji
       'primary',
       {
-        icon: '🎅',
+        icon: '🎅',  // Santa as separate icon
+        paddingX: 12,
+        paddingY: 8,
         onClick: () => this.scene.useSantasHint()
       }
     );
@@ -184,6 +194,8 @@ class UILayoutManager {
         icon: '↩️',
         pattern: 'candycane',
         border: true,
+        paddingX: 12,  // Match hint button padding
+        paddingY: 8,   // Match hint button padding to make it thinner
         onClick: () => this.scene.scene.start('DifficultySelection')
       }
     );

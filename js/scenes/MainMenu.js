@@ -33,13 +33,13 @@ class MainMenu extends Phaser.Scene {
     bg.setDisplaySize(width, height);
     bg.setDepth(GameUtils.getDepthLayers().BACKGROUND);
 
-    // Title with elegant Christmas styling
+    // Title with elegant Christmas styling and gold accents
     this.add.text(width / 2, height * 0.18, 'Christmas MasterMind', {
       fontFamily: 'Dancing Script, cursive',
       fontSize: '42px',
       fontWeight: '600',
-      fill: '#F8F8FF',           // Ghost white for elegance
-      stroke: '#0F4C36',         // Deep emerald green
+      fill: '#F5F5DC',           // Warm cream for elegance
+      stroke: '#0F4C36',         // Deep emerald green (matches buttons)
       strokeThickness: 3,
       shadow: {
         offsetX: 3,
@@ -50,6 +50,17 @@ class MainMenu extends Phaser.Scene {
         fill: true
       }
     }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
+
+    // Subtle gold highlight accent
+    this.add.text(width / 2, height * 0.18, 'Christmas MasterMind', {
+      fontFamily: 'Dancing Script, cursive',
+      fontSize: '42px',
+      fontWeight: '600',
+      fill: 'transparent',
+      stroke: '#DAA520',         // Sophisticated gold highlight
+      strokeThickness: 1,
+      alpha: 0.6
+    }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI + 0.1);
 
     this.createButtons(width, height);
     this.initializeSettings();

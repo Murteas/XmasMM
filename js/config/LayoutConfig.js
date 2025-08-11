@@ -28,25 +28,25 @@ const LayoutConfig = {
   // Button sizing
   SUBMIT_BUTTON_WIDTH: 60,
 
-  // Button style tokens (FestiveButtonTheming)
+  // Button style tokens (Harmonized Christmas Color Palette)
   BUTTON_STYLE: {
-    PRIMARY_BG: '#0d5016',
-    PRIMARY_BG_HOVER: '#156b1f',
-    PRIMARY_BG_ACTIVE: '#093b11',
+    PRIMARY_BG: '#0F4C36',        // Emerald green (matches title stroke)
+    PRIMARY_BG_HOVER: '#1a6b4a',  // Emerald hover state
+    PRIMARY_BG_ACTIVE: '#0a3d2a', // Emerald pressed state
     PRIMARY_FG: '#ffffff',
-    ACCENT_BG: '#ffd700',
-    ACCENT_BG_HOVER: '#ffe55c',
-    ACCENT_BG_ACTIVE: '#e6c200',
-    ACCENT_FG: '#0d5016',
-    DANGER_BG: '#c0392b',
-    DANGER_BG_HOVER: '#d04637',
-    DANGER_BG_ACTIVE: '#8f2a1f',
+    ACCENT_BG: '#DAA520',         // Sophisticated gold (less bright)
+    ACCENT_BG_HOVER: '#F4D03F',   // Warmer gold hover
+    ACCENT_BG_ACTIVE: '#B8860B',  // Rich gold pressed
+    ACCENT_FG: '#0F4C36',         // Emerald text on gold
+    DANGER_BG: '#A0342B',         // Deeper Christmas red
+    DANGER_BG_HOVER: '#C0392B',   // Classic Christmas red hover
+    DANGER_BG_ACTIVE: '#7A2920',  // Dark red pressed
     DANGER_FG: '#ffffff',
     DISABLED_BG: '#444444',
     DISABLED_FG: '#bbbbbb',
-  BORDER_GOLD: '#ffd700',
+  BORDER_GOLD: '#DAA520',         // Harmonized gold
   BORDER_WHITE: '#ffffff',
-  BORDER_GREEN_DARK: '#062c0c',
+  BORDER_GREEN_DARK: '#0a3d2a',   // Harmonized dark emerald
     RADIUS: 10,
     PADDING_X: 22,
     PADDING_Y: 12,

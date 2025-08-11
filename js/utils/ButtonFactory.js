@@ -35,8 +35,12 @@ class ButtonFactory {
     const { bg, texKey } = this._generateBackground(scene, variant, palette, cfg, btnWidth, btnHeight, scaleFactor, options);
 
     if (iconText) {
-      iconText.x = -totalLabelWidth / 2 + iconText.width / 2;
-      labelText.x = iconText.x + iconText.width / 2 + spacer + labelText.width / 2;
+      // Fix positioning calculation - place icon and text properly within container
+      const contentWidth = iconText.width + spacer + labelText.width;
+      const startX = -contentWidth / 2;
+      
+      iconText.x = startX + iconText.width / 2;
+      labelText.x = startX + iconText.width + spacer + labelText.width / 2;
     }
     container.add(bg);
     if (iconText) container.add(iconText);
@@ -50,6 +54,16 @@ class ButtonFactory {
       const newTotalLabelWidth = container.labelText.width + (iconText ? iconText.width + spacer : 0);
       const newBtnWidth = Math.round(newTotalLabelWidth + paddingX * 2);
       const newBtnHeight = Math.round(Math.max(container.labelText.height, iconText ? iconText.height : 0) + paddingY * 2);
+      
+      // Fix positioning when text changes
+      if (iconText) {
+        const contentWidth = iconText.width + spacer + container.labelText.width;
+        const startX = -contentWidth / 2;
+        
+        iconText.x = startX + iconText.width / 2;
+        container.labelText.x = startX + iconText.width + spacer + container.labelText.width / 2;
+      }
+      
       if (Math.abs(newBtnWidth - oldWidth) > 6) {
         // Only generate the texture, don't create a new image object
         const newTexKey = this._generateBackgroundTexture(scene, variant, palette, cfg, newBtnWidth, newBtnHeight, scaleFactor, options);
