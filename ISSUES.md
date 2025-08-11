@@ -22,20 +22,24 @@
 **Category**: Technical Stability  
 **Status**: Open
 
-**Problem**: Global keyboard + window event listeners (resize, error, unhandledrejection) are added but never explicitly removed on scene shutdown. Potential for duplicate handlers, memory growth, and unpredictable behavior if scenes are re-entered in future features (e.g., replay loops, multi-session testing).
-**Impact**: Hidden stability / performance risk; harder future debugging; could surface subtle input lag or duplicated logs.
+**Problem**: Global keyboard + window event listeners (resize, error, unhandledrejection) lack explicit teardown. Risk is currently low because scenes aren't re-created repeatedly, but future replay / multi-session features could expose duplicate handlers.
+**Impact**: Potential for duplicate handler accumulation in future architectures; currently minimal practical impact.
 **Location**: `GameScene` (keyboard), `main.js` (window events)
 
-**Planned Remediation**:
-- Add `shutdown` / `destroy` handlers in scenes to unregister keyboard listeners
-- Centralize window listener registration & cleanup in a lightweight LifecycleUtility or in initialize/destroy flow
-- Guard against multiple registrations (idempotent attach)
+**Current Mitigation (Aug 11 2025)**:
+- Added idempotent guard (`_debugKeysRegistered`) around debug keyboard listener so it cannot double-bind if scene setup runs again.
+- Decision: Defer full detach logic until replay / multi-session flow introduced to avoid unnecessary complexity now.
 
-**Acceptance Criteria**:
-- [ ] All keyboard listeners removed on scene shutdown
+**Deferred Remediation Plan** (activate when replay/multi-session added):
+- Add `shutdown` / `destroy` handlers to unregister keyboard listeners
+- Centralize window listener registration & cleanup
+- Lightweight ListenerRegistry utility (optional)
+
+**Acceptance Criteria (Deferred)**:
+- [ ] Keyboard listeners removed on scene shutdown (when replay added)
 - [ ] Window listeners cleaned when game disposed / reinitialized
-- [ ] No duplicate event firings after multiple game restarts
-- [ ] Lightweight utility or documented pattern established
+- [ ] No duplicate event firings after multiple restarts
+- [ ] Documented lifecycle pattern established
 
 ### TECH-001: Centralized Layout & Constants Module 🟡
 **Priority**: Medium  

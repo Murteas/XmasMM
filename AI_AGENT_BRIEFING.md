@@ -75,6 +75,8 @@ Polish the RoundOver scene and optimize its history view feature for better mobi
 - ✅ **Rapid performance validation** - ideal for PERF issues
 - ✅ **Zero production impact** - invisible to normal users
 
+**Implementation Note (Aug 11 2025):** Debug keyboard listener now wrapped in an idempotent guard (`_debugKeysRegistered`) to prevent duplicate bindings if the scene is ever re-created. Full lifecycle detach is intentionally deferred until multi-session / replay loops are introduced (see TECH-002 - currently scoped as deferred). Do NOT remove or refactor this without preserving the guard.
+
 **Usage Example:** `D` → `L` → test final rounds → `W` → test game completion → validate RoundOver scene
 
 ### 💡 **CRITICAL HINTS FOR NEXT AI AGENT**

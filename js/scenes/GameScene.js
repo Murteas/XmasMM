@@ -187,8 +187,12 @@ class GameScene extends Phaser.Scene {
   }
 
   setupDebugKeys() {
-    // Set up keyboard input for debug mode
-    this.input.keyboard.on('keydown', (event) => {
+  // Idempotent: prevent duplicate registrations if scene re-created (Option 2 safety guard)
+  if (this._debugKeysRegistered) return; // already registered
+  this._debugKeysRegistered = true;
+
+  // Set up keyboard input for debug mode (developer-only convenience)
+  this.input.keyboard.on('keydown', (event) => {
       // Only process debug keys if we have game managers ready
       if (!this.gameInputHandler || !this.gameStateManager) return;
       
