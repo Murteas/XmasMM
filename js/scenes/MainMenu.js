@@ -34,32 +34,37 @@ class MainMenu extends Phaser.Scene {
     bg.setDepth(GameUtils.getDepthLayers().BACKGROUND);
 
     // Title with elegant Christmas styling and gold accents
-    this.add.text(width / 2, height * 0.18, 'Christmas MasterMind', {
-      fontFamily: 'Dancing Script, cursive',
-      fontSize: '42px',
-      fontWeight: '600',
-      fill: '#F5F5DC',           // Warm cream for elegance
-      stroke: '#0F4C36',         // Deep emerald green (matches buttons)
-      strokeThickness: 3,
-      shadow: {
-        offsetX: 3,
-        offsetY: 3,
-        color: '#1A1A1A',        // Deep shadow
-        blur: 4,
-        stroke: true,
-        fill: true
-      }
-    }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
+    this.add
+      .text(width / 2, height * 0.18, "Christmas\nMasterMind", {
+        fontFamily: "Dancing Script, cursive",
+        fontSize: "60px",
+        fontWeight: "600",
+        fill: "#F5F5DC", // Warm cream for elegance
+        stroke: "#0F4C36", // Deep emerald green (matches buttons)
+        strokeThickness: 3,
+        align: "center", // Explicitly center multi-line text
+        shadow: {
+          offsetX: 3,
+          offsetY: 3,
+          color: "#1A1A1A", // Deep shadow
+          blur: 4,
+          stroke: true,
+          fill: true,
+        },
+      })
+      .setOrigin(0.5)
+      .setDepth(GameUtils.getDepthLayers().UI);
 
     // Subtle gold highlight accent
-    this.add.text(width / 2, height * 0.18, 'Christmas MasterMind', {
+    this.add.text(width / 2, height * 0.18, 'Christmas\nMasterMind', {
       fontFamily: 'Dancing Script, cursive',
-      fontSize: '42px',
+      fontSize: '60px',
       fontWeight: '600',
       fill: 'transparent',
       stroke: '#DAA520',         // Sophisticated gold highlight
       strokeThickness: 1,
-      alpha: 0.6
+      alpha: 0.6,
+      align: 'center' // Explicitly center multi-line text
     }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI + 0.1);
 
     this.createButtons(width, height);
@@ -180,11 +185,20 @@ class MainMenu extends Phaser.Scene {
     const content = this.add.container(0,0);
     this.helpOverlay.add(content);
 
-    const title = this.add.text(width/2, height*0.06, '🎄 How to Play Christmas MasterMind 🎄', {
-      font: `${Math.round(26 * layout.fontScale)}px Arial`,
-      fill: '#fff',
-      fontStyle: 'bold'
-    }).setOrigin(0.5);
+    const title = this.add
+      .text(
+        width / 2,
+        height * 0.06,
+        "🎄 How to Play 🎄\nChristmas MasterMind",
+        {
+          font: `${Math.round(24 * layout.fontScale)}px Arial`,
+          fill: "#fff",
+          fontStyle: "bold",
+          align: "center",
+          lineSpacing: 4,
+        }
+      )
+      .setOrigin(0.5);
     content.add(title);
 
     let currentY = title.y + title.height/2 + 14;
