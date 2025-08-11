@@ -166,173 +166,107 @@ class MainMenu extends Phaser.Scene {
   showHelpOverlay() {
     const { width, height } = this.cameras.main;
     const layout = GameUtils.getResponsiveLayout(width, height);
-    
-    // Create help overlay container
-    this.helpOverlay = this.add.container(0, 0);
-    
-    // Background
-    const helpBg = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.9);
-    
-    // Title with responsive sizing - increased size
-    const helpTitle = this.add.text(width / 2, height * 0.06, '🎄 How to Play XmasMM 🎄', {
-      font: `${Math.round(28 * layout.fontScale)}px Arial`, // Increased from 24 to 28
-      fill: '#fff',
-      fontStyle: 'bold',
-      align: 'center'
-    }).setOrigin(0.5);
+    // Create overlay root + background
+    this.helpOverlay = this.add.container(0,0);
+    const helpBg = this.add.rectangle(width/2, height/2, width, height, 0x000000, 0.9);
+    this.helpOverlay.add(helpBg);
 
-    // Part 1: Instructions up to element list
-    const instructionsPart1 = this.add.text(width / 2, height * 0.15, 
-      '🎯 Goal: Guess Santa\'s secret Christmas code!\n\n' +
-      '📱 How to Play:\n' +
-      '• Tap empty slots to select Christmas elements\n' +
-      '• Choose from these Christmas elements:\n', 
-      {
+    // Inner content container for easy shifting if overflow
+    const content = this.add.container(0,0);
+    this.helpOverlay.add(content);
+
+    const title = this.add.text(width/2, height*0.06, '🎄 How to Play XmasMM 🎄', {
+      font: `${Math.round(26 * layout.fontScale)}px Arial`,
+      fill: '#fff',
+      fontStyle: 'bold'
+    }).setOrigin(0.5);
+    content.add(title);
+
+    let currentY = title.y + title.height/2 + 14;
+
+    const blockWidth = width * 0.85;
+    const makeText = (text, options={}) => {
+      const t = this.add.text(width/2, currentY, text, Object.assign({
         font: `${Math.round(13 * layout.fontScale)}px Arial`,
         fill: '#fff',
         align: 'left',
         lineSpacing: Math.round(3 * layout.fontScale),
-        wordWrap: { width: width * 0.85 }
-      }
-    ).setOrigin(0.5);
+        wordWrap: { width: blockWidth }
+      }, options)).setOrigin(0.5,0);
+      content.add(t);
+      currentY = t.y + t.height + 14;
+      return t;
+    };
 
-    // Element images positioned closer to text in 2 rows of 3
-    const elementStartY = height * 0.28; // Moved closer to text (was 0.32)
-    const elementSize = Math.round(40 * layout.fontScale); // Much bigger images (was 32)
-    const horizontalSpacing = Math.round(45 * layout.fontScale); // Spacing between columns
-    const verticalSpacing = Math.round(48 * layout.fontScale); // Spacing between rows
-    
-    const gameElements = ['santa', 'present', 'star', 'tree', 'snowflake', 'candycane'];
-    
-    // Store images separately to add to container later
+    makeText('🎯 Goal: Guess Santa\'s secret Christmas code!\n\n📱 How to Play:\n• Tap empty slots to select Christmas elements\n• Choose from these Christmas elements:');
+
+    // Elements grid
+    const elementSize = Math.round(40 * layout.fontScale);
+    const horizontalSpacing = Math.round(52 * layout.fontScale);
+    const verticalSpacing = Math.round(52 * layout.fontScale);
+    const gameElements = ['santa','present','star','tree','snowflake','candycane'];
     const elementImages = [];
-    
+    const gridTop = currentY + elementSize/2; // center of first row
     gameElements.forEach((element, index) => {
-      const row = Math.floor(index / 3); // 0 for first row, 1 for second row
-      const col = index % 3; // 0, 1, 2 for columns
-      
-      // Calculate position for 2 rows of 3
-      const x = width / 2 - horizontalSpacing + (col * horizontalSpacing);
-      const y = elementStartY + (row * verticalSpacing);
-      
+      const row = Math.floor(index / 3);
+      const col = index % 3;
+      const x = width/2 - horizontalSpacing + col*horizontalSpacing;
+      const y = gridTop + row*verticalSpacing;
       const textureKey = `${element}_1x`;
-      
-      if (!this.textures.exists(textureKey)) {
-        console.error(`Missing texture: ${textureKey}`);
-        return;
-      }
-      
-      const img = this.add.image(x, y, textureKey)
-        .setDisplaySize(elementSize, elementSize)
-        .setOrigin(0.5)
-        .setVisible(true)
-        .setDepth(1002); // Higher depth than container
-      
+      if (!this.textures.exists(textureKey)) return;
+      const img = this.add.image(x, y, textureKey).setDisplaySize(elementSize, elementSize).setOrigin(0.5).setDepth(1002);
+      content.add(img);
       elementImages.push(img);
     });
+    // Advance currentY after grid
+    const rows = 2;
+    currentY = gridTop + (rows-1)*verticalSpacing + elementSize/2 + 20;
 
-    // Part 2: Instructions up to feedback symbols - adjusted position for 2-row layout
-    const instructionsPart2 = this.add.text(width / 2, height * 0.52,
-      '• Tap Submit when your guess is complete\n\n' +
-      '💡 Feedback Symbols:', 
-      {
-        font: `${Math.round(13 * layout.fontScale)}px Arial`,
-        fill: '#fff',
-        align: 'left',
-        lineSpacing: Math.round(3 * layout.fontScale),
-        wordWrap: { width: width * 0.85 }
-      }
-    ).setOrigin(0.5);
+    makeText('• Tap Submit when your guess is complete\n\n💡 Feedback Symbols:');
 
-    // Feedback symbol images positioned after part 2 - adjusted for new layout
-    const feedbackY = height * 0.62; // Moved down to accommodate 2-row element layout
-    const feedbackSize = Math.round(28 * layout.fontScale); // Even bigger feedback images (was 24)
-    const feedbackSpacing = Math.round(120 * layout.fontScale); // Closer together (was 140)
-    
-    // Create feedback images with labels
+    // Feedback symbols section
+    const feedbackSize = Math.round(30 * layout.fontScale);
+    const feedbackSpacing = Math.round(140 * layout.fontScale);
     const feedbackElements = [
       { key: 'feedback_perfect_star_1x', label: 'Perfect Match!' },
       { key: 'feedback_close_bell_1x', label: 'Close Match!' }
     ];
-    
-    const feedbackStartX = width / 2 - feedbackSpacing / 2;
+    const feedbackCenterY = currentY + feedbackSize/2;
+    const feedbackStartX = width/2 - feedbackSpacing/2;
     const feedbackImages = [];
-    
-    feedbackElements.forEach((feedback, index) => {
-      const x = feedbackStartX + (index * feedbackSpacing);
-      
-      if (!this.textures.exists(feedback.key)) {
-        console.error(`Missing feedback texture: ${feedback.key}`);
-        return;
-      }
-      
-      const img = this.add.image(x, feedbackY, feedback.key)
-        .setDisplaySize(feedbackSize, feedbackSize)
-        .setOrigin(0.5)
-        .setVisible(true)
-        .setDepth(1002);
-      
-      const label = this.add.text(x, feedbackY + feedbackSize/2 + 8, feedback.label, {
-        font: `${Math.round(10 * layout.fontScale)}px Arial`,
-        fill: '#fff',
-        align: 'center'
-      }).setOrigin(0.5).setDepth(1002);
-      
-      feedbackImages.push(img, label);
+    feedbackElements.forEach((f,i)=>{
+      if (!this.textures.exists(f.key)) return;
+      const x = feedbackStartX + i*feedbackSpacing;
+      const img = this.add.image(x, feedbackCenterY, f.key).setDisplaySize(feedbackSize, feedbackSize).setOrigin(0.5).setDepth(1002);
+      const label = this.add.text(x, feedbackCenterY + feedbackSize/2 + 6, f.label, { font: `${Math.round(10 * layout.fontScale)}px Arial`, fill:'#fff' }).setOrigin(0.5);
+      content.add(img); content.add(label); feedbackImages.push(img,label);
     });
+    currentY = feedbackCenterY + feedbackSize/2 + 40;
 
-    // Part 3: Remaining instructions positioned after feedback images
-    const instructionsPart3 = this.add.text(width / 2, height * 0.72,
-      '• (No symbol) = Element not in the secret code\n\n' +
-      '🎁 Santa\'s Hint: Available after a few guesses!\n' +
-      '🏆 Win by guessing the complete code!', 
-      {
-        font: `${Math.round(13 * layout.fontScale)}px Arial`,
-        fill: '#fff',
-        align: 'left',
-        lineSpacing: Math.round(3 * layout.fontScale),
-        wordWrap: { width: width * 0.85 }
-      }
-    ).setOrigin(0.5);
+    makeText('• (No symbol) = Element not in the secret code\n\n🎁 Santa\'s Hint: Available after a few guesses!\n🏆 Win by guessing the complete code!\n\n🧮 Scoring Summary:\n  ★ Perfect = 180 pts | 🔔 Close = 80 pts\n  +250 solve bonus if you win\n  Unused guesses (before 10): first 3×80, next 3×50, rest×30\n  Santa\'s Hint: -220 (once)\n  Final = Elements + Solve + Speed +/- Hint');
 
-    // Close button - adjusted for new layout
-    const closeBtn = this.add.text(width / 2, height * 0.82, 'Got it! Let\'s Play! 🎄', {
+    // Close button
+    const closeBtn = this.add.text(width/2, currentY + 8, 'Got it! Let\'s Play! 🎄', {
       font: `${Math.round(16 * layout.fontScale)}px Arial`,
       fill: '#fff',
       backgroundColor: '#c0392b',
-      padding: { 
-        left: Math.round(16 * layout.fontScale), 
-        right: Math.round(16 * layout.fontScale), 
-        top: Math.round(8 * layout.fontScale), 
-        bottom: Math.round(8 * layout.fontScale) 
-      },
-      borderRadius: 8
+      padding: { left: 18, right: 18, top: 8, bottom: 8 }
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-    
-    closeBtn.on('pointerdown', () => {
-      this.hideHelpOverlay();
-    });
-    
-    // Add touch feedback to close button
+    content.add(closeBtn);
+    closeBtn.on('pointerdown', ()=> this.hideHelpOverlay());
     this.addButtonTouchFeedback(closeBtn, { colorTint: 0xe74c3c });
-    // Add all elements to container
-    this.helpOverlay.add([helpBg, helpTitle, instructionsPart1, instructionsPart2, instructionsPart3, closeBtn]);
-    
-    // Store element images and feedback images for cleanup
-    this.helpElementImages = elementImages.concat(feedbackImages);
-    this.helpOverlay.setDepth(1000);
 
-    // Smooth entrance animation
-    this.helpOverlay.setAlpha(0);
-    this.helpOverlay.setScale(0.9);
-    this.tweens.add({
-      targets: this.helpOverlay,
-      alpha: 1,
-      scaleX: 1,
-      scaleY: 1,
-      duration: 300,
-      ease: 'Back.easeOut'
-    });
+    // Overflow handling: if content bottom goes beyond screen, shift upward slightly
+    const contentBoundsBottom = closeBtn.y + closeBtn.height/2 + 20;
+    if (contentBoundsBottom > height) {
+      const shift = contentBoundsBottom - height;
+      content.y -= shift;
+    }
+
+    // Store for cleanup
+    this.helpElementImages = elementImages.concat(feedbackImages);
+    this.helpOverlay.setDepth(1000).setAlpha(0).setScale(0.92);
+    this.tweens.add({ targets: this.helpOverlay, alpha:1, scaleX:1, scaleY:1, duration:260, ease:'Back.easeOut'});
   }
   
   hideHelpOverlay() {

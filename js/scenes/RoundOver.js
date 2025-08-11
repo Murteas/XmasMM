@@ -70,7 +70,7 @@ class RoundOver extends Phaser.Scene {
     const gameOverText = this.gameData.won ? 'Success!' : 'Game Over';
     const headerColor = this.gameData.won ? '#27ae60' : '#e74c3c';
     
-    const header = this.add.text(width / 2, 30, gameOverText, {
+  const header = this.add.text(width / 2, 26, gameOverText, {
       font: '28px Arial',
       fill: headerColor,
       fontStyle: 'bold'
@@ -78,7 +78,7 @@ class RoundOver extends Phaser.Scene {
     
     // Compact score display
     const breakdown = this.gameData.scoreManager.getScoreBreakdown();
-    const scoreText = this.add.text(width / 2, 65, `Score: ${breakdown.total} points`, {
+  const scoreText = this.add.text(width / 2, 60, `Score: ${breakdown.total} points`, {
       font: '20px Arial',
       fill: '#fff',
       fontStyle: 'bold'
@@ -94,11 +94,12 @@ class RoundOver extends Phaser.Scene {
       
       // Build detailed score breakdown (avoid redundant '+' signs)
       const parts = [];
+      const cfg = this.gameData.scoreManager.scoringConfig || { perfectElementPoints: 180, closeElementPoints: 80 };
       if (finalFeedback.perfect > 0) {
-        parts.push(`${finalFeedback.perfect}★ (${finalFeedback.perfect * 200}pts)`);
+        parts.push(`${finalFeedback.perfect}★ (${finalFeedback.perfect * cfg.perfectElementPoints}pts)`);
       }
       if (finalFeedback.close > 0) {
-        parts.push(`${finalFeedback.close}🔔 (${finalFeedback.close * 100}pts)`);
+        parts.push(`${finalFeedback.close}🔔 (${finalFeedback.close * cfg.closeElementPoints}pts)`);
       }
       if (breakdown.completeBonus > 0) {
         // No leading '+'; joiner will add plus between components
@@ -117,12 +118,20 @@ class RoundOver extends Phaser.Scene {
       scoreInfo = 'Keep practicing!';
     }
     
-    const scoreDetails = this.add.text(width / 2, 95, scoreInfo, {
+  const scoreDetails = this.add.text(width / 2, 90, scoreInfo, {
       font: '14px Arial',
       fill: '#ddd'
     }).setOrigin(0.5);
-    
-    this.headerContainer.add([header, scoreText, scoreDetails]);
+
+  this.headerContainer.add([header, scoreText, scoreDetails]);
+
+    // Info button (small circle i) to open scoring modal
+    const infoBtn = this.add.text(width - 28, 18, 'ⓘ', {
+      font: '20px Arial',
+      fill: '#fff'
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    infoBtn.on('pointerdown', () => this.showScoringModal());
+    this.headerContainer.add(infoBtn);
   }
 
   createScrollableContent(contentHeight) {
@@ -442,7 +451,7 @@ class RoundOver extends Phaser.Scene {
   }
 
   clampScrollPosition(desiredY, contentHeight) {
-    const headerY = 140; // static header height used above
+  const headerY = 150; // adjusted to include legend line spacing
     const minY = headerY - (this.totalScrollableContentHeight - contentHeight); // max scroll up (content moves up, container y decreases)
     const maxY = headerY; // original position
     if (this.totalScrollableContentHeight <= contentHeight) return headerY;
@@ -680,4 +689,97 @@ class RoundOver extends Phaser.Scene {
   }
 
   // ...existing code...
+
+  showScoringModal() {
+    if (this.scoringModal) return; // prevent duplicates
+    const { width, height } = this.cameras.main;
+    const container = this.add.container(0,0);
+    this.scoringModal = container;
+    const backdrop = this.add.rectangle(width/2, height/2, width, height, 0x000000, 0.85)
+      .setInteractive();
+    const panelWidth = Math.min(520, width * 0.9);
+    const maxPanelHeight = Math.min(420, height * 0.85);
+    // Temporary panel placeholder; we'll resize after measuring content
+    const panel = this.add.rectangle(width/2, height/2, panelWidth, maxPanelHeight, 0x0d2a40, 0.95)
+      .setStrokeStyle(2, 0xffffff, 0.25);
+    const title = this.add.text(width/2, height/2 - maxPanelHeight/2 + 40, 'Scoring Explained', {
+      font: '22px Arial',
+      fill: '#ffd700',
+      fontStyle: 'bold'
+    }).setOrigin(0.5);
+
+    const bodyText = [
+      'Element Points:',
+      '  ★ Perfect element right spot = 180 pts',
+      '  🔔 Right element wrong spot = 80 pts',
+      '',
+      'Solve Bonus:',
+      '  +250 for cracking the full code',
+      '',
+      'Speed Bonus (unused guesses before guess 10):',
+      '  First 3 unused guesses ×80',
+      '  Next 3 unused guesses ×50',
+  '  Remaining unused guesses ×30',
+      '',
+      'Hint Penalty:',
+      '  Using Santa\'s Hint costs 220 points (once per game)',
+      '',
+      'Final Score = Elements + Solve + Speed +/- Hint'
+    ].join('\n');
+    const body = this.add.text(width/2, title.y + 30, bodyText, {
+      font: '14px Arial',
+      fill: '#ffffff',
+      align: 'left',
+      lineSpacing: 4,
+      wordWrap: { width: panelWidth - 60 }
+    }).setOrigin(0.5, 0);
+    // Position close button beneath body (measure after render)
+    const closeBtn = this.add.text(width/2, 0, 'Close', {
+      font: '18px Arial',
+      fill: '#fff',
+      backgroundColor: '#c0392b',
+      padding: { left: 18, right: 18, top: 8, bottom: 8 }
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    closeBtn.on('pointerdown', () => this.hideScoringModal());
+    container.add([backdrop, panel, title, body, closeBtn]);
+
+    // After next frame, adjust panel & close button vertically based on body height
+    this.time.delayedCall(10, () => {
+      const contentHeight = (body.y - panel.y + body.height) + 80; // 40 padding top + 40 bottom approx
+      const finalPanelHeight = Math.min(maxPanelHeight, Math.max(260, contentHeight));
+      panel.height = finalPanelHeight;
+      panel.y = height/2; // ensure centered
+      // Reposition title relative to new panel height
+      title.y = panel.y - finalPanelHeight/2 + 40;
+      body.y = title.y + 30;
+      closeBtn.y = body.y + body.height + 28;
+      // If close button exceeds panel, expand panel if room
+      const needed = (closeBtn.y + closeBtn.height/2 + 24) - (panel.y + finalPanelHeight/2);
+      if (needed > 0) {
+        const expanded = Math.min(maxPanelHeight, finalPanelHeight + needed);
+        panel.height = expanded;
+        // Recompute center-based positions after expansion
+        title.y = panel.y - expanded/2 + 40;
+        body.y = title.y + 30;
+        closeBtn.y = body.y + body.height + 28;
+      }
+    });
+    container.setDepth(9999).setAlpha(0).setScale(0.95);
+    this.tweens.add({ targets: container, alpha: 1, scaleX: 1, scaleY: 1, duration: 200, ease: 'Back.easeOut'});
+  }
+
+  hideScoringModal() {
+    if (!this.scoringModal) return;
+    const modal = this.scoringModal;
+    this.scoringModal = null;
+    this.tweens.add({
+      targets: modal,
+      alpha: 0,
+      scaleX: 0.9,
+      scaleY: 0.9,
+      duration: 150,
+      ease: 'Power2',
+      onComplete: () => modal.destroy()
+    });
+  }
 }
