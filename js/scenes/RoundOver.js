@@ -267,50 +267,36 @@ class RoundOver extends Phaser.Scene {
     const buttonY = 25; // Centered in footer
     const buttonSpacing = width * 0.25;
     
-    // Play Again Button
-    const playAgainBtn = this.add.text(width / 2 - buttonSpacing, buttonY, 'Play Again', {
-      font: '18px Arial',
-      fill: '#fff',
-      backgroundColor: '#0d5016',
-      padding: { left: 20, right: 20, top: 12, bottom: 12 }
-    }).setOrigin(0.5)
-      .setInteractive({ useHandCursor: true })
-      .on('pointerdown', () => {
-        this.scene.start('Game', { 
-          difficulty: this.gameData.difficulty,
-          gameMode: this.gameData.gameMode 
-        });
-      })
-      .on('pointerover', function() {
-        this.setStyle({ backgroundColor: '#156b1f' });
-      })
-      .on('pointerout', function() {
-        this.setStyle({ backgroundColor: '#0d5016' });
-      });
-    
-    // Share Score Button
-    const shareBtn = this.add.text(width / 2 + buttonSpacing, buttonY, 'Share Score', {
-      font: '18px Arial',
-      fill: '#0d5016',
-      backgroundColor: '#ffd700',
-      padding: { left: 20, right: 20, top: 12, bottom: 12 }
-    }).setOrigin(0.5)
-      .setInteractive({ useHandCursor: true })
-      .on('pointerdown', () => {
-        this.shareScore();
-      })
-      .on('pointerover', function() {
-        this.setStyle({ backgroundColor: '#ffe55c' });
-      })
-      .on('pointerout', function() {
-        this.setStyle({ backgroundColor: '#ffd700' });
-      });
-    
-  // Add richer button feedback (mobile-friendly touch animation)
-  this.addButtonFeedback(playAgainBtn);
-  this.addButtonFeedback(shareBtn);
+    const playAgainBtn = ButtonFactory.createButton(
+      this,
+      width / 2 - buttonSpacing,
+      buttonY,
+      'Play Again',
+      'primary',
+      {
+        icon: '🔁',
+        onClick: () => {
+          this.scene.start('Game', {
+            difficulty: this.gameData.difficulty,
+            gameMode: this.gameData.gameMode
+          });
+        }
+      }
+    );
 
-  this.footerContainer.add([playAgainBtn, shareBtn]);
+    const shareBtn = ButtonFactory.createButton(
+      this,
+      width / 2 + buttonSpacing,
+      buttonY,
+      'Share Score',
+      'accent',
+      {
+        icon: '📤',
+        onClick: () => this.shareScore()
+      }
+    );
+
+    this.footerContainer.add([playAgainBtn, shareBtn]);
   }
 
   shareScore() {

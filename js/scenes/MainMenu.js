@@ -246,15 +246,11 @@ class MainMenu extends Phaser.Scene {
     makeText('• (No symbol) = Element not in the secret code\n\n🎁 Santa\'s Hint: Available after a few guesses!\n🏆 Win by guessing the complete code!\n\n🧮 Scoring Summary:\n  ★ Perfect = 180 pts | 🔔 Close = 80 pts\n  +250 solve bonus if you win\n  Unused guesses (before 10): first 3×80, next 3×50, rest×30\n  Santa\'s Hint: -220 (once)\n  Final = Elements + Solve + Speed +/- Hint');
 
     // Close button
-    const closeBtn = this.add.text(width/2, currentY + 8, 'Got it! Let\'s Play! 🎄', {
-      font: `${Math.round(16 * layout.fontScale)}px Arial`,
-      fill: '#fff',
-      backgroundColor: '#c0392b',
-      padding: { left: 18, right: 18, top: 8, bottom: 8 }
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    const closeBtn = ButtonFactory.createButton(this, width/2, currentY + 8, 'Let\'s Play!', 'accent', {
+      icon: '🎄',
+      onClick: () => this.hideHelpOverlay()
+    });
     content.add(closeBtn);
-    closeBtn.on('pointerdown', ()=> this.hideHelpOverlay());
-    this.addButtonTouchFeedback(closeBtn, { colorTint: 0xe74c3c });
 
     // Overflow handling: if content bottom goes beyond screen, shift upward slightly
     const contentBoundsBottom = closeBtn.y + closeBtn.height/2 + 20;
