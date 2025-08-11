@@ -1,105 +1,139 @@
 # Task: Festive Button & UI Theming Refresh (PRIORITY – before Audio)
 
-**Status**: 📋 PENDING  
+**Status**: 🟨 IN PROGRESS (ButtonFactory Complete - Text Theming Remaining)  
 **Priority**: HIGH (Execute before `AudioImplementation.md`)  
 **Objective**: Unify and upgrade interactive UI elements (buttons / info icons / hint text) with a polished, festive visual style that is consistent, accessible, and reusable—without introducing a build step.
 
-## Why This Matters
-Current buttons are functional but visually flat and inconsistent. A cohesive festive style (subtle gradients, ornament accents, consistent spacing, soft shadows, accessible contrast) will elevate perceived quality more than audio alone and should land first so later features (audio, random guess button) adopt the shared system.
+## 🎉 COMPLETED PROGRESS
+✅ **ButtonFactory Implementation**: Complete with Option 2.5 design (elegant Christmas + mobile clarity)
+✅ **Style Tokens**: LayoutConfig.BUTTON_STYLE with comprehensive theming
+✅ **Button Variants**: Primary, accent, danger variants with festive styling
+✅ **Interactive States**: Hover, pressed, disabled states with proper feedback
+✅ **Mobile Optimization**: Enhanced typography with stroke outlines for clarity
+✅ **Scene Integration**: MainMenu, RoundOver, DifficultySelection all using ButtonFactory
+✅ **Sophisticated Gradients**: _getElegantColorStops() with rich Christmas colors
+✅ **Accessibility**: WCAG contrast and 44x44 minimum hit targets
 
-## Goals
-- Centralize button styling tokens (colors, padding, corner radius, shadow intensity) – extend `LayoutConfig` (no bundler needed).
-- Replace ad‑hoc Text objects-as-buttons with a helper that wraps: background shape + label + optional accent icon/emoji.
-- Add light festive accents (tiny ornament/star sparkle) on primary CTAs (Play Again, Share Score, Submit, Hint when available).
-- Provide consistent press / hover / disabled states (scale + tint currently duplicated).
-- Maintain strict readability (WCAG-ish contrast in dark backgrounds).
-- Keep implementation minimal & fully data‑driven (no runtime image generation, use Phaser Graphics). 
+## 🎯 REMAINING WORK: Festive Text Theming
 
-## Non-Goals (Defer)
-- Full particle system or snow fall (separate optional polish task)
-- Animated gradient shaders (would require pipeline changes)
-- Theme switching system (YAGNI for now)
+**Focus**: Apply consistent festive styling to non-button text elements (titles, scores, hints, labels)
 
-## Implementation Plan
-### 1. Define Style Tokens (LayoutConfig additions)
-Add under a new section `BUTTON_STYLE`:
+### 1. Game Title Enhancement
+- **Current Issue**: Generic "XmasMM" title lacks festive appeal
+- **Action**: Research better Christmas-themed title options with user input
+- **Implementation**: Create title with festive styling (gradients, shadows, ornamental elements)
+
+### 2. Festive Text Factory
+Create `js/utils/TextFactory.js` for consistent festive text styling:
+```javascript
+TextFactory.createFestiveTitle(scene, x, y, text, size = 'large')
+TextFactory.createFestiveLabel(scene, x, y, text, variant = 'primary') 
+TextFactory.createFestiveScore(scene, x, y, score, highlight = false)
 ```
-PRIMARY_BG: '#0d5016'
-PRIMARY_BG_HOVER: '#156b1f'
-PRIMARY_BG_ACTIVE: '#093b11'
-PRIMARY_FG: '#ffffff'
-ACCENT_BG: '#ffd700'
-ACCENT_BG_HOVER: '#ffe55c'
-ACCENT_BG_ACTIVE: '#e6c200'
-ACCENT_FG: '#0d5016'
-DISABLED_BG: '#444444'
-DISABLED_FG: '#bbbbbb'
-RADIUS: 10
-PADDING_X: 22
-PADDING_Y: 12
-SHADOW_COLOR: 0x000000
-SHADOW_ALPHA: 0.35
-SHADOW_OFFSET_Y: 3
-FONT: '18px Arial'
+
+**Variants**:
+- `title`: Large, gradient text with shadow/glow for main headings
+- `score`: Bold, highlighted for score displays with celebration styling
+- `hint`: Subtle but readable for hint text with gentle Christmas accent
+- `label`: Standard festive styling for general labels
+
+### 3. Typography Enhancements
+- **Consistent Font Stack**: Christmas-appropriate fonts (Trebuchet MS established)
+- **Color Gradients**: Rich Christmas colors (deep greens, golds, crimsons)
+- **Text Effects**: Subtle shadows, strokes, and glows for readability
+- **Mobile Optimization**: Stroke outlines and sizing for mobile clarity
+
+### 4. Scene Text Updates
+Apply festive text styling to:
+- **GameScene**: Current score, hints, match status
+- **RoundOver**: Final scores, congratulations text, statistics
+- **MainMenu**: Game title, subtitle text, help content
+- **DifficultySelection**: Level descriptions, labels
+
+### 5. Christmas Ornamental Elements
+Add subtle decorative elements:
+- Small snowflake/star emojis for accent points
+- Candy cane color accents in text shadows
+- Holly leaf/berry colors in gradients
+- Optional tiny sparkle effects for scores/achievements
+
+## Implementation Plan (Remaining)
+
+### 1. Game Title Research & Selection
+- [ ] Brainstorm Christmas-themed alternatives to "XmasMM"
+- [ ] Consider: "Christmas Match Magic", "Holiday Memory Match", "Festive Match Quest", etc.
+- [ ] User feedback on preferred title
+- [ ] Implement title with gradient styling and optional graphic element
+
+### 2. Create TextFactory Utility
+Add `js/utils/TextFactory.js` with methods for consistent festive text:
+- Color gradients using Christmas palette
+- Shadow/stroke effects for readability  
+- Size variants (title, subtitle, body, caption)
+- Mobile-optimized typography
+
+### 3. Update LayoutConfig Text Styles
+Extend `LayoutConfig.js` with text styling tokens:
+```javascript
+TEXT_STYLE: {
+  TITLE_GRADIENT: ['#ff6b6b', '#ffd93d', '#6bcf7f'],
+  SCORE_HIGHLIGHT: '#ffd700',
+  HINT_SUBTLE: '#a8d8a8',
+  SHADOW_COLOR: '#2d5a32',
+  GLOW_COLOR: '#fff',
+  ...
+}
 ```
-(Adjust sizes for smaller screens with simple multiplier if width < 430.)
 
-### 2. Create `ButtonFactory` Utility (`js/utils/ButtonFactory.js`)
-Responsibilities:
-- `createButton(scene, x, y, label, variant, opts)` returns container with background (rounded rect), label text, optional emoji/icon.
-- Variants: `primary`, `accent`, `ghost`, `danger` (future-proof; implement at least primary & accent now).
-- Handles interactive states: hover/over (desktop), pointerdown/up, disable/enable API.
-- Applies consistent shadow (drop shadow via duplicate graphics offset OR pipeline tint fallback on low-end devices).
-- Accepts `onClick` callback.
+### 4. Apply Festive Text Styling
+Update scenes to use TextFactory for all non-button text:
+- Replace plain `scene.add.text()` calls with `TextFactory.createFestive...()`
+- Ensure consistent styling across all scenes
+- Test mobile readability and contrast
 
-### 3. Replace Existing Button Constructions
-Targets:
-- RoundOver: Play Again, Share Score, Info modal Close (danger or accent), (future Random Guess inherits automatically).
-- MainMenu: Play, How to Play, Difficulty selections if present, future audio toggle integration.
-- GameScene footer: Submit, Hint, (future Random Guess).
+### 5. Title Enhancement Priority Tasks
+- [ ] Implement chosen game title with festive styling
+- [ ] Consider adding subtle title graphic/ornament
+- [ ] Test title display across different screen sizes
+- [ ] Ensure title fits well with overall festive theme
 
-### 4. Add Optional Accent Emoji/Icon Support
-- Provide small star / bell / gift emoji to left of key CTAs (config flag).
-- Scale with font; ensure baseline alignment.
+## Game Title Brainstorming
+**Current**: "XmasMM" (Generic, not festive enough)
+**Candidates**:
+- "Christmas Match Magic" ✨
+- "Holiday Memory Match" 🎄  
+- "Festive Match Quest" 🎁
+- "Christmas Card Memory" 🎅
+- "Holiday Harmony Match" ❄️
+- "Merry Match Moments" 🔔
+- "Christmas Memory Magic" ⭐
 
-### 5. Centralize Feedback Animation
-Move current `addButtonFeedback` logic into factory (scale pulse + maybe quick glow).
+## Files To Add / Modify (Remaining)
+- Add: `js/utils/TextFactory.js`
+- Modify: `js/config/LayoutConfig.js` (text style tokens)
+- Modify: Scene files for text styling updates
+- Update: Game title implementation
+- Update: README with new game title
 
-### 6. Accessibility & Responsiveness
-- Ensure minimum hit target >= 44x44.
-- Auto-expand padding if text shorter than threshold.
-- Color contrast check (simple luminance calc; console.warn if variant fails).
+## Success Criteria (Remaining)
+- [ ] All text elements use consistent festive styling
+- [ ] New game title is implemented and visually appealing
+- [ ] Mobile text readability maintained or improved
+- [ ] Christmas theme is cohesive across all text elements
+- [ ] No performance regressions from text styling
 
-### 7. Update Docs
-- README: brief “Festive UI Style” section.
-- AI_AGENT_BRIEFING: mention ButtonFactory, tokens, extension pattern.
-- Add note to RandomGuessFeature to use factory.
+---
 
-### 8. Light QA Checklist
-- [ ] Buttons render correctly on mobile DPR 1x / 2x / 3x.
-- [ ] States (normal, hover, pressed, disabled) visually distinct.
-- [ ] Hint button disabled style applies after use.
-- [ ] Info modal Close using consistent styling.
-- [ ] No layout regressions (RoundOver scroll still correct).
-- [ ] Performance: no GC spikes when creating/destroying buttons.
-
-## Files To Add / Modify
-- Add: `js/utils/ButtonFactory.js`
-- Modify: `js/config/LayoutConfig.js` (tokens), `RoundOver.js`, `MainMenu.js`, `GameScene.js`, `UILayoutManager.js`, `GameInputHandler.js` (for hint styling refresh), README, AI_AGENT_BRIEFING.
-
-## Risks & Mitigations
-| Risk | Mitigation |
-|------|------------|
-| Over-styling reduces clarity | Keep palette limited to two strong variants + neutral | 
-| Inconsistent adoption | Grep for `.setInteractive` button patterns and migrate | 
-| Mobile performance (graphics redraw) | Cache graphics textures using `generateTexture` when size stable | 
-| Text scaling truncation | Recalculate container width after label set | 
-
-## Success Criteria
-- [ ] All major interactive elements use ButtonFactory.
-- [ ] Styling defined by centralized tokens only (no magic numbers in scenes).
-- [ ] Visual upgrade noted (subjective) while keeping readability & contrast.
-- [ ] No new console errors or performance regressions.
+## 📋 COMPLETED CHECKLIST
+- [x] ButtonFactory created with festive styling system
+- [x] LayoutConfig.BUTTON_STYLE tokens implemented
+- [x] All major scenes converted to use ButtonFactory
+- [x] Option 2.5 design with elegant Christmas gradients
+- [x] Mobile-optimized typography with stroke outlines
+- [x] Interactive states (hover, pressed, disabled) working
+- [x] Sophisticated color gradients implemented
+- [x] Accessibility considerations (contrast, hit targets)
+- [x] Performance optimized (texture caching)
 
 ---
 **Precedes**: `AudioImplementation.md`  

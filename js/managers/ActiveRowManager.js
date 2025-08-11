@@ -317,21 +317,27 @@ class ActiveRowManager {
     
     const submitButtonX = positioning.startX + (codeLength * positioning.elementSpacing) + 10;
     
-    this.activeRowSubmitBtn = this.scene.add.text(submitButtonX, activeRowY, 'Submit', {
-      font: '11px Arial',
-      fill: '#fff',
-      backgroundColor: '#27ae60',
-      padding: { left: 6, right: 6, top: 3, bottom: 3 }
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(GameUtils.getDepthLayers().TOUCH_AREA + 1.2);
+    // Use ButtonFactory for consistent festive styling with candy cane stripes
+    this.activeRowSubmitBtn = ButtonFactory.createButton(
+      this.scene,
+      submitButtonX,
+      activeRowY,
+      'Submit',
+      'primary',
+      {
+        icon: '🎯', // Target icon - perfect for "submit guess"
+        pattern: 'candycane', // Christmas candy cane stripes
+        gradient: true, // Festive gradient effect
+        font: '11px Arial', // Maintain current mobile sizing
+        onClick: () => this.scene.submitGuess()
+      }
+    );
     
-    // Add data tag for ScrollableHistoryManager to find
+    // Set depth and data tag for ScrollableHistoryManager
+    this.activeRowSubmitBtn.setDepth(GameUtils.getDepthLayers().TOUCH_AREA + 1.2);
     this.activeRowSubmitBtn.setData('uiType', 'submitButton');
     
-    this.activeRowSubmitBtn.on('pointerdown', () => {
-      this.scene.submitGuess();
-    });
-    
-    this.addSubmitButtonTouchFeedback(this.activeRowSubmitBtn);
+    // ButtonFactory handles touch feedback automatically, no need for addSubmitButtonTouchFeedback
   }
 
   showElementPicker(slotIndex) {
@@ -407,36 +413,7 @@ class ActiveRowManager {
     }
   }
 
-  addSubmitButtonTouchFeedback(button) {
-    button.on('pointerdown', () => {
-      button.setScale(0.9);
-      button.setAlpha(0.8);
-    });
-
-    button.on('pointerup', () => {
-      this.scene.tweens.add({
-        targets: button,
-        scale: 1.1,
-        alpha: 1,
-        duration: 100,
-        ease: 'Back.easeOut',
-        onComplete: () => {
-          this.scene.tweens.add({
-            targets: button,
-            scale: 1,
-            duration: 100,
-            ease: 'Power2'
-          });
-        }
-      });
-    });
-    
-    button.on('pointerout', () => {
-      this.scene.tweens.killTweensOf(button);
-      button.setScale(1);
-      button.setAlpha(1);
-    });
-  }
+  // Note: addSubmitButtonTouchFeedback method removed - ButtonFactory handles touch feedback automatically
 
   updateActiveRowPosition() {
     if (!this.hasActiveRow) return;

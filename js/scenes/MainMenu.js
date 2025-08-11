@@ -47,7 +47,7 @@ class MainMenu extends Phaser.Scene {
   createButtons(width, height) {
     // Start Game button (primary variant)
     this.startBtn = ButtonFactory.createButton(this, width / 2, height * 0.35, 'Start Game', 'primary', {
-      icon: '�',
+      icon: '🎄',
       gradient: true,
       border: true,
       onClick: () => this.scene.start('DifficultySelection')
@@ -66,7 +66,7 @@ class MainMenu extends Phaser.Scene {
     // SFX Toggle (danger variant for visual differentiation)
     const sfxLabel = 'SFX: ON';
     this.sfxBtn = ButtonFactory.createButton(this, width / 2, height * 0.65, sfxLabel, 'danger', {
-      icon: '�',
+      icon: '🔊',
       pattern: 'candycane',
       onClick: () => {
         const current = this.registry.get('sfxOn');

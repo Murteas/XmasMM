@@ -13,10 +13,19 @@ class ButtonFactory {
 
     const container = scene.add.container(x, y);
 
-    const labelText = scene.add.text(0, 0, label, { font, fill: palette.fg, align: 'center' }).setOrigin(0.5);
+    // Enhanced text styling for mobile clarity (Option 2.5)
+    const textStyle = { 
+      font, 
+      fill: palette.fg, 
+      align: 'center',
+      stroke: '#2d5a32', // Dark Christmas green for contrast
+      strokeThickness: 2
+    };
+    const labelText = scene.add.text(0, 0, label, textStyle).setOrigin(0.5);
+    
     let iconText = null;
     if (options.icon) {
-      iconText = scene.add.text(0, 0, options.icon, { font, fill: palette.fg }).setOrigin(0.5);
+      iconText = scene.add.text(0, 0, options.icon, textStyle).setOrigin(0.5);
     }
     const spacer = options.icon ? (options.iconSpacing || 8) : 0;
     const totalLabelWidth = labelText.width + (iconText ? iconText.width + spacer : 0);
@@ -112,24 +121,33 @@ class ButtonFactory {
   static _drawButtonBackground(g, width, height, radius, colorHex, shadowColor, shadowOffsetY, shadowAlpha, opts = {}) {
     if (shadowAlpha > 0) { g.fillStyle(shadowColor, shadowAlpha); g.fillRoundedRect(0, shadowOffsetY, width, height, radius); }
     const baseColorInt = Phaser.Display.Color.HexStringToColor(colorHex).color;
-    g.fillStyle(baseColorInt, 1);
-    g.fillRoundedRect(0, 0, width, height, radius);
     
     if (opts.gradient) {
-      // Overlay a subtle vertical gradient inside padding (no repeated rounded corners to prevent artifacts)
+      // Elegant Christmas gradient with sophisticated color stops
       const base = Phaser.Display.Color.IntegerToColor(baseColorInt);
-      const lighter = { r: Math.min(255, base.red + 35), g: Math.min(255, base.green + 35), b: Math.min(255, base.blue + 35) };
-      const darker = { r: Math.max(0, base.red - 45), g: Math.max(0, base.green - 45), b: Math.max(0, base.blue - 45) };
-      const steps = 24;
-      for (let i = 0; i < steps; i++) {
-        const t = i / (steps - 1);
-        const r = Phaser.Math.Linear(lighter.r, darker.r, t);
-        const gCh = Phaser.Math.Linear(lighter.g, darker.g, t);
-        const b = Phaser.Math.Linear(lighter.b, darker.b, t);
-        g.fillStyle(Phaser.Display.Color.GetColor(r, gCh, b), 0.65);
-        const sliceY = (height / steps) * i;
-        g.fillRect(1, sliceY, width - 2, height / steps + 1); // inset 1px to avoid edge bleed
+      const colorStops = this._getElegantColorStops(base);
+      
+      // Multi-stop gradient for premium feel
+      for (let i = 0; i < height; i++) {
+        const t = i / height;
+        let stopIndex = Math.floor(t * 3);
+        let localT = (t * 3) - stopIndex;
+        if (stopIndex >= 3) { stopIndex = 2; localT = 1; }
+        
+        const color1 = colorStops[stopIndex];
+        const color2 = colorStops[stopIndex + 1] || colorStops[stopIndex];
+        
+        const r = Math.round(Phaser.Math.Linear(color1.r, color2.r, localT));
+        const gCh = Math.round(Phaser.Math.Linear(color1.g, color2.g, localT));
+        const b = Math.round(Phaser.Math.Linear(color1.b, color2.b, localT));
+        
+        g.fillStyle(Phaser.Display.Color.GetColor(r, gCh, b), 1);
+        g.fillRect(1, i, width - 2, 1);
       }
+    } else {
+      // Fallback solid color
+      g.fillStyle(baseColorInt, 1);
+      g.fillRoundedRect(0, 0, width, height, radius);
     }
     
     if (opts.pattern === 'candycane') {
@@ -158,16 +176,32 @@ class ButtonFactory {
     }
     
     if (opts.border) {
+      // Elegant gold border with inner glow
       const borderColorInt = Phaser.Display.Color.HexStringToColor(opts.borderColor || '#ffd700').color;
-      g.lineStyle(2, borderColorInt, 1);
+      g.lineStyle(2, borderColorInt, 0.9);
       g.strokeRoundedRect(0, 0, width, height, radius);
+      
+      // Inner glow for premium feel
+      g.lineStyle(1, 0xffffff, 0.3);
+      g.strokeRoundedRect(2, 2, width - 4, height - 4, Math.max(0, radius - 2));
     }
     
     if (opts.highlight !== false) {
-      const highlightHeight = Math.max(4, height * 0.22);
-      g.fillStyle(0xffffff, 0.10);
+      // Subtle top highlight
+      const highlightHeight = Math.max(4, height * 0.25);
+      g.fillStyle(0xffffff, 0.12);
       g.fillRoundedRect(0, 0, width, highlightHeight, { tl: radius, tr: radius, bl: 0, br: 0 });
     }
+  }
+
+  static _getElegantColorStops(baseColor) {
+    // Create sophisticated Christmas color gradients
+    return [
+      { r: Math.min(255, baseColor.red + 40), g: Math.min(255, baseColor.green + 40), b: Math.min(255, baseColor.blue + 40) },
+      { r: Math.min(255, baseColor.red + 15), g: Math.min(255, baseColor.green + 15), b: Math.min(255, baseColor.blue + 15) },
+      { r: baseColor.red, g: baseColor.green, b: baseColor.blue },
+      { r: Math.max(0, baseColor.red - 30), g: Math.max(0, baseColor.green - 30), b: Math.max(0, baseColor.blue - 30) }
+    ];
   }
 
   static _generateBackground(scene, variant, palette, cfg, btnWidth, btnHeight, scaleFactor, options) {
