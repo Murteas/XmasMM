@@ -463,7 +463,8 @@ class UILayoutManager {
     // MOBILE OPTIMIZATION: Compact horizontal legend at bottom of screen
     const isSmallScreen = width < 500;
     const legendHeight = 40; // Increased from 35px
-    const legendY = height - 150; // Position in empty space below history
+    const safeAreaInsets = this.scene.safeAreaManager ? this.scene.safeAreaManager.getInsets() : { bottom: 0 };
+    const legendY = height - 150 - safeAreaInsets.bottom; // Position in empty space below history, above safe area
     
     // Horizontal layout for compactness
     const totalWidth = isSmallScreen ? width - 40 : 300;

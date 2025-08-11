@@ -37,6 +37,7 @@ class ModuleLoader {
     const coreModules = [
       'js/utils/TestConfig.js',
       'js/utils/GameUtils.js',
+      'js/utils/SafeAreaManager.js',
       'js/config/LayoutConfig.js',
       'js/utils/ButtonFactory.js'
     ];

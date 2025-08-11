@@ -158,13 +158,14 @@ class ActiveRowManager {
     
     if (guessCount >= 7) {
       // For games with many guesses, allow active row to go beyond normal content area
-      // but still respect absolute safe area (browser UI)
-      const absoluteMaxY = height - 100; // Leave space for browser UI and submit button
+      // but still respect absolute safe area (browser UI + device safe areas)
+      const safeAreaInsets = this.scene.safeAreaManager ? this.scene.safeAreaManager.getInsets() : { bottom: 0 };
+      const absoluteMaxY = height - 100 - safeAreaInsets.bottom; // Leave space for browser UI, submit button and safe areas
       activeRowY = Math.min(activeRowY, absoluteMaxY);
       
       console.log(`🎯 ActiveRowManager: Many guesses (${guessCount}), using extended layout`);
       console.log(`  - Calculated activeRowY: ${lastCompletedGuessY + activeRowSeparation}`);
-      console.log(`  - Absolute max Y: ${absoluteMaxY}`);
+      console.log(`  - Absolute max Y: ${absoluteMaxY} (safe bottom: ${safeAreaInsets.bottom}px)`);
       console.log(`  - Final activeRowY: ${activeRowY}`);
     } else {
       // For normal games, use standard content area constraints

@@ -129,6 +129,7 @@ class GameScene extends Phaser.Scene {
     // Initialize all specialized managers
     this.gameStateManager = new GameStateManager(this);
     this.scoreManager = new ScoreManager(this);
+    this.safeAreaManager = new SafeAreaManager(this);
     
     // SIMPLIFIED: Always use standard HistoryManager with Phaser containers
     // Create simple three-zone layout using pure Phaser containers
@@ -149,8 +150,9 @@ class GameScene extends Phaser.Scene {
   createSimplePhaserLayout() {
     // Simplified three-zone layout using pure Phaser containers
     const { width, height } = this.cameras.main;
+    const safeAreaInsets = this.safeAreaManager.getInsets();
     
-    // === SIMPLE THREE-ZONE LAYOUT ===
+    // === SIMPLE THREE-ZONE LAYOUT WITH SAFE AREA SUPPORT ===
     // Header container (fixed at top)
     this.headerContainer = this.add.container(0, 0);
     this.headerContainer.setDepth(1000);
@@ -161,14 +163,22 @@ class GameScene extends Phaser.Scene {
     this.scrollableContainer = this.add.container(0, headerHeight);
     this.scrollableContainer.setDepth(500);
     
-    // Footer container (fixed at bottom)
-    this.footerContainer = this.add.container(0, height - footerHeight);
+    // Footer container (fixed at bottom with safe area support)
+    const footerY = height - footerHeight - safeAreaInsets.bottom;
+    this.footerContainer = this.add.container(0, footerY);
     this.footerContainer.setDepth(1000);
     
-    console.log('📱 Simple Phaser three-zone layout created');
+    // Auto-update footer position when safe areas change
+    this.safeAreaManager.onInsetsChanged((insets) => {
+      const newFooterY = height - footerHeight - insets.bottom;
+      this.footerContainer.y = newFooterY;
+      console.log(`📱 Footer position updated: y=${newFooterY} (safe bottom: ${insets.bottom}px)`);
+    });
+    
+    console.log('📱 Simple Phaser three-zone layout created with safe area support');
     console.log(`  - Header: y=0, depth=1000`);
     console.log(`  - Scrollable: y=${headerHeight}, depth=500`);
-    console.log(`  - Footer: y=${height - footerHeight}, depth=1000`);
+    console.log(`  - Footer: y=${footerY}, depth=1000 (safe bottom: ${safeAreaInsets.bottom}px)`);
   }
 
   setupGameComponents() {
