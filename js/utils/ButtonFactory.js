@@ -34,8 +34,9 @@ class ButtonFactory {
 
     // Compute width/height
     const totalLabelWidth = labelText.width + (iconText ? iconText.width + 8 : 0);
-    const btnWidth = totalLabelWidth + paddingX * 2;
-    const btnHeight = Math.max(labelText.height, iconText ? iconText.height : 0) + paddingY * 2;
+    // Round sizes to integers for consistent hit areas
+    let btnWidth = Math.round(totalLabelWidth + paddingX * 2);
+    let btnHeight = Math.round(Math.max(labelText.height, iconText ? iconText.height : 0) + paddingY * 2);
 
     // Background rounded rectangle via Graphics -> generateTexture for performance
     const g = scene.add.graphics();
@@ -72,7 +73,7 @@ class ButtonFactory {
 
     // Interactive states
     container.setSize(btnWidth, btnHeight);
-    container.setInteractive(new Phaser.Geom.Rectangle(-btnWidth/2, -btnHeight/2, btnWidth, btnHeight), Phaser.Geom.Rectangle.Contains);
+    container.setInteractive({ useHandCursor: true });
 
     const applyState = (state) => {
       let bgColor;
