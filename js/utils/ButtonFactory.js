@@ -126,10 +126,21 @@ class ButtonFactory {
     }
     if (opts.pattern === 'candycane') {
       const stripeWidth = 6;
+      // Constrain stripe drawing to button bounds to prevent artifacts
       g.lineStyle(stripeWidth, 0xffffff, 0.22);
-      for (let x = -height; x < width + height; x += stripeWidth * 2) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x + height, height); g.strokePath(); }
+      for (let x = 0; x < width + height; x += stripeWidth * 2) { 
+        g.beginPath(); 
+        g.moveTo(Math.max(0, x), Math.max(0, x < height ? 0 : x - height)); 
+        g.lineTo(Math.min(width, x + height), Math.min(height, x + height > width ? height : x + height)); 
+        g.strokePath(); 
+      }
       g.lineStyle(stripeWidth, 0xff0000, 0.25);
-      for (let x = -height + stripeWidth; x < width + height; x += stripeWidth * 2) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x + height, height); g.strokePath(); }
+      for (let x = stripeWidth; x < width + height; x += stripeWidth * 2) { 
+        g.beginPath(); 
+        g.moveTo(Math.max(0, x), Math.max(0, x < height ? 0 : x - height)); 
+        g.lineTo(Math.min(width, x + height), Math.min(height, x + height > width ? height : x + height)); 
+        g.strokePath(); 
+      }
     }
     if (opts.border) {
       const borderColorInt = Phaser.Display.Color.HexStringToColor(opts.borderColor || '#ffd700').color;
