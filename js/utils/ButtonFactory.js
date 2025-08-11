@@ -6,94 +6,77 @@ class ButtonFactory {
   static createButton(scene, x, y, label, variant = 'primary', options = {}) {
     const cfg = LayoutConfig.BUTTON_STYLE;
     const scaleFactor = cfg.SMALL_SCREEN_SCALE(scene.cameras.main.width);
-
     const palette = this._resolveVariantColors(variant, cfg);
-
-    const paddingX = (options.paddingX || cfg.PADDING_X) * scaleFactor;
-    const paddingY = (options.paddingY || cfg.PADDING_Y) * scaleFactor;
+    const paddingX = (options.paddingX ?? cfg.PADDING_X) * scaleFactor;
+    const paddingY = (options.paddingY ?? cfg.PADDING_Y) * scaleFactor;
     const font = options.font || cfg.FONT;
 
-    // Create container
     const container = scene.add.container(x, y);
 
-    // Label text (measure first for width)
-  const labelText = scene.add.text(0, 0, label, {
-      font: font,
-      fill: palette.fg,
-      align: 'center'
-    }).setOrigin(0.5);
-
-    // Optional icon/emoji left of text
+    const labelText = scene.add.text(0, 0, label, { font, fill: palette.fg, align: 'center' }).setOrigin(0.5);
     let iconText = null;
     if (options.icon) {
-      iconText = scene.add.text(0, 0, options.icon, {
-        font: font,
-        fill: palette.fg
-      }).setOrigin(0.5);
+      iconText = scene.add.text(0, 0, options.icon, { font, fill: palette.fg }).setOrigin(0.5);
     }
-
-    // Compute width/height
-    const totalLabelWidth = labelText.width + (iconText ? iconText.width + 8 : 0);
-    // Round sizes to integers for consistent hit areas
+    const spacer = options.icon ? (options.iconSpacing || 8) : 0;
+    const totalLabelWidth = labelText.width + (iconText ? iconText.width + spacer : 0);
     let btnWidth = Math.round(totalLabelWidth + paddingX * 2);
     let btnHeight = Math.round(Math.max(labelText.height, iconText ? iconText.height : 0) + paddingY * 2);
 
-    // Background rounded rectangle via Graphics -> generateTexture for performance
-    const g = scene.add.graphics();
-    this._drawButtonBackground(g, btnWidth, btnHeight, cfg.RADIUS * scaleFactor, palette.bg, palette.shadow, cfg.SHADOW_OFFSET_Y * scaleFactor, cfg.SHADOW_ALPHA);
-    const texKey = `btn_${variant}_${btnWidth}_${btnHeight}_${Math.random().toString(36).slice(2,7)}`; // pseudo-unique; small risk OK
-    g.generateTexture(texKey, btnWidth, btnHeight);
-    g.destroy();
+    const { bg, texKey } = this._generateBackground(scene, variant, palette, cfg, btnWidth, btnHeight, scaleFactor, options);
 
-    const bg = scene.add.image(0, 0, texKey).setOrigin(0.5);
-
-    // Position label & icon
     if (iconText) {
       iconText.x = -totalLabelWidth / 2 + iconText.width / 2;
-      labelText.x = iconText.x + iconText.width / 2 + 8 + labelText.width / 2;
+      labelText.x = iconText.x + iconText.width / 2 + spacer + labelText.width / 2;
     }
-
     container.add(bg);
     if (iconText) container.add(iconText);
     container.add(labelText);
 
-    // Expose label for dynamic updates (e.g., toggles) without leaking internal structure elsewhere
     container.labelText = labelText;
     container.setLabel = (newText) => {
-      if (container.labelText) {
-        container.labelText.setText(newText);
-        // Recompute widths minimally (avoid full texture regen) when label changes length materially
-        const textWidth = container.labelText.width + (iconText ? iconText.width + 8 : 0);
-        const newBtnWidth = textWidth + paddingX * 2;
-        const newBtnHeight = Math.max(container.labelText.height, iconText ? iconText.height : 0) + paddingY * 2;
-        // Update interactive hit area & size (keep existing background scale; minor overflow acceptable)
-        container.setSize(newBtnWidth, newBtnHeight);
+      if (!container.labelText) return;
+      const oldWidth = container.width;
+      container.labelText.setText(newText);
+      const newTotalLabelWidth = container.labelText.width + (iconText ? iconText.width + spacer : 0);
+      const newBtnWidth = Math.round(newTotalLabelWidth + paddingX * 2);
+      const newBtnHeight = Math.round(Math.max(container.labelText.height, iconText ? iconText.height : 0) + paddingY * 2);
+      if (Math.abs(newBtnWidth - oldWidth) > 6) {
+        const newBg = this._generateBackground(scene, variant, palette, cfg, newBtnWidth, newBtnHeight, scaleFactor, options);
+        bg.setTexture(newBg.texKey);
+      }
+      container.setSize(newBtnWidth, newBtnHeight).setInteractive({ useHandCursor: true });
+      if (container._selectionOutline) {
+        container._selectionOutline.setSize(newBtnWidth + 8, newBtnHeight + 8);
       }
     };
 
-    // Interactive states
-    container.setSize(btnWidth, btnHeight);
-    container.setInteractive({ useHandCursor: true });
+    if (options.selectable) {
+      const outline = scene.add.rectangle(0, 0, btnWidth + 8, btnHeight + 8)
+        .setStrokeStyle(3, Phaser.Display.Color.HexStringToColor(cfg.BORDER_GOLD || '#ffd700').color)
+        .setOrigin(0.5)
+        .setVisible(!!options.selected);
+      container.addAt(outline, 0);
+      container._selectionOutline = outline;
+      container.setSelected = (state) => outline.setVisible(state);
+    }
 
+    container.setSize(btnWidth, btnHeight).setInteractive({ useHandCursor: true });
     const applyState = (state) => {
-      let bgColor;
-      if (state === 'hover') bgColor = palette.bgHover; else if (state === 'active') bgColor = palette.bgActive; else bgColor = palette.bg;
-      // redraw lightweight tint using fill pipeline instead of regenerating texture
+      let bgColor = palette.bg;
+      if (state === 'hover') bgColor = palette.bgHover; else if (state === 'active') bgColor = palette.bgActive;
       bg.setTintFill(Phaser.Display.Color.HexStringToColor(bgColor).color);
       labelText.setColor(palette.fg);
       if (iconText) iconText.setColor(palette.fg);
     };
 
-    container.on('pointerover', () => { if (!container.disabled) applyState('hover'); });
-    container.on('pointerout', () => { if (!container.disabled) { applyState('normal'); container.setScale(1); container.alpha = 1; } });
-    container.on('pointerdown', () => { if (!container.disabled) { applyState('active'); scene.tweens.add({ targets: container, scale: 0.94, duration: 60 }); } });
-    container.on('pointerup', () => {
-      if (!container.disabled) {
-        applyState('hover');
-        scene.tweens.add({ targets: container, scale: 1, duration: 100, ease: 'Back.easeOut' });
-        if (options.onClick) options.onClick();
-      }
-    });
+    const attach = (target) => {
+      target.on('pointerover', () => { if (!container.disabled) applyState('hover'); });
+      target.on('pointerout', () => { if (!container.disabled) { applyState('normal'); container.setScale(1); container.alpha = 1; } });
+      target.on('pointerdown', () => { if (!container.disabled) { applyState('active'); scene.tweens.add({ targets: container, scale: 0.94, duration: 60 }); } });
+      target.on('pointerup', () => { if (!container.disabled) { applyState('hover'); scene.tweens.add({ targets: container, scale: 1, duration: 100, ease: 'Back.easeOut' }); if (options.onClick) options.onClick(); } });
+    };
+    attach(container); attach(bg);
 
     container.disableButton = () => {
       container.disabled = true;
@@ -103,13 +86,7 @@ class ButtonFactory {
       if (iconText) iconText.setColor(cfg.DISABLED_FG);
       container.alpha = 0.85;
     };
-
-    container.enableButton = () => {
-      container.disabled = false;
-      applyState('normal');
-      container.alpha = 1;
-    };
-
+    container.enableButton = () => { container.disabled = false; applyState('normal'); container.alpha = 1; };
     applyState('normal');
     return container;
   }
@@ -126,19 +103,59 @@ class ButtonFactory {
     }
   }
 
-  static _drawButtonBackground(g, width, height, radius, colorHex, shadowColor, shadowOffsetY, shadowAlpha) {
-    // Shadow
-    if (shadowAlpha > 0) {
-      g.fillStyle(shadowColor, shadowAlpha);
-      g.fillRoundedRect(0, shadowOffsetY, width, height, radius);
+  static _drawButtonBackground(g, width, height, radius, colorHex, shadowColor, shadowOffsetY, shadowAlpha, opts = {}) {
+    if (shadowAlpha > 0) { g.fillStyle(shadowColor, shadowAlpha); g.fillRoundedRect(0, shadowOffsetY, width, height, radius); }
+    if (opts.gradient) {
+      const baseColorInt = Phaser.Display.Color.HexStringToColor(colorHex).color;
+      const base = Phaser.Display.Color.IntegerToColor(baseColorInt);
+      const lighter = { r: Math.min(255, base.red + 35), g: Math.min(255, base.green + 35), b: Math.min(255, base.blue + 35) };
+      const darker = { r: Math.max(0, base.red - 35), g: Math.max(0, base.green - 35), b: Math.max(0, base.blue - 35) };
+      const steps = 18;
+      for (let i = 0; i < steps; i++) {
+        const t = i / (steps - 1);
+        const r = Phaser.Math.Linear(lighter.r, darker.r, t);
+        const gCh = Phaser.Math.Linear(lighter.g, darker.g, t);
+        const b = Phaser.Math.Linear(lighter.b, darker.b, t);
+        g.fillStyle(Phaser.Display.Color.GetColor(r, gCh, b), 1);
+        const sliceY = (height / steps) * i;
+        g.fillRoundedRect(0, sliceY, width, height / steps + 1, radius);
+      }
+    } else {
+      g.fillStyle(Phaser.Display.Color.HexStringToColor(colorHex).color, 1);
+      g.fillRoundedRect(0, 0, width, height, radius);
     }
-    // Main fill
-    g.fillStyle(Phaser.Display.Color.HexStringToColor(colorHex).color, 1);
-    g.fillRoundedRect(0, 0, width, height, radius);
-    // Inner highlight (top overlay)
-    const highlightHeight = Math.max(4, height * 0.22);
-    g.fillStyle(0xffffff, 0.12);
-    g.fillRoundedRect(0, 0, width, highlightHeight, { tl: radius, tr: radius, bl: 0, br: 0 });
+    if (opts.pattern === 'candycane') {
+      const stripeWidth = 6;
+      g.lineStyle(stripeWidth, 0xffffff, 0.22);
+      for (let x = -height; x < width + height; x += stripeWidth * 2) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x + height, height); g.strokePath(); }
+      g.lineStyle(stripeWidth, 0xff0000, 0.25);
+      for (let x = -height + stripeWidth; x < width + height; x += stripeWidth * 2) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x + height, height); g.strokePath(); }
+    }
+    if (opts.border) {
+      const borderColorInt = Phaser.Display.Color.HexStringToColor(opts.borderColor || '#ffd700').color;
+      g.lineStyle(2, borderColorInt, 1);
+      g.strokeRoundedRect(0, 0, width, height, radius);
+    }
+    if (opts.highlight !== false) {
+      const highlightHeight = Math.max(4, height * 0.22);
+      g.fillStyle(0xffffff, 0.10);
+      g.fillRoundedRect(0, 0, width, highlightHeight, { tl: radius, tr: radius, bl: 0, br: 0 });
+    }
+  }
+
+  static _generateBackground(scene, variant, palette, cfg, btnWidth, btnHeight, scaleFactor, options) {
+    const g = scene.add.graphics();
+    this._drawButtonBackground(g, btnWidth, btnHeight, cfg.RADIUS * scaleFactor, palette.bg, palette.shadow, cfg.SHADOW_OFFSET_Y * scaleFactor, cfg.SHADOW_ALPHA, {
+      gradient: options.gradient !== false,
+      pattern: options.pattern || (variant === 'danger' && options.pattern !== 'none' ? 'candycane' : null),
+      border: options.border !== false,
+      borderColor: options.borderColor || (variant === 'primary' ? (cfg.BORDER_GOLD || '#ffd700') : variant === 'danger' ? '#ffffff' : '#0d5016')
+    });
+    const texKey = `btn_${variant}_${btnWidth}_${btnHeight}_${Math.random().toString(36).slice(2,7)}`;
+    g.generateTexture(texKey, btnWidth, btnHeight);
+    g.destroy();
+    const bg = scene.add.image(0, 0, texKey).setOrigin(0.5);
+    return { bg, texKey };
   }
 }
 

@@ -77,6 +77,8 @@ class UILayoutManager {
       'primary',
       {
         icon: '🎅',
+        gradient: true,
+        border: true,
         onClick: () => this.scene.useSantasHint()
       }
     );
@@ -153,6 +155,8 @@ class UILayoutManager {
       'danger',
       {
         icon: '↩️',
+        pattern: 'candycane',
+        border: true,
         onClick: () => this.scene.scene.start('DifficultySelection')
       }
     );

@@ -47,14 +47,18 @@ class MainMenu extends Phaser.Scene {
   createButtons(width, height) {
     // Start Game button (primary variant)
     this.startBtn = ButtonFactory.createButton(this, width / 2, height * 0.35, 'Start Game', 'primary', {
-      icon: '🎮',
+      icon: '�',
+      gradient: true,
+      border: true,
       onClick: () => this.scene.start('DifficultySelection')
     });
     this.startBtn.setDepth(GameUtils.getDepthLayers().UI);
 
     // How to Play button (accent variant)
-    this.helpBtn = ButtonFactory.createButton(this, width / 2, height * 0.48, 'How to Play', 'accent', {
+    this.helpBtn = ButtonFactory.createButton(this, width / 2, height * 0.48, 'How to Play', 'primary', {
       icon: '📘',
+      gradient: true,
+      border: true,
       onClick: () => this.showHelpOverlay()
     });
     this.helpBtn.setDepth(GameUtils.getDepthLayers().UI);
@@ -62,7 +66,8 @@ class MainMenu extends Phaser.Scene {
     // SFX Toggle (danger variant for visual differentiation)
     const sfxLabel = 'SFX: ON';
     this.sfxBtn = ButtonFactory.createButton(this, width / 2, height * 0.65, sfxLabel, 'danger', {
-      icon: '🔊',
+      icon: '�',
+      pattern: 'candycane',
       onClick: () => {
         const current = this.registry.get('sfxOn');
         this.registry.set('sfxOn', !current);
@@ -75,6 +80,7 @@ class MainMenu extends Phaser.Scene {
     // Music Toggle (danger variant too; could differentiate later)
     this.musicBtn = ButtonFactory.createButton(this, width / 2, height * 0.75, 'Music: ON', 'danger', {
       icon: '🎵',
+      pattern: 'candycane',
       onClick: () => {
         const current = this.registry.get('musicOn');
         this.registry.set('musicOn', !current);

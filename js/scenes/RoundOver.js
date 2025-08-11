@@ -267,14 +267,16 @@ class RoundOver extends Phaser.Scene {
     const buttonY = 25; // Centered in footer
     const buttonSpacing = width * 0.25;
     
-    const playAgainBtn = ButtonFactory.createButton(
+  const playAgainBtn = ButtonFactory.createButton(
       this,
       width / 2 - buttonSpacing,
       buttonY,
       'Play Again',
       'primary',
       {
-        icon: '🔁',
+    icon: '🔁',
+    gradient: true,
+    border: true,
         onClick: () => {
           this.scene.start('Game', {
             difficulty: this.gameData.difficulty,
@@ -284,14 +286,16 @@ class RoundOver extends Phaser.Scene {
       }
     );
 
-    const shareBtn = ButtonFactory.createButton(
+  const shareBtn = ButtonFactory.createButton(
       this,
       width / 2 + buttonSpacing,
       buttonY,
       'Share Score',
       'accent',
       {
-        icon: '📤',
+    icon: '📤',
+    gradient: true,
+    border: true,
         onClick: () => this.shareScore()
       }
     );

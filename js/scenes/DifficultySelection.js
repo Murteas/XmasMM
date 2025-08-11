@@ -53,41 +53,24 @@ class DifficultySelection extends Phaser.Scene {
     
     difficultyOptions.forEach((option, index) => {
       const y = startY + (index * buttonSpacing);
-      
-      // Christmas-themed buttons with clear selection indicators
-      const isSelected = option.length === 4;
-      const btn = this.add.text(centerX, y, option.label + (isSelected ? ' ✓' : ''), {
-        font: '24px Arial', // Keep normal weight for readability
-        fill: '#fff',
-        backgroundColor: isSelected ? '#c0392b' : '#27ae60', // Christmas red or green
-        padding: { left: 24, right: 24, top: 12, bottom: 12 }
-      }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(GameUtils.getDepthLayers().UI);
-      
-      // Add a visible border using a background rectangle for selected button
-      if (isSelected) {
-        const borderRect = this.add.rectangle(centerX, y, btn.width + 8, btn.height + 8, 0xffffff, 0)
-          .setStrokeStyle(3, 0xffffff)
-          .setDepth(GameUtils.getDepthLayers().UI - 1);
-      }
-      
-      // Description text positioned further below with better spacing
-      const desc = this.add.text(centerX, y + 40, option.description, {
-        font: '14px Arial',
-        fill: '#ccc'
-      }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
-      
-      btn.on('pointerdown', () => {
-        this.codeLength = option.length;
-        this.updateCodeLengthButtons();
-      });
-      
-      this.codeLengthBtns.push({ 
-        btn, 
-        desc, 
-        length: option.length, 
-        label: option.label,
-        borderRect: isSelected ? this.children.list[this.children.list.length - 2] : null // Get the border rect if it exists
-      });
+      const isSelected = option.length === this.codeLength;
+      const btn = ButtonFactory.createButton(
+        this,
+        centerX,
+        y,
+        option.label,
+        isSelected ? 'danger' : 'primary',
+        {
+          icon: option.length === 4 ? '🎄' : '🎅',
+          pattern: isSelected ? 'candycane' : null,
+          selectable: true,
+          selected: isSelected,
+          onClick: () => { this.codeLength = option.length; this.updateCodeLengthButtons(); }
+        }
+      );
+      btn.setDepth(GameUtils.getDepthLayers().UI);
+      const desc = this.add.text(centerX, y + 40, option.description, { font: '14px Arial', fill: '#ccc' }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
+      this.codeLengthBtns.push({ btn, desc, length: option.length, label: option.label });
     });
   }
 
@@ -106,86 +89,40 @@ class DifficultySelection extends Phaser.Scene {
     const layout = GameUtils.getResponsiveLayout(width, height);
     
     // Confirm button with responsive positioning - moved down for vertical layout
-    const confirmBtn = GameUtils.createResponsiveText(
+    const confirmBtn = ButtonFactory.createButton(
       this,
-      width / 2, 
-      height * 0.75, // Moved down to accommodate vertical difficulty buttons
-      'Confirm',
+      width / 2,
+      height * 0.75,
+      'Start 🎁',
+      'primary',
       {
-        fontSize: `${Math.round(28 * layout.fontScale)}px`,
-        fontFamily: 'Arial',
-        fill: '#fff',
-        backgroundColor: '#27ae60',
-        padding: { 
-          left: Math.round(24 * layout.fontScale), 
-          right: Math.round(24 * layout.fontScale), 
-          top: Math.round(12 * layout.fontScale), 
-          bottom: Math.round(12 * layout.fontScale) 
+        icon: '✅',
+        onClick: () => {
+          this.registry.set('codeLength', this.codeLength);
+          this.registry.set('maxGuesses', this.maxGuesses);
+          this.scene.start('Game');
         }
       }
-    ).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(GameUtils.getDepthLayers().UI);
-    
-    // Ensure minimum touch target size
-    const buttonBounds = confirmBtn.getBounds();
-    if (buttonBounds.width < layout.minTouchSize) {
-      confirmBtn.setPadding(layout.minTouchSize / 2, confirmBtn.style.padding.top);
-    }
-    
-    confirmBtn.on('pointerdown', () => {
-      this.registry.set('codeLength', this.codeLength);
-      this.registry.set('maxGuesses', this.maxGuesses);
-      this.scene.start('Game');
-    });
-    
-    // Back button
-    const backBtn = this.add.text(50, 50, 'Back', {
-      font: '20px Arial',
-      fill: '#fff',
-      backgroundColor: '#444',
-      padding: { left: 12, right: 12, top: 6, bottom: 6 }
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(GameUtils.getDepthLayers().UI);
-    
-    backBtn.on('pointerdown', () => {
-      this.scene.start('MainMenu');
-    });
+    );
+    confirmBtn.setDepth(GameUtils.getDepthLayers().UI);
+
+    const backBtn = ButtonFactory.createButton(
+      this,
+      70,
+      60,
+      'Back',
+      'danger',
+      { icon: '↩️', pattern: 'candycane', onClick: () => this.scene.start('MainMenu') }
+    );
+    backBtn.setDepth(GameUtils.getDepthLayers().UI);
   }
   
   updateCodeLengthButtons() {
-    this.codeLengthBtns.forEach(({ btn, desc, length, label, borderRect }) => {
-      if (length === this.codeLength) {
-        // Selected button: Christmas red + checkmark + white border
-        btn.setText(label + ' ✓');
-        btn.setStyle({ 
-          font: '24px Arial',
-          fill: '#fff', 
-          backgroundColor: '#c0392b'
-        });
-        desc.setStyle({ fill: '#fff' });
-        
-        // Create or show border
-        if (!borderRect) {
-          const newBorder = this.add.rectangle(btn.x, btn.y, btn.width + 8, btn.height + 8, 0xffffff, 0)
-            .setStrokeStyle(3, 0xffffff)
-            .setDepth(GameUtils.getDepthLayers().UI - 1);
-          this.codeLengthBtns.find(item => item.length === length).borderRect = newBorder;
-        } else {
-          borderRect.setVisible(true);
-        }
-      } else {
-        // Unselected button: Christmas green + no checkmark + no border
-        btn.setText(label);
-        btn.setStyle({ 
-          font: '24px Arial',
-          fill: '#fff', 
-          backgroundColor: '#27ae60'
-        });
-        desc.setStyle({ fill: '#ccc' });
-        
-        // Hide border if it exists
-        if (borderRect) {
-          borderRect.setVisible(false);
-        }
-      }
+    this.codeLengthBtns.forEach(({ btn, desc, length, label }) => {
+      const selected = length === this.codeLength;
+      btn.setSelected && btn.setSelected(selected);
+      btn.setLabel(label + (selected ? ' ✓' : ''));
+      desc.setStyle({ fill: selected ? '#fff' : '#ccc' });
     });
   }
 }
