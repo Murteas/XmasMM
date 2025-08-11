@@ -91,7 +91,7 @@ class RoundOver extends Phaser.Scene {
         this.gameData.secretCode
       );
       
-      // Build detailed score breakdown
+      // Build detailed score breakdown (avoid redundant '+' signs)
       const parts = [];
       if (finalFeedback.perfect > 0) {
         parts.push(`${finalFeedback.perfect}★ (${finalFeedback.perfect * 200}pts)`);
@@ -100,18 +100,18 @@ class RoundOver extends Phaser.Scene {
         parts.push(`${finalFeedback.close}🔔 (${finalFeedback.close * 100}pts)`);
       }
       if (breakdown.completeBonus > 0) {
-        parts.push(`+${breakdown.completeBonus} solved bonus`);
+        // No leading '+'; joiner will add plus between components
+        parts.push(`${breakdown.completeBonus} solved bonus`);
       }
       if (breakdown.speedBonus !== 0) {
-        const speedLabel = breakdown.speedBonus > 0 ? '+' : '';
         const speedDesc = breakdown.speedBonus > 0 ? 'fast finish' : 'time penalty';
-        parts.push(`${speedLabel}${breakdown.speedBonus} ${speedDesc}`);
+        parts.push(`${breakdown.speedBonus} ${speedDesc}`);
       }
       if (breakdown.hintPenalty < 0) {
         parts.push(`${breakdown.hintPenalty} for hints`);
       }
-      
-      scoreInfo = parts.join(' + ');
+
+      scoreInfo = parts.join(' + ').replace(/ \+ -/g, ' - '); // Clean up patterns like ' + -75'
     } else {
       scoreInfo = 'Keep practicing!';
     }
