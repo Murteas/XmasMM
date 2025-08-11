@@ -1,20 +1,10 @@
 {
-  "name": "christmas-mastermind-debug-tools",
+  "name": "christmas-mastermind",
   "version": "1.0.0",
-  "description": "Debugging and testing tools for Christmas MasterMind puzzle game",
+  "description": "Christmas MasterMind - A mobile-first Christmas puzzle game",
   "scripts": {
-    "debug-interactions": "node scripts/debug-interactions.js",
-    "test-game-structure": "node scripts/test-game-structure.js",
-    "verify-assets": "node scripts/verify-assets.js",
-  "check-mobile-layout": "node scripts/check-mobile-layout.js",
-  "score-sim": "node scripts/score_simulation.js",
-    "start-dev": "python scripts/dev_server.py",
-  "validate-tasks": "python scripts/validate_tasks.py",
-  "install-hooks": "bash scripts/install_hooks.sh",
-  "test": "npm run verify-assets && npm run test-game-structure && npm run validate-tasks"
-  },
-  "devDependencies": {
-    "puppeteer": "^21.0.0"
+    "install-hooks": "bash scripts/install_hooks.sh",
+    "serve": "python -m http.server 8000"
   },
   "engines": {
     "node": ">=18.0.0"

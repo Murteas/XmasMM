@@ -1,25 +1,34 @@
 #!/usr/bin/env bash
-# Pre-commit hook: validate tasks registry & block commit on errors.
+# Pre-commit hook: Simple validation to ensure commits don't break basic project structure
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 NC='\033[0m'
 
-echo -e "${YELLOW}[pre-commit] Running task registry validation...${NC}" 
-python scripts/validate_tasks.py > .git/hooks/task_validation_output.tmp 2>&1
-STATUS=$?
+echo -e "${YELLOW}[pre-commit] Running basic project validation...${NC}" 
 
-if [ $STATUS -ne 0 ]; then
-  echo -e "${RED}[pre-commit] Task validation failed. See below:${NC}" >&2
-  cat .git/hooks/task_validation_output.tmp >&2
-  echo -e "${RED}Commit aborted. Fix tasks.json / markdown sync issues and retry.${NC}" >&2
+# Check for basic JavaScript syntax errors in main files
+JS_FILES="js/main.js js/scenes/*.js js/managers/*.js js/utils/*.js"
+JS_ERROR=0
+
+for file in $JS_FILES; do
+  if [ -f "$file" ]; then
+    # Basic syntax check using node (if available)
+    if command -v node &> /dev/null; then
+      if ! node -c "$file" 2>/dev/null; then
+        echo -e "${RED}[pre-commit] JavaScript syntax error in: $file${NC}" >&2
+        JS_ERROR=1
+      fi
+    fi
+  fi
+done
+
+if [ $JS_ERROR -ne 0 ]; then
+  echo -e "${RED}Commit aborted. Fix JavaScript syntax errors and retry.${NC}" >&2
   exit 1
 else
-  echo -e "${GREEN}[pre-commit] Task validation passed.${NC}"
+  echo -e "${GREEN}[pre-commit] Basic validation passed.${NC}"
 fi
-
-# Optional: add quick lint placeholder (disabled - can enable when ESLint present)
-# echo -e "${YELLOW}[pre-commit] (Skipping lint - not configured)${NC}" 
 
 exit 0

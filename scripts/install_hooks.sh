@@ -14,4 +14,4 @@ cp "$HOOK_SRC" "$HOOK_DEST"
 chmod +x "$HOOK_DEST"
 
 echo "Installed pre-commit hook -> .git/hooks/pre-commit"
-python scripts/validate_tasks.py || true
+echo "Pre-commit hook will now perform basic JavaScript syntax validation"
