@@ -85,6 +85,8 @@ Polish the RoundOver scene and optimize its history view feature for better mobi
 - **Mobile Touch Targets**: Buttons need 44px minimum touch target size
 - **Christmas Theming**: Use forest green (`#0d5016`) and gold (`#ffd700`) color scheme
 - **No Background Processes**: Always use `isBackground=false` in terminal commands
+- **Layout Constants**: Use global `LayoutConfig` (loaded via ModuleLoader) instead of new literals for header/footer heights or row spacing.
+- **Scoring Summary**: Current formula = (Perfect×200 + Close×100) + 300 solved bonus + speed adjustment (+75 each unused guess under 10, -25 each over) - 200 if hint used. Balance review planned to widen mid-range diversity.
 
 ## �🚨 CRITICAL LIMITATIONS FOR AI AGENTS
 

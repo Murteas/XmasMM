@@ -87,12 +87,13 @@ For rapid testing and development, the game includes a debug mode:
 1. Access the game via the provided GitHub Pages URL.
 2. Select difficulty settings (code length and number of guesses).
 3. Guess the code by selecting elements and submitting guesses.
-4. Receive feedback (black pegs for correct element and position, white pegs for correct element but wrong position).
+4. Receive feedback: ⭐ Perfect (right element & position), 🔔 Close (right element, wrong spot), ✖ Wrong.
 5. Share your score verbally with other players.
 6. Play again to compete for the highest score!
 
 ## 📁 Project Structure
 - **🎮 Game Code**: `js/` - Phaser.js game implementation
+	- `js/config/LayoutConfig.js` centralized layout constants (TECH-001)
 - **🎨 Assets**: `assets/` - Christmas-themed graphics and audio
 - **🧪 Testing**: `tests/` - Comprehensive test suite
 - **📋 Tasks**: `tasks/` - Individual task documentation
@@ -105,3 +106,16 @@ For rapid testing and development, the game includes a debug mode:
 - **Testing**: HTML + Node.js validation suite
 - **Hosting**: GitHub Pages compatible
 - **AI-Friendly**: Machine-readable task management system
+
+## 🧮 Scoring System (Current)
+Final score = Element Points + Solved Bonus + Speed Bonus/Penalty + Hint Penalty.
+
+Components:
+- Element Points: 200 pts per ⭐ (perfect), 100 pts per 🔔 (close) from final winning guess (or forced to all perfect if solved but feedback mismatch).
+- Solved Bonus: +300 (only if code solved).
+- Speed: For target threshold (10 guesses). Each unused guess up to threshold: +75. Each extra guess beyond threshold: -25.
+- Hint Penalty: -200 if Santa's hint used.
+
+Example: 5-element solution solved in 7 guesses with final guess showing 3⭐ 2🔔 and no hint: (5×200=1000) +300 + (10-7)*75=225 = 1525.
+
+Planned Review: Diversify mid-range outcomes (see forthcoming scoring balance proposal).*** End Patch
