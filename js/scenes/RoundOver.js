@@ -51,7 +51,9 @@ class RoundOver extends Phaser.Scene {
     
     // Create content for each zone
     this.createHeaderContent();
-    this.createScrollableContent(contentHeight);
+  this.createScrollableContent(contentHeight);
+  // Enable touch / drag scrolling AFTER content is laid out
+  this.enableScrollableInteraction(contentHeight);
     this.createFooterContent();
     
     // Add masking for clean scroll boundaries
@@ -178,13 +180,17 @@ class RoundOver extends Phaser.Scene {
     }).setOrigin(0.5);
     currentY += 30;
     
-    // History rows
-    const rowHeight = 45;
+    // History rows (denser layout while preserving readability)
+    const rowHeight = 42; // Slightly reduced for improved density
     this.gameData.guessHistory.forEach((guess, index) => {
       const feedback = this.gameData.feedbackHistory[index];
-      this.createHistoryRow(guess, feedback, index + 1, currentY, this.scrollableContainer);
+      this.createHistoryRow(guess, feedback, index + 1, currentY, this.scrollableContainer, rowHeight);
       currentY += rowHeight;
     });
+
+    // Track total scrollable content height for drag constraints
+    this.totalScrollableContentHeight = currentY + 10; // padding tail
+    this.visibleScrollableHeight = contentHeight;
     
     this.scrollableContainer.add([solutionLabel, solutionContainer, historyLabel]);
   }
@@ -290,7 +296,11 @@ class RoundOver extends Phaser.Scene {
         this.setStyle({ backgroundColor: '#ffd700' });
       });
     
-    this.footerContainer.add([playAgainBtn, shareBtn]);
+  // Add richer button feedback (mobile-friendly touch animation)
+  this.addButtonFeedback(playAgainBtn);
+  this.addButtonFeedback(shareBtn);
+
+  this.footerContainer.add([playAgainBtn, shareBtn]);
   }
 
   shareScore() {
@@ -320,28 +330,32 @@ class RoundOver extends Phaser.Scene {
     }
   }
 
-  createHistoryRow(guess, feedback, rowNumber, y, container) {
+  createHistoryRow(guess, feedback, rowNumber, y, container, rowHeight = 42) {
     const { width } = this.cameras.main;
-    
-    // Add subtle background highlight for better mobile separation
-    const rowBackground = this.add.rectangle(width / 2, y, width - 40, 40, 0x000000, 0.2)
-      .setStrokeStyle(1, 0x444444, 0.5);
+
+    // Quality classification (family-friendly feedback)
+    const quality = this.calculateGuessQuality(guess, this.gameData.secretCode);
+
+    // Background with subtle quality tint
+    const bgWidth = width - 32;
+    const rowBackground = this.add.rectangle(width / 2, y, bgWidth, rowHeight - 4, quality.colorHex, 0.12)
+      .setStrokeStyle(1, 0x444444, 0.4);
     container.add(rowBackground);
-    
-    // Row number
-    const rowText = this.add.text(30, y, `${rowNumber}:`, {
-      font: '14px Arial',
-      fill: '#fff'
+
+    // Row number & quality bar
+    const numberX = 22;
+    const rowText = this.add.text(numberX, y, `${rowNumber}`, {
+      font: '13px Arial',
+      fill: '#ffffff'
     }).setOrigin(0, 0.5);
-    
-    // Guess elements - optimized for scrollable view with larger size for better visibility
-    const elementSize = 30; // Increased from 24 for better mobile readability
-    const elementSpacing = 35; // Increased from 28 to accommodate larger elements
-    const startX = 70;
-    
+
+    // Guess elements (slightly reduced spacing for density)
+    const elementSize = 28;
+    const elementSpacing = 32;
+    const startX = 60;
+
     guess.forEach((element, index) => {
       const x = startX + (index * elementSpacing);
-      
       try {
         const imageKey = this.getElementImageKey(element);
         if (this.textures.exists(imageKey)) {
@@ -350,41 +364,88 @@ class RoundOver extends Phaser.Scene {
           container.add(elementImage);
         } else {
           const elementText = this.add.text(x, y, element.charAt(0).toUpperCase(), {
-            font: '12px Arial', // Increased from 10px for better readability
+            font: '12px Arial',
             fill: '#fff',
             backgroundColor: '#666',
-            padding: { left: 4, right: 4, top: 3, bottom: 3 } // Increased padding
+            padding: { left: 4, right: 4, top: 3, bottom: 3 }
           }).setOrigin(0.5);
           container.add(elementText);
         }
       } catch (error) {
         const elementText = this.add.text(x, y, element.charAt(0).toUpperCase(), {
-          font: '12px Arial', // Increased from 10px for better readability
+          font: '12px Arial',
           fill: '#fff',
           backgroundColor: '#666',
-          padding: { left: 4, right: 4, top: 3, bottom: 3 } // Increased padding
+          padding: { left: 4, right: 4, top: 3, bottom: 3 }
         }).setOrigin(0.5);
         container.add(elementText);
       }
     });
-    
-    // Feedback symbols
-    const feedbackStartX = startX + (guess.length * elementSpacing) + 25;
+
+    // Feedback symbols (stars/bells)
+    const feedbackStartX = startX + (guess.length * elementSpacing) + 16;
     let feedbackX = feedbackStartX;
-    
-    // Perfect matches (stars)
     for (let i = 0; i < feedback.black; i++) {
       this.createFeedbackSymbol('perfect', feedbackX, y, 14, container);
       feedbackX += 16;
     }
-    
-    // Close matches (bells)
     for (let i = 0; i < feedback.white; i++) {
       this.createFeedbackSymbol('close', feedbackX, y, 14, container);
       feedbackX += 16;
     }
-    
+
+    // Quality label at far right (truncate if space constrained)
+    const remainingSpace = (width - 20) - feedbackX;
+    if (remainingSpace > 60) {
+      const qualityLabel = this.add.text(width - 24, y, quality.label, {
+        font: '12px Arial',
+        fill: quality.color
+      }).setOrigin(1, 0.5);
+      container.add(qualityLabel);
+    }
+
     container.add([rowText]);
+  }
+
+  enableScrollableInteraction(contentHeight) {
+    // Skip if content fits
+    if (!this.totalScrollableContentHeight || this.totalScrollableContentHeight <= contentHeight) return;
+
+    this.isDraggingScroll = false;
+    this.scrollDragStartY = 0;
+    this.scrollContainerStartY = this.scrollableContainer.y;
+
+    const onPointerDown = (pointer) => {
+      if (pointer.y < 140 || pointer.y > (this.cameras.main.height - 100)) return; // outside scroll zone
+      this.isDraggingScroll = true;
+      this.scrollDragStartY = pointer.y;
+      this.scrollContainerStartY = this.scrollableContainer.y;
+    };
+    const onPointerMove = (pointer) => {
+      if (!this.isDraggingScroll) return;
+      const delta = pointer.y - this.scrollDragStartY;
+      this.scrollableContainer.y = this.clampScrollPosition(this.scrollContainerStartY + delta, contentHeight);
+    };
+    const endDrag = () => { this.isDraggingScroll = false; };
+
+    this.input.on('pointerdown', onPointerDown);
+    this.input.on('pointermove', onPointerMove);
+    this.input.on('pointerup', endDrag);
+    this.input.on('pointerupoutside', endDrag);
+
+    // Wheel support (desktop)
+    this.input.on('wheel', (pointer, gameObjects, dx, dy) => {
+      const next = this.scrollableContainer.y - dy * 0.5;
+      this.scrollableContainer.y = this.clampScrollPosition(next, contentHeight);
+    });
+  }
+
+  clampScrollPosition(desiredY, contentHeight) {
+    const headerY = 140; // static header height used above
+    const minY = headerY - (this.totalScrollableContentHeight - contentHeight); // max scroll up (content moves up, container y decreases)
+    const maxY = headerY; // original position
+    if (this.totalScrollableContentHeight <= contentHeight) return headerY;
+    return Phaser.Math.Clamp(desiredY, minY, maxY);
   }
 
   createFeedbackSymbol(symbolType, x, y, size, container) {
