@@ -33,17 +33,17 @@ class MainMenu extends Phaser.Scene {
     bg.setDisplaySize(width, height);
     bg.setDepth(GameUtils.getDepthLayers().BACKGROUND);
 
-    // Title with enhanced Christmas styling
+    // Title with elegant Christmas styling
     this.add.text(width / 2, height * 0.18, 'Christmas MasterMind', {
-      font: 'bold 36px Arial',
-      fill: '#FFD700',           // Christmas gold
-      stroke: '#8B0000',         // Dark red stroke for Christmas feel
-      strokeThickness: 4,
+      font: 'italic bold 38px serif',
+      fill: '#F5F5DC',           // Elegant cream/beige
+      stroke: '#2F4F2F',         // Deep forest green
+      strokeThickness: 2,
       shadow: {
-        offsetX: 3,
-        offsetY: 3,
-        color: '#000000',
-        blur: 6,
+        offsetX: 2,
+        offsetY: 2,
+        color: '#1A1A1A',
+        blur: 3,
         stroke: true,
         fill: true
       }
