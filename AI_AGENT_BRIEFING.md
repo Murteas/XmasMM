@@ -86,7 +86,7 @@ Polish the RoundOver scene and optimize its history view feature for better mobi
 - **Christmas Theming**: Use forest green (`#0d5016`) and gold (`#ffd700`) color scheme
 - **No Background Processes**: Always use `isBackground=false` in terminal commands
 - **Layout Constants**: Use global `LayoutConfig` (loaded via ModuleLoader) instead of new literals for header/footer heights or row spacing.
-- **Scoring Summary**: Current formula = (Perfect×200 + Close×100) + 300 solved bonus + speed adjustment (+75 each unused guess under 10, -25 each over) - 200 if hint used. Balance review planned to widen mid-range diversity.
+- **Scoring Summary (Aug 11 2025)**: (Perfect×180 + Close×80) + 250 solved bonus + tiered speed bonus (unused guesses: first 3×80, next 3×50, remaining×30; over-threshold guesses -25 each) - 220 if hint used.
 
 ## �🚨 CRITICAL LIMITATIONS FOR AI AGENTS
 

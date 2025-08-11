@@ -14,15 +14,19 @@ class ScoreManager {
       hintPenalty: 0
     };
 
-    // Simple configuration - no complex dependencies
+    // Diversity-oriented scoring configuration (Aug 11 2025 refresh)
     this.scoringConfig = {
-      perfectElementPoints: 200,
-      closeElementPoints: 100,
-      completeBonus: 300,
-      speedBonusPerGuess: 75,
-      speedPenaltyPerGuess: 25,
+      perfectElementPoints: 180,   // was 200
+      closeElementPoints: 80,      // was 100
+      completeBonus: 250,          // was 300
       speedBonusThreshold: 10,
-      hintPenalty: 200
+      speedTier1Count: 3,
+      speedTier1Value: 80,
+      speedTier2Count: 3,
+      speedTier2Value: 50,
+      speedTier3Value: 30,
+      speedPenaltyPerGuess: 25,
+      hintPenalty: 220            // slightly higher cost
     };
   }
 
@@ -59,11 +63,18 @@ class ScoreManager {
       this.scoreBreakdown.completeBonus = this.scoringConfig.completeBonus;
     }
 
-    // Speed bonus/penalty
+    // Speed bonus / penalty (tiered bonus for unused guesses below threshold)
     if (guessesUsed < this.scoringConfig.speedBonusThreshold) {
-      this.scoreBreakdown.speedBonus = (this.scoringConfig.speedBonusThreshold - guessesUsed) * this.scoringConfig.speedBonusPerGuess;
+      const unused = this.scoringConfig.speedBonusThreshold - guessesUsed;
+      let remaining = unused;
+      const tier1 = Math.min(remaining, this.scoringConfig.speedTier1Count); remaining -= tier1;
+      const tier2 = Math.min(remaining, this.scoringConfig.speedTier2Count); remaining -= tier2;
+      const tier3 = Math.max(remaining, 0);
+      this.scoreBreakdown.speedBonus = (tier1 * this.scoringConfig.speedTier1Value) +
+                                       (tier2 * this.scoringConfig.speedTier2Value) +
+                                       (tier3 * this.scoringConfig.speedTier3Value);
     } else if (guessesUsed > this.scoringConfig.speedBonusThreshold) {
-      this.scoreBreakdown.speedBonus = (this.scoringConfig.speedBonusThreshold - guessesUsed) * this.scoringConfig.speedPenaltyPerGuess; // This will be negative
+      this.scoreBreakdown.speedBonus = (this.scoringConfig.speedBonusThreshold - guessesUsed) * this.scoringConfig.speedPenaltyPerGuess; // negative
     }
 
     // Hint penalty
@@ -221,8 +232,8 @@ class ScoreManager {
     // Simple ongoing score calculation - just track guesses used
     const guessesUsed = maxGuesses - guessesRemaining;
     
-    // Basic score: starts high, decreases with more guesses
-    this.currentScore = Math.max(0, 1000 - (guessesUsed * 100));
+  // Basic indicative score: adjusted to new element scale (not final score formula)
+  this.currentScore = Math.max(0, 900 - (guessesUsed * 90));
     
     // Apply hint penalty if used
     if (this.hintUsed) {

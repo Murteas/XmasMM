@@ -111,11 +111,11 @@ For rapid testing and development, the game includes a debug mode:
 Final score = Element Points + Solved Bonus + Speed Bonus/Penalty + Hint Penalty.
 
 Components:
-- Element Points: 200 pts per ⭐ (perfect), 100 pts per 🔔 (close) from final winning guess (or forced to all perfect if solved but feedback mismatch).
-- Solved Bonus: +300 (only if code solved).
-- Speed: For target threshold (10 guesses). Each unused guess up to threshold: +75. Each extra guess beyond threshold: -25.
-- Hint Penalty: -200 if Santa's hint used.
+- Element Points: 180 pts per ⭐ (perfect), 80 pts per 🔔 (close) from the final winning guess (forced to all perfect if solved but feedback mismatch).
+- Solved Bonus: +250 (only if code solved).
+- Speed: Unused guesses below threshold (10) are tiered: first 3 @ +80 each, next 3 @ +50 each, remaining @ +30. Extra guesses beyond 10: -25 each.
+- Hint Penalty: -220 if Santa's hint used.
 
-Example: 5-element solution solved in 7 guesses with final guess showing 3⭐ 2🔔 and no hint: (5×200=1000) +300 + (10-7)*75=225 = 1525.
+Example: 5-element solution solved in 7 guesses (final all perfect via solve): (5×180=900) +250 + speed bonus ((unused 3 → 3×80=240)) = 1390.
 
 Planned Review: Diversify mid-range outcomes (see forthcoming scoring balance proposal).*** End Patch
