@@ -42,8 +42,9 @@ class ButtonFactory {
       const newBtnWidth = Math.round(newTotalLabelWidth + paddingX * 2);
       const newBtnHeight = Math.round(Math.max(container.labelText.height, iconText ? iconText.height : 0) + paddingY * 2);
       if (Math.abs(newBtnWidth - oldWidth) > 6) {
-        const newBg = this._generateBackground(scene, variant, palette, cfg, newBtnWidth, newBtnHeight, scaleFactor, options);
-        bg.setTexture(newBg.texKey);
+        // Only generate the texture, don't create a new image object
+        const newTexKey = this._generateBackgroundTexture(scene, variant, palette, cfg, newBtnWidth, newBtnHeight, scaleFactor, options);
+        bg.setTexture(newTexKey);
       }
       container.setSize(newBtnWidth, newBtnHeight).setInteractive({ useHandCursor: true });
       if (container._selectionOutline) {
@@ -63,9 +64,14 @@ class ButtonFactory {
 
     container.setSize(btnWidth, btnHeight).setInteractive({ useHandCursor: true });
     const applyState = (state) => {
-      let bgColor = palette.bg;
-      if (state === 'hover') bgColor = palette.bgHover; else if (state === 'active') bgColor = palette.bgActive;
-      bg.setTintFill(Phaser.Display.Color.HexStringToColor(bgColor).color);
+      // Use subtle tinting instead of tintFill to preserve custom graphics
+      if (state === 'hover') {
+        bg.setTint(0xdddddd); // Slight darkening for hover
+      } else if (state === 'active') {
+        bg.setTint(0xbbbbbb); // More darkening for active
+      } else {
+        bg.clearTint(); // Normal state shows original graphics
+      }
       labelText.setColor(palette.fg);
       if (iconText) iconText.setColor(palette.fg);
     };
@@ -108,6 +114,7 @@ class ButtonFactory {
     const baseColorInt = Phaser.Display.Color.HexStringToColor(colorHex).color;
     g.fillStyle(baseColorInt, 1);
     g.fillRoundedRect(0, 0, width, height, radius);
+    
     if (opts.gradient) {
       // Overlay a subtle vertical gradient inside padding (no repeated rounded corners to prevent artifacts)
       const base = Phaser.Display.Color.IntegerToColor(baseColorInt);
@@ -124,29 +131,38 @@ class ButtonFactory {
         g.fillRect(1, sliceY, width - 2, height / steps + 1); // inset 1px to avoid edge bleed
       }
     }
+    
     if (opts.pattern === 'candycane') {
-      const stripeWidth = 6;
-      // Constrain stripe drawing to button bounds to prevent artifacts
-      g.lineStyle(stripeWidth, 0xffffff, 0.22);
-      for (let x = 0; x < width + height; x += stripeWidth * 2) { 
+      // Bigger candy cane stripes (12px wide, more visible)
+      // Constrain coordinates to stay within button bounds
+      const stripeWidth = 12;
+      const spacing = stripeWidth * 2;
+      
+      // White stripes (more opaque)
+      g.lineStyle(stripeWidth, 0xffffff, 0.4);
+      for (let x = 0; x < width; x += spacing) { 
         g.beginPath(); 
-        g.moveTo(Math.max(0, x), Math.max(0, x < height ? 0 : x - height)); 
-        g.lineTo(Math.min(width, x + height), Math.min(height, x + height > width ? height : x + height)); 
+        g.moveTo(Math.max(0, x), 0); 
+        g.lineTo(Math.min(width, x + height), height); 
         g.strokePath(); 
       }
-      g.lineStyle(stripeWidth, 0xff0000, 0.25);
-      for (let x = stripeWidth; x < width + height; x += stripeWidth * 2) { 
+      
+      // Red stripes (more opaque)
+      g.lineStyle(stripeWidth, 0xff0000, 0.45);
+      for (let x = stripeWidth; x < width; x += spacing) { 
         g.beginPath(); 
-        g.moveTo(Math.max(0, x), Math.max(0, x < height ? 0 : x - height)); 
-        g.lineTo(Math.min(width, x + height), Math.min(height, x + height > width ? height : x + height)); 
+        g.moveTo(Math.max(0, x), 0); 
+        g.lineTo(Math.min(width, x + height), height); 
         g.strokePath(); 
       }
     }
+    
     if (opts.border) {
       const borderColorInt = Phaser.Display.Color.HexStringToColor(opts.borderColor || '#ffd700').color;
       g.lineStyle(2, borderColorInt, 1);
       g.strokeRoundedRect(0, 0, width, height, radius);
     }
+    
     if (opts.highlight !== false) {
       const highlightHeight = Math.max(4, height * 0.22);
       g.fillStyle(0xffffff, 0.10);
@@ -155,18 +171,41 @@ class ButtonFactory {
   }
 
   static _generateBackground(scene, variant, palette, cfg, btnWidth, btnHeight, scaleFactor, options) {
-    const g = scene.add.graphics();
-    this._drawButtonBackground(g, btnWidth, btnHeight, cfg.RADIUS * scaleFactor, palette.bg, palette.shadow, cfg.SHADOW_OFFSET_Y * scaleFactor, cfg.SHADOW_ALPHA, {
+    // Create graphics object WITHOUT adding to scene display list
+    const g = scene.make.graphics({});
+    
+    const stylingOpts = {
       gradient: options.gradient !== false,
       pattern: options.pattern || (variant === 'danger' && options.pattern !== 'none' ? 'candycane' : null),
       border: options.border !== false,
-  borderColor: options.borderColor || (variant === 'primary' ? (cfg.BORDER_GOLD || '#ffd700') : variant === 'danger' ? (cfg.BORDER_GOLD || '#ffd700') : '#0d5016')
-    });
+      borderColor: options.borderColor || (variant === 'primary' ? (cfg.BORDER_GOLD || '#ffd700') : variant === 'danger' ? (cfg.BORDER_GOLD || '#ffd700') : '#0d5016')
+    };
+    
+    this._drawButtonBackground(g, btnWidth, btnHeight, cfg.RADIUS * scaleFactor, palette.bg, palette.shadow, cfg.SHADOW_OFFSET_Y * scaleFactor, cfg.SHADOW_ALPHA, stylingOpts);
     const texKey = `btn_${variant}_${btnWidth}_${btnHeight}_${Math.random().toString(36).slice(2,7)}`;
     g.generateTexture(texKey, btnWidth, btnHeight);
     g.destroy();
     const bg = scene.add.image(0, 0, texKey).setOrigin(0.5);
     return { bg, texKey };
+  }
+
+  static _generateBackgroundTexture(scene, variant, palette, cfg, btnWidth, btnHeight, scaleFactor, options) {
+    // Create graphics object WITHOUT adding to scene display list
+    const g = scene.make.graphics({});
+    
+    const stylingOpts = {
+      gradient: options.gradient !== false,
+      pattern: options.pattern || (variant === 'danger' && options.pattern !== 'none' ? 'candycane' : null),
+      border: options.border !== false,
+      borderColor: options.borderColor || (variant === 'primary' ? (cfg.BORDER_GOLD || '#ffd700') : variant === 'danger' ? (cfg.BORDER_GOLD || '#ffd700') : '#0d5016')
+    };
+    
+    this._drawButtonBackground(g, btnWidth, btnHeight, cfg.RADIUS * scaleFactor, palette.bg, palette.shadow, cfg.SHADOW_OFFSET_Y * scaleFactor, cfg.SHADOW_ALPHA, stylingOpts);
+    const texKey = `btn_${variant}_${btnWidth}_${btnHeight}_${Math.random().toString(36).slice(2,7)}`;
+    g.generateTexture(texKey, btnWidth, btnHeight);
+    g.destroy();
+    // Return only the texture key, don't create an image object
+    return texKey;
   }
 }
 

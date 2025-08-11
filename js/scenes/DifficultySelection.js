@@ -97,6 +97,8 @@ class DifficultySelection extends Phaser.Scene {
       'primary',
       {
         icon: '✅',
+        gradient: true,
+        border: true,
         onClick: () => {
           this.registry.set('codeLength', this.codeLength);
           this.registry.set('maxGuesses', this.maxGuesses);
@@ -124,5 +126,16 @@ class DifficultySelection extends Phaser.Scene {
       btn.setLabel(label + (selected ? ' ✓' : ''));
       desc.setStyle({ fill: selected ? '#fff' : '#ccc' });
     });
+  }
+
+  shutdown() {
+    // Clean up any remaining graphics or textures
+    if (this.codeLengthBtns) {
+      this.codeLengthBtns.forEach(({ btn }) => {
+        if (btn && btn.destroy) {
+          btn.destroy();
+        }
+      });
+    }
   }
 }

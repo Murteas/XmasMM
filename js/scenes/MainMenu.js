@@ -148,6 +148,10 @@ class MainMenu extends Phaser.Scene {
     // Create overlay root + background
     this.helpOverlay = this.add.container(0,0);
     const helpBg = this.add.rectangle(width/2, height/2, width, height, 0x000000, 0.9);
+    
+    // Make background interactive to block clicks to buttons below
+    helpBg.setInteractive();
+    
     this.helpOverlay.add(helpBg);
 
     // Inner content container for easy shifting if overflow

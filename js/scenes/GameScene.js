@@ -188,8 +188,10 @@ class GameScene extends Phaser.Scene {
   }
 
   setupDebugKeys() {
-  // Idempotent: prevent duplicate registrations if scene re-created (Option 2 safety guard)
-  if (this._debugKeysRegistered) return; // already registered
+  // Clean up any existing debug key listeners to prevent duplicates
+  if (this._debugKeysRegistered) {
+    this.input.keyboard.removeAllListeners('keydown');
+  }
   this._debugKeysRegistered = true;
 
   // Set up keyboard input for debug mode (developer-only convenience)
@@ -465,5 +467,18 @@ class GameScene extends Phaser.Scene {
       button.setScale(1);
       button.clearTint();
     });
+  }
+
+  shutdown() {
+    // Clean up debug key listeners to prevent conflicts on restart
+    if (this._debugKeysRegistered) {
+      this.input.keyboard.removeAllListeners('keydown');
+      this._debugKeysRegistered = false;
+    }
+    
+    // Clean up any remaining UI elements
+    if (this.uiLayoutManager) {
+      this.uiLayoutManager.destroy && this.uiLayoutManager.destroy();
+    }
   }
 }
