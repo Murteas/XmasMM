@@ -8,7 +8,9 @@
     "verify-assets": "node scripts/verify-assets.js",
     "check-mobile-layout": "node scripts/check-mobile-layout.js",
     "start-dev": "python scripts/dev_server.py",
-    "test": "npm run verify-assets && npm run test-game-structure"
+  "validate-tasks": "python scripts/validate_tasks.py",
+  "install-hooks": "bash scripts/install_hooks.sh",
+  "test": "npm run verify-assets && npm run test-game-structure && npm run validate-tasks"
   },
   "devDependencies": {
     "puppeteer": "^21.0.0"

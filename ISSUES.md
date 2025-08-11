@@ -2,7 +2,7 @@
 
 ## 📊 Current Status Summary
 
-**Total Active Issues**: 5 (UI enhancements + design research + share bug)
+**Total Active Issues**: 11 (UI enhancements + design research + share bug + technical debt reduction)
 
 **Overall Project Health**: 🟢 **Excellent**
 - Core functionality complete and mobile-optimized  
@@ -11,11 +11,125 @@
 - PERF-001 game transition performance optimized
 - Focus on final visual polish
 
-**Last Updated**: August 8, 2025
+**Last Updated**: August 11, 2025
 
 ---
 
 ## 🚨 Open Issues
+
+### TECH-002: Scene Lifecycle Listener Cleanup 🔴
+**Priority**: High  
+**Category**: Technical Stability  
+**Status**: Open
+
+**Problem**: Global keyboard + window event listeners (resize, error, unhandledrejection) are added but never explicitly removed on scene shutdown. Potential for duplicate handlers, memory growth, and unpredictable behavior if scenes are re-entered in future features (e.g., replay loops, multi-session testing).
+**Impact**: Hidden stability / performance risk; harder future debugging; could surface subtle input lag or duplicated logs.
+**Location**: `GameScene` (keyboard), `main.js` (window events)
+
+**Planned Remediation**:
+- Add `shutdown` / `destroy` handlers in scenes to unregister keyboard listeners
+- Centralize window listener registration & cleanup in a lightweight LifecycleUtility or in initialize/destroy flow
+- Guard against multiple registrations (idempotent attach)
+
+**Acceptance Criteria**:
+- [ ] All keyboard listeners removed on scene shutdown
+- [ ] Window listeners cleaned when game disposed / reinitialized
+- [ ] No duplicate event firings after multiple game restarts
+- [ ] Lightweight utility or documented pattern established
+
+### TECH-001: Centralized Layout & Constants Module 🟡
+**Priority**: Medium  
+**Category**: Maintainability  
+**Status**: Open
+
+**Problem**: Repeated magic numbers (header heights 120/140, footer 120, row height 60, spacing constants) scattered across managers (e.g., `ActiveRowManager`, `GameScene`, layout methods) increase risk of drift and complicate tuning.
+**Impact**: Harder to adjust UI globally; increases inconsistency risk when polishing.
+
+**Solution Direction**:
+- Create `js/config/LayoutConfig.js` exporting shared sizing + timing constants
+- Replace literals incrementally (non-breaking passes)
+- Document rationale & mobile target ranges
+
+**Acceptance Criteria**:
+- [ ] Single source for header/footer heights, row height, spacing, delay values
+- [ ] At least 3 high-traffic files refactored to use constants
+- [ ] No behavior change (visual diff stable)
+- [ ] README / AI briefing mentions constants module
+
+### TECH-003: Lightweight Logger Abstraction 🟡
+**Priority**: Medium  
+**Category**: Developer Experience  
+**Status**: Open
+
+**Problem**: Direct `console.log` / `console.warn` calls throughout code (debug + runtime) lack centralized control, making production noise management harder.
+**Impact**: Harder to silence logs for production profiling; ad‑hoc filtering required.
+
+**Solution Direction**:
+- Introduce `Logger` wrapper (levels: debug/info/warn/error)
+- Gate debug output via `TestConfig.shouldShowDebugLogs()` or URL param
+- Provide no-op stubs in production mode
+
+**Acceptance Criteria**:
+- [ ] Logger module created and documented
+- [ ] At least 10 scattered direct logs replaced (non-critical only)
+- [ ] Production mode silence verified
+- [ ] Debug flag re-enables expected instrumentation
+
+### TECH-004: ESLint + Prettier (Warn-Only Integration) 🟡
+**Priority**: Medium  
+**Category**: Code Quality  
+**Status**: Open
+
+**Problem**: No enforced lint/format baseline; future contributors (or AI agents) may introduce inconsistent patterns.
+**Impact**: Gradual readability decline; higher review overhead.
+
+**Solution Direction**:
+- Add `devDependencies` + minimal `.eslintrc` (phaser globals, browser, ES2020)
+- Prettier config for consistent spacing (defer auto-format of legacy files)
+- Add npm script: `lint` (no autofix) & `format:check`
+
+**Acceptance Criteria**:
+- [ ] ESLint config present with Phaser globals suppressed
+- [ ] Prettier config present
+- [ ] Running lint produces only warnings (no blocking errors)
+- [ ] Documented in AI briefing / README contribution section
+
+### TECH-005: Asset Loading Manifest / DRY Preload 🟡
+**Priority**: Low-Medium  
+**Category**: Performance / Maintainability  
+**Status**: Open
+
+**Problem**: Repetitive manual image load calls for each density; harder to add/remove assets consistently.
+**Impact**: Risk of omissions or mismatched keys; verbose preload.
+
+**Solution Direction**:
+- Create manifest array: `{ baseKey: 'santa', variants: ['1x','2x','3x'] }`
+- Loop-driven registration in `preload()`; fallback strategy preserved
+- Optional future conditional loading (only needed density)
+
+**Acceptance Criteria**:
+- [ ] Manifest module created (`js/config/AssetManifest.js`)
+- [ ] Preload logic uses loops rather than repeated calls
+- [ ] No missing textures vs prior implementation
+- [ ] File count & load time unchanged or improved
+
+### TECH-006: Debug Key Map Documentation Consistency 🟡
+**Priority**: Low  
+**Category**: Documentation Hygiene  
+**Status**: Open
+
+**Problem**: Debug mode documented in README & AI briefing, but no centralized authoritative reference; risk of divergence if keys evolve.
+**Impact**: Minor confusion for future maintainers / agents.
+
+**Solution Direction**:
+- Add `docs/debug-mode.md` authoritative key mapping & usage guidelines
+- Link from README + AI briefing; ensure in-code comment block references file
+
+**Acceptance Criteria**:
+- [ ] New doc file created and linked
+- [ ] GameScene debug handler comment references doc
+- [ ] README / AI briefing updated to point to single source
+- [ ] Keys verified in documentation match implementation
 
 ### UI-014: Share Score Button Requires Double-Tap 🔴
 **Priority**: Medium  

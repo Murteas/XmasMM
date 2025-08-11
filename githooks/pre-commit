@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Pre-commit hook: validate tasks registry & block commit on errors.
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+NC='\033[0m'
+
+echo -e "${YELLOW}[pre-commit] Running task registry validation...${NC}" 
+python scripts/validate_tasks.py > .git/hooks/task_validation_output.tmp 2>&1
+STATUS=$?
+
+if [ $STATUS -ne 0 ]; then
+  echo -e "${RED}[pre-commit] Task validation failed. See below:${NC}" >&2
+  cat .git/hooks/task_validation_output.tmp >&2
+  echo -e "${RED}Commit aborted. Fix tasks.json / markdown sync issues and retry.${NC}" >&2
+  exit 1
+else
+  echo -e "${GREEN}[pre-commit] Task validation passed.${NC}"
+fi
+
+# Optional: add quick lint placeholder (disabled - can enable when ESLint present)
+# echo -e "${YELLOW}[pre-commit] (Skipping lint - not configured)${NC}" 
+
+exit 0

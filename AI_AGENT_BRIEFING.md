@@ -16,6 +16,7 @@
 3. Run test verification: `cd tests && bash verify_tests.sh 2>&1 | tee test-results/verification.log`
 4. **ASK USER** to start server on port 8000 if needed (agents cannot start servers)
 5. Run `python scripts/automation.py status 2>&1 | tee test-results/status.log`
+6. Run task registry validation: `npm run validate-tasks 2>&1 | tee test-results/task_validation.log` (Confirm no drift before adding/modifying tasks)
 
 ## � CURRENT PROJECT STATUS (Updated July 16, 2025)
 
@@ -163,6 +164,37 @@ ls -la js/managers/
 ### **Task System**
 - `tasks/` - Individual task documentation
 - `tasks.json` - Machine-readable task registry
+ - `scripts/validate_tasks.py` / `npm run validate-tasks` - MUST run before and after modifying tasks to prevent drift
+
+### ✅ Task Validation Protocol
+Always run the validator before introducing new tasks or marking tasks complete:
+```bash
+npm run validate-tasks 2>&1 | tee test-results/task_validation.log
+```
+If it reports discrepancies:
+1. Add missing markdown or JSON entries
+2. Re-run until clean (no errors/warnings)
+3. Commit changes with message: "Sync tasks registry"
+4. Reference any promoted issues (e.g., TECH-002 → ListenerCleanup)
+
+Never rely solely on ISSUES.md for scheduled work—once something is scheduled, promote it into tasks.json + create /tasks/ markdown.
+
+### 🔐 Automated Enforcement (Git Hook)
+Local contributors should install the pre-commit hook once:
+```bash
+npm run install-hooks
+```
+The hook blocks commits if `scripts/validate_tasks.py` fails. If you see a failure:
+1. Read the reported missing/extra tasks list
+2. Add or remove the relevant markdown/JSON entries
+3. Re-run `npm run validate-tasks`
+4. Commit again
+
+If running in an environment where hooks are not executed (some CI or hosted agents), explicitly run:
+```bash
+npm run validate-tasks
+```
+before committing generated changes.
 
 ## 🎮 Phaser.js Best Practices
 

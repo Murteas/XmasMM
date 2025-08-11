@@ -1,11 +1,11 @@
 {
   "project": {
     "name": "XmasMM",
-    "version": "1.0.0", 
-    "lastUpdated": "2025-07-16T23:59:59.999999"
+    "version": "1.0.0",
+    "lastUpdated": "2025-08-11T12:00:00.000000"
   },
   "phases": {
-    "feature_development": {
+  "feature_development": {
       "name": "Feature Development", 
       "status": "COMPLETED",
       "tasks": [
@@ -24,7 +24,7 @@
         "GameScreenMobileOptimization"
       ]
     },
-    "finalization": {
+  "finalization": {
       "name": "Finalization",
       "status": "CURRENT",
       "tasks": [
@@ -193,7 +193,7 @@
     "GameScreenMobileOptimization": {
       "id": "GameScreenMobileOptimization",
       "name": "Game Screen Mobile Optimization",
-      "status": "READY",
+      "status": "COMPLETED",
       "priority": 4.5,
       "phase": "feature_development",
       "description": "Optimize spacing, layout, and messaging of game screen and round over scene for mobile devices",
@@ -232,7 +232,9 @@
           "Score messaging clarity improvements",
           "Mobile touch interaction enhancements"
         ]
-      }
+  },
+  "completedAt": "2025-08-11T11:55:00.000000",
+  "completionNotes": "Backfilled timestamp during synchronization; actual completion earlier (see git history)."
     },
     "CodeArchitectureRefactoring": {
       "id": "CodeArchitectureRefactoring",
@@ -277,7 +279,7 @@
     "UsabilityImprovements": {
       "id": "UsabilityImprovements",
       "name": "Usability Improvements",
-      "status": "CURRENT",
+      "status": "COMPLETED",
       "priority": 6,
       "phase": "feature_development",
       "description": "Final accessibility and polish improvements - Visual consistency completed",
@@ -307,6 +309,39 @@
         "AudioImplementation"
       ],
       "estimatedHours": 8
+    },
+    "ListenerCleanup": {
+      "id": "ListenerCleanup",
+      "name": "Listener Lifecycle Cleanup",
+      "status": "PLANNED",
+      "priority": 6.8,
+      "phase": "finalization",
+      "description": "Implement lifecycle-safe registration & removal of global and scene-level event listeners (TECH-002).",
+      "objectives": [
+        "Audit existing window & keyboard listeners",
+        "Add scene shutdown hooks to remove keyboard handlers",
+        "Centralize window listener management",
+        "Prevent duplicate registration across replays",
+        "Add lightweight test/diagnostic to confirm no duplication"
+      ],
+      "deliverables": [
+        "Refactored GameScene keyboard lifecycle logic",
+        "Central listener utility (optional)",
+        "Documentation note in AI_AGENT_BRIEFING.md",
+        "Validation output from scripts/validate_tasks.py (post-change)"
+      ],
+      "successCriteria": [
+        "No duplicate keyboard handler firings after multiple game restarts",
+        "All window listeners removable / documented",
+        "Zero regression to existing input behavior",
+        "Script-based audit passes"
+      ],
+      "dependencies": [],
+      "dependents": [
+        "AudioImplementation",
+        "RandomGuessFeature"
+      ],
+      "estimatedHours": 3
     },
     "AudioImplementation": {
       "id": "AudioImplementation",
@@ -371,6 +406,187 @@
       ],
       "dependents": [],
       "estimatedHours": 12
+  },
+  "RoundOverScenePolish": {
+      "id": "RoundOverScenePolish",
+      "name": "Round Over Scene Polish",
+      "status": "CURRENT",
+      "priority": 6.5,
+      "phase": "finalization",
+      "description": "Polish RoundOver scene layout and history UX per RoundOverScenePolish.md",
+      "objectives": [
+        "Improve RoundOver main screen spacing & hierarchy",
+        "Optimize history view density & touch targets",
+        "Add / refine solution & quality indicators integration",
+        "Maintain Christmas theming and readability"
+      ],
+      "deliverables": [
+        "js/scenes/RoundOver.js - layout & history refinements",
+        "tests (manual) - multi viewport verification"
+      ],
+      "successCriteria": [
+        "RoundOver main view visually polished",
+        "History rows show more data without scrolling overflow",
+        "All touch targets >=44px",
+        "Solution and quality info clear & accessible"
+      ],
+      "dependencies": [
+        "RoundOverScene"
+      ],
+      "dependents": [
+        "AudioImplementation"
+      ],
+      "estimatedHours": 5
+    },
+  "RandomGuessFeature": {
+      "id": "RandomGuessFeature",
+      "name": "Random Guess Player Feature",
+      "status": "PLANNED",
+      "priority": 9,
+      "phase": "finalization",
+      "description": "Player-facing random guess / inspiration button (debug tooling already implemented separately).",
+      "objectives": [
+        "Design fair penalty or cooldown system",
+        "Integrate button near Submit/Hint without clutter",
+        "Provide educational framing when used",
+        "Avoid undermining strategic play",
+        "Ensure separation from existing debug-only random fill keys"
+      ],
+      "deliverables": [
+        "UI button & modal (GameScene / UILayoutManager)",
+        "GameInputHandler player-trigger integration (distinct path)",
+        "ScoreManager adjustments for penalties"
+      ],
+      "successCriteria": [
+        "Feature optional & unobtrusive",
+        "Clear cost / benefit messaging",
+        "No regression to existing hint system",
+        "Mobile layout unaffected"
+      ],
+      "dependencies": [
+        "RoundOverScenePolish",
+        "DebugRandomGuessTools"
+      ],
+      "dependents": [],
+      "estimatedHours": 4
+    },
+    "DebugRandomGuessTools": {
+      "id": "DebugRandomGuessTools",
+      "name": "Debug Random Guess Tools",
+      "status": "COMPLETED",
+      "priority": 6.6,
+      "phase": "finalization",
+      "description": "Implement developer-only debug mode with random guess fill, auto-win, fast-forward, and jump-to-last-round shortcuts.",
+      "objectives": [
+        "Add keyboard toggle for debug mode (D)",
+        "Provide random row fill (R)",
+        "Provide auto-win fill (W)",
+        "Provide fast-forward multi-guess (F)",
+        "Provide jump near last round (L)",
+        "Ensure zero impact on normal gameplay"
+      ],
+      "deliverables": [
+        "js/scenes/GameScene.js - debug key handling",
+        "js/managers/GameInputHandler.js - debug helper methods",
+        "js/managers/ActiveRowManager.js - fillAllElements helper",
+        "Documentation updates (README, AI_AGENT_BRIEFING)"
+      ],
+      "successCriteria": [
+        "All debug shortcuts functional",
+        "No crashes when keys pressed outside GameScene initialization window",
+        "No accidental exposure to end users (keys only mode)",
+        "Documentation reflects feature"
+      ],
+      "dependencies": [],
+      "dependents": [
+        "RandomGuessFeature"
+      ],
+      "estimatedHours": 3,
+      "completedAt": "2025-08-04T12:00:00.000000"
+    },
+    "GameScreenFooterLayoutFix": {
+      "id": "GameScreenFooterLayoutFix",
+      "name": "Game Screen Footer Layout Fix",
+      "status": "COMPLETED",
+      "priority": 5.4,
+      "phase": "feature_development",
+      "description": "Adjust footer region layout for consistent active row positioning and legend spacing.",
+      "objectives": [
+        "Fix footer overlap issues",
+        "Ensure active row visibility above browser chrome",
+        "Preserve touch target sizing"
+      ],
+      "deliverables": ["ActiveRowManager.js adjustments", "UILayoutManager layout tuning"],
+      "successCriteria": [
+        "No clipping on iPhone safe area",
+        "Legend not overlapping active row",
+        "Footer stable across orientation"
+      ],
+      "dependencies": ["MobileLayoutOptimization"],
+      "dependents": ["GameScreenMobileLayoutFix"],
+      "estimatedHours": 3,
+      "completedAt": "2025-07-13T14:00:00.000000"
+    },
+    "GameScreenHistoryCompression": {
+      "id": "GameScreenHistoryCompression",
+      "name": "Game Screen History Compression",
+      "status": "COMPLETED",
+      "priority": 5.5,
+      "phase": "feature_development",
+      "description": "Reduce vertical footprint of history rows to improve mobile information density.",
+      "objectives": [
+        "Lower row height",
+        "Maintain readability",
+        "Preserve feedback symbol clarity"
+      ],
+      "deliverables": ["HistoryRenderer row sizing changes"],
+      "successCriteria": [
+        "More rows visible without scroll",
+        "No overlap or truncation",
+        "Consistent spacing with active row"
+      ],
+      "dependencies": ["MobileLayoutOptimization"],
+      "dependents": ["GameScreenMobileLayoutFix"],
+      "estimatedHours": 2,
+      "completedAt": "2025-07-13T18:00:00.000000"
+    },
+    "GameScreenMobileLayoutFix": {
+      "id": "GameScreenMobileLayoutFix",
+      "name": "Game Screen Mobile Layout Fix",
+      "status": "COMPLETED",
+      "priority": 5.6,
+      "phase": "feature_development",
+      "description": "Follow-up fixes consolidating layout adjustments for mobile after compression & footer fixes.",
+      "objectives": [
+        "Resolve residual spacing edge cases",
+        "Harden safe area calculations",
+        "Stabilize active row reposition logic"
+      ],
+      "deliverables": ["GameUtils viewport helpers", "ActiveRowManager safe area logic"],
+      "successCriteria": [
+        "Active row never overlaps browser UI",
+        "Consistent spacing on narrow widths (<=375px)",
+        "No regressions in legend spacing"
+      ],
+      "dependencies": ["GameScreenHistoryCompression"],
+      "dependents": ["GameScreenMobileOptimization"],
+      "estimatedHours": 4,
+      "completedAt": "2025-07-14T08:30:00.000000"
+    },
+    "README": {
+      "id": "README",
+      "name": "README & Docs Sync",
+      "status": "COMPLETED",
+      "priority": 3.5,
+      "phase": "feature_development",
+      "description": "Documentation alignment task for primary onboarding materials.",
+      "objectives": ["Ensure README reflects architecture", "Add debug mode doc", "Link AI briefing"],
+      "deliverables": ["README.md updates", "AI_AGENT_BRIEFING.md sync"],
+      "successCriteria": ["Debug mode documented", "Task system referenced", "Mobile focus highlighted"],
+      "dependencies": [],
+      "dependents": [],
+      "estimatedHours": 1,
+      "completedAt": "2025-08-08T09:00:00.000000"
     }
   },
   "assets": {
@@ -419,19 +635,19 @@
     }
   },
   "currentState": {
-    "activeTask": "GameScreenMobileOptimization",
-    "nextTask": "UsabilityImprovements",
+    "activeTask": "RoundOverScenePolish",
+    "nextTask": "AudioImplementation",
     "blockedTasks": [],
     "readyTasks": [],
     "completedPhases": [
       "mobile_foundation",
       "code_preparation"
     ],
-    "currentPhase": "feature_development",
+    "currentPhase": "finalization",
     "overallProgress": {
-      "completed": 5,
-      "total": 9,
-      "percentage": 56
+      "completed": 12,
+      "total": 17,
+      "percentage": 71
     }
   },
   "validation": {
