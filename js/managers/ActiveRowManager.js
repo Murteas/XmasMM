@@ -1,4 +1,5 @@
 // ActiveRowManager.js - Handles active row (inline editing) functionality
+import LayoutConfig from '../config/LayoutConfig.js';
 
 class ActiveRowManager {
   constructor(scene, historyManager) {
@@ -121,7 +122,8 @@ class ActiveRowManager {
     const layout = GameUtils.getResponsiveLayout(width, height);
     
     // Calculate header layout (same as UILayoutManager)
-    const baseHeaderHeight = isSmallScreen ? 140 : 120;
+  // Use centralized layout constants
+  const baseHeaderHeight = LayoutConfig.getBaseHeaderHeight(isSmallScreen);
     const headerBottomY = isVerySmallScreen ? 145 : (isSmallScreen ? 120 : 95);
     
     // Account for Christmas legend space
@@ -137,7 +139,7 @@ class ActiveRowManager {
       headerBottomY + legendSpacing + legendHeight + 15 // Extra padding for active row
     );
     
-    const rowHeight = 60;
+  const rowHeight = LayoutConfig.HISTORY_ROW_HEIGHT_STANDARD;
     const guessHistory = this.historyManager.getGuessHistory();
     const scrollOffset = this.historyManager.getScrollOffset();
     

@@ -1,4 +1,5 @@
 // GameScene.js - Main game scene (refactored for modular architecture)
+import LayoutConfig from '../config/LayoutConfig.js';
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -155,8 +156,8 @@ class GameScene extends Phaser.Scene {
     this.headerContainer.setDepth(1000);
     
     // Scrollable content container (middle area)
-    const headerHeight = 140;
-    const footerHeight = 120;
+  const headerHeight = LayoutConfig.THREE_ZONE_HEADER;
+  const footerHeight = LayoutConfig.FOOTER_HEIGHT_GAME;
     this.scrollableContainer = this.add.container(0, headerHeight);
     this.scrollableContainer.setDepth(500);
     

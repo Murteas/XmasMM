@@ -1,4 +1,5 @@
 // RoundOver.js - End game screen with score breakdown and options
+import LayoutConfig from '../config/LayoutConfig.js';
 
 class RoundOver extends Phaser.Scene {
   constructor() {
@@ -38,11 +39,11 @@ class RoundOver extends Phaser.Scene {
     const { width, height } = this.cameras.main;
     
     // Fixed header zone (header info + score)
-    const headerHeight = 140;
+  const headerHeight = LayoutConfig.THREE_ZONE_HEADER;
     this.headerContainer = this.add.container(0, 0);
     
     // Scrollable content zone (solution + history)
-    const footerHeight = 100;
+  const footerHeight = LayoutConfig.FOOTER_HEIGHT_ROUND_OVER;
     const contentHeight = height - headerHeight - footerHeight;
     this.scrollableContainer = this.add.container(0, headerHeight);
     
@@ -181,7 +182,7 @@ class RoundOver extends Phaser.Scene {
     currentY += 30;
     
     // History rows (denser layout while preserving readability)
-    const rowHeight = 42; // Slightly reduced for improved density
+  const rowHeight = LayoutConfig.ROUND_OVER_ROW_HEIGHT_DENSE; // centralized constant
     this.gameData.guessHistory.forEach((guess, index) => {
       const feedback = this.gameData.feedbackHistory[index];
       this.createHistoryRow(guess, feedback, index + 1, currentY, this.scrollableContainer, rowHeight);
@@ -330,7 +331,7 @@ class RoundOver extends Phaser.Scene {
     }
   }
 
-  createHistoryRow(guess, feedback, rowNumber, y, container, rowHeight = 42) {
+  createHistoryRow(guess, feedback, rowNumber, y, container, rowHeight = LayoutConfig.ROUND_OVER_ROW_HEIGHT_DENSE) {
     const { width } = this.cameras.main;
 
     // Quality classification (family-friendly feedback)
