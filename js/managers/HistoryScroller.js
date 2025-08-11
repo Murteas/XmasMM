@@ -15,12 +15,17 @@ class HistoryScroller {
   setupHistoryScroll() {
     const { width, height } = this.scene.cameras.main;
     
-    // Calculate touch area dimensions
+    // Calculate touch area dimensions with proper footer avoidance
     const isSmallScreen = width < 500;
     const baseHeaderHeight = isSmallScreen ? 140 : 120;
     const historyStartY = Math.max(baseHeaderHeight, height * 0.22);
-    const bottomMargin = isSmallScreen ? 60 : 80;
-    const historyEndY = height - bottomMargin;
+    
+    // Respect footer container positioning to avoid touch conflicts
+    const footerHeight = LayoutConfig.FOOTER_HEIGHT_GAME;
+    const safeAreaInsets = this.scene.safeAreaManager ? this.scene.safeAreaManager.getInsets() : { bottom: 0 };
+    const swipeGestureMargin = 20;
+    const footerTopY = height - footerHeight - safeAreaInsets.bottom - swipeGestureMargin;
+    const historyEndY = footerTopY - 10; // 10px buffer above footer
     
     // Create invisible touch area for history scrolling
     this.historyTouchArea = this.scene.add.rectangle(
