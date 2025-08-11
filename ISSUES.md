@@ -11,7 +11,7 @@
 - PERF-001 game transition performance optimized
 - Focus on final visual polish
 
-**Last Updated**: August 11, 2025
+**Last Updated**: August 11, 2025 (Afternoon update – RoundOver polish & score formatting complete)
 
 ---
 
@@ -317,4 +317,4 @@
 - **Core Functionality**: Working ✅
 - **User Experience**: Polished ✅
 
-**Next Focus**: RoundOverScenePolish, AudioImplementation, FinalTesting
+**Next Focus**: TECH-002 ListenerCleanup (lifecycle safety), then AudioImplementation, then FinalTesting
