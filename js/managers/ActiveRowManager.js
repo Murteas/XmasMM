@@ -48,7 +48,7 @@ class ActiveRowManager {
     
     this.hasActiveRow = true;
     
-    return this.scene.footerContainer ? 60 : this.calculateActiveRowPosition(); // Return relative position
+    return this.scene.footerContainer ? 40 : this.calculateActiveRowPosition(); // Return relative position
   }
 
   createActiveRowInFooter() {
@@ -56,10 +56,10 @@ class ActiveRowManager {
     const { width } = this.scene.cameras.main;
     const codeLength = this.scene.codeLength;
     
-    // Create background in footer container (relative positioning)
+    // Create background in footer container (relative positioning - moved higher for legend space)
     this.activeRowBackground = this.scene.add.rectangle(
       width / 2,
-      60, // Relative Y position within footer
+      40, // Moved up from 60 to create space for legend below
       width - 20,
       50,
       0x4a4a4a,
@@ -79,13 +79,13 @@ class ActiveRowManager {
     
     for (let i = 0; i < codeLength; i++) {
       const slotX = startX + i * (slotSize + 8);
-      const slot = this.scene.add.rectangle(slotX + slotSize/2, 60, slotSize, slotSize, 0x666666)
+      const slot = this.scene.add.rectangle(slotX + slotSize/2, 40, slotSize, slotSize, 0x666666)
         .setStrokeStyle(2, 0xcccccc)
         .setInteractive()
         .on('pointerdown', () => this.elementPicker.showElementPicker(i, this.activeRowGuess));
       
       // Create display element based on current guess state (handles pre-filled guesses)
-      const displayElement = this.createSlotDisplay(slotX + slotSize/2, 60, i);
+      const displayElement = this.createSlotDisplay(slotX + slotSize/2, 40, i);
       
       this.scene.footerContainer.add([slot, displayElement]);
       
@@ -95,12 +95,12 @@ class ActiveRowManager {
     
     // Create Christmas-themed submit button properly aligned (GameScreenMobileLayoutFix)
     const submitButtonX = startX + totalSlotsWidth + 50; // Positioned after slots with gap
-    this.activeRowSubmitBtn = this.scene.add.rectangle(submitButtonX, 60, submitButtonWidth, 40, 0x0d5016) // Forest green
+    this.activeRowSubmitBtn = this.scene.add.rectangle(submitButtonX, 40, submitButtonWidth, 40, 0x0d5016) // Forest green
       .setStrokeStyle(2, 0x0a4012) // Darker green border
       .setInteractive()
       .on('pointerdown', () => this.scene.submitGuess());
 
-    const submitText = this.scene.add.text(submitButtonX, 60, '🎁 Submit', { // Better text!
+    const submitText = this.scene.add.text(submitButtonX, 40, '🎁 Submit', { // Better text!
       fontSize: '13px',
       fill: '#ffffff',
       fontFamily: 'Arial'
