@@ -163,12 +163,20 @@ class ScoreManager {
   checkHintAvailability(hintBtn, hintText) {
     if (this.hintUsed) {
       // Already used hint this round
-      hintBtn.setStyle({ fill: '#888', backgroundColor: '#444' });
+      if (hintBtn && hintBtn.disableButton) {
+        hintBtn.disableButton();
+      } else if (hintBtn && hintBtn.setStyle) {
+        hintBtn.setStyle({ fill: '#888', backgroundColor: '#444' });
+      }
       hintText.setText('Hint: Used').setStyle({ fill: '#888' });
       return false;
     } else {
-      // Always available (with penalty warning)
-      hintBtn.setStyle({ fill: '#fff', backgroundColor: '#0d5016' }); // Forest green when available
+      // Available (with penalty warning)
+      if (hintBtn && hintBtn.enableButton) {
+        hintBtn.enableButton();
+      } else if (hintBtn && hintBtn.setStyle) {
+        hintBtn.setStyle({ fill: '#fff', backgroundColor: '#0d5016' });
+      }
       hintText.setText(`🎅 Hint (-${this.scoringConfig.hintPenalty} pts)`).setStyle({ fill: '#fff' });
       return true;
     }
@@ -213,7 +221,11 @@ class ScoreManager {
     currentGuess[targetPosition] = revealedElement;
     
     // Update UI to show hint used
-    hintBtn.setStyle({ fill: '#888', backgroundColor: '#444' }); // Gray when used
+    if (hintBtn && hintBtn.disableButton) {
+      hintBtn.disableButton();
+    } else if (hintBtn && hintBtn.setStyle) {
+      hintBtn.setStyle({ fill: '#888', backgroundColor: '#444' });
+    }
     hintText.setText('Hint: Used').setStyle({ fill: '#888' });
     
     return {

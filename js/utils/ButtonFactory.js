@@ -17,7 +17,7 @@ class ButtonFactory {
     const container = scene.add.container(x, y);
 
     // Label text (measure first for width)
-    const labelText = scene.add.text(0, 0, label, {
+  const labelText = scene.add.text(0, 0, label, {
       font: font,
       fill: palette.fg,
       align: 'center'
@@ -55,6 +55,20 @@ class ButtonFactory {
     container.add(bg);
     if (iconText) container.add(iconText);
     container.add(labelText);
+
+    // Expose label for dynamic updates (e.g., toggles) without leaking internal structure elsewhere
+    container.labelText = labelText;
+    container.setLabel = (newText) => {
+      if (container.labelText) {
+        container.labelText.setText(newText);
+        // Recompute widths minimally (avoid full texture regen) when label changes length materially
+        const textWidth = container.labelText.width + (iconText ? iconText.width + 8 : 0);
+        const newBtnWidth = textWidth + paddingX * 2;
+        const newBtnHeight = Math.max(container.labelText.height, iconText ? iconText.height : 0) + paddingY * 2;
+        // Update interactive hit area & size (keep existing background scale; minor overflow acceptable)
+        container.setSize(newBtnWidth, newBtnHeight);
+      }
+    };
 
     // Interactive states
     container.setSize(btnWidth, btnHeight);

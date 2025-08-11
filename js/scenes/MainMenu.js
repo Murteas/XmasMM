@@ -45,71 +45,44 @@ class MainMenu extends Phaser.Scene {
   }
 
   createButtons(width, height) {
-    // Start Game button
-    const startBtn = this.add.text(width / 2, height * 0.35, 'Start Game', {
-      font: '32px Arial',
-      fill: '#fff',
-      backgroundColor: '#c0392b',
-      padding: { left: 24, right: 24, top: 12, bottom: 12 },
-      borderRadius: 8
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(GameUtils.getDepthLayers().UI);
-    
-    startBtn.on('pointerdown', () => {
-      this.scene.start('DifficultySelection');
+    // Start Game button (primary variant)
+    this.startBtn = ButtonFactory.createButton(this, width / 2, height * 0.35, 'Start Game', 'primary', {
+      icon: '🎮',
+      onClick: () => this.scene.start('DifficultySelection')
     });
+    this.startBtn.setDepth(GameUtils.getDepthLayers().UI);
 
-    // How to Play button
-    const helpBtn = this.add
-      .text(width / 2, height * 0.48, "How to Play", {
-        font: "24px Arial",
-        fill: "#fff",
-        backgroundColor: "#27ae60",
-        padding: { left: 20, right: 20, top: 10, bottom: 10 },
-        borderRadius: 6,
-      })
-      .setOrigin(0.5)
-      .setInteractive({ useHandCursor: true })
-      .setDepth(GameUtils.getDepthLayers().UI);
-    
-    helpBtn.on('pointerdown', () => {
-      this.showHelpOverlay();
+    // How to Play button (accent variant)
+    this.helpBtn = ButtonFactory.createButton(this, width / 2, height * 0.48, 'How to Play', 'accent', {
+      icon: '📘',
+      onClick: () => this.showHelpOverlay()
     });
+    this.helpBtn.setDepth(GameUtils.getDepthLayers().UI);
 
-    // SFX Toggle
-    this.sfxBtn = this.add.text(width / 2, height * 0.65, 'SFX: ON', {
-      font: '24px Arial',
-      fill: '#fff',
-      backgroundColor: '#222',
-      padding: { left: 18, right: 18, top: 8, bottom: 8 },
-      borderRadius: 6
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(GameUtils.getDepthLayers().UI);
-    
-    this.sfxBtn.on('pointerdown', () => {
-      const current = this.registry.get('sfxOn');
-      this.registry.set('sfxOn', !current);
-      this.sfxBtn.setText('SFX: ' + (this.registry.get('sfxOn') ? 'ON' : 'OFF'));
+    // SFX Toggle (danger variant for visual differentiation)
+    const sfxLabel = 'SFX: ON';
+    this.sfxBtn = ButtonFactory.createButton(this, width / 2, height * 0.65, sfxLabel, 'danger', {
+      icon: '🔊',
+      onClick: () => {
+        const current = this.registry.get('sfxOn');
+        this.registry.set('sfxOn', !current);
+        const newLabel = 'SFX: ' + (this.registry.get('sfxOn') ? 'ON' : 'OFF');
+        this.sfxBtn.setLabel(newLabel);
+      }
     });
+    this.sfxBtn.setDepth(GameUtils.getDepthLayers().UI);
 
-    // Music Toggle
-    this.musicBtn = this.add.text(width / 2, height * 0.75, 'Music: ON', {
-      font: '24px Arial',
-      fill: '#fff',
-      backgroundColor: '#222',
-      padding: { left: 18, right: 18, top: 8, bottom: 8 },
-      borderRadius: 6
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(GameUtils.getDepthLayers().UI);
-    
-    this.musicBtn.on('pointerdown', () => {
-      const current = this.registry.get('musicOn');
-      this.registry.set('musicOn', !current);
-      this.musicBtn.setText('Music: ' + (this.registry.get('musicOn') ? 'ON' : 'OFF'));
+    // Music Toggle (danger variant too; could differentiate later)
+    this.musicBtn = ButtonFactory.createButton(this, width / 2, height * 0.75, 'Music: ON', 'danger', {
+      icon: '🎵',
+      onClick: () => {
+        const current = this.registry.get('musicOn');
+        this.registry.set('musicOn', !current);
+        const newLabel = 'Music: ' + (this.registry.get('musicOn') ? 'ON' : 'OFF');
+        this.musicBtn.setLabel(newLabel);
+      }
     });
-
-    // Add touch feedback to all buttons
-    this.addButtonTouchFeedback(startBtn, { colorTint: 0xe74c3c });
-    this.addButtonTouchFeedback(helpBtn, { colorTint: 0x34495e });
-    this.addButtonTouchFeedback(this.sfxBtn, { colorTint: 0x555 });
-    this.addButtonTouchFeedback(this.musicBtn, { colorTint: 0x555 });
+    this.musicBtn.setDepth(GameUtils.getDepthLayers().UI);
   }
 
   initializeSettings() {

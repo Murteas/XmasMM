@@ -82,24 +82,18 @@ class UILayoutManager {
     ).setOrigin(1, 0).setDepth(GameUtils.getDepthLayers().UI);
     
     // Santa's Hint button positioned safely below header
-    this.hintBtn = GameUtils.createResponsiveText(
+    this.hintBtn = ButtonFactory.createButton(
       this.scene,
       width / 2,
-      layout.headerY + Math.round(35 * layout.fontScale),
+      layout.headerY + Math.round(38 * layout.fontScale),
       "Santa's Hint",
+      'accent',
       {
-        fontSize: `${Math.round(14 * layout.fontScale)}px`,
-        fontFamily: 'Arial',
-        fill: '#888',
-        backgroundColor: '#333',
-        padding: { 
-          left: Math.round(10 * layout.fontScale), 
-          right: Math.round(10 * layout.fontScale), 
-          top: Math.round(6 * layout.fontScale), 
-          bottom: Math.round(6 * layout.fontScale) 
-        }
+        icon: '🎅',
+        onClick: () => this.scene.useSantasHint()
       }
-    ).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
+    );
+    this.hintBtn.setDepth(GameUtils.getDepthLayers().UI);
     
     // SIMPLIFIED: Add header elements to header container if available
     if (this.scene.headerContainer) {
@@ -131,12 +125,18 @@ class UILayoutManager {
     }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
     
     // Santa's Hint button - proper color coding (green=available, gray=unavailable)
-    this.hintBtn = this.scene.add.text(width / 2, 125, "🎅 Hint", {
-      font: '14px Arial',
-      fill: '#888', // Start gray (locked)
-      backgroundColor: '#444', // Start gray background
-      padding: { left: 10, right: 10, top: 4, bottom: 4 }
-    }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
+    this.hintBtn = ButtonFactory.createButton(
+      this.scene,
+      width / 2,
+      125,
+      'Hint',
+      'accent',
+      {
+        icon: '🎅',
+        onClick: () => this.scene.useSantasHint()
+      }
+    );
+    this.hintBtn.setDepth(GameUtils.getDepthLayers().UI);
   }
 
   setupButtons() {
@@ -145,59 +145,37 @@ class UILayoutManager {
     const { width, height } = viewport;
     
     // Submit button (hidden since we're using integrated button in active row)
-    this.submitBtn = this.scene.add.text(width - 70, 300, 'Submit', {
-      font: '16px Arial',
-      fill: '#fff',
-      backgroundColor: '#27ae60',
-      padding: { left: 12, right: 12, top: 6, bottom: 6 }
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(GameUtils.getDepthLayers().UI + 10);
-    
-    // Hide the external submit button since we're using integrated approach
-    this.submitBtn.setVisible(false);
-    
-    this.submitBtn.on('pointerdown', () => {
-      this.scene.submitGuess();
-    });
-    
-    // Add touch feedback to submit button
-    this.addButtonTouchFeedback(this.submitBtn, { colorTint: 0x2ecc71 });
+    this.submitBtn = ButtonFactory.createButton(
+      this.scene,
+      width - 70,
+      300,
+      'Submit',
+      'primary',
+      {
+        icon: '✅',
+        onClick: () => this.scene.submitGuess()
+      }
+    );
+    this.submitBtn.setDepth(GameUtils.getDepthLayers().UI + 10);
+    this.submitBtn.setVisible(false); // Hidden with inline submission approach
     
     // Configure hint button interactivity
-    this.hintBtn.setInteractive({ useHandCursor: true });
-    this.hintBtn.on('pointerdown', () => {
-      this.scene.useSantasHint();
-    });
-    
-    // Add touch feedback to hint button
-    this.addButtonTouchFeedback(this.hintBtn, { colorTint: 0xe67e22 });
+  // Hint button already configured in creation; ScoreManager will manage enabled/disabled state
     
     // Back button in top-left header (proper UX pattern) - GameScreenFooterLayoutFix
     const layout = GameUtils.getResponsiveLayout(width, height);
-    const backBtn = GameUtils.createResponsiveText(
+    const backBtn = ButtonFactory.createButton(
       this.scene,
-      60, // Left margin
-      50, // Top header position - much better than floating mid-screen
+      60,
+      50,
       'Back',
+      'danger',
       {
-        fontSize: `${Math.round(16 * layout.fontScale)}px`,
-        fontFamily: 'Arial',
-        fill: '#fff',
-        backgroundColor: '#444',
-        padding: { 
-          left: Math.round(12 * layout.fontScale), 
-          right: Math.round(12 * layout.fontScale), 
-          top: Math.round(6 * layout.fontScale), 
-          bottom: Math.round(6 * layout.fontScale) 
-        }
+        icon: '↩️',
+        onClick: () => this.scene.scene.start('DifficultySelection')
       }
-    ).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(GameUtils.getDepthLayers().UI);
-    
-    backBtn.on('pointerdown', () => {
-      this.scene.scene.start('DifficultySelection');
-    });
-    
-    // Add touch feedback to back button
-    this.addButtonTouchFeedback(backBtn, { colorTint: 0x7f8c8d });
+    );
+    backBtn.setDepth(GameUtils.getDepthLayers().UI);
   }
 
   setupBackground() {
@@ -339,16 +317,18 @@ class UILayoutManager {
 
   showRestartButton() {
     this.scene.time.delayedCall(2000, () => {
-      const restartBtn = this.scene.add.text(this.scene.cameras.main.width / 2, this.scene.cameras.main.height / 2 + 100, 'Play Again', {
-        font: '24px Arial',
-        fill: '#fff',
-        backgroundColor: '#3498db',
-        padding: { left: 16, right: 16, top: 8, bottom: 8 }
-      }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(GameUtils.getDepthLayers().GAME_OVER);
-      
-      restartBtn.on('pointerdown', () => {
-        this.scene.scene.start('DifficultySelection');
-      });
+      const restartBtn = ButtonFactory.createButton(
+        this.scene,
+        this.scene.cameras.main.width / 2,
+        this.scene.cameras.main.height / 2 + 100,
+        'Play Again',
+        'primary',
+        {
+          icon: '🔁',
+          onClick: () => this.scene.scene.start('DifficultySelection')
+        }
+      );
+      restartBtn.setDepth(GameUtils.getDepthLayers().GAME_OVER);
     });
   }
 
