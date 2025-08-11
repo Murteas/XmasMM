@@ -1,13 +1,33 @@
 # Mobile Fullscreen Viewport Clipping Issue
 
-**Status**: 🔴 ACTIVE  
-**Priority**: HIGH  
+**Status**: ✅ RESOLVED (August 11, 2025)  
+**Priority**: HIGH (Completed)  
 **Platform**: Mobile devices (real hardware)  
-**Affects**: Guess screen, Game Over screen, How to Play screen  
+**Resolution**: Safe area implementation with footer positioning fixes
 
-## Problem Description
+## ✅ RESOLUTION SUMMARY
 
-When the game is accessed via "Add to Home Screen" (PWA fullscreen mode) on real mobile devices, content is clipped at the top and bottom of the screen:
+**Fixed by**: Safe area CSS implementation + Phaser footer positioning updates
+**Commit**: `e84cc11` - "Fix footer and active row positioning to respect safe areas"
+**Verification**: PWA fullscreen mode now properly respects device safe zones
+
+### **Issues Resolved**
+- ✅ **Top Clipping**: Implemented CSS safe area variables (--sat, --sar, --sab, --sal)
+- ✅ **Footer Overlap**: Updated GameScene footer container positioning with SafeAreaManager
+- ✅ **Submit Button Safe Zone**: Active row and submit button now respect bottom safe areas
+- ✅ **Auto-Update**: Footer position dynamically adjusts when safe areas change
+
+### **Technical Implementation**
+- SafeAreaManager integration in GameScene
+- CSS env(safe-area-inset-*) variables with fallbacks
+- Footer container positioning: `height - footerHeight - safeAreaInsets.bottom`
+- Auto-update callback for orientation/device changes
+
+---
+
+## ORIGINAL PROBLEM DESCRIPTION (For Reference)
+
+When the game was accessed via "Add to Home Screen" (PWA fullscreen mode) on real mobile devices, content was clipped at the top and bottom of the screen:
 
 ### **Top Clipping**
 - Title areas are partially obscured

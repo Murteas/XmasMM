@@ -147,9 +147,16 @@ ls -la js/managers/
 ## 📁 Critical Files
 
 ### **Core Documentation**
-- `ISSUES.md` - 🚨 Active issues only (cleaned up)
+- `ISSUES.md` - 🚨 **PRIMARY ISSUE TRACKER** - All open issues + recent resolved (single source of truth)
+- `issues/archived/` - Historical issues organized by session (for context when needed)
 - `PROJECT_STATUS.md` - Real-time progress (auto-updated)
 - `README.md` - Project overview
+
+### **Issue Management for AI Agents**
+- **ALWAYS check ISSUES.md first** - Contains all active issues and immediate priorities
+- **For historical context**: Refer to `issues/archived/session-*.md` files
+- **Update workflow**: Modify ISSUES.md for all status changes (single source of truth)
+- **Archive threshold**: When ISSUES.md >200 lines, move resolved issues to archives
 
 ### **Mobile Architecture** (ESSENTIAL)
 - `docs/phaser-mobile-architecture.md` - **MOBILE-006 solution patterns**
