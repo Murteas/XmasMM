@@ -164,7 +164,7 @@ class GameScene extends Phaser.Scene {
     this.scrollableContainer.setDepth(500);
     
     // Footer container (fixed at bottom with safe area support + swipe gesture margin)
-    const swipeGestureMargin = 20; // Additional margin to prevent iOS/Android bottom swipe conflicts
+    const swipeGestureMargin = 40; // Increased from 20px - Additional margin to prevent iOS/Android bottom swipe conflicts and ensure adequate clearance
     const footerY = height - footerHeight - safeAreaInsets.bottom - swipeGestureMargin;
     this.footerContainer = this.add.container(0, footerY);
     this.footerContainer.setDepth(1000);
@@ -173,7 +173,7 @@ class GameScene extends Phaser.Scene {
     this.safeAreaManager.onInsetsChanged((insets) => {
       const newFooterY = height - footerHeight - insets.bottom - swipeGestureMargin;
       this.footerContainer.y = newFooterY;
-      console.log(`📱 Footer position updated: y=${newFooterY} (safe bottom: ${insets.bottom}px + ${swipeGestureMargin}px margin)`);
+      console.log(`📱 Footer position updated: y=${newFooterY} (safe bottom: ${insets.bottom}px + ${swipeGestureMargin}px gesture margin)`);
     });
     
     console.log('📱 Simple Phaser three-zone layout created with safe area support');
