@@ -1,54 +1,138 @@
 # 🧪 XmasMM Testing Documentation
 
-**AI-Agent Optimized Testing System** - Complete testing infrastructure for mobile-first Pha### Before Making Changes
-1. Establish baseline: `cd tests && bash run_tests.sh`
-2. Note any existing failures
-3. Ensure HTTP server is running on port 8000 (any HTTP server)js development.
+**AI-Agent Optimized Testing System** - Simplified testing infrastructure for mobile-first Phaser.js development.
 
 ## 📁 Directory Structure
 
-### Core Test Files
-- `test_comprehensive.html` - **PRIMARY**: Integration testing of modular architecture
-- `test_mobile_expert.html` - **MOBILE**: MOBILE-006 ScrollableHistoryManager testing  
-- `test_mobile_evaluation.html` - **MOBILE**: Mobile device evaluation and viewport testing
-- `index.html` - Test suite navigation hub
-
-### Specialized Test Files  
-- `test_canvas_optimization.html` - Canvas performance and mobile optimization
-- `test_asset_loading.html` - Christmas asset loading verification
-- `test_debug_performance.html` - Performance debugging and FPS monitoring
-
-### Automation & Verification Scripts
-- `run_tests.sh` - **COMPREHENSIVE**: Full test suite with verification
-- `verify_tests.sh` - **QUICK**: Primary verification script (run after every change)
-- `automated_test_verifier.js` - Deep automated verification with HTTP testing
-- `cleanup_redundancy.sh` - **REDUNDANCY CHECK**: Prevents duplicate files and documentation
-- `package.json` - Node.js dependencies for automation
-
-### Enhanced Node.js Testing (Root Level)
-- **📦 Main `package.json`** - Professional debugging tools and scripts
-- **🔧 `scripts/debug-interactions.js`** - Interaction debugging with JSON reports
-- **🔍 `scripts/verify-assets.js`** - Asset verification and size analysis
-- **📊 `test-results/`** - JSON reports from enhanced debugging tools
+### Essential Test Files
+- `verify_tests.sh` - **AI AGENT PRIMARY**: Quick verification script (run after every change)
+- `test_mobile_expert.html` - **MANUAL TESTING RECOMMENDED**: Mobile device evaluation and ScrollableHistoryManager testing  
+- `index.html` - **MANUAL TESTING**: Test suite navigation hub with device info
+- `package.json` - Node.js dependencies for testing scripts
 
 ### Test Results & Data
-- `automated_test_results.json` - Verification results
-- `test_results.json` - Legacy test results
+- `../test-results/verification.log` - Latest verification results
+- `../test-results/asset_verification_report.json` - Asset verification reports
+- `../test-results/debug-mode-guide.md` - Debug mode documentation
 
 ## 🚀 Quick Test Commands (Essential for AI Agents)
 
-### Enhanced Node.js Testing (NEW - Requires Node.js v22.17.0+)
+### Primary AI Agent Verification
 ```bash
-# From project root - professional debugging tools
-npm run verify-assets        # Asset verification with size analysis
-npm run debug-interactions   # Interaction debugging with JSON reports  
-npm test                     # Combined verification suite
-npm run start-dev            # Start Python dev server via npm
+# From tests directory - essential for AI agents
+cd tests && bash verify_tests.sh
 
-# Check JSON reports
-cat test-results/asset_verification_report.json
-cat test-results/interaction_debug_report.json
+# View results
+cat ../test-results/verification.log
 ```
+
+### Manual Testing (Recommended for Human Validation)
+```bash
+# Start development server first
+python -m http.server 8000
+
+# Then visit in browser:
+http://localhost:8000/tests/              # Test suite navigation
+http://localhost:8000/tests/test_mobile_expert.html  # Mobile-specific testing
+```
+
+### Node.js Testing (Optional)
+```bash
+# From tests directory
+npm run verify    # Runs verify_tests.sh via npm
+```
+
+## 🎯 AI Agent Testing Workflow
+
+### Before Making Changes
+1. Establish baseline: `cd tests && bash verify_tests.sh`
+2. Note any existing failures
+3. Ensure HTTP server is running on port 8000
+
+### After Making Changes  
+1. **ALWAYS RUN**: `cd tests && bash verify_tests.sh`
+2. Verify all core files load correctly
+3. Check for HTTP errors in verification output
+4. Review `../test-results/verification.log` for details
+
+### For Complex Changes
+1. **Manual verification recommended**: Use `test_mobile_expert.html` 
+2. Test mobile viewport and interactions
+3. Verify ScrollableHistoryManager functionality
+4. Check touch interactions and responsive behavior
+
+## 📱 Manual Testing Guidelines
+
+### When to Use Manual Testing
+- **UI/UX Changes**: Visual verification needed
+- **Mobile Features**: Touch interactions, viewport behavior  
+- **Complex Interactions**: Multi-step user flows
+- **Final Validation**: Before considering work complete
+
+### Recommended Manual Tests
+1. **test_mobile_expert.html**: 
+   - Mobile-specific functionality testing
+   - ScrollableHistoryManager behavior
+   - Touch interaction validation
+   - Viewport and safe area testing
+
+2. **index.html**:
+   - Test suite navigation
+   - Device information display
+   - Quick access to all test files
+   - Browser compatibility testing
+
+## � File Descriptions
+
+### verify_tests.sh
+- **Purpose**: Primary AI agent verification tool
+- **Checks**: HTTP server status, core file loading, basic functionality
+- **Output**: Pass/fail status with detailed logging
+- **Usage**: Run after every code change
+
+### test_mobile_expert.html  
+- **Purpose**: Mobile-specific testing and validation
+- **Features**: ScrollableHistoryManager testing, mobile viewport simulation
+- **Usage**: Manual testing recommended for mobile changes
+- **Benefits**: Real mobile behavior testing, touch interaction validation
+
+### index.html
+- **Purpose**: Test suite navigation and browser testing
+- **Features**: Device info display, test file navigation, compatibility testing
+- **Usage**: Manual testing entry point
+- **Benefits**: Organized access to all testing resources
+
+## 📊 Test Results
+
+All test results are stored in `../test-results/`:
+- `verification.log` - Latest automated verification results  
+- `asset_verification_report.json` - Asset validation data
+- `debug-mode-guide.md` - Debug mode usage instructions
+
+## 🚨 Common Issues
+
+### HTTP Server Not Running
+```bash
+# Error: Development server not running on port 8000
+# Solution:
+python -m http.server 8000
+```
+
+### File Loading Errors
+```bash
+# Check verify_tests.sh output for specific files
+# Common causes: typos in file paths, missing files, syntax errors
+```
+
+### Mobile Testing Issues  
+```bash
+# Use test_mobile_expert.html for mobile-specific debugging
+# Check browser developer tools for viewport and touch issues
+```
+
+---
+
+**Note**: This testing system is optimized for AI agent development workflows while maintaining manual testing capabilities for complex validation scenarios.
 
 ### Traditional HTML Testing (Legacy)
 ```bash

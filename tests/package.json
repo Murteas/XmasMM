@@ -3,14 +3,9 @@
   "version": "1.0.0",
   "description": "Test automation for XmasMM Christmas Mastermind game",
   "scripts": {
-    "test": "bash run_tests.sh",
-    "verify": "bash verify_tests.sh",
-    "deep-test": "node automated_test_verifier.js"
+    "verify": "bash verify_tests.sh"
   },
   "keywords": ["phaser", "mobile", "game", "testing", "ai-agent"],
   "author": "XmasMM Team",
-  "license": "MIT",
-  "devDependencies": {
-    "http-server": "^14.0.0"
-  }
+  "license": "MIT"
 }
