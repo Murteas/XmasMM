@@ -11,43 +11,47 @@
 - **Collaborator**:  Technical collaborator, not order-taker. The user wants engineering dialogue, not compliance.
 
 ## 🚀 Quick Start (Do in Order)
-1. **🚨 CRITICAL**: Read `ISSUES.md` for blocking problems
-2. Check `PROJECT_STATUS.md` for current state
-3. Run test verification: `cd tests && bash verify_tests.sh 2>&1 | tee test-results/verification.log`
-4. **ASK USER** to start server: `python -m http.server 8000` (agents cannot start servers)
-5. Basic validation can be done with simple syntax checks
+1. **🚨 CRITICAL**: Read `ISSUES.md` for all project tracking - single source of truth
+2. Run test verification: `cd tests && bash verify_tests.sh 2>&1 | tee test-results/verification.log`
+3. **ASK USER** to start server: `python -m http.server 8000` (agents cannot start servers)
+4. Basic validation can be done with simple syntax checks
 
-## � CURRENT PROJECT STATUS (Updated July 16, 2025)
+## 📊 CURRENT PROJECT STATUS (Updated August 14, 2025)
 
 ### ✅ **COMPLETED MAJOR MILESTONES**
 - **Mobile Layout Optimization**: Complete footer container system with proper mobile responsiveness
-- **Game Over Flow**: Removed overlays, clean transitions to RoundOver scene  
-- **Documentation Cleanup**: AI_AGENT_BRIEFING.md is single source of truth, README.md streamlined
+- **Safe Area Implementation**: Mobile PWA fullscreen viewport clipping resolved 
+- **Layout Constants**: Centralized LayoutConfig.js system implemented
+- **Button Theming**: Complete festive button system with Christmas styling
+- **Issues Consolidation**: Single source of truth established in ISSUES.md
+- **Game Over Flow**: Clean transitions to RoundOver scene  
+- **Documentation Cleanup**: Streamlined project organization
 - **Hint System Perfection**: 
   - Always available (no score threshold)
   - Strategic selection (fixes wrong positions first, then fills empty slots)
   - Visual glow highlighting working correctly in footer container
-  - Clear penalty communication (-200 pts)
+  - Clear penalty communication (-220 pts)
   - Persistent hints (user dismisses manually)
   - Perfect mobile UX
 
-### 🎯 **IMMEDIATE NEXT PRIORITY: RoundOverScenePolish**
-Polish the RoundOver scene and optimize its history view feature for better mobile UX.
+### 🎯 **IMMEDIATE NEXT PRIORITY: UI-011 Christmas Title Enhancement**
+Enhance the "XmasMM" title with festive Christmas theming for improved visual appeal.
 
 **Key Benefits:**
-1. **Mobile UX**: Optimize the "View History" feature within RoundOver scene
-2. **Visual Polish**: Final refinements to the game completion experience
-3. **Touch Optimization**: Ensure all RoundOver interactions are mobile-friendly
-4. **Consistency**: Complete the mobile optimization story
+1. **Christmas Spirit**: Transform plain white title into festive display
+2. **Visual Polish**: Complete the Christmas theme consistency
+3. **Options**: Gradients, decorative elements, or elegant styling effects
+4. **Readability**: Maintain clear text while adding Christmas flair
 
 **Files to Focus On:**
-- `js/scenes/RoundOver.js` - Focus on createHistoryView() method and mobile UX
-- Test mobile viewport to ensure 44px touch targets maintained
+- `js/scenes/GameScene.js` - Title creation and styling
+- Consider existing Christmas color scheme (#0d5016 forest green, #ffd700 gold)
 
-### 🔧 **OTHER POTENTIAL PRIORITIES** (Lower Priority)
-- **Audio Implementation**: Add Christmas-themed sound effects
-- **Final Testing**: Comprehensive QA across devices and browsers
-- **Performance Optimization**: Canvas rendering improvements for mobile devices
+### 🔧 **OTHER ACTIVE PRIORITIES** (See ISSUES.md for complete list)
+- **AUDIO-001**: Christmas Audio Integration - Family-friendly sound effects
+- **TECH-002**: Scene Lifecycle Listener Cleanup - Event handler management  
+- **UI-014**: Share Score Double-Tap Bug - Fix share button behavior
+- **DEPLOY-001**: Final Testing and Deployment - Family user testing
 
 ### 🧪 **TESTING FOCUS**
 - Mobile viewport testing (375x667 minimum)
@@ -147,16 +151,14 @@ ls -la js/managers/
 ## 📁 Critical Files
 
 ### **Core Documentation**
-- `ISSUES.md` - 🚨 **PRIMARY ISSUE TRACKER** - All open issues + recent resolved (single source of truth)
-- `issues/archived/` - Historical issues organized by session (for context when needed)
-- `PROJECT_STATUS.md` - Real-time progress (auto-updated)
-- `README.md` - Project overview
+- `ISSUES.md` - 🚨 **COMPLETE PROJECT TRACKER** - All issues, priorities, and project management (single source of truth)
+- `README.md` - Project overview and quick start guide
+- `AI_AGENT_BRIEFING.md` - This file - Complete developer onboarding
 
 ### **Issue Management for AI Agents**
-- **ALWAYS check ISSUES.md first** - Contains all active issues and immediate priorities
-- **For historical context**: Refer to `issues/archived/session-*.md` files
-- **Update workflow**: Modify ISSUES.md for all status changes (single source of truth)
-- **Archive threshold**: When ISSUES.md >200 lines, move resolved issues to archives
+- **ALWAYS check ISSUES.md first** - Single source of truth for all project tracking
+- **Update workflow**: Modify ISSUES.md for all status changes and priority updates
+- **Complete tracking**: All issues, priorities, and implementation details in one file
 
 ### **Mobile Architecture** (ESSENTIAL)
 - `docs/phaser-mobile-architecture.md` - **MOBILE-006 solution patterns**
@@ -169,8 +171,9 @@ ls -la js/managers/
 - `js/scenes/` - Phaser scene implementations
 
 ### **Project Structure**
-- `tasks/` - Historical task documentation (reference only)
-- `tasks.json` - Historical task registry (reference only)
+- **ISSUES.md** - Complete project tracking (single source of truth)
+- **js/config/LayoutConfig.js** - Centralized layout constants
+- **docs/** - Technical architecture documentation
 
 ### 🔐 Git Hook (Optional)
 Local contributors can install the pre-commit hook for basic validation:

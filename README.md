@@ -1,13 +1,27 @@
-# 🎄 Christmas MasterMind
+# 🎄 Christmas Mas## 📋 Qui### **Project Management**
+- **📊 Current Status**: [ISSUES.md](ISSUES.md) - Complete project tracking (single source of truth)
+- **🤖 AI Guidelines**: [AI_AGENT_BRIEFING.md](AI_AGENT_BRIEFING.md) - Development workflow guide
+
+### **Development Resources**  
+- **🧪 Testing Suite**: [TESTING.md](TESTING.md) - Test validation and integration
+- **🎨 Graphics Assets**: [Graphics_Asset_Requirements.md](Graphics_Asset_Requirements.md) - Asset specifications
+- **📋 Original Requirements**: [XmasMM_PRD.md](XmasMM_PRD.md) - Historical project definitionevelopment Resources**  
+- **🧪 Testing Suite**: [TESTING.md](TESTING.md) - Test validation and integration
+- **🎨 Graphics Assets**: [Graphics_Asset_Requirements.md](Graphics_Asset_Requirements.md) - Asset specifications
+- **📋 Original Requirements**: [XmasMM_PRD.md](XmasMM_PRD.md) - Historical project definitiongation
+
+### **Project Management**
+- **📊 Current Status**: [ISSUES.md](ISSUES.md) - Complete project tracking (single source of truth)
+- **🤖 AI Guidelines**: [AI_AGENT_BRIEFING.md](AI_AGENT_BRIEFING.md) - Development workflow guide
 
 **A mobile-optimized Christmas puzzle game for family fun!**
 
-> **🤖 AI Agents**: Read [AI_AGENT_BRIEFING.md](AI_AGENT_BRIEFING.md) before starting work - this project uses specialized agentic task management.
+> **🤖 AI Agents**: Read [AI_AGENT_BRIEFING.md](AI_AGENT_BRIEFING.md) before starting work - this project uses consolidated issue tracking.
 
 ## ✨ Current Status
 🎉 **Mobile foundation complete!** Christmas feature development in progress.
 
-**📊 Live Status**: See [PROJECT_STATUS.md](PROJECT_STATUS.md) for real-time project state and current tasks.
+**📊 Live Status**: See [ISSUES.md](ISSUES.md) for all project tracking - single source of truth for issues, tasks, and priorities.
 
 ### **Key Achievements**
 - ✅ **Mobile Excellence**: Complete viewport utilization (100vw x 100vh) 
@@ -63,7 +77,7 @@ See [AI_AGENT_BRIEFING.md](AI_AGENT_BRIEFING.md) for complete development setup,
 **Key Points:**
 - ⚠️ **Phaser.js games require HTTP server** (file:// URLs show white screen)
 - 🧪 **Testing suite**: See AI briefing for detailed testing procedures
-- 📋 **Task management**: Machine-readable system for AI agents
+- 📋 **Issue tracking**: [ISSUES.md](ISSUES.md) single source of truth for all project management
 
 ### **🔧 Debug Mode (Development)**
 For rapid testing and development, the game includes a debug mode:
@@ -93,10 +107,10 @@ For rapid testing and development, the game includes a debug mode:
 
 ## 📁 Project Structure
 - **🎮 Game Code**: `js/` - Phaser.js game implementation
-	- `js/config/LayoutConfig.js` centralized layout constants (TECH-001)
+	- `js/config/LayoutConfig.js` centralized layout constants
 - **🎨 Assets**: `assets/` - Christmas-themed graphics and audio
 - **🧪 Testing**: `tests/` - Comprehensive test suite
-- **📋 Tasks**: `tasks/` - Individual task documentation
+- **📋 Issues**: [ISSUES.md](ISSUES.md) - Complete project tracking
 - **🤖 AI System**: [AI_AGENT_BRIEFING.md](AI_AGENT_BRIEFING.md) - Developer onboarding
 
 ## 🔧 Technology Stack
@@ -105,7 +119,7 @@ For rapid testing and development, the game includes a debug mode:
 - **Architecture**: Modular manager classes for maintainability
 - **Testing**: HTML + Node.js validation suite
 - **Hosting**: GitHub Pages compatible
-- **AI-Friendly**: Machine-readable task management system
+- **AI-Friendly**: Consolidated issue tracking system
 
 ## 🧮 Scoring System (Current)
 Final score = Element Points + Solved Bonus + Speed Bonus/Penalty + Hint Penalty.
