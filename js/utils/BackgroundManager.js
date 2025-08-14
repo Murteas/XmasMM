@@ -135,6 +135,15 @@ class BackgroundManager {
       intensity: 'magical'
     });
   }
+   static setupBlizzardChristmas(scene, scenePrefix) {
+    return this.setupChristmasBackground(scene, scenePrefix, { 
+      enhanced: true, 
+      animated: true, 
+      count: 45,
+      speed: 'fast',
+      intensity: 'magical'
+    });
+  }
 
   static setupGentleChristmas(scene, scenePrefix) {
     return this.setupChristmasBackground(scene, scenePrefix, { 
