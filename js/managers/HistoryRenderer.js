@@ -119,9 +119,9 @@ class HistoryRenderer {
     guess.forEach((element, colIndex) => {
       const x = startX + colIndex * elementSpacing;
       
-      // Create slot background with opacity
-      const slot = this.scene.add.rectangle(x, y, elementWidth, 30, 0x666666)
-        .setStrokeStyle(1, 0xffffff)
+      // Create slot background with stronger contrast for visibility against Christmas background
+      const slot = this.scene.add.rectangle(x, y, elementWidth, 30, 0x2a2a2a)
+        .setStrokeStyle(2, 0xffffff, 0.9)
         .setDepth(depth)
         .setAlpha(opacity);
       

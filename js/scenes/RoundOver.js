@@ -27,9 +27,8 @@ class RoundOver extends Phaser.Scene {
   create() {
     const { width, height } = this.cameras.main;
     
-    // Set background
-    this.add.image(width / 2, height / 2, 'bg')
-      .setDisplaySize(width, height);
+    // Enhanced Christmas background for celebration
+    BackgroundManager.setupEnhancedChristmas(this, 'roundover');
 
     // Implement three-zone mobile architecture
     this.createThreeZoneLayout();

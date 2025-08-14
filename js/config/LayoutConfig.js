@@ -50,8 +50,8 @@ const LayoutConfig = {
     RADIUS: 10,
     PADDING_X: 22,
     PADDING_Y: 12,
-    // Enhanced typography for mobile clarity (Option 2.5)
-    FONT: 'bold 18px "Trebuchet MS", "Arial Black", Arial, sans-serif',
+    // Enhanced typography for mobile clarity (Option 2.5) - Updated for playful consistency
+    FONT: 'bold 18px "Comic Sans MS", "Trebuchet MS", Arial, sans-serif',
     SHADOW_COLOR: 0x000000,
     SHADOW_ALPHA: 0.35,
     SHADOW_OFFSET_Y: 3,

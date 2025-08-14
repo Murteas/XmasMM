@@ -203,16 +203,8 @@ class UILayoutManager {
   }
 
   setupBackground() {
-    const { width, height } = this.scene.cameras.main;
-    
-    // Add background image
-    const bg = this.scene.add.image(width / 2, height / 2, 'bg');
-    bg.setDisplaySize(width, height);
-    bg.setDepth(GameUtils.getDepthLayers().BACKGROUND);
-    
-    // Add dark overlay to improve contrast
-    const overlay = this.scene.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.4);
-    overlay.setDepth(GameUtils.getDepthLayers().OVERLAY);
+    // Gentle Christmas background for gameplay (less distracting)
+    BackgroundManager.setupGentleChristmas(this.scene, 'game');
   }
 
   showLoadingState() {

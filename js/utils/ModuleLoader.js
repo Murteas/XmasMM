@@ -38,6 +38,7 @@ class ModuleLoader {
       'js/utils/TestConfig.js',
       'js/utils/GameUtils.js',
       'js/utils/SafeAreaManager.js',
+      'js/utils/BackgroundManager.js',
       'js/config/LayoutConfig.js',
       'js/utils/ButtonFactory.js'
     ];

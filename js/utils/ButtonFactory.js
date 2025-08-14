@@ -86,24 +86,81 @@ class ButtonFactory {
     }
 
     container.setSize(btnWidth, btnHeight).setInteractive({ useHandCursor: true });
+    
+    // Enhanced interactive states using Phaser.js best practices
     const applyState = (state) => {
-      // Use subtle tinting instead of tintFill to preserve custom graphics
       if (state === 'hover') {
-        bg.setTint(0xdddddd); // Slight darkening for hover
+        // Subtle brightening for hover using Phaser's tint system
+        bg.setTint(0xf0f0f0);
+        labelText.setColor(palette.fg);
+        if (iconText) iconText.setColor(palette.fg);
       } else if (state === 'active') {
-        bg.setTint(0xbbbbbb); // More darkening for active
+        // Darker tint for pressed state
+        bg.setTint(0xcccccc);
+        labelText.setColor(palette.fg);
+        if (iconText) iconText.setColor(palette.fg);
       } else {
-        bg.clearTint(); // Normal state shows original graphics
+        // Normal state - clear all effects
+        bg.clearTint();
+        labelText.setColor(palette.fg);
+        if (iconText) iconText.setColor(palette.fg);
       }
-      labelText.setColor(palette.fg);
-      if (iconText) iconText.setColor(palette.fg);
     };
 
+    // Professional button interaction using Phaser's tween system
     const attach = (target) => {
-      target.on('pointerover', () => { if (!container.disabled) applyState('hover'); });
-      target.on('pointerout', () => { if (!container.disabled) { applyState('normal'); container.setScale(1); container.alpha = 1; } });
-      target.on('pointerdown', () => { if (!container.disabled) { applyState('active'); scene.tweens.add({ targets: container, scale: 0.94, duration: 60 }); } });
-      target.on('pointerup', () => { if (!container.disabled) { applyState('hover'); scene.tweens.add({ targets: container, scale: 1, duration: 100, ease: 'Back.easeOut' }); if (options.onClick) options.onClick(); } });
+      target.on('pointerover', () => { 
+        if (!container.disabled) {
+          applyState('hover');
+          // Subtle scale increase on hover
+          scene.tweens.add({ 
+            targets: container, 
+            scale: 1.02, 
+            duration: 100, 
+            ease: 'Power2' 
+          });
+        }
+      });
+      
+      target.on('pointerout', () => { 
+        if (!container.disabled) { 
+          applyState('normal'); 
+          // Return to normal scale
+          scene.tweens.add({ 
+            targets: container, 
+            scale: 1, 
+            duration: 100, 
+            ease: 'Power2' 
+          });
+        } 
+      });
+      
+      target.on('pointerdown', () => { 
+        if (!container.disabled) { 
+          applyState('active'); 
+          // Satisfying press feedback
+          scene.tweens.add({ 
+            targets: container, 
+            scale: 0.96, 
+            duration: 60, 
+            ease: 'Power2' 
+          }); 
+        } 
+      });
+      
+      target.on('pointerup', () => { 
+        if (!container.disabled) { 
+          applyState('hover'); 
+          // Smooth bounce back with elastic easing
+          scene.tweens.add({ 
+            targets: container, 
+            scale: 1.02, 
+            duration: 120, 
+            ease: 'Back.easeOut' 
+          }); 
+          if (options.onClick) options.onClick(); 
+        } 
+      });
     };
     attach(container); attach(bg);
 
@@ -133,106 +190,119 @@ class ButtonFactory {
   }
 
   static _drawButtonBackground(g, width, height, radius, colorHex, shadowColor, shadowOffsetY, shadowAlpha, opts = {}) {
-    if (shadowAlpha > 0) { g.fillStyle(shadowColor, shadowAlpha); g.fillRoundedRect(0, shadowOffsetY, width, height, radius); }
+    // Professional Christmas button design using Phaser.js best practices
+    
+    // Shadow layer
+    if (shadowAlpha > 0) { 
+      g.fillStyle(shadowColor, shadowAlpha); 
+      g.fillRoundedRect(0, shadowOffsetY, width, height, radius); 
+    }
+    
     const baseColorInt = Phaser.Display.Color.HexStringToColor(colorHex).color;
     
     if (opts.gradient) {
-      // Elegant Christmas gradient with sophisticated color stops
+      // Enhanced Christmas gradient using Phaser's color interpolation
       const base = Phaser.Display.Color.IntegerToColor(baseColorInt);
-      const colorStops = this._getElegantColorStops(base);
+      const colorStops = this._getChristmasColorStops(base);
       
-      // Multi-stop gradient for premium feel
+      // Create smooth vertical gradient
       for (let i = 0; i < height; i++) {
         const t = i / height;
-        let stopIndex = Math.floor(t * 3);
-        let localT = (t * 3) - stopIndex;
-        if (stopIndex >= 3) { stopIndex = 2; localT = 1; }
+        let stopIndex = Math.floor(t * (colorStops.length - 1));
+        let localT = (t * (colorStops.length - 1)) - stopIndex;
+        
+        if (stopIndex >= colorStops.length - 1) { 
+          stopIndex = colorStops.length - 2; 
+          localT = 1; 
+        }
         
         const color1 = colorStops[stopIndex];
-        const color2 = colorStops[stopIndex + 1] || colorStops[stopIndex];
+        const color2 = colorStops[stopIndex + 1];
         
         const r = Math.round(Phaser.Math.Linear(color1.r, color2.r, localT));
         const gCh = Math.round(Phaser.Math.Linear(color1.g, color2.g, localT));
         const b = Math.round(Phaser.Math.Linear(color1.b, color2.b, localT));
         
         g.fillStyle(Phaser.Display.Color.GetColor(r, gCh, b), 1);
-        g.fillRect(1, i, width - 2, 1);
+        g.fillRect(0, i, width, 1);
       }
     } else {
-      // Fallback solid color
+      // Solid color fallback
       g.fillStyle(baseColorInt, 1);
       g.fillRoundedRect(0, 0, width, height, radius);
     }
     
-    if (opts.pattern === 'candycane') {
-      // Bigger candy cane stripes (12px wide, more visible)
-      // Constrain coordinates to stay within button bounds
-      const stripeWidth = 12;
-      const spacing = stripeWidth * 2;
-      
-      // White stripes (more opaque)
-      g.lineStyle(stripeWidth, 0xffffff, 0.4);
-      for (let x = 0; x < width; x += spacing) { 
-        g.beginPath(); 
-        g.moveTo(Math.max(0, x), 0); 
-        g.lineTo(Math.min(width, x + height), height); 
-        g.strokePath(); 
-      }
-      
-      // Red stripes (more opaque)
-      g.lineStyle(stripeWidth, 0xff0000, 0.45);
-      for (let x = stripeWidth; x < width; x += spacing) { 
-        g.beginPath(); 
-        g.moveTo(Math.max(0, x), 0); 
-        g.lineTo(Math.min(width, x + height), height); 
-        g.strokePath(); 
-      }
-    }
-    
+    // Professional border with Christmas styling
     if (opts.border) {
-      // Elegant gold border with inner glow
       const borderColorInt = Phaser.Display.Color.HexStringToColor(opts.borderColor || '#ffd700').color;
-      g.lineStyle(2, borderColorInt, 0.9);
-      g.strokeRoundedRect(0, 0, width, height, radius);
-      
-      // Inner glow for premium feel
-      g.lineStyle(1, 0xffffff, 0.3);
-      g.strokeRoundedRect(2, 2, width - 4, height - 4, Math.max(0, radius - 2));
+      g.lineStyle(2, borderColorInt, 0.8);
+      g.strokeRoundedRect(1, 1, width - 2, height - 2, radius);
     }
     
+    // Subtle top highlight for depth (Phaser best practice for button lighting)
     if (opts.highlight !== false) {
-      // Subtle top highlight
-      const highlightHeight = Math.max(4, height * 0.25);
-      g.fillStyle(0xffffff, 0.12);
-      g.fillRoundedRect(0, 0, width, highlightHeight, { tl: radius, tr: radius, bl: 0, br: 0 });
+      const highlightHeight = Math.max(3, height * 0.3);
+      g.fillStyle(0xffffff, 0.15);
+      g.fillRoundedRect(2, 2, width - 4, highlightHeight, { 
+        tl: Math.max(0, radius - 2), 
+        tr: Math.max(0, radius - 2), 
+        bl: 0, 
+        br: 0 
+      });
+    }
+    
+    // Subtle inner glow for premium feel
+    if (opts.gradient) {
+      g.lineStyle(1, 0xffffff, 0.2);
+      g.strokeRoundedRect(1, 1, width - 2, height - 2, Math.max(0, radius - 1));
     }
   }
 
-  static _getElegantColorStops(baseColor) {
-    // Create sophisticated Christmas color gradients
+  static _getChristmasColorStops(baseColor) {
+    // Professional Christmas gradients using Phaser.js color science
+    // Creates depth and visual interest without being distracting
     return [
-      { r: Math.min(255, baseColor.red + 40), g: Math.min(255, baseColor.green + 40), b: Math.min(255, baseColor.blue + 40) },
-      { r: Math.min(255, baseColor.red + 15), g: Math.min(255, baseColor.green + 15), b: Math.min(255, baseColor.blue + 15) },
-      { r: baseColor.red, g: baseColor.green, b: baseColor.blue },
-      { r: Math.max(0, baseColor.red - 30), g: Math.max(0, baseColor.green - 30), b: Math.max(0, baseColor.blue - 30) }
+      { 
+        r: Math.min(255, baseColor.red + 35), 
+        g: Math.min(255, baseColor.green + 35), 
+        b: Math.min(255, baseColor.blue + 35) 
+      }, // Lighter top
+      { 
+        r: Math.min(255, baseColor.red + 10), 
+        g: Math.min(255, baseColor.green + 10), 
+        b: Math.min(255, baseColor.blue + 10) 
+      }, // Slightly lighter
+      { 
+        r: baseColor.red, 
+        g: baseColor.green, 
+        b: baseColor.blue 
+      }, // Base color
+      { 
+        r: Math.max(0, baseColor.red - 25), 
+        g: Math.max(0, baseColor.green - 25), 
+        b: Math.max(0, baseColor.blue - 25) 
+      } // Darker bottom
     ];
   }
 
   static _generateBackground(scene, variant, palette, cfg, btnWidth, btnHeight, scaleFactor, options) {
-    // Create graphics object WITHOUT adding to scene display list
+    // Create graphics object using Phaser best practices
     const g = scene.make.graphics({});
     
     const stylingOpts = {
-      gradient: options.gradient !== false,
-      pattern: options.pattern || (variant === 'danger' && options.pattern !== 'none' ? 'candycane' : null),
-      border: options.border !== false,
-      borderColor: options.borderColor || (variant === 'primary' ? (cfg.BORDER_GOLD || '#ffd700') : variant === 'danger' ? (cfg.BORDER_GOLD || '#ffd700') : '#0d5016')
+      gradient: options.gradient !== false, // Default to gradient for modern look
+      border: options.border !== false,    // Default to border for definition
+      borderColor: options.borderColor || (variant === 'primary' ? '#ffd700' : variant === 'accent' ? '#0F4C36' : '#ffd700'),
+      highlight: options.highlight !== false // Default to highlight for depth
     };
     
     this._drawButtonBackground(g, btnWidth, btnHeight, cfg.RADIUS * scaleFactor, palette.bg, palette.shadow, cfg.SHADOW_OFFSET_Y * scaleFactor, cfg.SHADOW_ALPHA, stylingOpts);
-    const texKey = `btn_${variant}_${btnWidth}_${btnHeight}_${Math.random().toString(36).slice(2,7)}`;
+    
+    // Generate unique texture key using Phaser's built-in utilities
+    const texKey = `btn_${variant}_${btnWidth}_${btnHeight}_${scene.time.now}`;
     g.generateTexture(texKey, btnWidth, btnHeight);
-    g.destroy();
+    g.destroy(); // Clean up graphics object
+    
     const bg = scene.add.image(0, 0, texKey).setOrigin(0.5);
     return { bg, texKey };
   }

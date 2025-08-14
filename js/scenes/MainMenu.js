@@ -28,44 +28,30 @@ class MainMenu extends Phaser.Scene {
   create() {
     const { width, height } = this.cameras.main;
     
-    // Add background image
-    const bg = this.add.image(width / 2, height / 2, 'bg');
-    bg.setDisplaySize(width, height);
-    bg.setDepth(GameUtils.getDepthLayers().BACKGROUND);
+    // Magical Christmas background with animated snowflakes for main menu
+    BackgroundManager.setupMagicalChristmas(this, 'mainmenu');
 
-    // Title with elegant Christmas styling and gold accents
+    // Playful Christmas title with clean styling
     this.add
-      .text(width / 2, height * 0.18, "Christmas\nMasterMind", {
-        fontFamily: "Dancing Script, cursive",
-        fontSize: "60px",
-        fontWeight: "600",
-        fill: "#F5F5DC", // Warm cream for elegance
-        stroke: "#0F4C36", // Deep emerald green (matches buttons)
+      .text(width / 2, height * 0.18, "🎄 Christmas 🎄\n🎁 MasterMind 🎁", {
+        fontFamily: "Comic Sans MS, Trebuchet MS, sans-serif",
+        fontSize: "46px",
+        fontWeight: "bold",
+        fill: "#CC0000", // Slightly deeper Christmas red
+        stroke: "#FFFFFF", // White outline for readability
         strokeThickness: 3,
-        align: "center", // Explicitly center multi-line text
+        align: "center",
         shadow: {
-          offsetX: 3,
-          offsetY: 3,
-          color: "#1A1A1A", // Deep shadow
-          blur: 4,
-          stroke: true,
+          offsetX: 2,
+          offsetY: 2,
+          color: "#003300", // Darker green shadow
+          blur: 2,
+          stroke: false,
           fill: true,
         },
       })
       .setOrigin(0.5)
       .setDepth(GameUtils.getDepthLayers().UI);
-
-    // Subtle gold highlight accent
-    this.add.text(width / 2, height * 0.18, 'Christmas\nMasterMind', {
-      fontFamily: 'Dancing Script, cursive',
-      fontSize: '60px',
-      fontWeight: '600',
-      fill: 'transparent',
-      stroke: '#DAA520',         // Sophisticated gold highlight
-      strokeThickness: 1,
-      alpha: 0.6,
-      align: 'center' // Explicitly center multi-line text
-    }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI + 0.1);
 
     this.createButtons(width, height);
     this.initializeSettings();
@@ -94,7 +80,6 @@ class MainMenu extends Phaser.Scene {
     const sfxLabel = 'SFX: ON';
     this.sfxBtn = ButtonFactory.createButton(this, width / 2, height * 0.65, sfxLabel, 'danger', {
       icon: '🔊',
-      pattern: 'candycane',
       onClick: () => {
         const current = this.registry.get('sfxOn');
         this.registry.set('sfxOn', !current);
@@ -107,7 +92,6 @@ class MainMenu extends Phaser.Scene {
     // Music Toggle (danger variant too; could differentiate later)
     this.musicBtn = ButtonFactory.createButton(this, width / 2, height * 0.75, 'Music: ON', 'danger', {
       icon: '🎵',
-      pattern: 'candycane',
       onClick: () => {
         const current = this.registry.get('musicOn');
         this.registry.set('musicOn', !current);

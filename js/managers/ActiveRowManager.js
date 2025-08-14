@@ -79,8 +79,8 @@ class ActiveRowManager {
     
     for (let i = 0; i < codeLength; i++) {
       const slotX = startX + i * (slotSize + 8);
-      const slot = this.scene.add.rectangle(slotX + slotSize/2, 40, slotSize, slotSize, 0x666666)
-        .setStrokeStyle(2, 0xcccccc)
+      const slot = this.scene.add.rectangle(slotX + slotSize/2, 40, slotSize, slotSize, 0x2a2a2a)
+        .setStrokeStyle(3, 0xffffff, 0.9)
         .setInteractive()
         .on('pointerdown', () => this.elementPicker.showElementPicker(i, this.activeRowGuess));
       
@@ -251,8 +251,8 @@ class ActiveRowManager {
   }
 
   createSlot(x, y, elementWidth) {
-    return this.scene.add.rectangle(x, y, elementWidth, elementWidth, 0x666666, 0)
-      .setStrokeStyle(2, 0xffffff)
+    return this.scene.add.rectangle(x, y, elementWidth, elementWidth, 0x2a2a2a, 0.8)
+      .setStrokeStyle(3, 0xffffff, 0.9)
       .setInteractive({ useHandCursor: true })
       .setDepth(GameUtils.getDepthLayers().TOUCH_AREA);
   }
