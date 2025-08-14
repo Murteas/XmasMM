@@ -2,19 +2,17 @@
 
 ## 📊 Current Status Summary
 
-**Total Active Issues**: 10 (UI enhancements + design research + share bug + technical debt reduction)
+**Total Active Issues**: 12 (UI enhancements + audio integration + deployment + technical debt)
 
 **Overall Project Health**: 🟢 **Excellent**
 - Core functionality complete and mobile-optimized  
 - Mobile PWA safe area implementation completed ✅
 - Centralized layout constants system implemented ✅
 - Button theming and typography enhancement completed ✅
-- RoundOver consolidation completed
-- UI-010 score display enhancement completed
-- PERF-001 game transition performance optimized
-- Focus on final visual polish
+- Ready for audio integration and final testing phase
+- Focus on final polish and family-ready deployment
 
-**Last Updated**: August 14, 2025 (Issues directory removed, UI-012 Button Graphics completed)
+**Last Updated**: August 14, 2025 (Task/Issue consolidation - audio and deployment issues added)
 
 ---
 
@@ -250,6 +248,63 @@
 - [ ] Decide on enhancement approach or keep current
 - [ ] If changing: implement new background with A/B comparison
 
+### AUDIO-001: Christmas Audio Integration 🔴
+**Priority**: High (Next Phase)  
+**Category**: Feature Enhancement  
+**Status**: Open
+
+**Problem**: Game lacks festive audio atmosphere that would enhance family gameplay experience
+**Impact**: Missing opportunity for Christmas immersion and family engagement
+**Location**: Audio integration across all scenes
+
+**Design Requirements**:
+- Family-friendly audio (gentle, not startling)
+- Optional/toggleable (families may play in quiet environments)
+- Small file sizes (< 1MB total for mobile performance)
+- iOS Safari compatibility (requires user interaction)
+
+**Implementation Plan**:
+- **Audio Files Needed**: Gentle jingle bells (guess submission), "Ho ho ho" (correct solutions), Santa chuckle (hint usage), soft Christmas background music loop
+- **Integration Points**: MainMenu.js (preload), GameScene.js (event triggers), existing sound toggle state
+- **Technical Considerations**: User interaction requirement for iOS, volume level testing, graceful fallback when disabled
+
+**Acceptance Criteria**:
+- [ ] Christmas-themed sound effects for key game events
+- [ ] Optional background music during gameplay
+- [ ] Proper iOS Safari audio handling with user interaction
+- [ ] Audio toggle integration with existing menu controls
+- [ ] Game fully playable with audio disabled
+- [ ] Family-appropriate volume levels and sound selection
+
+### DEPLOY-001: Final Testing and Deployment 🟡
+**Priority**: Low (Final Phase)  
+**Category**: Quality Assurance  
+**Status**: Open
+
+**Problem**: Need comprehensive family testing before deployment
+**Impact**: Ensures game works flawlessly for intended family audience
+**Location**: Multi-device testing and documentation
+
+**Testing Requirements**:
+- **Multi-Device Testing**: iPhone models (SE through Pro Max), different screen sizes
+- **Family User Testing**: Different ages and technical skill levels
+- **Performance Validation**: <5 second load times, 60 FPS animations, battery usage
+- **Edge Case Testing**: Incomplete guesses, network issues, graceful error handling
+
+**Documentation Needed**:
+- Player guide for family members (README.md update)
+- Technical maintainer guide (MAINTAINER.md)
+- Troubleshooting for common family tech issues
+- Asset update guide for future Christmas seasons
+
+**Acceptance Criteria**:
+- [ ] Tested on multiple iPhone models with consistent experience
+- [ ] Family members of varying tech skills can play without confusion
+- [ ] Performance meets family-friendly standards (<5s load, 60 FPS)
+- [ ] Complete documentation for players and maintainers
+- [ ] Edge cases handled gracefully
+- [ ] Deployment ready with family-tested experience
+
 ### UI-015: Random Guess Feature for Players 🟡
 **Priority**: Low  
 **Category**: Feature Enhancement  
@@ -351,16 +406,9 @@
 4. **Archive**: Move to `issues/archived/` when file >200 lines
 
 ### **AI Agent Guidelines**
-- **Primary Reference**: Always check ISSUES.md first for current state
-- **Task Relationship**: Some tasks/ files contain related implementation details
+- **Single Source of Truth**: ISSUES.md contains ALL project tracking
 - **Update Pattern**: Modify ISSUES.md for all status changes
-- **Cross-Reference**: When tasks are completed, mark corresponding issues as resolved
-
-### **Task vs Issue Relationship**
-Some items are tracked in both systems:
-- **TECH-002 Listener Cleanup** (issue) = `tasks/ListenerCleanup.md` (implementation plan)
-- **UI-012 Button Graphics** (issue) = `tasks/FestiveButtonTheming.md` (completed implementation)
-- **Audio Implementation** (next steps) = `tasks/AudioImplementation.md` (detailed plan)
+- **Implementation Details**: Can be added directly to issue descriptions when needed
 
 ---
 
@@ -373,4 +421,4 @@ Some items are tracked in both systems:
 - **Core Functionality**: Working ✅
 - **User Experience**: Polished ✅
 
-**Next Focus**: UI-011 Christmas Title Enhancement, then TECH-002 ListenerCleanup, then AudioImplementation
+**Next Focus**: UI-011 Christmas Title Enhancement, then AUDIO-001 Christmas Audio Integration, then TECH-002 ListenerCleanup, then DEPLOY-001 Final Testing
