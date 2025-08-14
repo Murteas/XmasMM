@@ -27,9 +27,9 @@ class MainMenu extends Phaser.Scene {
 
   create() {
     const { width, height } = this.cameras.main;
-    
-    // Magical Christmas background with animated snowflakes for main menu
-    BackgroundManager.setupMagicalChristmas(this, 'mainmenu');
+
+    // Blizzard Christmas background with animated snowflakes for main menu
+    BackgroundManager.setupBlizzardChristmas(this, 'mainmenu');
 
     // Playful Christmas title with clean styling
     this.add
