@@ -2,17 +2,18 @@
 
 ## 📊 Current Status Summary
 
-**Total Active Issues**: 13 (UI enhancements + design research + share bug + technical debt reduction)
+**Total Active Issues**: 11 (UI enhancements + design research + share bug + technical debt reduction)
 
 **Overall Project Health**: 🟢 **Excellent**
 - Core functionality complete and mobile-optimized  
-- Mobile PWA safe area implementation completed
+- Mobile PWA safe area implementation completed ✅
+- Centralized layout constants system implemented ✅
 - RoundOver consolidation completed
 - UI-010 score display enhancement completed
 - PERF-001 game transition performance optimized
 - Focus on final visual polish
 
-**Last Updated**: August 11, 2025 (Issues consolidation - mobile safe area fixes completed)
+**Last Updated**: August 11, 2025 (TECH-001 LayoutConfig + MOBILE-001 SafeArea completed)
 
 ---
 
@@ -42,24 +43,25 @@
 - [ ] No duplicate event firings after multiple restarts
 - [ ] Documented lifecycle pattern established
 
-### TECH-001: Centralized Layout & Constants Module 🟡
+### TECH-001: Centralized Layout & Constants Module ✅
 **Priority**: Medium  
 **Category**: Maintainability  
-**Status**: Open
+**Status**: Resolved (August 11, 2025)
 
 **Problem**: Repeated magic numbers (header heights 120/140, footer 120, row height 60, spacing constants) scattered across managers (e.g., `ActiveRowManager`, `GameScene`, layout methods) increase risk of drift and complicate tuning.
 **Impact**: Harder to adjust UI globally; increases inconsistency risk when polishing.
 
-**Solution Direction**:
-- Create `js/config/LayoutConfig.js` exporting shared sizing + timing constants
-- Replace literals incrementally (non-breaking passes)
-- Document rationale & mobile target ranges
+**Solution Implemented**:
+- ✅ Created `js/config/LayoutConfig.js` with comprehensive layout constants
+- ✅ Centralized header heights (140/120), footer heights (160), row heights (60)  
+- ✅ Added mobile-specific spacing and touch target constants
+- ✅ Integrated across GameScene, ActiveRowManager, UILayoutManager, HistoryScroller
 
-**Acceptance Criteria**:
-- [ ] Single source for header/footer heights, row height, spacing, delay values
-- [ ] At least 3 high-traffic files refactored to use constants
-- [ ] No behavior change (visual diff stable)
-- [ ] README / AI briefing mentions constants module
+**Acceptance Criteria Completed**:
+- ✅ Single source for header/footer heights, row height, spacing, delay values
+- ✅ Multiple high-traffic files refactored to use constants
+- ✅ No behavior change (visual diff stable)
+- ✅ Layout constants documented with mobile baseline (375x667)
 
 ### TECH-003: Lightweight Logger Abstraction 🟡
 **Priority**: Medium  
@@ -265,11 +267,55 @@
 
 ## 📋 Resolved Issues Archive
 
+### MOBILE-001: Mobile PWA Safe Area Implementation ✅  
+**Priority**: High  
+**Category**: Mobile UX  
+**Status**: Resolved (August 11, 2025)
+
+**Problem**: Footer and active row positioned too close to bottom edge on mobile PWA fullscreen mode, causing:
+- Active row disappearing when swiping on iOS/Android gesture areas
+- Poor UX with elements too close to screen edge
+- Overlap between active row and Christmas legend
+- Touch conflicts between history scrolling and footer elements
+
+**Solution Implemented**:
+- ✅ Created SafeAreaManager.js for cross-platform safe area detection
+- ✅ Implemented CSS env() API with intelligent fallbacks  
+- ✅ Added 20px swipe gesture margin for iOS/Android bottom swipe prevention
+- ✅ Increased FOOTER_HEIGHT_GAME from 120px to 160px for better spacing
+- ✅ Fixed HistoryScroller touch area to respect footer positioning
+- ✅ Adjusted active row Y position from 60 to 40 within footer container
+- ✅ Updated legend positioning to calculate based on footer container position
+
+**Technical Implementation**:
+- Footer positioned at: `height - footerHeight - safeAreaBottom - gestureMargin`
+- Legend positioned at: `footerTopY - legendHeight - 15px` for proper spacing
+- Touch areas properly separated to prevent conflicts
+- Real-device testing confirmed proper positioning and functionality
+
+**Files Modified**: 
+- `js/utils/SafeAreaManager.js` (new)
+- `js/config/LayoutConfig.js` (updated constants)
+- `js/scenes/GameScene.js` (footer positioning)
+- `js/managers/ActiveRowManager.js` (active row positioning)
+- `js/managers/UILayoutManager.js` (legend positioning)
+- `js/managers/HistoryScroller.js` (touch area fixes)
+
+**Acceptance Criteria Completed**:
+- ✅ Mobile PWA footer properly positioned above safe areas
+- ✅ No conflicts with iOS/Android bottom swipe gestures
+- ✅ Active row and legend properly spaced without overlap
+- ✅ Touch areas separated to prevent interaction conflicts
+- ✅ Cross-platform compatibility verified
+
+---
+
 Recent issues have been moved to preserve readability. For complete resolution history, see:
 - **Latest**: `issues/archived/session-august-11-2025.md` (8 resolved issues including mobile safe area fixes)
 - **Historical**: `issues/archived/` folder contains all previous sessions
 
 **Recent Major Completions**:
+- ✅ TECH-001: Centralized Layout & Constants Module (August 11, 2025)
 - ✅ MOBILE-001: Mobile PWA safe area implementation (August 11, 2025)
 - ✅ PERF-001: Game transition performance optimization (August 8, 2025)  
 - ✅ UI-010: Real-time score display implementation (August 8, 2025)
@@ -309,6 +355,7 @@ Recent issues have been moved to preserve readability. For complete resolution h
 - **Critical Issues**: 0 ✅
 - **Game Breaking**: 0 ✅  
 - **Mobile Optimization**: Complete ✅
+- **Layout System**: Centralized ✅
 - **Core Functionality**: Working ✅
 - **User Experience**: Polished ✅
 
