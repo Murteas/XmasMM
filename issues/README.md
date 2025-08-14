@@ -12,8 +12,6 @@ issues/
 │   ├── session-001-july-12-2025.md
 │   └── ...
 ├── detailed/ (future)      # Complex investigations >100 lines
-├── christmas-title-theming.md     # → MOVED to ISSUES.md
-├── mobile-fullscreen-viewport-clipping.md  # → RESOLVED & ARCHIVED
 └── README.md (this file)
 ```
 
@@ -23,7 +21,7 @@ issues/
 - ✅ **All Open Issues** - Complete active issue list
 - ✅ **Recent Resolved Issues** - Last 1-2 development sessions  
 - ✅ **Management Guidelines** - Workflow documentation
-- ✅ **Target**: Keep under 200 lines for AI agent scanning
+- ✅ **Target**: Keep under 300 lines for AI agent scanning
 
 ### **issues/archived/ (Historical Reference)**
 - 📁 **Resolved Issues** - Organized by development session
@@ -31,16 +29,21 @@ issues/
 - 📁 **Research Notes** - Background investigation materials
 
 ### **AI Agent Workflow**
-1. **Check ISSUES.md first** - Primary reference for all current state
+1. **Check ISSUES.md ONLY** - Single source of truth for all current state
 2. **Reference archives** - Only when deeper historical context needed
 3. **Update ISSUES.md** - All status changes go to primary tracker
-4. **Archive when needed** - Move resolved issues when >200 lines
+4. **Archive when needed** - Move resolved issues when ISSUES.md exceeds 300 lines
+
+## 🚫 **No Duplicate Files**
+- Individual issue files in `/issues/` are **NOT maintained**
+- All active issues tracked exclusively in `ISSUES.md`
+- Prevents AI agent confusion and maintains single source of truth
 
 ## 🤖 Benefits for AI Agents
-1. **Single Reference Point** - No need to check multiple locations
-2. **Quick Scanning** - ISSUES.md optimized for rapid comprehension
+1. **Single Reference Point** - Check ISSUES.md only, no other files needed
+2. **Quick Scanning** - Optimized for rapid comprehension
 3. **Complete History** - Archives preserve full context when needed
-4. **Clear Workflow** - Unambiguous update patterns
+4. **Zero Duplicates** - Eliminates conflicting information sources
 
 ## 📊 Archive Index
 - **Session August 11, 2025**: Issues consolidation + mobile safe area implementation
@@ -52,4 +55,4 @@ issues/
   - Additional legacy items preserved
 
 ---
-*This system maintains optimal balance between immediate accessibility and historical preservation.*
+*ISSUES.md is the ONLY active issue tracker. No other issue files are maintained.*
