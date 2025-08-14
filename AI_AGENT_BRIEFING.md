@@ -12,9 +12,9 @@
 
 ## 🚀 Quick Start (Do in Order)
 1. **🚨 CRITICAL**: Read `ISSUES.md` for all project tracking - single source of truth
-2. Run test verification: `cd tests && bash verify_tests.sh 2>&1 | tee test-results/verification.log`
+2. **🧪 VERIFY**: Run `cd tests && bash verify_tests.sh` to establish baseline
 3. **ASK USER** to start server: `python -m http.server 8000` (agents cannot start servers)
-4. Basic validation can be done with simple syntax checks
+4. **VALIDATE**: Basic file syntax checks with `node -c filename.js` if needed
 
 ## 📊 CURRENT PROJECT STATUS (Updated August 14, 2025)
 
@@ -93,7 +93,7 @@ Enhance the "XmasMM" title with festive Christmas theming for improved visual ap
 
 ## �🚨 CRITICAL LIMITATIONS FOR AI AGENTS
 
-### **🚫 What Agents CANNOT Do**
+### 🚫 What Agents CANNOT Do**
 - **Start servers** - Always ask user to run: `python -m http.server 8000`
 - **Test in browsers** - file:// URLs don't work with Phaser.js (white screen only)
 - **See browser console errors** - Must rely on user feedback
@@ -102,6 +102,27 @@ Enhance the "XmasMM" title with festive Christmas theming for improved visual ap
 
 ### **✅ What Agents CAN Do**
 - Check file syntax: `node -c filename.js`
+- Verify file loading: `cd tests && bash verify_tests.sh`
+- Validate project structure and code patterns
+- Review and update documentation
+
+### **🎯 When to Recommend Manual Testing**
+**ALWAYS suggest manual testing for:**
+- **UI/UX Changes**: Visual verification needed - use `tests/test_mobile_expert.html`
+- **Mobile Features**: Touch interactions, viewport behavior - use mobile device testing
+- **Complex Interactions**: Multi-step user flows - use `tests/index.html` for navigation
+- **Final Validation**: Before considering major features complete - comprehensive browser testing
+
+**Manual Testing Commands:**
+```bash
+# Start server first
+python -m http.server 8000
+
+# Then test in browser:
+http://localhost:8000/tests/test_mobile_expert.html  # Mobile testing
+http://localhost:8000/tests/                        # Test navigation
+http://localhost:8000/                              # Main game
+```
 - Run verification scripts: `cd tests && bash verify_tests.sh`
 - Check HTTP status: `curl -I http://localhost:8000`
 - Modify code and provide testing instructions
@@ -164,11 +185,10 @@ ls -la js/managers/
 - `docs/phaser-mobile-architecture.md` - **MOBILE-006 solution patterns**
 - `docs/mobile-best-practices.md` - **Mobile UI implementation**
 
-### **Testing & Code**
-- `tests/verify_tests.sh` - **Primary verification tool**
-- `tests/test_mobile_expert.html` - Mobile-specific testing
-- `js/managers/` - Game state management
-- `js/scenes/` - Phaser scene implementations
+### **Testing & Verification**
+- `tests/verify_tests.sh` - **PRIMARY**: Essential AI agent verification tool
+- `tests/test_mobile_expert.html` - **MANUAL TESTING**: Mobile feature validation (recommended for human testing)
+- `tests/index.html` - **MANUAL TESTING**: Test navigation hub for browser testing
 
 ### **Project Structure**
 - **ISSUES.md** - Complete project tracking (single source of truth)
