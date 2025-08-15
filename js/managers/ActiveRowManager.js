@@ -71,39 +71,39 @@ class ActiveRowManager {
     
     this.scene.footerContainer.add(this.activeRowBackground);
     
-    // CORRECTED: Right-side submit button approach 
+    // CORRECTED: Right-side submit button approach with PROPER SPACING
     const submitBtnWidth = 75; // Compact width for right side
-    const buttonSlotGap = 15; // Gap between slots and submit button
-    const slotSpacing = 8; // Compact slot spacing
+    const buttonSlotGap = 20; // INCREASED gap between slots and submit button
+    const sideMargins = 15; // Margins from screen edges
     
-    // Calculate remaining space for slots (slots now come first)
-    const reservedSpace = submitBtnWidth + buttonSlotGap + 30; // 30px for margins
-    const availableForSlots = width - reservedSpace;
-    const slotSize = Math.max(35, Math.floor(availableForSlots / codeLength) - slotSpacing);
+    // CRITICAL FIX: Calculate slot positions properly to prevent overlap
+    const availableWidth = width - (sideMargins * 2) - submitBtnWidth - buttonSlotGap;
+    const slotSize = Math.floor(availableWidth / codeLength) - 5; // 5px spacing between slots
+    const actualSlotsWidth = codeLength * slotSize; // No extra spacing in total width
     
-    const totalSlotsWidth = codeLength * slotSize + (codeLength - 1) * slotSpacing;
-    const totalLayoutWidth = totalSlotsWidth + buttonSlotGap + submitBtnWidth;
-    const layoutStartX = (width - totalLayoutWidth) / 2;
+    // Position layout from left margin
+    const slotsStartX = sideMargins;
+    const submitX = slotsStartX + actualSlotsWidth + buttonSlotGap + (submitBtnWidth / 2);
     
-    // CREATE SLOTS FIRST (on the left)
+    console.log(`🔧 Layout Debug: width=${width}, slotsStart=${slotsStartX}, slotsWidth=${actualSlotsWidth}, gap=${buttonSlotGap}, submitX=${submitX}, submitWidth=${submitBtnWidth}`);
+    
+    // CREATE SLOTS FIRST (properly spaced from left)
     this.activeRowElements = [];
-    const slotsStartX = layoutStartX;
     
     for (let i = 0; i < codeLength; i++) {
-      const slotX = slotsStartX + i * (slotSize + slotSpacing);
-      const slot = this.scene.add.rectangle(slotX + slotSize/2, footerActiveRowY, slotSize, slotSize, 0x2a2a2a)
+      const slotX = slotsStartX + (i * slotSize) + (slotSize / 2); // CORRECTED positioning
+      const slot = this.scene.add.rectangle(slotX, footerActiveRowY, slotSize - 2, slotSize - 2, 0x2a2a2a)
         .setStrokeStyle(3, 0xffffff, 0.9)
         .setInteractive()
         .on('pointerdown', () => this.elementPicker.showElementPicker(i, this.activeRowGuess));
       
-      const displayElement = this.createSlotDisplay(slotX + slotSize/2, footerActiveRowY, i);
+      const displayElement = this.createSlotDisplay(slotX, footerActiveRowY, i);
       
       this.scene.footerContainer.add([slot, displayElement]);
       this.activeRowElements.push({ slot, displayElement });
     }
     
-    // CREATE SUBMIT BUTTON (far right, after slots)
-    const submitX = layoutStartX + totalSlotsWidth + buttonSlotGap;
+    // CREATE SUBMIT BUTTON (far right, with guaranteed gap)
     this.activeRowSubmitBtn = this.scene.add.rectangle(submitX, footerActiveRowY, submitBtnWidth, 50, 0x0d5016)
       .setStrokeStyle(2, 0x0a4012)
       .setInteractive()
@@ -117,7 +117,7 @@ class ActiveRowManager {
     
     this.scene.footerContainer.add([this.activeRowSubmitBtn, submitText]);
     
-    console.log(`📱 Right-aligned active row: slots=${totalSlotsWidth}px, gap=${buttonSlotGap}px, submit=${submitBtnWidth}px`);
+    console.log(`📱 Fixed layout: ${codeLength} slots of ${slotSize}px each, ${buttonSlotGap}px gap, submit at x=${submitX}`);
   }
 
   calculateActiveRowPosition() {
