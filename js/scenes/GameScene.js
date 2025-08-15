@@ -165,8 +165,8 @@ class GameScene extends Phaser.Scene {
     this.scrollableContainer = this.add.container(0, headerHeight);
     this.scrollableContainer.setDepth(500);
     
-    // Footer container (fixed at bottom with safe area support + swipe gesture margin)
-    const swipeGestureMargin = 40; // Increased from 20px - Additional margin to prevent iOS/Android bottom swipe conflicts and ensure adequate clearance
+    // Footer container (fixed at bottom with safe area support + minimal gesture margin)
+    const swipeGestureMargin = 10; // REDUCED from 40px - Minimal margin to maximize space usage while still preventing gesture conflicts
     const footerY = height - footerHeight - safeAreaInsets.bottom - swipeGestureMargin;
     this.footerContainer = this.add.container(0, footerY);
     this.footerContainer.setDepth(1000);

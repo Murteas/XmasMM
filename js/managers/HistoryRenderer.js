@@ -36,9 +36,9 @@ class HistoryRenderer {
       headerBottomY + 10 // Reduced spacing since no legend
     );
     
-    // Mobile-optimized row height for bigger elements and better visibility
-    // Increased from 45px to 55px to accommodate larger elements (35px + padding)
-    const rowHeight = 55;
+    // Mobile-optimized row height for much bigger elements and excellent visibility
+    // Increased from 55px to 65px to accommodate larger elements (45px + padding)
+    const rowHeight = 65;
     const bottomMargin = isSmallScreen ? 40 : 50; // Reduced to use more space
     const maxVisibleRows = Math.floor((height - startY - bottomMargin) / rowHeight);
     
@@ -93,9 +93,9 @@ class HistoryRenderer {
     
     const isSmallScreen = width < 500;
     
-    // IMPROVED: Bigger elements for better visibility and family accessibility
-    const elementSize = 35; // Increased from 28 to 35 for better visibility
-    const elementSpacing = 42; // Increased from 32 to 42 for better spacing
+    // IMPROVED: Much bigger elements for excellent visibility and family accessibility
+    const elementSize = 45; // Increased from 35 to 45 for much better visibility
+    const elementSpacing = 55; // Increased from 42 to 55 for better spacing
     
     // MOBILE EXPERT DESIGN: Use much more screen width (90% vs ~60%)
     const totalRowWidth = (codeLength * elementSpacing) - elementSpacing + elementSize;
@@ -125,18 +125,14 @@ class HistoryRenderer {
     guess.forEach((element, colIndex) => {
       const x = startX + colIndex * elementSpacing;
       
-      // Create slot background with stronger contrast for visibility against Christmas background
-      const slot = this.scene.add.rectangle(x, y, elementSize, elementSize, 0x2a2a2a) // Use elementSize for consistency
-        .setStrokeStyle(2, 0xffffff, 0.9)
-        .setDepth(depth)
-        .setAlpha(opacity);
+      // EXPERT DESIGN: Remove white borders like RoundOver screen for cleaner look and more space
+      // No slot background - just place elements directly like the polished game end screen
       
       // Create element image with fallback and opacity
       const elementImage = this.createElementImage(element, x, y, elementSize, depth, opacity);
       
-      this.historyGroup.add(slot);
       this.historyGroup.add(elementImage);
-      this.historyElements.push(slot, elementImage);
+      this.historyElements.push(elementImage);
     });
   }
 
@@ -208,16 +204,16 @@ class HistoryRenderer {
     
     let feedbackX = x; // Start position for symbols
     
-    // Render perfect feedback symbols (Christmas Stars) - like RoundOver
+    // Render perfect feedback symbols (Christmas Stars) - like RoundOver but bigger
     for (let i = 0; i < feedback.black; i++) {
-      this.renderFeedbackSymbol('perfect', feedbackX, y, 14, depth + 0.01, opacity);
-      feedbackX += 16; // Simple 16px spacing like RoundOver
+      this.renderFeedbackSymbol('perfect', feedbackX, y, 18, depth + 0.01, opacity); // Increased from 14 to 18
+      feedbackX += 20; // Increased spacing from 16 to 20 for bigger icons
     }
     
-    // Render close feedback symbols (Christmas Bells) - like RoundOver  
+    // Render close feedback symbols (Christmas Bells) - like RoundOver but bigger
     for (let i = 0; i < feedback.white; i++) {
-      this.renderFeedbackSymbol('close', feedbackX, y, 14, depth + 0.01, opacity);
-      feedbackX += 16; // Simple 16px spacing like RoundOver
+      this.renderFeedbackSymbol('close', feedbackX, y, 18, depth + 0.01, opacity); // Increased from 14 to 18
+      feedbackX += 20; // Increased spacing from 16 to 20 for bigger icons
     }
     
     // No complex background - let symbols render cleanly like RoundOver
