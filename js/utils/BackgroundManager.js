@@ -8,7 +8,7 @@ class BackgroundManager {
    * @param {number} width - Background width
    * @param {number} height - Background height
    * @param {string} textureKey - Unique texture key for this scene
-   * @param {string} theme - 'traditional', 'festive', 'winter', or 'warm'
+   * @param {string} theme - 'traditional', 'festive', 'winter', or 'red'
    * @returns {Phaser.GameObjects.Image} The background image object
    */
   static createChristmasGradientBackground(scene, width, height, textureKey = 'christmas_gradient_bg', theme = 'traditional') {
@@ -35,9 +35,9 @@ class BackgroundManager {
         top: '#2C4F6B',      // Icy blue-green
         bottom: '#1A3445'    // Deep winter blue
       },
-      warm: {
-        top: '#8B4513',      // Warm Christmas brown
-        bottom: '#5D2F0A'    // Deep cozy brown
+      red: {
+        top: '#8B1538',      // Deep Christmas red
+        bottom: '#4A0E1F'    // Very dark burgundy
       }
     };
     
@@ -390,7 +390,7 @@ class BackgroundManager {
    * @returns {Array} Available theme names for easy selection
    */
   static getAvailableThemes() {
-    return ['traditional', 'festive', 'winter', 'warm'];
+    return ['traditional', 'festive', 'winter', 'red'];
   }
 
   /**
