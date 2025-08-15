@@ -59,7 +59,7 @@ class ActiveRowManager {
     // MOBILE EXPERT FIX: Position active row higher in footer to prevent overlap
     const footerActiveRowY = 30;
     
-    // Create background in footer container
+    // Create clean background in footer container - no border for modern design
     this.activeRowBackground = this.scene.add.rectangle(
       width / 2,
       footerActiveRowY,
@@ -67,7 +67,7 @@ class ActiveRowManager {
       60,
       0x4a4a4a,
       0.8
-    ).setStrokeStyle(3, 0xffd700);
+    ); // REMOVED: .setStrokeStyle(3, 0xffd700) for clean borderless design
     
     this.scene.footerContainer.add(this.activeRowBackground);
     
@@ -135,17 +135,14 @@ class ActiveRowManager {
   const baseHeaderHeight = LayoutConfig.getBaseHeaderHeight(isSmallScreen);
     const headerBottomY = isVerySmallScreen ? 145 : (isSmallScreen ? 120 : 95);
     
-    // Account for Christmas legend space
-    const legendItemHeight = 20;
-    const legendItems = 2; // perfect and close feedback symbols
-    const legendHeight = (legendItems * legendItemHeight) + 25;
-    const legendSpacing = 10;
+    // EXPERT UX: Legend removed - no legend space calculations needed
+    // Reclaimed 65px of valuable mobile screen space for better game layout
     
-    // History starts below header and legend
+    // History starts below header only - legend space reclaimed
     const historyStartY = Math.max(
       baseHeaderHeight, 
       layout.contentStartY, // Use safe area aware content start
-      headerBottomY + legendSpacing + legendHeight + 15 // Extra padding for active row
+      headerBottomY + 10 // Minimal padding since legend removed
     );
     
   const rowHeight = LayoutConfig.HISTORY_ROW_HEIGHT_STANDARD;

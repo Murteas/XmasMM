@@ -145,17 +145,14 @@ class HistoryScroller {
     const baseHeaderHeight = isSmallScreen ? 140 : 120;
     const headerBottomY = isVerySmallScreen ? 145 : (isSmallScreen ? 120 : 95);
     
-    // Account for Christmas legend space
-    const legendItemHeight = 20;
-    const legendItems = 2;
-    const legendHeight = (legendItems * legendItemHeight) + 25;
-    const legendSpacing = 10;
+    // EXPERT UX: Legend removed - no legend space calculations needed
+    // Mobile space optimization: Reclaimed 65px for better layout
     
-    // History starts below header and legend
+    // History starts below header only - legend space reclaimed
     const historyStartY = Math.max(
       baseHeaderHeight, 
       layout.contentStartY,
-      headerBottomY + legendSpacing + legendHeight + 15
+      headerBottomY + 10 // Minimal padding since legend removed
     );
     
     const rowHeight = LayoutConfig.HISTORY_ROW_HEIGHT_STANDARD; // Use updated 75px height

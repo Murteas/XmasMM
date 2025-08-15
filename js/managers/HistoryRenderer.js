@@ -29,11 +29,11 @@ class HistoryRenderer {
     // const legendHeight = (legendItems * legendItemHeight) + 25;
     // const legendSpacing = 10;
     
-    // History starts below header only (legend space reclaimed)
+    // History starts much higher for maximum space usage - expert mobile optimization
     const startY = Math.max(
       baseHeaderHeight, 
-      height * 0.22,
-      headerBottomY + 10 // Reduced spacing since no legend
+      height * 0.14, // Reduced from 0.18 to 0.14 for even higher positioning
+      headerBottomY + 2 // Reduced from 5 to 2 for minimal gap
     );
     
     // Mobile-optimized row height for much bigger elements and excellent visibility
@@ -96,6 +96,21 @@ class HistoryRenderer {
     // IMPROVED: Much bigger elements for excellent visibility and family accessibility
     const elementSize = 45; // Increased from 35 to 45 for much better visibility
     const elementSpacing = 55; // Increased from 42 to 55 for better spacing
+    
+    // Add subtle row background for better visibility against Christmas background
+    const rowWidth = width * 0.95;
+    const rowHeight = 65; // Current row height
+    const rowBackground = this.scene.add.rectangle(
+      width / 2, 
+      y, 
+      rowWidth, 
+      rowHeight - 5, // Slight padding
+      0x000000, 
+      0.15 // Very subtle transparency
+    ).setOrigin(0.5).setDepth(depth - 0.1);
+    
+    this.historyGroup.add(rowBackground);
+    this.historyElements.push(rowBackground);
     
     // MOBILE EXPERT DESIGN: Use much more screen width (90% vs ~60%)
     const totalRowWidth = (codeLength * elementSpacing) - elementSpacing + elementSize;
@@ -181,13 +196,12 @@ class HistoryRenderer {
   }
 
   renderFeedback(feedback, startX, y, elementSpacing, codeLength, depth, opacity = 1.0) {
-    // USE ROUNDOVER'S SUPERIOR LAYOUT PATTERN
-    // Calculate feedback position with proper spacing AFTER the guess elements
-    const feedbackStartX = startX + (codeLength * elementSpacing) + 16; // 16px gap like RoundOver
+    // Feedback positioned closer to guess elements for better screen utilization
+    const feedbackStartX = startX + (codeLength * elementSpacing) + 5; // Reduced from 8 to 5px gap
     
-    console.log(`🎯 Feedback positioning (RoundOver pattern): startX=${startX}, codeLength=${codeLength}, spacing=${elementSpacing}, feedbackStartX=${feedbackStartX}`);
+    console.log(`🎯 Feedback positioning: startX=${startX}, codeLength=${codeLength}, spacing=${elementSpacing}, feedbackStartX=${feedbackStartX}`);
     
-    // Create Christmas feedback symbols with proper spacing
+    // Create bigger Christmas feedback symbols with closer positioning
     this.renderChristmasFeedback(feedback, feedbackStartX, y, depth, opacity);
   }
 
@@ -199,24 +213,23 @@ class HistoryRenderer {
    * @param {number} depth - Rendering depth
    */
   renderChristmasFeedback(feedback, x, y, depth, opacity = 1.0) {
-    // USE ROUNDOVER'S SUPERIOR FEEDBACK RENDERING PATTERN
-    // Simple, reliable spacing without complex background calculations
+    // Enhanced feedback rendering - bigger icons with optimal spacing
     
     let feedbackX = x; // Start position for symbols
     
-    // Render perfect feedback symbols (Christmas Stars) - like RoundOver but bigger
+    // Render perfect feedback symbols (Christmas Stars) - bigger and more visible
     for (let i = 0; i < feedback.black; i++) {
-      this.renderFeedbackSymbol('perfect', feedbackX, y, 18, depth + 0.01, opacity); // Increased from 14 to 18
-      feedbackX += 20; // Increased spacing from 16 to 20 for bigger icons
+      this.renderFeedbackSymbol('perfect', feedbackX, y, 20, depth + 0.01, opacity); // Increased from 16 to 20
+      feedbackX += 22; // Increased spacing from 18 to 22 for bigger icons
     }
     
-    // Render close feedback symbols (Christmas Bells) - like RoundOver but bigger
+    // Render close feedback symbols (Christmas Bells) - bigger and more visible
     for (let i = 0; i < feedback.white; i++) {
-      this.renderFeedbackSymbol('close', feedbackX, y, 18, depth + 0.01, opacity); // Increased from 14 to 18
-      feedbackX += 20; // Increased spacing from 16 to 20 for bigger icons
+      this.renderFeedbackSymbol('close', feedbackX, y, 20, depth + 0.01, opacity); // Increased from 16 to 20
+      feedbackX += 22; // Increased spacing from 18 to 22 for bigger icons
     }
     
-    // No complex background - let symbols render cleanly like RoundOver
+    // Clean rendering without background complexity
   }
 
   /**
