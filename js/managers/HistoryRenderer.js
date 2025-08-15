@@ -184,8 +184,22 @@ class HistoryRenderer {
   }
 
   renderFeedback(feedback, startX, y, elementSpacing, codeLength, depth, opacity = 1.0) {
+    const { width } = this.scene.cameras.main;
     const lastElementX = startX + (codeLength - 1) * elementSpacing;
-    const feedbackX = lastElementX + elementSpacing + 20;
+    
+    // MOBILE EXPERT FIX: Smart feedback positioning to prevent off-screen issues
+    // Calculate available space after elements and ensure feedback fits
+    const availableSpace = width - lastElementX - 20; // 20px padding from right edge
+    const feedbackWidth = 60; // Estimated width needed for feedback symbols
+    
+    let feedbackX;
+    if (availableSpace >= feedbackWidth) {
+      // Enough space - position normally
+      feedbackX = lastElementX + elementSpacing + 15;
+    } else {
+      // Limited space - position compactly or move to right edge
+      feedbackX = Math.max(lastElementX + 25, width - feedbackWidth - 10);
+    }
     
     // Create Christmas feedback symbols instead of traditional pegs with opacity
     this.renderChristmasFeedback(feedback, feedbackX, y, depth, opacity);
@@ -322,7 +336,8 @@ class HistoryRenderer {
   }
 
   renderRowNumber(rowIndex, startX, y, depth, opacity = 1.0) {
-    const rowNumberX = Math.max(20, startX - 35); // More spacing from guess boxes
+    // MOBILE EXPERT FIX: Move row numbers further left to avoid larger element overlap
+    const rowNumberX = Math.max(15, startX - 50); // Increased spacing from 35 to 50
     const rowNumberText = this.scene.add.text(rowNumberX, y, `${rowIndex + 1}`, {
       font: '14px Arial', // Larger font (was 12px)
       fill: '#fff',       

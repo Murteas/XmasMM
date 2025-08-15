@@ -78,19 +78,21 @@ class ActiveRowManager {
     const slotSpacing = 12; // Better spacing between slots
     const totalSlotsWidth = codeLength * slotSize + (codeLength - 1) * slotSpacing;
     // MOBILE EXPERT DESIGN: Better submit button sizing and positioning to prevent overlap
-    const submitButtonWidth = 90; // Wider for better touch target
-    const submitButtonGap = 20; // More space between slots and button to prevent overlap
+    const submitButtonWidth = 85; // Optimal width for mobile
+    const submitButtonGap = 25; // Increased gap to prevent overlap
     const totalRowWidth = totalSlotsWidth + submitButtonWidth + submitButtonGap;
     
-    // MOBILE EXPERT FIX: Ensure we have enough space, otherwise reduce slot size
-    const availableWidth = width - 40; // Account for padding
+    // MOBILE EXPERT FIX: Ensure we have enough space with better calculation
+    const availableWidth = width - 30; // Account for screen padding
     let finalSlotSize = slotSize;
     let finalSpacing = slotSpacing;
     
     if (totalRowWidth > availableWidth) {
-      // Recalculate with smaller slots to fit everything without overlap
-      finalSlotSize = Math.max(40, (availableWidth - submitButtonWidth - submitButtonGap) / codeLength - finalSpacing + finalSpacing/codeLength);
-      console.log(`🎯 Adjusted slot size to ${finalSlotSize} to prevent submit button overlap`);
+      // Recalculate with proportional reduction to fit everything without overlap
+      const reductionFactor = availableWidth / totalRowWidth;
+      finalSlotSize = Math.max(35, slotSize * reductionFactor); // Minimum 35px slots
+      finalSpacing = Math.max(8, slotSpacing * reductionFactor); // Minimum 8px spacing
+      console.log(`🎯 Proportionally adjusted slots: size=${finalSlotSize.toFixed(1)}, spacing=${finalSpacing.toFixed(1)}`);
     }
     
     const finalTotalSlotsWidth = codeLength * finalSlotSize + (codeLength - 1) * finalSpacing;
@@ -113,15 +115,15 @@ class ActiveRowManager {
       this.activeRowElements.push({ slot, displayElement });
     }
     
-    // MOBILE EXPERT DESIGN: Christmas-themed submit button with proper spacing
-    const submitButtonX = startX + finalTotalSlotsWidth + submitButtonGap; // Proper spacing to prevent overlap
+    // MOBILE EXPERT DESIGN: Christmas-themed submit button with guaranteed proper spacing
+    const submitButtonX = startX + finalTotalSlotsWidth + submitButtonGap; // Use calculated gap
     this.activeRowSubmitBtn = this.scene.add.rectangle(submitButtonX, footerActiveRowY, submitButtonWidth, 50, 0x0d5016) // Taller for better touch
       .setStrokeStyle(2, 0x0a4012) // Darker green border
       .setInteractive()
       .on('pointerdown', () => this.scene.submitGuess());
 
     const submitText = this.scene.add.text(submitButtonX, footerActiveRowY, '🎁 Submit', {
-      fontSize: '14px', // Slightly larger text
+      fontSize: '13px', // Appropriate for mobile
       fill: '#ffffff',
       fontFamily: 'Arial'
     }).setOrigin(0.5);
@@ -177,28 +179,30 @@ class ActiveRowManager {
     const guessCount = guessHistory.length;
     
     if (guessCount >= 7) {
-      // MOBILE EXPERT DESIGN: For games with many guesses, allow active row to go beyond normal content area
+      // MOBILE EXPERT DESIGN: For games with many guesses, move closer to bottom
       // but still respect absolute safe area and PREVENT OVERLAP with footer
       const safeAreaInsets = this.scene.safeAreaManager ? this.scene.safeAreaManager.getInsets() : { bottom: 0 };
       const footerHeight = LayoutConfig.FOOTER_HEIGHT_GAME; // Use updated footer height
-      const footerBuffer = 20; // Extra buffer above footer
+      const footerBuffer = 10; // Reduced buffer for closer positioning
       const absoluteMaxY = height - footerHeight - footerBuffer - safeAreaInsets.bottom;
       activeRowY = Math.min(activeRowY, absoluteMaxY);
       
-      console.log(`🎯 ActiveRowManager: Many guesses (${guessCount}), using extended layout`);
+      console.log(`🎯 ActiveRowManager: Many guesses (${guessCount}), using closer-to-bottom layout`);
       console.log(`  - Calculated activeRowY: ${lastCompletedGuessY + activeRowSeparation}`);
       console.log(`  - Footer height: ${footerHeight}px`);
+      console.log(`  - Footer buffer: ${footerBuffer}px (reduced from 20px)`);
       console.log(`  - Absolute max Y: ${absoluteMaxY} (safe bottom: ${safeAreaInsets.bottom}px)`);
       console.log(`  - Final activeRowY: ${activeRowY}`);
     } else {
-      // MOBILE EXPERT DESIGN: For normal games, use improved content area constraints with footer awareness
+      // MOBILE EXPERT DESIGN: For normal games, move footer closer to bottom 
       const footerHeight = LayoutConfig.FOOTER_HEIGHT_GAME;
-      const footerBuffer = 30; // Extra margin above footer
+      const footerBuffer = 15; // Reduced buffer to move closer to bottom
       const maxActiveRowY = height - footerHeight - footerBuffer;
       activeRowY = Math.min(activeRowY, maxActiveRowY);
       
-      console.log(`🎯 ActiveRowManager: Normal game (${guessCount} guesses), using improved layout`);
+      console.log(`🎯 ActiveRowManager: Normal game (${guessCount} guesses), using closer-to-bottom layout`);
       console.log(`  - Footer height: ${footerHeight}px`);
+      console.log(`  - Footer buffer: ${footerBuffer}px (reduced from 30px)`);
       console.log(`  - Max active row Y: ${maxActiveRowY}`);
       console.log(`  - Final activeRowY: ${activeRowY}`);
     }

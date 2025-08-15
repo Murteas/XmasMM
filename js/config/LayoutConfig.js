@@ -10,8 +10,8 @@ const LayoutConfig = {
   // Unified fixed header height used in simplified three-zone scenes
   THREE_ZONE_HEADER: 140,
 
-  // Footer heights (MOBILE EXPERT FIX: Increased for better mobile UX and prevent overlap)
-  FOOTER_HEIGHT_GAME: 180,  // Increased from 160 to prevent active row overlap 
+  // Footer heights (MOBILE EXPERT: Optimized for better bottom positioning)
+  FOOTER_HEIGHT_GAME: 150, // Reduced from 180 to move closer to bottom
   FOOTER_HEIGHT_ROUND_OVER: 100,
 
   // History & RoundOver row heights (MOBILE EXPERT: Increased for larger elements)

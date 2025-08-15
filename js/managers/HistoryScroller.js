@@ -96,9 +96,9 @@ class HistoryScroller {
     const baseHeaderHeight = isSmallScreen ? 140 : 120;
     const historyStartY = Math.max(baseHeaderHeight, height * 0.22);
     
-    // MOBILE EXPERT DESIGN: Use updated footer height for better spacing
-    const footerHeight = LayoutConfig.FOOTER_HEIGHT_GAME; // 180px
-    const bottomMargin = footerHeight + 20; // Buffer above footer
+    // MOBILE EXPERT DESIGN: Use optimized footer height for better positioning
+    const footerHeight = LayoutConfig.FOOTER_HEIGHT_GAME; // Now 150px
+    const bottomMargin = footerHeight + 15; // Reduced buffer for closer positioning 
     const rowHeight = LayoutConfig.HISTORY_ROW_HEIGHT_STANDARD; // Now 75px for larger elements
     const maxVisibleRows = Math.floor((height - historyStartY - bottomMargin) / rowHeight);
     
@@ -167,9 +167,9 @@ class HistoryScroller {
     const activeRowSeparation = 15; // Extra space between completed guesses and active row
     const activeRowY = lastCompletedGuessY + activeRowSeparation;
     
-    // MOBILE EXPERT FIX: Use safe area aware bottom boundary with improved footer spacing
+    // MOBILE EXPERT FIX: Use optimized footer spacing for closer positioning
     const footerHeight = LayoutConfig.FOOTER_HEIGHT_GAME;
-    const footerBuffer = 40; // Better separation from footer
+    const footerBuffer = 25; // Reduced for closer footer positioning
     const historyEndY = height - footerHeight - footerBuffer; // Respect footer and add buffer
     
     // Check if active row needs scrolling with better logic
