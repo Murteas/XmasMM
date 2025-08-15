@@ -52,14 +52,17 @@ class ActiveRowManager {
   }
 
   createActiveRowInFooter() {
-    // Simple approach: Create active row elements in footer container
+    // MOBILE EXPERT DESIGN: Better footer layout with proper spacing
     const { width } = this.scene.cameras.main;
     const codeLength = this.scene.codeLength;
     
-    // Create background in footer container (relative positioning - moved higher for legend space)
+    // MOBILE EXPERT FIX: Position active row higher in footer to prevent overlap
+    const footerActiveRowY = 30; // Moved up from 40 for better separation
+    
+    // Create background in footer container (relative positioning)
     this.activeRowBackground = this.scene.add.rectangle(
       width / 2,
-      40, // Moved up from 60 to create space for legend below
+      footerActiveRowY,
       width - 20,
       50,
       0x4a4a4a,
@@ -69,23 +72,26 @@ class ActiveRowManager {
     
     this.scene.footerContainer.add(this.activeRowBackground);
     
-    // Create slots in footer container
+    // MOBILE EXPERT DESIGN: Better slot sizing for family accessibility
     this.activeRowElements = [];
-    const slotSize = Math.min(40, (width - 140) / codeLength); // More space for submit button
-    const totalSlotsWidth = codeLength * slotSize + (codeLength - 1) * 8;
-    const submitButtonWidth = 80; // Wider for better text fit
-    const totalRowWidth = totalSlotsWidth + submitButtonWidth + 20; // 20px gap between slots and button
+    const slotSize = Math.min(45, (width - 140) / codeLength); // Larger touch targets
+    const slotSpacing = 10; // Better spacing between slots
+    const totalSlotsWidth = codeLength * slotSize + (codeLength - 1) * slotSpacing;
+    // MOBILE EXPERT DESIGN: Better submit button sizing and positioning  
+    const submitButtonWidth = 85; // Wider for better touch target
+    const submitButtonGap = 15; // More space between slots and button
+    const totalRowWidth = totalSlotsWidth + submitButtonWidth + submitButtonGap;
     const startX = (width - totalRowWidth) / 2;
     
     for (let i = 0; i < codeLength; i++) {
-      const slotX = startX + i * (slotSize + 8);
-      const slot = this.scene.add.rectangle(slotX + slotSize/2, 40, slotSize, slotSize, 0x2a2a2a)
+      const slotX = startX + i * (slotSize + slotSpacing);
+      const slot = this.scene.add.rectangle(slotX + slotSize/2, footerActiveRowY, slotSize, slotSize, 0x2a2a2a)
         .setStrokeStyle(3, 0xffffff, 0.9)
         .setInteractive()
         .on('pointerdown', () => this.elementPicker.showElementPicker(i, this.activeRowGuess));
       
       // Create display element based on current guess state (handles pre-filled guesses)
-      const displayElement = this.createSlotDisplay(slotX + slotSize/2, 40, i);
+      const displayElement = this.createSlotDisplay(slotX + slotSize/2, footerActiveRowY, i);
       
       this.scene.footerContainer.add([slot, displayElement]);
       
@@ -93,15 +99,15 @@ class ActiveRowManager {
       this.activeRowElements.push({ slot, displayElement });
     }
     
-    // Create Christmas-themed submit button properly aligned (GameScreenMobileLayoutFix)
-    const submitButtonX = startX + totalSlotsWidth + 50; // Positioned after slots with gap
-    this.activeRowSubmitBtn = this.scene.add.rectangle(submitButtonX, 40, submitButtonWidth, 40, 0x0d5016) // Forest green
+    // MOBILE EXPERT DESIGN: Christmas-themed submit button with better positioning
+    const submitButtonX = startX + totalSlotsWidth + submitButtonGap; // Better spacing
+    this.activeRowSubmitBtn = this.scene.add.rectangle(submitButtonX, footerActiveRowY, submitButtonWidth, 45, 0x0d5016) // Taller for better touch
       .setStrokeStyle(2, 0x0a4012) // Darker green border
       .setInteractive()
       .on('pointerdown', () => this.scene.submitGuess());
 
-    const submitText = this.scene.add.text(submitButtonX, 40, '🎁 Submit', { // Better text!
-      fontSize: '13px',
+    const submitText = this.scene.add.text(submitButtonX, footerActiveRowY, '🎁 Submit', {
+      fontSize: '14px', // Slightly larger text
       fill: '#ffffff',
       fontFamily: 'Arial'
     }).setOrigin(0.5);
@@ -152,29 +158,35 @@ class ActiveRowManager {
     const activeRowSeparation = 15; // Extra space to prevent overlap
     let activeRowY = lastCompletedGuessY + activeRowSeparation;
     
-    // CRITICAL FIX: Don't constrain active row by contentEndY when there are many guesses
+    // MOBILE EXPERT FIX: Don't constrain active row by contentEndY when there are many guesses
     // The content area needs to expand to accommodate all guesses
     const guessCount = guessHistory.length;
     
     if (guessCount >= 7) {
-      // For games with many guesses, allow active row to go beyond normal content area
-      // but still respect absolute safe area (browser UI + device safe areas)
+      // MOBILE EXPERT DESIGN: For games with many guesses, allow active row to go beyond normal content area
+      // but still respect absolute safe area and PREVENT OVERLAP with footer
       const safeAreaInsets = this.scene.safeAreaManager ? this.scene.safeAreaManager.getInsets() : { bottom: 0 };
-      const absoluteMaxY = height - 100 - safeAreaInsets.bottom; // Leave space for browser UI, submit button and safe areas
+      const footerHeight = LayoutConfig.FOOTER_HEIGHT_GAME; // Use updated footer height
+      const footerBuffer = 20; // Extra buffer above footer
+      const absoluteMaxY = height - footerHeight - footerBuffer - safeAreaInsets.bottom;
       activeRowY = Math.min(activeRowY, absoluteMaxY);
       
       console.log(`🎯 ActiveRowManager: Many guesses (${guessCount}), using extended layout`);
       console.log(`  - Calculated activeRowY: ${lastCompletedGuessY + activeRowSeparation}`);
+      console.log(`  - Footer height: ${footerHeight}px`);
       console.log(`  - Absolute max Y: ${absoluteMaxY} (safe bottom: ${safeAreaInsets.bottom}px)`);
       console.log(`  - Final activeRowY: ${activeRowY}`);
     } else {
-      // For normal games, use standard content area constraints
-      const maxActiveRowY = layout.contentEndY - 30; // Extra margin for submit button
+      // MOBILE EXPERT DESIGN: For normal games, use improved content area constraints with footer awareness
+      const footerHeight = LayoutConfig.FOOTER_HEIGHT_GAME;
+      const footerBuffer = 30; // Extra margin above footer
+      const maxActiveRowY = height - footerHeight - footerBuffer;
       activeRowY = Math.min(activeRowY, maxActiveRowY);
       
-      console.log(`🎯 ActiveRowManager: Normal game (${guessCount} guesses), using standard layout`);
-      console.log(`  - Content end Y: ${layout.contentEndY}`);
+      console.log(`🎯 ActiveRowManager: Normal game (${guessCount} guesses), using improved layout`);
+      console.log(`  - Footer height: ${footerHeight}px`);
       console.log(`  - Max active row Y: ${maxActiveRowY}`);
+      console.log(`  - Final activeRowY: ${activeRowY}`);
     }
     
     // Ensure it doesn't go above the content area (this constraint is always valid)
@@ -232,9 +244,10 @@ class ActiveRowManager {
   }
 
   calculateSlotPositioning(codeLength, width, isSmallScreen) {
-    const elementWidth = isSmallScreen ? 35 : 40;
-    const elementSpacing = isSmallScreen ? 42 : 50;
-    const submitButtonWidth = 60;
+    // MOBILE EXPERT DESIGN: Improved sizing for family accessibility
+    const elementWidth = isSmallScreen ? 42 : 45; // Larger touch targets
+    const elementSpacing = isSmallScreen ? 48 : 55; // Better spacing
+    const submitButtonWidth = 85; // Consistent with footer layout
     
     const totalElementsWidth = (codeLength * elementSpacing) - (elementSpacing - elementWidth);
     const totalRowWidth = totalElementsWidth + submitButtonWidth + 20;

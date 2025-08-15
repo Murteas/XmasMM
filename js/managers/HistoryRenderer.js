@@ -92,12 +92,18 @@ class HistoryRenderer {
     const { width } = this.scene.cameras.main;
     
     const isSmallScreen = width < 500;
-    const elementSpacing = isSmallScreen ? 45 : 60;
-    const elementWidth = isSmallScreen ? 35 : 40;
     
-    // Center the row based on screen width and code length
+    // MOBILE EXPERT DESIGN: Optimize spacing for better screen utilization
+    const elementSpacing = isSmallScreen ? 50 : 65; // Increased spacing for better touch targets
+    const elementWidth = isSmallScreen ? 38 : 42; // Slightly larger for family accessibility
+    
+    // MOBILE EXPERT DESIGN: Use much more screen width (90% vs ~60%)
     const totalRowWidth = (codeLength * elementSpacing) - elementSpacing + elementWidth;
-    const startX = Math.max(30, (width - totalRowWidth) / 2);
+    const screenPadding = Math.min(20, width * 0.05); // 5% padding or 20px max
+    const maxRowWidth = width - (screenPadding * 2);
+    
+    // Use wider layout by minimizing left margin  
+    const startX = Math.max(screenPadding, screenPadding + (maxRowWidth - totalRowWidth) / 2);
     
     // Visual hierarchy: fade older guesses (GameScreenHistoryCompression task)
     // Most recent 2 rows stay full opacity, older rows fade to 80%

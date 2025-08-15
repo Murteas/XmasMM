@@ -1,4 +1,5 @@
 // HistoryScroller.js - Handles history scrolling functionality
+// Uses global LayoutConfig (loaded via ModuleLoader)
 
 class HistoryScroller {
   constructor(scene, historyManager) {
@@ -94,7 +95,10 @@ class HistoryScroller {
     const isSmallScreen = width < 500;
     const baseHeaderHeight = isSmallScreen ? 140 : 120;
     const historyStartY = Math.max(baseHeaderHeight, height * 0.22);
-    const bottomMargin = isSmallScreen ? 60 : 80;
+    
+    // MOBILE EXPERT DESIGN: Use updated footer height for better spacing
+    const footerHeight = LayoutConfig.FOOTER_HEIGHT_GAME; // 180px
+    const bottomMargin = footerHeight + 20; // Buffer above footer
     const rowHeight = 60;
     const maxVisibleRows = Math.floor((height - historyStartY - bottomMargin) / rowHeight);
     
@@ -163,8 +167,10 @@ class HistoryScroller {
     const activeRowSeparation = 15; // Extra space between completed guesses and active row
     const activeRowY = lastCompletedGuessY + activeRowSeparation;
     
-    // Use safe area aware bottom boundary
-    const historyEndY = layout.contentEndY - 30; // Respect safe area bottom
+    // MOBILE EXPERT FIX: Use safe area aware bottom boundary with improved footer spacing
+    const footerHeight = LayoutConfig.FOOTER_HEIGHT_GAME;
+    const footerBuffer = 40; // Better separation from footer
+    const historyEndY = height - footerHeight - footerBuffer; // Respect footer and add buffer
     
     // Check if active row needs scrolling with better logic
     const activeRowBottomY = activeRowY + 30; // Account for active row height
