@@ -64,7 +64,7 @@ class ActiveRowManager {
       width / 2,
       footerActiveRowY,
       width - 20,
-      50,
+      60, // Taller background for larger elements
       0x4a4a4a,
       0.8
     )
@@ -72,26 +72,40 @@ class ActiveRowManager {
     
     this.scene.footerContainer.add(this.activeRowBackground);
     
-    // MOBILE EXPERT DESIGN: Better slot sizing for family accessibility
+    // MOBILE EXPERT DESIGN: Much larger slots to match history elements
     this.activeRowElements = [];
-    const slotSize = Math.min(45, (width - 140) / codeLength); // Larger touch targets
-    const slotSpacing = 10; // Better spacing between slots
+    const slotSize = Math.min(55, (width - 120) / codeLength); // Larger to match history elements, leave more space for submit
+    const slotSpacing = 12; // Better spacing between slots
     const totalSlotsWidth = codeLength * slotSize + (codeLength - 1) * slotSpacing;
-    // MOBILE EXPERT DESIGN: Better submit button sizing and positioning  
-    const submitButtonWidth = 85; // Wider for better touch target
-    const submitButtonGap = 15; // More space between slots and button
+    // MOBILE EXPERT DESIGN: Better submit button sizing and positioning to prevent overlap
+    const submitButtonWidth = 90; // Wider for better touch target
+    const submitButtonGap = 20; // More space between slots and button to prevent overlap
     const totalRowWidth = totalSlotsWidth + submitButtonWidth + submitButtonGap;
-    const startX = (width - totalRowWidth) / 2;
+    
+    // MOBILE EXPERT FIX: Ensure we have enough space, otherwise reduce slot size
+    const availableWidth = width - 40; // Account for padding
+    let finalSlotSize = slotSize;
+    let finalSpacing = slotSpacing;
+    
+    if (totalRowWidth > availableWidth) {
+      // Recalculate with smaller slots to fit everything without overlap
+      finalSlotSize = Math.max(40, (availableWidth - submitButtonWidth - submitButtonGap) / codeLength - finalSpacing + finalSpacing/codeLength);
+      console.log(`🎯 Adjusted slot size to ${finalSlotSize} to prevent submit button overlap`);
+    }
+    
+    const finalTotalSlotsWidth = codeLength * finalSlotSize + (codeLength - 1) * finalSpacing;
+    const finalTotalRowWidth = finalTotalSlotsWidth + submitButtonWidth + submitButtonGap;
+    const startX = (width - finalTotalRowWidth) / 2;
     
     for (let i = 0; i < codeLength; i++) {
-      const slotX = startX + i * (slotSize + slotSpacing);
-      const slot = this.scene.add.rectangle(slotX + slotSize/2, footerActiveRowY, slotSize, slotSize, 0x2a2a2a)
+      const slotX = startX + i * (finalSlotSize + finalSpacing);
+      const slot = this.scene.add.rectangle(slotX + finalSlotSize/2, footerActiveRowY, finalSlotSize, finalSlotSize, 0x2a2a2a)
         .setStrokeStyle(3, 0xffffff, 0.9)
         .setInteractive()
         .on('pointerdown', () => this.elementPicker.showElementPicker(i, this.activeRowGuess));
       
       // Create display element based on current guess state (handles pre-filled guesses)
-      const displayElement = this.createSlotDisplay(slotX + slotSize/2, footerActiveRowY, i);
+      const displayElement = this.createSlotDisplay(slotX + finalSlotSize/2, footerActiveRowY, i);
       
       this.scene.footerContainer.add([slot, displayElement]);
       
@@ -99,9 +113,9 @@ class ActiveRowManager {
       this.activeRowElements.push({ slot, displayElement });
     }
     
-    // MOBILE EXPERT DESIGN: Christmas-themed submit button with better positioning
-    const submitButtonX = startX + totalSlotsWidth + submitButtonGap; // Better spacing
-    this.activeRowSubmitBtn = this.scene.add.rectangle(submitButtonX, footerActiveRowY, submitButtonWidth, 45, 0x0d5016) // Taller for better touch
+    // MOBILE EXPERT DESIGN: Christmas-themed submit button with proper spacing
+    const submitButtonX = startX + finalTotalSlotsWidth + submitButtonGap; // Proper spacing to prevent overlap
+    this.activeRowSubmitBtn = this.scene.add.rectangle(submitButtonX, footerActiveRowY, submitButtonWidth, 50, 0x0d5016) // Taller for better touch
       .setStrokeStyle(2, 0x0a4012) // Darker green border
       .setInteractive()
       .on('pointerdown', () => this.scene.submitGuess());

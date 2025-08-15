@@ -99,7 +99,7 @@ class HistoryScroller {
     // MOBILE EXPERT DESIGN: Use updated footer height for better spacing
     const footerHeight = LayoutConfig.FOOTER_HEIGHT_GAME; // 180px
     const bottomMargin = footerHeight + 20; // Buffer above footer
-    const rowHeight = 60;
+    const rowHeight = LayoutConfig.HISTORY_ROW_HEIGHT_STANDARD; // Now 75px for larger elements
     const maxVisibleRows = Math.floor((height - historyStartY - bottomMargin) / rowHeight);
     
     return {
@@ -158,7 +158,7 @@ class HistoryScroller {
       headerBottomY + legendSpacing + legendHeight + 15
     );
     
-    const rowHeight = 60;
+    const rowHeight = LayoutConfig.HISTORY_ROW_HEIGHT_STANDARD; // Use updated 75px height
     const guessHistory = this.historyManager.getGuessHistory();
     
     // CRITICAL FIX: Calculate active row position AFTER the last completed guess

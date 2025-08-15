@@ -165,7 +165,7 @@ class ScrollableHistoryManager {
   }
   
   createRowContainer(rowData, index) {
-    const rowContainer = this.scene.add.container(0, index * 60);
+    const rowContainer = this.scene.add.container(0, index * LayoutConfig.HISTORY_ROW_HEIGHT_STANDARD);
     
     // Add guess elements to row container
     if (rowData.elements) {

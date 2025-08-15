@@ -14,8 +14,8 @@ const LayoutConfig = {
   FOOTER_HEIGHT_GAME: 180,  // Increased from 160 to prevent active row overlap 
   FOOTER_HEIGHT_ROUND_OVER: 100,
 
-  // History & RoundOver row heights
-  HISTORY_ROW_HEIGHT_STANDARD: 60,
+  // History & RoundOver row heights (MOBILE EXPERT: Increased for larger elements)
+  HISTORY_ROW_HEIGHT_STANDARD: 75, // Increased from 60 to accommodate larger elements
   ROUND_OVER_ROW_HEIGHT_DENSE: 42,
 
   // Minimum touch target

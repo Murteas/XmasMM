@@ -93,9 +93,9 @@ class HistoryRenderer {
     
     const isSmallScreen = width < 500;
     
-    // MOBILE EXPERT DESIGN: Optimize spacing for better screen utilization
-    const elementSpacing = isSmallScreen ? 50 : 65; // Increased spacing for better touch targets
-    const elementWidth = isSmallScreen ? 38 : 42; // Slightly larger for family accessibility
+    // MOBILE EXPERT DESIGN: Much larger elements since max 10 guesses
+    const elementSpacing = isSmallScreen ? 65 : 80; // Increased significantly for bigger elements
+    const elementWidth = isSmallScreen ? 55 : 65; // Much larger for family accessibility and visual prominence
     
     // MOBILE EXPERT DESIGN: Use much more screen width (90% vs ~60%)
     const totalRowWidth = (codeLength * elementSpacing) - elementSpacing + elementWidth;
