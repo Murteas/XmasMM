@@ -122,7 +122,9 @@ class GameScene extends Phaser.Scene {
 
   initializeGame() {
     const { width, height } = this.cameras.main;
-    this.cameras.main.setBackgroundColor('#1a1a2e');
+    
+    // Use subtle Christmas background with user's theme preference (less distracting for gameplay)
+    BackgroundManager.setupSubtleChristmas(this, 'game');
   }
 
   setupManagers() {

@@ -108,26 +108,32 @@ class BackgroundManager {
   }
 
   /**
-   * Complete Christmas background setup (gradient + snowflakes)
+   * Complete Christmas background setup (gradient + snowflakes) with theme support
    * @param {Phaser.Scene} scene - The Phaser scene instance
    * @param {string} scenePrefix - Unique prefix for texture keys (e.g., 'mainmenu', 'game')
-   * @param {Object} options - Optional animation settings
+   * @param {Object} options - Optional animation settings and theme
    * @returns {Object} Object containing background and overlay references
    */
   static setupChristmasBackground(scene, scenePrefix = 'scene', options = {}) {
     const { width, height } = scene.cameras.main;
     
+    // Get theme from options or scene registry or default to traditional
+    const theme = options.theme || 
+                 (scene.registry && scene.registry.get('backgroundTheme')) || 
+                 'traditional';
+    
     const background = this.createChristmasGradientBackground(
       scene, 
       width, 
       height, 
-      `christmas_bg_${scenePrefix}`
+      `christmas_bg_${scenePrefix}_${theme}`,
+      theme
     );
     
     // Choose overlay type based on options
     const overlay = options.enhanced ? 
-      this.createEnhancedSnowflakeOverlay(scene, width, height, `snowflake_${scenePrefix}`) :
-      this.createSnowflakeOverlay(scene, width, height, `snowflake_${scenePrefix}`);
+      this.createEnhancedSnowflakeOverlay(scene, width, height, `snowflake_${scenePrefix}_${theme}`) :
+      this.createSnowflakeOverlay(scene, width, height, `snowflake_${scenePrefix}_${theme}`);
     
     // Add animated snowflakes if requested
     let animatedSnowflakes = null;

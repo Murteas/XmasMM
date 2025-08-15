@@ -14,9 +14,8 @@ class DifficultySelection extends Phaser.Scene {
   
   create() {
     const { width, height } = this.cameras.main;
-    this.cameras.main.setBackgroundColor('#1a1a2e');
     
-    // Enhanced Christmas background for menu
+    // Enhanced Christmas background with user's theme preference
     BackgroundManager.setupEnhancedChristmas(this, 'difficulty');
     
     this.createTitle(width, height);
