@@ -1,22 +1,20 @@
-# 🎄 Christmas Mas## 📋 Qui### **Project Management**
-- **📊 Current Status**: [ISSUES.md](ISSUES.md) - Complete project tracking (single source of truth)
-- **🤖 AI Guidelines**: [AI_AGENT_BRIEFING.md](AI_AGENT_BRIEFING.md) - Development workflow guide
-
-### **Development Resources**  
-- **🧪 Testing Suite**: [TESTING.md](TESTING.md) - Test validation and integration
-- **🎨 Graphics Assets**: [Graphics_Asset_Requirements.md](Graphics_Asset_Requirements.md) - Asset specifications
-- **📋 Original Requirements**: [XmasMM_PRD.md](XmasMM_PRD.md) - Historical project definitionevelopment Resources**  
-- **🧪 Testing Suite**: [TESTING.md](TESTING.md) - Test validation and integration
-- **🎨 Graphics Assets**: [Graphics_Asset_Requirements.md](Graphics_Asset_Requirements.md) - Asset specifications
-- **📋 Original Requirements**: [XmasMM_PRD.md](XmasMM_PRD.md) - Historical project definitiongation
-
-### **Project Management**
-- **📊 Current Status**: [ISSUES.md](ISSUES.md) - Complete project tracking (single source of truth)
-- **🤖 AI Guidelines**: [AI_AGENT_BRIEFING.md](AI_AGENT_BRIEFING.md) - Development workflow guide
+# 🎄 Christmas MasterMind
 
 **A mobile-optimized Christmas puzzle game for family fun!**
 
-> **🤖 AI Agents**: Read [AI_AGENT_BRIEFING.md](AI_AGENT_BRIEFING.md) before starting work - this project uses consolidated issue tracking.
+## 🤖 AI Agent Quick Rules
+**Critical guidelines for AI agents working on this project:**
+
+1. 🚨 **Check [ISSUES.md](ISSUES.md) first** - Single source of truth for all project tracking
+2. 🚫 **NEVER start servers** - Always ask user: `python -m http.server 8000`
+3. 🚫 **NEVER use isBackground=true** - Always use `isBackground=false` in terminals
+4. 🤝 **ASK clarifying questions** - Collaborate, don't just comply with requests
+5. � **Mobile-first development** - Test 375x667 minimum viewport
+6. ✅ **Follow test protocol**: Agent changes → User tests → Agent fixes based on feedback
+7. 📁 **Use LayoutConfig.js** - No magic numbers for heights/spacing
+8. 🎨 **Christmas theming** - Forest green (#0d5016) and gold (#ffd700) color scheme
+
+> **🤖 Full Guidelines**: See [AI_AGENT_BRIEFING.md](AI_AGENT_BRIEFING.md) for complete onboarding
 
 ## ✨ Current Status
 🎉 **Mobile foundation complete!** Christmas feature development in progress.

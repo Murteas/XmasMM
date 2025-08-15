@@ -129,7 +129,7 @@ class UILayoutManager {
       .setOrigin(0.5, 0.5)
       .setDepth(GameUtils.getDepthLayers().UI - 0.1);
     
-    this.progressText = this.scene.add.text(width / 2, 85, `Score: ${this.scene.scoreManager ? this.scene.scoreManager.getCurrentScore() : 0}`, {
+    this.progressText = this.scene.add.text(width / 2, 85, `Progress: 0`, {
       font: '16px Arial',
       fill: '#fff',
       stroke: '#000000',
@@ -137,7 +137,7 @@ class UILayoutManager {
     }).setOrigin(0.5, 0.5).setDepth(GameUtils.getDepthLayers().UI);
     
     // Keep the right-aligned score as backup (will be hidden in favor of left score)
-    this.scoreText = this.scene.add.text(width - 50, 70, `Score: ${this.scene.scoreManager ? this.scene.scoreManager.getCurrentScore() : 0}`, {
+    this.scoreText = this.scene.add.text(width - 50, 70, `Progress: 0`, {
       font: '18px Arial',
       fill: '#fff'
     }).setOrigin(1, 0).setDepth(GameUtils.getDepthLayers().UI).setVisible(false);
@@ -402,22 +402,19 @@ class UILayoutManager {
     });
   }
 
-  updateGuessesDisplay(guessesRemaining) {
-    // UI-010: Update score display in real-time instead of turn counter
-    if (this.progressText && this.scene.scoreManager) {
-      const currentScore = this.scene.scoreManager.getCurrentScore();
-      this.progressText.setText(`Score: ${currentScore}`);
-    }
-  }
-
-  updateScoreDisplay(scoreText) {
-    // Update consolidated progress display
+  updateProgressDisplay() {
+    // Single method for updating progress display
+    const progressPoints = this.scene.scoreManager.getProgressPoints();
+    const gameStats = this.scene.gameStateManager.getGameStats();
+    
+    // Update main progress display  
     if (this.progressText) {
-      this.progressText.setText(scoreText);
+      this.progressText.setText(`Progress: ${progressPoints}`);
     }
-    // Legacy support for any remaining scoreText references
-    if (this.scoreText) {
-      this.scoreText.setText(scoreText);
+    
+    // Update guesses remaining (if needed separately)
+    if (this.guessesText) {
+      this.guessesText.setText(`Guesses: ${gameStats.guessesRemaining}`);
     }
   }
 

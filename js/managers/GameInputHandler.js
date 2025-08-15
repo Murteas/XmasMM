@@ -21,8 +21,8 @@ class GameInputHandler {
     // Add to history
     this.scene.historyManager.addGuess(currentGuess, result.feedback);
     
-    // Update UI
-    this.scene.uiLayoutManager.updateGuessesDisplay(result.guessesRemaining);
+    // Update UI progress display
+    this.scene.uiLayoutManager.updateProgressDisplay();
     
     // Handle game state changes
     if (result.isWin) {
@@ -63,18 +63,15 @@ class GameInputHandler {
   }
 
   updateScore() {
-    const gameStats = this.scene.gameStateManager.getGameStats();
-    this.scene.scoreManager.calculateScore(
-      gameStats.maxGuesses, 
-      gameStats.guessesRemaining, 
-      gameStats.codeLength
-    );
+    // Update progress points based on all guesses so far
+    this.scene.scoreManager.updateProgressPoints();
     
+    // Update UI display
+    this.scene.uiLayoutManager.updateProgressDisplay();
+    
+    // Check if Santa's Hint should be enabled
     const uiElements = this.scene.uiLayoutManager.getUIElements();
-    this.scene.scoreManager.updateScoreDisplay(uiElements.scoreText);
-    
-    // UI-010: Update the main header score display
-    this.scene.uiLayoutManager.updateGuessesDisplay(gameStats.guessesRemaining);
+    this.scene.scoreManager.checkHintAvailability(uiElements.hintBtn, uiElements.hintText);
   }
 
   processSantasHint() {

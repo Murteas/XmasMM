@@ -1,12 +1,10 @@
-// ScoreManager.js - Handles element-based scoring and hint availability
-// Simplified for maintainability
+// ScoreManager.js - Handles scoring and progress tracking
 
 class ScoreManager {
   constructor(scene) {
     this.scene = scene;
-    this.currentScore = 0;
+    this.progressPoints = 0; // Tracks earned points during gameplay
     this.hintUsed = false;
-    this.hintThreshold = 500; // Keep for compatibility
     this.scoreBreakdown = {
       elementPoints: 0,
       completeBonus: 0,
@@ -14,11 +12,10 @@ class ScoreManager {
       hintPenalty: 0
     };
 
-    // Diversity-oriented scoring configuration (Aug 11 2025 refresh)
     this.scoringConfig = {
-      perfectElementPoints: 180,   // was 200
-      closeElementPoints: 80,      // was 100
-      completeBonus: 250,          // was 300
+      perfectElementPoints: 180,
+      closeElementPoints: 80,
+      completeBonus: 250,
       speedBonusThreshold: 10,
       speedTier1Count: 3,
       speedTier1Value: 80,
@@ -26,7 +23,7 @@ class ScoreManager {
       speedTier2Value: 50,
       speedTier3Value: 30,
       speedPenaltyPerGuess: 25,
-      hintPenalty: 220            // slightly higher cost
+      hintPenalty: 220
     };
   }
 
@@ -83,15 +80,13 @@ class ScoreManager {
     }
 
     // Calculate final score
-    this.currentScore = this.scoreBreakdown.elementPoints + 
-                       this.scoreBreakdown.completeBonus + 
-                       this.scoreBreakdown.speedBonus + 
-                       this.scoreBreakdown.hintPenalty;
+    const finalScore = this.scoreBreakdown.elementPoints + 
+                      this.scoreBreakdown.completeBonus + 
+                      this.scoreBreakdown.speedBonus + 
+                      this.scoreBreakdown.hintPenalty;
 
     // Ensure score is never negative
-    this.currentScore = Math.max(0, this.currentScore);
-
-    return this.currentScore;
+    return Math.max(0, finalScore);
   }
 
   /**
@@ -129,9 +124,15 @@ class ScoreManager {
    * Get detailed score breakdown for display
    */
   getScoreBreakdown() {
+    // Calculate total from breakdown components
+    const total = this.scoreBreakdown.elementPoints + 
+                  this.scoreBreakdown.completeBonus + 
+                  this.scoreBreakdown.speedBonus + 
+                  this.scoreBreakdown.hintPenalty;
+    
     return {
       ...this.scoreBreakdown,
-      total: this.currentScore
+      total: Math.max(0, total)
     };
   }
 
@@ -142,15 +143,22 @@ class ScoreManager {
     const won = gameWon ? 'solved' : 'attempted';
     const hintText = this.hintUsed ? ', hint used' : '';
     
+    // Calculate total score from breakdown
+    const totalScore = this.scoreBreakdown.elementPoints + 
+                      this.scoreBreakdown.completeBonus + 
+                      this.scoreBreakdown.speedBonus + 
+                      this.scoreBreakdown.hintPenalty;
+    const finalScore = Math.max(0, totalScore);
+    
     const breakdown = `(${this.scoreBreakdown.elementPoints}${
       this.scoreBreakdown.completeBonus > 0 ? ' + ' + this.scoreBreakdown.completeBonus : ''
     }${
       this.scoreBreakdown.speedBonus !== 0 ? (this.scoreBreakdown.speedBonus > 0 ? ' + ' : ' ') + this.scoreBreakdown.speedBonus : ''
     }${
       this.scoreBreakdown.hintPenalty !== 0 ? ' ' + this.scoreBreakdown.hintPenalty : ''
-    } = ${this.currentScore}pts)`;
+    } = ${finalScore}pts)`;
     
-    return `Christmas MasterMind Score: ${this.currentScore}pts 🎄\n${codeLength} elements ${won}, ${guessesUsed} guesses${hintText}\n${breakdown}`;
+    return `Christmas MasterMind Score: ${finalScore}pts 🎄\n${codeLength} elements ${won}, ${guessesUsed} guesses${hintText}\n${breakdown}`;
   }
 
   updateScoreDisplay(scoreText) {
@@ -237,35 +245,31 @@ class ScoreManager {
     };
   }
 
-  /**
-   * Calculate ongoing score during gameplay (simplified for real-time updates)
-   * @param {number} maxGuesses - Maximum guesses allowed
-   * @param {number} guessesRemaining - Guesses remaining
-   * @param {number} codeLength - Length of the code
-   */
-  calculateScore(maxGuesses, guessesRemaining, codeLength) {
-    // Simple ongoing score calculation - just track guesses used
-    const guessesUsed = maxGuesses - guessesRemaining;
+  // Calculate progress points based on the MOST RECENT guess only
+  updateProgressPoints() {
+    // Reset progress points
+    this.progressPoints = 0;
     
-  // Basic indicative score: adjusted to new element scale (not final score formula)
-  this.currentScore = Math.max(0, 900 - (guessesUsed * 90));
+    // Get the most recent submitted guess and secret code
+    const secretCode = this.scene.gameStateManager.getSecretCode();
+    const guessHistory = this.scene.historyManager.getGuessHistory();
     
-    // Apply hint penalty if used
-    if (this.hintUsed) {
-      this.currentScore -= this.scoringConfig.hintPenalty;
+    // Calculate points only from the most recent guess
+    if (guessHistory && guessHistory.length > 0) {
+      const mostRecentGuess = guessHistory[guessHistory.length - 1];
+      const feedback = this.calculateElementFeedback(mostRecentGuess, secretCode);
+      this.progressPoints = (feedback.perfect * this.scoringConfig.perfectElementPoints) + 
+                           (feedback.close * this.scoringConfig.closeElementPoints);
     }
-    
-    // Ensure score doesn't go negative
-    this.currentScore = Math.max(0, this.currentScore);
+  }
+
+  getProgressPoints() {
+    return this.progressPoints;
   }
 
   reset() {
-    this.currentScore = 0;
+    this.progressPoints = 0;
     this.hintUsed = false;
-  }
-
-  getCurrentScore() {
-    return this.currentScore;
   }
 
   isHintUsed() {
