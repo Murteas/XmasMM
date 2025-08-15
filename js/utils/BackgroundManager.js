@@ -3,14 +3,15 @@
 
 class BackgroundManager {
   /**
-   * Creates professional Christmas gradient background for any scene
+   * Creates professional Christmas gradient background with family-friendly theme variants
    * @param {Phaser.Scene} scene - The Phaser scene instance
    * @param {number} width - Background width
    * @param {number} height - Background height
    * @param {string} textureKey - Unique texture key for this scene
+   * @param {string} theme - 'traditional', 'festive', 'winter', or 'warm'
    * @returns {Phaser.GameObjects.Image} The background image object
    */
-  static createChristmasGradientBackground(scene, width, height, textureKey = 'christmas_gradient_bg') {
+  static createChristmasGradientBackground(scene, width, height, textureKey = 'christmas_gradient_bg', theme = 'traditional') {
     // Check if texture already exists to avoid regeneration
     if (scene.textures.exists(textureKey)) {
       return scene.add.image(width / 2, height / 2, textureKey)
@@ -20,9 +21,31 @@ class BackgroundManager {
     // Create graphics object for gradient using Phaser best practices
     const gradientGraphics = scene.make.graphics({});
     
-    // Professional Christmas color palette
-    const topColor = Phaser.Display.Color.HexStringToColor('#0d3820');    // Deep forest green
-    const bottomColor = Phaser.Display.Color.HexStringToColor('#051610');  // Very dark green
+    // Family-friendly Christmas theme color palettes
+    const christmasThemes = {
+      traditional: {
+        top: '#0d3820',      // Deep forest green (original)
+        bottom: '#051610'    // Very dark green (original)
+      },
+      festive: {
+        top: '#1e4d3f',      // Rich emerald green
+        bottom: '#0a2817'    // Deep emerald
+      },
+      winter: {
+        top: '#2C4F6B',      // Icy blue-green
+        bottom: '#1A3445'    // Deep winter blue
+      },
+      warm: {
+        top: '#8B4513',      // Warm Christmas brown
+        bottom: '#5D2F0A'    // Deep cozy brown
+      }
+    };
+    
+    const selectedTheme = christmasThemes[theme] || christmasThemes.traditional;
+    
+    // Professional Christmas color palette with theme support
+    const topColor = Phaser.Display.Color.HexStringToColor(selectedTheme.top);
+    const bottomColor = Phaser.Display.Color.HexStringToColor(selectedTheme.bottom);
     
     // Draw smooth vertical gradient using Phaser's color interpolation
     for (let y = 0; y < height; y++) {
@@ -223,6 +246,14 @@ class BackgroundManager {
       if (Math.random() < 0.1) { // 10% chance for star shapes
         this.drawSnowflakeShape(snowGraphics, x, y, size, opacity);
       }
+      
+      // Add family-friendly golden sparkles for magical atmosphere (5% chance)
+      if (Math.random() < 0.05) {
+        const sparkleSize = Math.random() * 1.5 + 0.3; // Smaller sparkles (0.3-1.8px)
+        const sparkleOpacity = Math.random() * 0.08 + 0.02; // Subtle sparkles (2-10%)
+        snowGraphics.fillStyle(0xffd700, sparkleOpacity); // Golden color
+        snowGraphics.fillCircle(x + (Math.random() - 0.5) * 10, y + (Math.random() - 0.5) * 10, sparkleSize);
+      }
     }
     
     snowGraphics.generateTexture(textureKey, width, height);
@@ -352,6 +383,23 @@ class BackgroundManager {
       graphics.lineBetween(x, y, x1, y1);
       graphics.lineBetween(x2, y2, x + Math.cos(angle + Math.PI/6) * size * 0.6, y + Math.sin(angle + Math.PI/6) * size * 0.6);
     }
+  }
+
+  /**
+   * Quick helper for family-friendly theme selection
+   * @returns {Array} Available theme names for easy selection
+   */
+  static getAvailableThemes() {
+    return ['traditional', 'festive', 'winter', 'warm'];
+  }
+
+  /**
+   * Get a random theme for variety in family gameplay sessions
+   * @returns {string} Random theme name
+   */
+  static getRandomTheme() {
+    const themes = this.getAvailableThemes();
+    return themes[Math.floor(Math.random() * themes.length)];
   }
 }
 

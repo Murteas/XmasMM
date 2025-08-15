@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Christmas Background Themes Demo</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Arial', sans-serif;
+            background: #1a1a1a;
+            color: white;
+        }
+        .demo-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .theme-demo {
+            border: 2px solid #444;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+        }
+        canvas {
+            border-radius: 8px;
+            max-width: 100%;
+            height: auto;
+        }
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+        h3 {
+            margin: 10px 0 5px 0;
+            color: #FFD700;
+        }
+        .description {
+            font-size: 0.9em;
+            color: #bbb;
+            margin-bottom: 10px;
+        }
+        .features {
+            font-size: 0.8em;
+            color: #90EE90;
+            margin-top: 10px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.min.js"></script>
+</head>
+<body>
+    <h1>🎄 Family-Friendly Christmas Background Themes 🎄</h1>
+    <p style="text-align: center; color: #ccc;">High-impact, low-effort enhancements for XmasMM</p>
+    
+    <div class="demo-container">
+        <div class="theme-demo">
+            <h3>Traditional 🌲</h3>
+            <div class="description">Classic deep forest green - original cozy feel</div>
+            <div id="traditional-demo"></div>
+            <div class="features">✨ Original colors ✨ Golden sparkles ✨ Star snowflakes</div>
+        </div>
+        
+        <div class="theme-demo">
+            <h3>Festive 🎁</h3>
+            <div class="description">Rich emerald green - vibrant and cheerful</div>
+            <div id="festive-demo"></div>
+            <div class="features">✨ Brighter greens ✨ Golden sparkles ✨ Star snowflakes</div>
+        </div>
+        
+        <div class="theme-demo">
+            <h3>Winter ❄️</h3>
+            <div class="description">Icy blue-green - cool winter atmosphere</div>
+            <div id="winter-demo"></div>
+            <div class="features">✨ Blue tones ✨ Golden sparkles ✨ Star snowflakes</div>
+        </div>
+        
+        <div class="theme-demo">
+            <h3>Warm 🔥</h3>
+            <div class="description">Cozy brown tones - fireplace warmth</div>
+            <div id="warm-demo"></div>
+            <div class="features">✨ Warm browns ✨ Golden sparkles ✨ Star snowflakes</div>
+        </div>
+    </div>
+
+    <script>
+        // Mock GameUtils for demo
+        window.GameUtils = {
+            getDepthLayers: () => ({ BACKGROUND: 1 })
+        };
+
+        // Load our enhanced BackgroundManager
+        const script = document.createElement('script');
+        script.src = 'js/utils/BackgroundManager.js';
+        script.onload = () => {
+            const themes = ['traditional', 'festive', 'winter', 'warm'];
+            
+            themes.forEach(theme => {
+                const config = {
+                    type: Phaser.AUTO,
+                    width: 280,
+                    height: 200,
+                    parent: `${theme}-demo`,
+                    backgroundColor: '#000000',
+                    scene: {
+                        create: function() {
+                            const { width, height } = this.cameras.main;
+                            
+                            // Create background with our new theme support
+                            BackgroundManager.createChristmasGradientBackground(
+                                this, width, height, `${theme}_bg`, theme
+                            );
+                            
+                            // Add enhanced snowflakes with golden sparkles
+                            BackgroundManager.createEnhancedSnowflakeOverlay(
+                                this, width, height, `${theme}_snow`
+                            );
+                            
+                            // Add some magical animated snowflakes
+                            BackgroundManager.createMagicalSnowflakes(this, {
+                                count: 15,
+                                speed: 'slow',
+                                intensity: 'magical'
+                            });
+                        }
+                    }
+                };
+                
+                new Phaser.Game(config);
+            });
+        };
+        document.head.appendChild(script);
+    </script>
+</body>
+</html>
