@@ -105,9 +105,12 @@ class SafeAreaDebugger {
 // Global availability
 window.SafeAreaDebugger = SafeAreaDebugger;
 
-// Auto-add debug overlay in development mode
+// DISABLED: Auto-add debug overlay (was obscuring hint button)
+// Debug overlay can still be manually enabled in console with SafeAreaDebugger.addDebugOverlay()
+/*
 if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
   window.addEventListener('load', () => {
     setTimeout(() => SafeAreaDebugger.addDebugOverlay(), 1000);
   });
 }
+*/

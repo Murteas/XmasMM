@@ -52,85 +52,72 @@ class ActiveRowManager {
   }
 
   createActiveRowInFooter() {
-    // MOBILE EXPERT DESIGN: Better footer layout with proper spacing
+    // CORRECTED: Submit button on FAR RIGHT as requested
     const { width } = this.scene.cameras.main;
     const codeLength = this.scene.codeLength;
     
     // MOBILE EXPERT FIX: Position active row higher in footer to prevent overlap
-    const footerActiveRowY = 30; // Moved up from 40 for better separation
+    const footerActiveRowY = 30;
     
-    // Create background in footer container (relative positioning)
+    // Create background in footer container
     this.activeRowBackground = this.scene.add.rectangle(
       width / 2,
       footerActiveRowY,
       width - 20,
-      60, // Taller background for larger elements
+      60,
       0x4a4a4a,
       0.8
-    )
-      .setStrokeStyle(3, 0xffd700);
+    ).setStrokeStyle(3, 0xffd700);
     
     this.scene.footerContainer.add(this.activeRowBackground);
     
-    // MOBILE EXPERT DESIGN: Much larger slots to match history elements
-    this.activeRowElements = [];
-    const slotSize = Math.min(55, (width - 120) / codeLength); // Larger to match history elements, leave more space for submit
-    const slotSpacing = 12; // Better spacing between slots
+    // CORRECTED: Right-side submit button approach 
+    const submitBtnWidth = 75; // Compact width for right side
+    const buttonSlotGap = 15; // Gap between slots and submit button
+    const slotSpacing = 8; // Compact slot spacing
+    
+    // Calculate remaining space for slots (slots now come first)
+    const reservedSpace = submitBtnWidth + buttonSlotGap + 30; // 30px for margins
+    const availableForSlots = width - reservedSpace;
+    const slotSize = Math.max(35, Math.floor(availableForSlots / codeLength) - slotSpacing);
+    
     const totalSlotsWidth = codeLength * slotSize + (codeLength - 1) * slotSpacing;
-    // MOBILE EXPERT DESIGN: Better submit button sizing and positioning to prevent overlap
-    const submitButtonWidth = 85; // Optimal width for mobile
-    const submitButtonGap = 25; // Increased gap to prevent overlap
-    const totalRowWidth = totalSlotsWidth + submitButtonWidth + submitButtonGap;
+    const totalLayoutWidth = totalSlotsWidth + buttonSlotGap + submitBtnWidth;
+    const layoutStartX = (width - totalLayoutWidth) / 2;
     
-    // MOBILE EXPERT FIX: Ensure we have enough space with better calculation
-    const availableWidth = width - 30; // Account for screen padding
-    let finalSlotSize = slotSize;
-    let finalSpacing = slotSpacing;
-    
-    if (totalRowWidth > availableWidth) {
-      // Recalculate with proportional reduction to fit everything without overlap
-      const reductionFactor = availableWidth / totalRowWidth;
-      finalSlotSize = Math.max(35, slotSize * reductionFactor); // Minimum 35px slots
-      finalSpacing = Math.max(8, slotSpacing * reductionFactor); // Minimum 8px spacing
-      console.log(`🎯 Proportionally adjusted slots: size=${finalSlotSize.toFixed(1)}, spacing=${finalSpacing.toFixed(1)}`);
-    }
-    
-    const finalTotalSlotsWidth = codeLength * finalSlotSize + (codeLength - 1) * finalSpacing;
-    const finalTotalRowWidth = finalTotalSlotsWidth + submitButtonWidth + submitButtonGap;
-    const startX = (width - finalTotalRowWidth) / 2;
+    // CREATE SLOTS FIRST (on the left)
+    this.activeRowElements = [];
+    const slotsStartX = layoutStartX;
     
     for (let i = 0; i < codeLength; i++) {
-      const slotX = startX + i * (finalSlotSize + finalSpacing);
-      const slot = this.scene.add.rectangle(slotX + finalSlotSize/2, footerActiveRowY, finalSlotSize, finalSlotSize, 0x2a2a2a)
+      const slotX = slotsStartX + i * (slotSize + slotSpacing);
+      const slot = this.scene.add.rectangle(slotX + slotSize/2, footerActiveRowY, slotSize, slotSize, 0x2a2a2a)
         .setStrokeStyle(3, 0xffffff, 0.9)
         .setInteractive()
         .on('pointerdown', () => this.elementPicker.showElementPicker(i, this.activeRowGuess));
       
-      // Create display element based on current guess state (handles pre-filled guesses)
-      const displayElement = this.createSlotDisplay(slotX + finalSlotSize/2, footerActiveRowY, i);
+      const displayElement = this.createSlotDisplay(slotX + slotSize/2, footerActiveRowY, i);
       
       this.scene.footerContainer.add([slot, displayElement]);
-      
-      // Structure expected by updateSlotDisplay method
       this.activeRowElements.push({ slot, displayElement });
     }
     
-    // MOBILE EXPERT DESIGN: Christmas-themed submit button with guaranteed proper spacing
-    const submitButtonX = startX + finalTotalSlotsWidth + submitButtonGap; // Use calculated gap
-    this.activeRowSubmitBtn = this.scene.add.rectangle(submitButtonX, footerActiveRowY, submitButtonWidth, 50, 0x0d5016) // Taller for better touch
-      .setStrokeStyle(2, 0x0a4012) // Darker green border
+    // CREATE SUBMIT BUTTON (far right, after slots)
+    const submitX = layoutStartX + totalSlotsWidth + buttonSlotGap;
+    this.activeRowSubmitBtn = this.scene.add.rectangle(submitX, footerActiveRowY, submitBtnWidth, 50, 0x0d5016)
+      .setStrokeStyle(2, 0x0a4012)
       .setInteractive()
       .on('pointerdown', () => this.scene.submitGuess());
 
-    const submitText = this.scene.add.text(submitButtonX, footerActiveRowY, '🎁 Submit', {
-      fontSize: '13px', // Appropriate for mobile
+    const submitText = this.scene.add.text(submitX, footerActiveRowY, '🎁 Submit', {
+      fontSize: '12px',
       fill: '#ffffff',
       fontFamily: 'Arial'
     }).setOrigin(0.5);
     
     this.scene.footerContainer.add([this.activeRowSubmitBtn, submitText]);
     
-    console.log('📱 Active row created in footer container with relative positioning');
+    console.log(`📱 Right-aligned active row: slots=${totalSlotsWidth}px, gap=${buttonSlotGap}px, submit=${submitBtnWidth}px`);
   }
 
   calculateActiveRowPosition() {

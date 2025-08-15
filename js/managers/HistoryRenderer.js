@@ -93,12 +93,13 @@ class HistoryRenderer {
     
     const isSmallScreen = width < 500;
     
-    // MOBILE EXPERT DESIGN: Much larger elements since max 10 guesses
-    const elementSpacing = isSmallScreen ? 65 : 80; // Increased significantly for bigger elements
-    const elementWidth = isSmallScreen ? 55 : 65; // Much larger for family accessibility and visual prominence
+    // IMPROVED: Use RoundOver's superior spacing pattern
+    // RoundOver uses: elementSize=28, elementSpacing=32, feedbackStartX with +16 gap
+    const elementSize = 28; // Match RoundOver exactly
+    const elementSpacing = 32; // Match RoundOver exactly
     
     // MOBILE EXPERT DESIGN: Use much more screen width (90% vs ~60%)
-    const totalRowWidth = (codeLength * elementSpacing) - elementSpacing + elementWidth;
+    const totalRowWidth = (codeLength * elementSpacing) - elementSpacing + elementSize;
     const screenPadding = Math.min(20, width * 0.05); // 5% padding or 20px max
     const maxRowWidth = width - (screenPadding * 2);
     
@@ -112,27 +113,27 @@ class HistoryRenderer {
     const opacity = rowAge <= 1 ? 1.0 : 0.8;
     
     // Render guess elements with opacity
-    this.renderGuessElements(guess, startX, y, elementSpacing, elementWidth, depth, opacity);
+    this.renderGuessElements(guess, startX, y, elementSpacing, elementSize, depth, opacity);
     
-    // Render feedback with opacity
+    // Render feedback with opacity (using RoundOver pattern)
     this.renderFeedback(feedback, startX, y, elementSpacing, codeLength, depth, opacity);
     
     // Render row number with opacity
     this.renderRowNumber(rowIndex, startX, y, depth, opacity);
   }
 
-  renderGuessElements(guess, startX, y, elementSpacing, elementWidth, depth, opacity = 1.0) {
+  renderGuessElements(guess, startX, y, elementSpacing, elementSize, depth, opacity = 1.0) {
     guess.forEach((element, colIndex) => {
       const x = startX + colIndex * elementSpacing;
       
       // Create slot background with stronger contrast for visibility against Christmas background
-      const slot = this.scene.add.rectangle(x, y, elementWidth, 30, 0x2a2a2a)
+      const slot = this.scene.add.rectangle(x, y, elementSize, elementSize, 0x2a2a2a) // Use elementSize for consistency
         .setStrokeStyle(2, 0xffffff, 0.9)
         .setDepth(depth)
         .setAlpha(opacity);
       
       // Create element image with fallback and opacity
-      const elementImage = this.createElementImage(element, x, y, elementWidth, depth, opacity);
+      const elementImage = this.createElementImage(element, x, y, elementSize, depth, opacity);
       
       this.historyGroup.add(slot);
       this.historyGroup.add(elementImage);
@@ -184,25 +185,14 @@ class HistoryRenderer {
   }
 
   renderFeedback(feedback, startX, y, elementSpacing, codeLength, depth, opacity = 1.0) {
-    const { width } = this.scene.cameras.main;
-    const lastElementX = startX + (codeLength - 1) * elementSpacing;
+    // USE ROUNDOVER'S SUPERIOR LAYOUT PATTERN
+    // Calculate feedback position with proper spacing AFTER the guess elements
+    const feedbackStartX = startX + (codeLength * elementSpacing) + 16; // 16px gap like RoundOver
     
-    // MOBILE EXPERT FIX: Smart feedback positioning to prevent off-screen issues
-    // Calculate available space after elements and ensure feedback fits
-    const availableSpace = width - lastElementX - 20; // 20px padding from right edge
-    const feedbackWidth = 60; // Estimated width needed for feedback symbols
+    console.log(`🎯 Feedback positioning (RoundOver pattern): startX=${startX}, codeLength=${codeLength}, spacing=${elementSpacing}, feedbackStartX=${feedbackStartX}`);
     
-    let feedbackX;
-    if (availableSpace >= feedbackWidth) {
-      // Enough space - position normally
-      feedbackX = lastElementX + elementSpacing + 15;
-    } else {
-      // Limited space - position compactly or move to right edge
-      feedbackX = Math.max(lastElementX + 25, width - feedbackWidth - 10);
-    }
-    
-    // Create Christmas feedback symbols instead of traditional pegs with opacity
-    this.renderChristmasFeedback(feedback, feedbackX, y, depth, opacity);
+    // Create Christmas feedback symbols with proper spacing
+    this.renderChristmasFeedback(feedback, feedbackStartX, y, depth, opacity);
   }
 
   /**
@@ -213,43 +203,24 @@ class HistoryRenderer {
    * @param {number} depth - Rendering depth
    */
   renderChristmasFeedback(feedback, x, y, depth, opacity = 1.0) {
-    // Optimized symbol size for compressed history rows (GameScreenHistoryCompression task)
-    const symbolSize = 14; // Reduced from 16 for better space utilization
-    const symbolSpacing = 16; // Reduced from 18 for tighter packing
+    // USE ROUNDOVER'S SUPERIOR FEEDBACK RENDERING PATTERN
+    // Simple, reliable spacing without complex background calculations
     
-    // Calculate total width needed for all symbols
-    const totalSymbols = feedback.black + feedback.white;
-    const totalWidth = totalSymbols > 0 ? (totalSymbols * symbolSpacing) - (symbolSpacing - symbolSize) : 60;
+    let feedbackX = x; // Start position for symbols
     
-    // Background for feedback area (slightly larger than text version for symbols) with opacity
-    const feedbackBg = this.scene.add.rectangle(x, y, Math.max(totalWidth + 10, 60), 25, 0xffffff, 0.9)
-      .setStrokeStyle(1, 0x333333)
-      .setDepth(depth)
-      .setAlpha(opacity);
-    
-    this.historyGroup.add(feedbackBg);
-    this.historyElements.push(feedbackBg);
-    
-    // No feedback case - show empty background
-    if (totalSymbols === 0) {
-      return;
-    }
-    
-    // Start position for symbols (centered in feedback area)
-    const startSymbolX = x - (totalWidth / 2) + (symbolSize / 2);
-    let currentX = startSymbolX;
-    
-    // Render perfect feedback symbols (Christmas Stars) with opacity
+    // Render perfect feedback symbols (Christmas Stars) - like RoundOver
     for (let i = 0; i < feedback.black; i++) {
-      this.renderFeedbackSymbol('perfect', currentX, y, symbolSize, depth + 0.01, opacity);
-      currentX += symbolSpacing;
+      this.renderFeedbackSymbol('perfect', feedbackX, y, 14, depth + 0.01, opacity);
+      feedbackX += 16; // Simple 16px spacing like RoundOver
     }
     
-    // Render close feedback symbols (Christmas Bells) with opacity
+    // Render close feedback symbols (Christmas Bells) - like RoundOver  
     for (let i = 0; i < feedback.white; i++) {
-      this.renderFeedbackSymbol('close', currentX, y, symbolSize, depth + 0.01, opacity);
-      currentX += symbolSpacing;
+      this.renderFeedbackSymbol('close', feedbackX, y, 14, depth + 0.01, opacity);
+      feedbackX += 16; // Simple 16px spacing like RoundOver
     }
+    
+    // No complex background - let symbols render cleanly like RoundOver
   }
 
   /**

@@ -159,7 +159,7 @@ class BackgroundManager {
     return this.setupChristmasBackground(scene, scenePrefix, { 
       enhanced: true, 
       animated: true, 
-      count: 25,
+      count: 15, // PERFORMANCE: Reduced from 25
       speed: 'medium',
       intensity: 'magical'
     });
@@ -168,7 +168,7 @@ class BackgroundManager {
     return this.setupChristmasBackground(scene, scenePrefix, { 
       enhanced: true, 
       animated: true, 
-      count: 45,
+      count: 20, // PERFORMANCE: Reduced from 45
       speed: 'fast',
       intensity: 'magical'
     });
@@ -178,7 +178,7 @@ class BackgroundManager {
     return this.setupChristmasBackground(scene, scenePrefix, { 
       enhanced: true, 
       animated: true, 
-      count: 15,
+      count: 10, // PERFORMANCE: Reduced from 15
       speed: 'slow',
       intensity: 'normal'
     });
@@ -209,9 +209,9 @@ class BackgroundManager {
       `snowflake_${scenePrefix}`
     );
     
-    // Add animated snowflakes for magical effect
+    // Add animated snowflakes for magical effect (PERFORMANCE: Reduced default count)
     const animatedSnowflakes = this.createMagicalSnowflakes(scene, {
-      count: options.snowflakeCount || 30,
+      count: options.snowflakeCount || 15, // PERFORMANCE: Reduced from 30
       speed: options.snowflakeSpeed || 'medium',
       intensity: options.intensity || 'normal'
     });
@@ -270,24 +270,24 @@ class BackgroundManager {
   }
 
   /**
-   * Creates magical animated snowflakes with realistic physics
+   * Creates magical animated snowflakes with realistic physics (PERFORMANCE OPTIMIZED)
    * @param {Phaser.Scene} scene - The Phaser scene instance
    * @param {Object} options - Animation configuration
    * @returns {Phaser.GameObjects.Group} Group containing animated snowflakes
    */
   static createMagicalSnowflakes(scene, options = {}) {
     const { width, height } = scene.cameras.main;
-    const count = options.count || 30;
+    const count = Math.min(options.count || 20, 20); // PERFORMANCE: Cap at 20 snowflakes max
     const speed = options.speed || 'medium';
     const intensity = options.intensity || 'normal';
     
     const snowflakeGroup = scene.add.group();
     
-    // Speed configurations
+    // Speed configurations (PERFORMANCE: Reduced complexity)
     const speedConfigs = {
-      slow: { fallSpeed: 0.3, swaySpeed: 0.5, swayAmount: 15 },
-      medium: { fallSpeed: 0.6, swaySpeed: 0.8, swayAmount: 25 },
-      fast: { fallSpeed: 1.0, swaySpeed: 1.2, swayAmount: 35 }
+      slow: { fallSpeed: 0.4, swaySpeed: 0.6, swayAmount: 20 },
+      medium: { fallSpeed: 0.8, swaySpeed: 1.0, swayAmount: 30 },
+      fast: { fallSpeed: 1.2, swaySpeed: 1.4, swayAmount: 40 }
     };
     
     const config = speedConfigs[speed] || speedConfigs.medium;
@@ -296,36 +296,36 @@ class BackgroundManager {
       // Random starting positions (some start above screen)
       const x = Math.random() * (width + 100) - 50;
       const y = Math.random() * height - Math.random() * 200;
-      const size = Math.random() * 3 + 0.8; // Increased animated sizes (0.8-3.8px)
-      const opacity = Math.random() * 0.4 + 0.1; // 10-50% opacity
+      const size = Math.random() * 2.5 + 1; // Slightly smaller for performance
+      const opacity = Math.random() * 0.3 + 0.1; // 10-40% opacity
       
       // Create snowflake with random characteristics
       const snowflake = scene.add.circle(x, y, size, 0xffffff, opacity);
       
-      // Add some golden animated sparkles for extra magic (10% chance)
-      if (Math.random() < 0.1) {
+      // PERFORMANCE: Reduce golden sparkles (only 5% instead of 10%)
+      if (Math.random() < 0.05) {
         const sparkleX = x + (Math.random() - 0.5) * 30;
         const sparkleY = y + (Math.random() - 0.5) * 30;
-        const sparkleSize = Math.random() * 1.5 + 0.5;
-        const sparkleOpacity = Math.random() * 0.3 + 0.1;
+        const sparkleSize = Math.random() * 1.2 + 0.5;
+        const sparkleOpacity = Math.random() * 0.25 + 0.1;
         const sparkle = scene.add.circle(sparkleX, sparkleY, sparkleSize, 0xffd700, sparkleOpacity);
         
-        // Make sparkles fall with the same pattern as snowflakes
+        // Simple sparkle animation (no sway, just fall)
         sparkle.startX = sparkleX;
         sparkle.resetY = -20;
-        sparkle.fallSpeed = config.fallSpeed * (0.8 + Math.random() * 0.4);
+        sparkle.fallSpeed = config.fallSpeed * 0.9;
         snowflakeGroup.add(sparkle);
         
-        // Add sparkle falling animation
+        // Single tween for sparkles
         scene.tweens.add({
           targets: sparkle,
           y: height + 50,
-          duration: (height + 70) / sparkle.fallSpeed * 100,
+          duration: (height + 70) / sparkle.fallSpeed * 80,
           ease: 'Linear',
           repeat: -1,
-          delay: Math.random() * 3000,
+          delay: Math.random() * 2000,
           onRepeat: () => {
-            sparkle.x = sparkle.startX + (Math.random() - 0.5) * 50;
+            sparkle.x = sparkle.startX + (Math.random() - 0.5) * 40;
             sparkle.y = sparkle.resetY;
           }
         });
@@ -334,58 +334,50 @@ class BackgroundManager {
       // Store original position for reset
       snowflake.startX = x;
       snowflake.resetY = -20;
-      snowflake.fallSpeed = config.fallSpeed * (0.7 + Math.random() * 0.6); // Vary individual speeds
-      snowflake.swayAmount = config.swayAmount * (0.5 + Math.random() * 1.0);
-      snowflake.swayPhase = Math.random() * Math.PI * 2; // Random phase offset
+      snowflake.fallSpeed = config.fallSpeed * (0.8 + Math.random() * 0.4);
+      snowflake.swayAmount = config.swayAmount * (0.6 + Math.random() * 0.8);
       
-      // Falling animation with realistic sway
-      const fallTween = scene.tweens.add({
+      // PERFORMANCE: Combined fall + sway in single tween using complex value
+      scene.tweens.add({
         targets: snowflake,
         y: height + 50,
-        duration: (height + 70) / snowflake.fallSpeed * 100, // Adjust duration based on speed
+        x: {
+          from: snowflake.x,
+          to: snowflake.x + (Math.random() - 0.5) * snowflake.swayAmount * 2
+        },
+        duration: (height + 70) / snowflake.fallSpeed * 80,
         ease: 'Linear',
         repeat: -1,
-        delay: Math.random() * 3000, // Stagger start times
+        delay: Math.random() * 2000,
         onRepeat: () => {
           // Reset position with slight randomization
-          snowflake.x = snowflake.startX + (Math.random() - 0.5) * 100;
+          snowflake.x = snowflake.startX + (Math.random() - 0.5) * 60;
           snowflake.y = snowflake.resetY;
         }
       });
       
-      // Side-to-side sway animation
-      const swayTween = scene.tweens.add({
-        targets: snowflake,
-        x: `+=${snowflake.swayAmount}`,
-        duration: 2000 + Math.random() * 1000, // 2-3 second cycles
-        ease: 'Sine.easeInOut',
-        yoyo: true,
-        repeat: -1,
-        delay: Math.random() * 2000
-      });
-      
-      // Subtle rotation for more natural movement
-      if (size > 1.5) { // Only larger snowflakes get rotation
+      // PERFORMANCE: Only add rotation to larger snowflakes, simpler animation
+      if (size > 1.8 && Math.random() < 0.4) { // Only 40% of large snowflakes get rotation
         scene.tweens.add({
           targets: snowflake,
-          rotation: Math.PI * 2,
-          duration: 8000 + Math.random() * 4000, // 8-12 second rotations
+          rotation: Math.PI * (Math.random() > 0.5 ? 2 : -2),
+          duration: 10000 + Math.random() * 5000, // Slower, less frequent
           ease: 'Linear',
           repeat: -1,
-          delay: Math.random() * 1000
+          delay: Math.random() * 2000
         });
       }
       
-      // Intensity-based alpha breathing for sparkle effect
-      if (intensity === 'magical') {
+      // PERFORMANCE: Simplified intensity effect (no alpha breathing for all)
+      if (intensity === 'magical' && Math.random() < 0.3) { // Only 30% get breathing effect
         scene.tweens.add({
           targets: snowflake,
-          alpha: opacity * 1.5,
-          duration: 1500 + Math.random() * 1000,
+          alpha: opacity * 1.3,
+          duration: 2000 + Math.random() * 1000,
           ease: 'Sine.easeInOut',
           yoyo: true,
           repeat: -1,
-          delay: Math.random() * 3000
+          delay: Math.random() * 4000
         });
       }
       

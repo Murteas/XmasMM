@@ -20,7 +20,9 @@ class TestConfig {
       // Add test-specific styling
       document.body.classList.add('test-environment');
       
-      // Add debug info to page
+      // DISABLED: Debug info overlay (was obscuring game UI)
+      // Can be manually enabled if needed for testing
+      /*
       const debugInfo = document.createElement('div');
       debugInfo.id = 'test-debug-info';
       debugInfo.style.cssText = `
@@ -42,6 +44,7 @@ class TestConfig {
         UA: ${navigator.userAgent.includes('Mobile') ? 'Mobile' : 'Desktop'}
       `;
       document.body.appendChild(debugInfo);
+      */
     }
   }
   
