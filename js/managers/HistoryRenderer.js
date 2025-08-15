@@ -36,10 +36,10 @@ class HistoryRenderer {
       headerBottomY + 10 // Reduced spacing since no legend
     );
     
-    // Mobile-optimized row height for better space utilization  
-    // Balanced compromise: 45px (25% smaller than 60px, but more readable than 40px)
-    const rowHeight = 45;
-    const bottomMargin = isSmallScreen ? 60 : 80;
+    // Mobile-optimized row height for bigger elements and better visibility
+    // Increased from 45px to 55px to accommodate larger elements (35px + padding)
+    const rowHeight = 55;
+    const bottomMargin = isSmallScreen ? 40 : 50; // Reduced to use more space
     const maxVisibleRows = Math.floor((height - startY - bottomMargin) / rowHeight);
     
     const totalRows = guessHistory.length;
@@ -93,10 +93,9 @@ class HistoryRenderer {
     
     const isSmallScreen = width < 500;
     
-    // IMPROVED: Use RoundOver's superior spacing pattern
-    // RoundOver uses: elementSize=28, elementSpacing=32, feedbackStartX with +16 gap
-    const elementSize = 28; // Match RoundOver exactly
-    const elementSpacing = 32; // Match RoundOver exactly
+    // IMPROVED: Bigger elements for better visibility and family accessibility
+    const elementSize = 35; // Increased from 28 to 35 for better visibility
+    const elementSpacing = 42; // Increased from 32 to 42 for better spacing
     
     // MOBILE EXPERT DESIGN: Use much more screen width (90% vs ~60%)
     const totalRowWidth = (codeLength * elementSpacing) - elementSpacing + elementSize;
@@ -154,8 +153,9 @@ class HistoryRenderer {
         return this.createFallbackElement(element, x, y, elementWidth, depth, opacity);
       }
       
-      // Scale image to fit in history slot and apply opacity
-      const imageScale = Math.min(24 / elementImage.width, 24 / elementImage.height);
+      // Scale image to fit in larger history slot and apply opacity
+      const targetSize = elementWidth - 4; // Leave 2px padding on each side
+      const imageScale = Math.min(targetSize / elementImage.width, targetSize / elementImage.height);
       elementImage.setScale(imageScale);
       elementImage.setOrigin(0.5).setDepth(depth + 0.01).setAlpha(opacity);
       

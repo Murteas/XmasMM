@@ -166,31 +166,31 @@ class ActiveRowManager {
     const guessCount = guessHistory.length;
     
     if (guessCount >= 7) {
-      // MOBILE EXPERT DESIGN: For games with many guesses, move closer to bottom
-      // but still respect absolute safe area and PREVENT OVERLAP with footer
+      // MOBILE EXPERT DESIGN: Push active row very close to safe area for maximum space usage
       const safeAreaInsets = this.scene.safeAreaManager ? this.scene.safeAreaManager.getInsets() : { bottom: 0 };
       const footerHeight = LayoutConfig.FOOTER_HEIGHT_GAME; // Use updated footer height
-      const footerBuffer = 10; // Reduced buffer for closer positioning
+      const footerBuffer = 5; // Minimal buffer - just barely above safe area
       const absoluteMaxY = height - footerHeight - footerBuffer - safeAreaInsets.bottom;
       activeRowY = Math.min(activeRowY, absoluteMaxY);
       
-      console.log(`🎯 ActiveRowManager: Many guesses (${guessCount}), using closer-to-bottom layout`);
+      console.log(`🎯 ActiveRowManager: Many guesses (${guessCount}), pushing to barely above safe area`);
       console.log(`  - Calculated activeRowY: ${lastCompletedGuessY + activeRowSeparation}`);
       console.log(`  - Footer height: ${footerHeight}px`);
-      console.log(`  - Footer buffer: ${footerBuffer}px (reduced from 20px)`);
+      console.log(`  - Footer buffer: ${footerBuffer}px (minimal - barely above safe area)`);
       console.log(`  - Absolute max Y: ${absoluteMaxY} (safe bottom: ${safeAreaInsets.bottom}px)`);
       console.log(`  - Final activeRowY: ${activeRowY}`);
     } else {
-      // MOBILE EXPERT DESIGN: For normal games, move footer closer to bottom 
+      // MOBILE EXPERT DESIGN: For normal games, also push closer to safe area
+      const safeAreaInsets = this.scene.safeAreaManager ? this.scene.safeAreaManager.getInsets() : { bottom: 0 };
       const footerHeight = LayoutConfig.FOOTER_HEIGHT_GAME;
-      const footerBuffer = 15; // Reduced buffer to move closer to bottom
-      const maxActiveRowY = height - footerHeight - footerBuffer;
+      const footerBuffer = 8; // Small buffer to move very close to safe area
+      const maxActiveRowY = height - footerHeight - footerBuffer - safeAreaInsets.bottom;
       activeRowY = Math.min(activeRowY, maxActiveRowY);
       
-      console.log(`🎯 ActiveRowManager: Normal game (${guessCount} guesses), using closer-to-bottom layout`);
+      console.log(`🎯 ActiveRowManager: Normal game (${guessCount} guesses), pushing closer to safe area`);
       console.log(`  - Footer height: ${footerHeight}px`);
-      console.log(`  - Footer buffer: ${footerBuffer}px (reduced from 30px)`);
-      console.log(`  - Max active row Y: ${maxActiveRowY}`);
+      console.log(`  - Footer buffer: ${footerBuffer}px (small - close to safe area)`);
+      console.log(`  - Max active row Y: ${maxActiveRowY} (safe bottom: ${safeAreaInsets.bottom}px)`);
       console.log(`  - Final activeRowY: ${activeRowY}`);
     }
     
