@@ -196,11 +196,14 @@ class HistoryRenderer {
   }
 
   renderFeedback(feedback, startX, y, elementSpacing, codeLength, depth, opacity = 1.0) {
-    // Feedback positioned closer to guess elements for better screen utilization
-    const feedbackStartX = startX + (codeLength * elementSpacing) + 5; // Reduced from 8 to 5px gap
+    // Calculate available space for feedback to prevent overflow
+    const { width } = this.scene.cameras.main;
+    const screenPadding = Math.min(20, width * 0.05);
+    const feedbackStartX = startX + (codeLength * elementSpacing) + 5;
+    const maxFeedbackWidth = width - screenPadding - feedbackStartX;
     
-    // Create bigger Christmas feedback symbols with closer positioning
-    this.renderChristmasFeedback(feedback, feedbackStartX, y, depth, opacity);
+    // Create bigger Christmas feedback symbols with smart spacing
+    this.renderChristmasFeedback(feedback, feedbackStartX, y, depth, opacity, maxFeedbackWidth);
   }
 
   /**
@@ -210,24 +213,62 @@ class HistoryRenderer {
    * @param {number} y - Y position for feedback display  
    * @param {number} depth - Rendering depth
    */
-  renderChristmasFeedback(feedback, x, y, depth, opacity = 1.0) {
-    // Enhanced feedback rendering - bigger icons with optimal spacing
+  renderChristmasFeedback(feedback, x, y, depth, opacity = 1.0, maxWidth = null) {
+    // Compact grid layout for perfect feedback display
     
-    let feedbackX = x; // Start position for symbols
+    const totalFeedbackCount = feedback.black + feedback.white;
+    if (totalFeedbackCount === 0) return;
     
-    // Render perfect feedback symbols (Christmas Stars) - bigger and more visible
+    const iconSize = 16; // Slightly smaller for grid layout
+    const gridSpacing = 18; // Tight spacing for compact grid
+    
+    // Create combined feedback array for grid arrangement
+    const feedbackIcons = [];
+    
+    // Add perfect matches (stars) first
     for (let i = 0; i < feedback.black; i++) {
-      this.renderFeedbackSymbol('perfect', feedbackX, y, 20, depth + 0.01, opacity); // Increased from 16 to 20
-      feedbackX += 22; // Increased spacing from 18 to 22 for bigger icons
+      feedbackIcons.push('perfect');
     }
     
-    // Render close feedback symbols (Christmas Bells) - bigger and more visible
+    // Add close matches (bells) 
     for (let i = 0; i < feedback.white; i++) {
-      this.renderFeedbackSymbol('close', feedbackX, y, 20, depth + 0.01, opacity); // Increased from 16 to 20
-      feedbackX += 22; // Increased spacing from 18 to 22 for bigger icons
+      feedbackIcons.push('close');
     }
     
-    // Clean rendering without background complexity
+    // Calculate optimal grid dimensions
+    const totalIcons = feedbackIcons.length;
+    let cols, rows;
+    
+    if (totalIcons <= 2) {
+      cols = totalIcons;
+      rows = 1;
+    } else if (totalIcons <= 4) {
+      cols = 2;
+      rows = Math.ceil(totalIcons / 2);
+    } else if (totalIcons <= 6) {
+      cols = 3;
+      rows = Math.ceil(totalIcons / 3);
+    } else {
+      // Fallback for edge cases
+      cols = 3;
+      rows = Math.ceil(totalIcons / 3);
+    }
+    
+    // Calculate grid positioning
+    const gridWidth = (cols - 1) * gridSpacing;
+    const gridHeight = (rows - 1) * gridSpacing;
+    const startX = x - gridWidth / 2;
+    const startY = y - gridHeight / 2;
+    
+    // Render icons in grid
+    feedbackIcons.forEach((iconType, index) => {
+      const col = index % cols;
+      const row = Math.floor(index / cols);
+      const iconX = startX + col * gridSpacing;
+      const iconY = startY + row * gridSpacing;
+      
+      this.renderFeedbackSymbol(iconType, iconX, iconY, iconSize, depth + 0.01, opacity);
+    });
   }
 
   /**

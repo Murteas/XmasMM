@@ -273,7 +273,7 @@ class MainMenu extends Phaser.Scene {
       return t;
     };
 
-    makeText('🎯 Goal: Guess Santa\'s secret Christmas code!\n\n📱 How to Play:\n• Tap empty slots to select Christmas elements\n• Choose from these Christmas elements:');
+    makeText('🎯 Goal: Guess Santa\'s secret Christmas code!\n\n📱 How to Play:\n• Tap Christmas elements at bottom to fill your guess\n• Elements auto-fill empty slots, or tap a slot first to replace\n• Choose from these Christmas elements:');
 
     // Elements grid
     const elementSize = Math.round(40 * layout.fontScale);

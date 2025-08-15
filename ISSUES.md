@@ -184,25 +184,21 @@
 - [ ] Clean, uncluttered header design
 - [ ] No loss of important functionality or branding
 
-### UI-021: Element Picker Interaction Enhancement 🔴
+### UI-021: Element Picker Interaction Enhancement ✅
 **Priority**: High  
 **Category**: User Experience  
-**Status**: Open
+**Status**: Resolved
 
-**Problem**: Element picker interaction is awkward - users must click a box then move finger/mouse up to screen center to choose an element
-**Impact**: Poor user experience, especially on mobile devices where this gesture is unnatural
-**Location**: Element selection interface during gameplay
-**Current State**: Click slot → picker appears in center → select element
-
-**Discussion Required**:
-- Evaluate current picker positioning and interaction model
-- Consider alternative approaches (inline picker, bottom sheet, adjacent popup)
-- Balance mobile vs desktop usability
-- Consider accessibility implications
-
-**Design Alternatives to Evaluate**:
-- Bottom sheet picker that slides up from element slot
-- Inline picker that appears directly above/below selected slot
+**Problem**: Element picker interaction was awkward - users had to click slot then modal for each element selection  
+**Impact**: Poor UX with 12 interactions needed for first guess (6 slots × 2 clicks each)  
+**Solution Implemented**: 
+- Replaced modal with always-visible inline element bar
+- Smart auto-fill: tap element → fills next empty slot (1 interaction vs 2)
+- Explicit replacement: tap slot → tap element for replacements
+- Compact grid feedback layout prevents overflow
+- Centered layout with proper visual hierarchy
+- Subtle animation hints for discoverability
+**Result**: Dramatically improved UX flow, especially for initial guess filling
 - Side panel picker for desktop
 - Tap-and-hold vs click interaction models
 

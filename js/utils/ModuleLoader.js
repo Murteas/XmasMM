@@ -13,6 +13,7 @@ class ModuleLoader {
       'js/managers/ScoreManager.js',
       'js/managers/HistoryRenderer.js',
       'js/managers/HistoryScroller.js',
+      'js/managers/ElementBar.js',
       'js/managers/ElementPicker.js',
       'js/managers/ActiveRowManager.js',
       'js/managers/ScrollableHistoryManager.js',
@@ -48,6 +49,7 @@ class ModuleLoader {
       'js/managers/ScoreManager.js',
       'js/managers/HistoryRenderer.js',
       'js/managers/HistoryScroller.js',
+      'js/managers/ElementBar.js',
       'js/managers/ElementPicker.js'
     ];
     

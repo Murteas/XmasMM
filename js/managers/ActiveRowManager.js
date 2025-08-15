@@ -11,7 +11,8 @@ class ActiveRowManager {
     this.activeRowSubmitBtn = null;
     this.activeRowGuess = [];
     this.hasActiveRow = false;
-    this.elementPicker = new ElementPicker(scene, this);
+    this.selectedSlotIndex = null; // Track which slot is selected for replacement
+    this.elementBar = new ElementBar(scene, this);
   }
 
   createActiveRow(prefillGuess = null) {
@@ -52,44 +53,44 @@ class ActiveRowManager {
   }
 
   createActiveRowInFooter() {
+    // Create element bar first (top row of footer)
+    this.elementBar.create(this.scene.footerContainer);
+    
     // CORRECTED: Submit button on FAR RIGHT as requested
     const { width } = this.scene.cameras.main;
     const codeLength = this.scene.codeLength;
     
-    // MOBILE EXPERT FIX: Position active row higher in footer to prevent overlap
-    const footerActiveRowY = 30;
+    // Adjusted for two-row footer layout with better spacing
+    const footerActiveRowY = 15; // Moved down to give element bar more space
     
-    // EXPERT UX DECISION: Remove grey background for clean, modern design
-    // Benefits: Works perfectly with any number of elements (4, 5, 6+)
-    // Matches our borderless design philosophy throughout the game
-    // Eliminates container sizing issues and focuses attention on game elements
-    // this.activeRowBackground = removed for clean mobile-first design
+    // Better centered layout for professional appearance
+    const submitBtnWidth = 70;
+    const buttonSlotGap = 15;
+    const sideMargins = 12;
     
-    // CORRECTED: Right-side submit button approach with PROPER SPACING
-    const submitBtnWidth = 75; // Compact width for right side
-    const buttonSlotGap = 20; // INCREASED gap between slots and submit button
-    const sideMargins = 15; // Margins from screen edges
+    // Calculate optimal slot size for centered layout
+    const maxSlotSize = 42;
+    const totalSlotArea = codeLength * maxSlotSize;
+    const totalFooterWidth = totalSlotArea + buttonSlotGap + submitBtnWidth;
     
-    // CRITICAL FIX: Calculate slot positions properly to prevent overlap
-    const availableWidth = width - (sideMargins * 2) - submitBtnWidth - buttonSlotGap;
-    const slotSize = Math.floor(availableWidth / codeLength) - 5; // 5px spacing between slots
-    const actualSlotsWidth = codeLength * slotSize; // No extra spacing in total width
+    // Center the entire active row group
+    const centerStartX = (width - totalFooterWidth) / 2;
+    const slotSize = Math.min(maxSlotSize, Math.floor(totalSlotArea / codeLength));
+    const slotsStartX = centerStartX;
+    const submitX = slotsStartX + (codeLength * slotSize) + buttonSlotGap + (submitBtnWidth / 2);
     
-    // Position layout from left margin
-    const slotsStartX = sideMargins;
-    const submitX = slotsStartX + actualSlotsWidth + buttonSlotGap + (submitBtnWidth / 2);
-    
-    console.log(`🔧 Layout Debug: width=${width}, slotsStart=${slotsStartX}, slotsWidth=${actualSlotsWidth}, gap=${buttonSlotGap}, submitX=${submitX}, submitWidth=${submitBtnWidth}`);
+    console.log(`🔧 Centered Layout: width=${width}, centerStart=${centerStartX}, submitX=${submitX}`);
     
     // CREATE SLOTS FIRST (properly spaced from left)
     this.activeRowElements = [];
     
     for (let i = 0; i < codeLength; i++) {
-      const slotX = slotsStartX + (i * slotSize) + (slotSize / 2); // CORRECTED positioning
+      const slotX = slotsStartX + (i * slotSize) + (slotSize / 2);
+      // Smaller, more compact slots since element bar is primary interaction
       const slot = this.scene.add.rectangle(slotX, footerActiveRowY, slotSize - 2, slotSize - 2, 0x2a2a2a)
-        .setStrokeStyle(3, 0xffffff, 0.9)
+        .setStrokeStyle(2, 0xffffff, 0.9) // Thinner border for compact look
         .setInteractive()
-        .on('pointerdown', () => this.elementPicker.showElementPicker(i, this.activeRowGuess));
+        .on('pointerdown', () => this.selectSlot(i));
       
       const displayElement = this.createSlotDisplay(slotX, footerActiveRowY, i);
       
@@ -98,13 +99,13 @@ class ActiveRowManager {
     }
     
     // CREATE SUBMIT BUTTON (far right, with guaranteed gap)
-    this.activeRowSubmitBtn = this.scene.add.rectangle(submitX, footerActiveRowY, submitBtnWidth, 50, 0x0d5016)
+    this.activeRowSubmitBtn = this.scene.add.rectangle(submitX, footerActiveRowY, submitBtnWidth, 45, 0x0d5016) // Reduced height
       .setStrokeStyle(2, 0x0a4012)
       .setInteractive()
       .on('pointerdown', () => this.scene.submitGuess());
 
     const submitText = this.scene.add.text(submitX, footerActiveRowY, '🎁 Submit', {
-      fontSize: '12px',
+      fontSize: '11px', // Slightly smaller font
       fill: '#ffffff',
       fontFamily: 'Arial'
     }).setOrigin(0.5);
@@ -544,7 +545,72 @@ class ActiveRowManager {
 
   reset() {
     this.removeActiveRow();
-    this.elementPicker.destroy();
+    this.elementBar.destroy();
+  }
+
+  // New element bar integration methods
+  selectSlot(slotIndex) {
+    // Clear previous selection
+    this.clearSlotSelection();
+    
+    // Select new slot
+    this.selectedSlotIndex = slotIndex;
+    
+    // Visual feedback for selected slot
+    if (this.activeRowElements && this.activeRowElements[slotIndex]) {
+      const slot = this.activeRowElements[slotIndex].slot;
+      slot.setStrokeStyle(4, 0xffd700, 1.0); // Gold highlight
+    }
+  }
+
+  clearSlotSelection() {
+    if (this.selectedSlotIndex !== null && this.activeRowElements && this.activeRowElements[this.selectedSlotIndex]) {
+      const slot = this.activeRowElements[this.selectedSlotIndex].slot;
+      slot.setStrokeStyle(3, 0xffffff, 0.9); // Reset to normal
+    }
+    this.selectedSlotIndex = null;
+  }
+
+  handleElementSelection(element) {
+    // Smart selection logic
+    const emptySlotIndex = this.activeRowGuess.findIndex(guess => guess === null);
+    
+    if (emptySlotIndex !== -1) {
+      // Auto-fill next empty slot
+      this.selectElement(emptySlotIndex, element);
+      this.clearSlotSelection();
+    } else if (this.selectedSlotIndex !== null) {
+      // Replace selected slot
+      this.selectElement(this.selectedSlotIndex, element);
+      this.clearSlotSelection();
+    } else {
+      // All slots full, no slot selected - show feedback
+      this.showSlotSelectionHint();
+    }
+    
+    // Update element bar visual state
+    this.elementBar.updateUsedElements(this.activeRowGuess);
+  }
+
+  showSlotSelectionHint() {
+    // Position hint near the footer/active row area
+    const { width, height } = this.scene.cameras.main;
+    const hintY = height - 120; // Near footer but above it
+    
+    const hintText = this.scene.add.text(width / 2, hintY, 'Tap a slot first to replace an element', {
+      fontSize: '14px',
+      fill: '#ffd700',
+      backgroundColor: '#000000',
+      padding: { left: 10, right: 10, top: 5, bottom: 5 }
+    }).setOrigin(0.5).setDepth(1000);
+    
+    // Fade out after 2 seconds
+    this.scene.tweens.add({
+      targets: hintText,
+      alpha: 0,
+      duration: 2000,
+      onComplete: () => hintText.destroy()
+    });
   }
 
   destroy() {
