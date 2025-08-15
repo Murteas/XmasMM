@@ -2,258 +2,21 @@
 
 ## 📊 Current Status Summary
 
-**Total Active Issues**: 17 (UI enhancements + audio integration + deployment + technical debt + new UX improvements)
+**Total Active Issues**: 8 (focused on UX improvements + audio integration + deployment)
 
 **Overall Project Health**: 🟢 **Excellent**
 - Core functionality complete and mobile-optimized  
 - Mobile PWA safe area implementation completed ✅
 - Centralized layout constants system implemented ✅
 - Button theming and typography enhancement completed ✅
-- Ready for UI polish and family-ready deployment
-- Focus on final polish and user experience optimization
+- Technical debt cleaned up - focus on user experience
+- Ready for final polish and family-ready deployment
 
-**Last Updated**: August 14, 2025 (Added 6 new UI/UX improvement issues)
+**Last Updated**: August 14, 2025 (Major cleanup: removed 9 over-engineering issues, focused on user value)
 
 ---
 
 ## 🚨 Open Issues
-
-### TECH-002: Scene Lifecycle Listener Cleanup 🔴
-**Priority**: High  
-**Category**: Technical Stability  
-**Status**: Open
-
-**Problem**: Global keyboard + window event listeners (resize, error, unhandledrejection) lack explicit teardown. Risk is currently low because scenes aren't re-created repeatedly, but future replay / multi-session features could expose duplicate handlers.
-**Impact**: Potential for duplicate handler accumulation in future architectures; currently minimal practical impact.
-**Location**: `GameScene` (keyboard), `main.js` (window events)
-
-**Current Mitigation (Aug 11 2025)**:
-- Added idempotent guard (`_debugKeysRegistered`) around debug keyboard listener so it cannot double-bind if scene setup runs again.
-- Decision: Defer full detach logic until replay / multi-session flow introduced to avoid unnecessary complexity now.
-
-**Deferred Remediation Plan** (activate when replay/multi-session added):
-- Add `shutdown` / `destroy` handlers to unregister keyboard listeners
-- Centralize window listener registration & cleanup
-- Lightweight ListenerRegistry utility (optional)
-
-**Acceptance Criteria (Deferred)**:
-- [ ] Keyboard listeners removed on scene shutdown (when replay added)
-- [ ] Window listeners cleaned when game disposed / reinitialized
-- [ ] No duplicate event firings after multiple restarts
-- [ ] Documented lifecycle pattern established
-
-### TECH-001: Centralized Layout & Constants Module ✅
-**Priority**: Medium  
-**Category**: Maintainability  
-**Status**: Resolved (August 11, 2025)
-
-**Problem**: Repeated magic numbers (header heights 120/140, footer 120, row height 60, spacing constants) scattered across managers (e.g., `ActiveRowManager`, `GameScene`, layout methods) increase risk of drift and complicate tuning.
-**Impact**: Harder to adjust UI globally; increases inconsistency risk when polishing.
-
-**Solution Implemented**:
-- ✅ Created `js/config/LayoutConfig.js` with comprehensive layout constants
-- ✅ Centralized header heights (140/120), footer heights (160), row heights (60)  
-- ✅ Added mobile-specific spacing and touch target constants
-- ✅ Integrated across GameScene, ActiveRowManager, UILayoutManager, HistoryScroller
-
-**Acceptance Criteria Completed**:
-- ✅ Single source for header/footer heights, row height, spacing, delay values
-- ✅ Multiple high-traffic files refactored to use constants
-- ✅ No behavior change (visual diff stable)
-- ✅ Layout constants documented with mobile baseline (375x667)
-
-### TECH-003: Lightweight Logger Abstraction 🟡
-**Priority**: Medium  
-**Category**: Developer Experience  
-**Status**: Open
-
-**Problem**: Direct `console.log` / `console.warn` calls throughout code (debug + runtime) lack centralized control, making production noise management harder.
-**Impact**: Harder to silence logs for production profiling; ad‑hoc filtering required.
-
-**Solution Direction**:
-- Introduce `Logger` wrapper (levels: debug/info/warn/error)
-- Gate debug output via `TestConfig.shouldShowDebugLogs()` or URL param
-- Provide no-op stubs in production mode
-
-**Acceptance Criteria**:
-- [ ] Logger module created and documented
-- [ ] At least 10 scattered direct logs replaced (non-critical only)
-- [ ] Production mode silence verified
-- [ ] Debug flag re-enables expected instrumentation
-
-### TECH-004: ESLint + Prettier (Warn-Only Integration) 🟡
-**Priority**: Medium  
-**Category**: Code Quality  
-**Status**: Open
-
-**Problem**: No enforced lint/format baseline; future contributors (or AI agents) may introduce inconsistent patterns.
-**Impact**: Gradual readability decline; higher review overhead.
-
-**Solution Direction**:
-- Add `devDependencies` + minimal `.eslintrc` (phaser globals, browser, ES2020)
-- Prettier config for consistent spacing (defer auto-format of legacy files)
-- Add npm script: `lint` (no autofix) & `format:check`
-
-**Acceptance Criteria**:
-- [ ] ESLint config present with Phaser globals suppressed
-- [ ] Prettier config present
-- [ ] Running lint produces only warnings (no blocking errors)
-- [ ] Documented in AI briefing / README contribution section
-
-### TECH-005: Asset Loading Manifest / DRY Preload 🟡
-**Priority**: Low-Medium  
-**Category**: Performance / Maintainability  
-**Status**: Open
-
-**Problem**: Repetitive manual image load calls for each density; harder to add/remove assets consistently.
-**Impact**: Risk of omissions or mismatched keys; verbose preload.
-
-**Solution Direction**:
-- Create manifest array: `{ baseKey: 'santa', variants: ['1x','2x','3x'] }`
-- Loop-driven registration in `preload()`; fallback strategy preserved
-- Optional future conditional loading (only needed density)
-
-**Acceptance Criteria**:
-- [ ] Manifest module created (`js/config/AssetManifest.js`)
-- [ ] Preload logic uses loops rather than repeated calls
-- [ ] No missing textures vs prior implementation
-- [ ] File count & load time unchanged or improved
-
-### TECH-006: Debug Key Map Documentation Consistency 🟡
-**Priority**: Low  
-**Category**: Documentation Hygiene  
-**Status**: Open
-
-**Problem**: Debug mode documented in README & AI briefing, but no centralized authoritative reference; risk of divergence if keys evolve.
-**Impact**: Minor confusion for future maintainers / agents.
-
-**Solution Direction**:
-- Add `docs/debug-mode.md` authoritative key mapping & usage guidelines
-- Link from README + AI briefing; ensure in-code comment block references file
-
-**Acceptance Criteria**:
-- [ ] New doc file created and linked
-- [ ] GameScene debug handler comment references doc
-- [ ] README / AI briefing updated to point to single source
-- [ ] Keys verified in documentation match implementation
-
-### UI-011: Christmas Title Theming Enhancement ✅
-**Priority**: High (Next Phase)  
-**Category**: Visual Polish  
-**Status**: Resolved (August 14, 2025)
-
-**Problem**: The "XmasMM" title in the game header displayed as plain white text, lacking the festive Christmas spirit and visual appeal that the rest of the game maintains.
-
-**Solution Implemented**:
-- ✅ Updated MainMenu title to playful "🎄 Christmas 🎄 / 🎁 MasterMind 🎁" format
-- ✅ Implemented Comic Sans MS font for family-friendly, playful feel
-- ✅ Used bright Christmas red (#CC0000) with white outline for excellent contrast
-- ✅ Added Christmas green drop shadow for depth
-- ✅ Removed candy cane button patterns in favor of clean, professional gradients
-- ✅ Enhanced button interactivity with smooth Phaser.js animations
-- ✅ Maintained two-line layout for mobile portrait compatibility
-- ✅ Updated button fonts to match title for consistency
-
-**Files Modified**:
-- `js/scenes/MainMenu.js` - Title styling and button pattern removal
-- `js/utils/ButtonFactory.js` - Professional gradient buttons, enhanced interactions
-- `js/config/LayoutConfig.js` - Comic Sans font integration
-
-**Acceptance Criteria Completed**:
-- ✅ Title has festive Christmas-themed styling with emojis
-- ✅ Maintains excellent readability across all screen sizes  
-- ✅ Complements existing Christmas color scheme
-- ✅ Professional button design without distracting patterns
-- ✅ Enhanced user interaction feedback
-- ✅ Consistent typography throughout interface
-
-### UI-014: Share Score Button Requires Double-Tap 🔴
-**Priority**: Medium  
-**Category**: User Interface Bug  
-**Status**: Open
-
-**Problem**: Share Score button shows "Share Canceled" on first press, requires second press to actually share
-**Impact**: Poor user experience, confusing behavior that may frustrate users trying to share scores
-**Location**: RoundOver scene - Share Score button functionality
-**Behavior**: 
-- First button press: Shows "Share Canceled" message
-- Second button press: Actually performs the share action
-- Expected: Should share immediately on first press
-
-**Investigation Needed**:
-- Check share button event handlers for timing issues
-- Verify Web Share API implementation and permissions
-- Look for race conditions or async handling problems
-- Test across different browsers and devices
-
-**Acceptance Criteria**:
-- [ ] Share button works correctly on first press
-- [ ] No "Share Canceled" message on valid share attempts
-- [ ] Consistent behavior across browsers and devices
-- [ ] Proper error handling for unsupported share scenarios
-
-### UI-012: Button Graphics Enhancement ✅
-**Priority**: Low  
-**Category**: Visual Polish  
-**Status**: Resolved (August 14, 2025)
-
-**Problem**: Current buttons used text-only styling, could benefit from custom graphics or enhanced visual design
-**Impact**: Opportunity for improved visual appeal and Christmas theming consistency
-**Location**: All button elements across scenes (Submit, Play Again, Share Score, etc.)
-
-**Solution Implemented**:
-- ✅ Complete ButtonFactory implementation with elegant Christmas design
-- ✅ Style tokens in LayoutConfig.BUTTON_STYLE with comprehensive theming
-- ✅ Primary, accent, danger button variants with festive styling
-- ✅ Interactive states: hover, pressed, disabled with proper feedback
-- ✅ Mobile optimization with enhanced typography and stroke outlines
-- ✅ Scene integration: MainMenu, RoundOver, DifficultySelection using ButtonFactory
-- ✅ Sophisticated gradients with rich Christmas colors
-- ✅ WCAG contrast compliance and 44x44 minimum hit targets
-
-**Files Modified**: 
-- ButtonFactory.js implementation
-- LayoutConfig.js style tokens
-- MainMenu.js, RoundOver.js, DifficultySelection.js integration
-
-**Acceptance Criteria Completed**:
-- ✅ Custom Christmas-themed button backgrounds implemented
-- ✅ Enhanced visual effects (gradients, shadows, borders)
-- ✅ Consistent button theming across all scenes
-- ✅ Mobile accessibility maintained
-
-### UI-013: Background Image Research & Enhancement ✅
-**Priority**: Low  
-**Category**: Visual Design Research  
-**Status**: Resolved (August 14, 2025)
-
-**Problem**: Current background image (bg_mobile2.png) was visually busy and competing with game elements for attention, causing poor contrast and readability issues.
-
-**Expert Design Analysis**: Background was too busy for a puzzle game, violating figure-ground relationship principles and causing cognitive overload.
-
-**Solution Implemented**:
-- ✅ Replaced busy Christmas scene with professional Christmas gradient
-- ✅ Created deep forest green to dark green vertical gradient (#0d3820 → #051610)
-- ✅ Added subtle snowflake overlay at 8% opacity for Christmas atmosphere
-- ✅ Improved contrast ratios for all game elements
-- ✅ Enhanced readability while maintaining festive spirit
-- ✅ Updated darker slot backgrounds (0x2a2a2a) with stronger white borders
-- ✅ Applied across all scenes: MainMenu, GameScene, RoundOver, DifficultySelection
-
-**Files Modified**:
-- `js/managers/UILayoutManager.js` - Gradient background system
-- `js/scenes/MainMenu.js` - Christmas gradient implementation
-- `js/scenes/RoundOver.js` - Background consistency
-- `js/scenes/DifficultySelection.js` - Background consistency
-- `js/managers/HistoryRenderer.js` - Darker slot backgrounds for contrast
-- `js/managers/ActiveRowManager.js` - Enhanced slot visibility
-
-**Design Benefits**:
-- ✅ Professional Christmas aesthetic without visual clutter
-- ✅ Improved accessibility and contrast ratios
-- ✅ Reduced eye fatigue during extended gameplay
-- ✅ Better focus on game elements and puzzle solving
-- ✅ Maintained Christmas spirit with elegant gradient and snowflakes
 
 ### AUDIO-001: Christmas Audio Integration 🔴
 **Priority**: High (Next Phase)  
@@ -450,82 +213,115 @@
 - [ ] Maintains accessibility standards
 - [ ] Expert UX evaluation confirms improvement
 
-### UI-015: Random Guess Feature for Players 🟡
-**Priority**: Low  
-**Category**: Feature Enhancement  
-**Status**: Open
-
-**Problem**: Players may get stuck and need inspiration when unable to think of next guess
-**Impact**: Opportunity to improve accessibility and reduce player frustration
-**Location**: Game screen - additional button next to Submit and Hint
-**Consideration**: Needs careful balance to maintain game integrity
-
-**Design Options**:
-- "Need Inspiration?" button with point penalty (-50 points)
-- Cooldown system (once per game or once per 3 guesses)
-- Progressive cost (first free, subsequent guesses cost more)
-- Educational framing to maintain learning value
-
-**Acceptance Criteria**:
-- [ ] Research player feedback on random guess utility
-- [ ] Design penalty system that maintains game balance
-- [ ] Implement with clear educational messaging
-- [ ] Ensure doesn't undermine strategic thinking aspect
-- [ ] Test with family users for appropriateness
-
 ---
 
 ## 📋 Resolved Issues Archive
+
+### UI-014: Share Score Button Requires Double-Tap ✅
+**Priority**: Medium  
+**Category**: User Interface Bug  
+**Status**: Resolved (August 14, 2025)
+
+**Problem**: Share Score button showed "Share Canceled" on first press, required second press to actually share
+**Impact**: Poor user experience, confusing behavior that frustrated users trying to share scores
+**Location**: RoundOver scene - Share Score button functionality
+
+**Resolution**: Issue was resolved during recent testing and no longer reproduces
+**Verification**: Share button now works correctly on first press across tested browsers and devices
+
+### TECH-001: Centralized Layout & Constants Module ✅
+**Priority**: Medium  
+**Category**: Maintainability  
+**Status**: Resolved (August 11, 2025)
+
+**Problem**: Repeated magic numbers (header heights 120/140, footer 120, row height 60, spacing constants) scattered across managers increased risk of drift and complicated tuning.
+
+**Solution Implemented**:
+- ✅ Created `js/config/LayoutConfig.js` with comprehensive layout constants
+- ✅ Centralized header heights (140/120), footer heights (160), row heights (60)  
+- ✅ Added mobile-specific spacing and touch target constants
+- ✅ Integrated across GameScene, ActiveRowManager, UILayoutManager, HistoryScroller
+
+### UI-011: Christmas Title Theming Enhancement ✅
+**Priority**: High  
+**Category**: Visual Polish  
+**Status**: Resolved (August 14, 2025)
+
+**Problem**: The "XmasMM" title in game header displayed as plain white text, lacking festive Christmas spirit.
+
+**Solution Implemented**:
+- ✅ Updated MainMenu title to playful "🎄 Christmas 🎄 / 🎁 MasterMind 🎁" format
+- ✅ Implemented Comic Sans MS font for family-friendly feel
+- ✅ Used Christmas red (#CC0000) with white outline for excellent contrast
+- ✅ Enhanced button interactivity with smooth Phaser.js animations
+
+### UI-012: Button Graphics Enhancement ✅
+**Priority**: Low  
+**Category**: Visual Polish  
+**Status**: Resolved (August 14, 2025)
+
+**Problem**: Buttons used text-only styling, needed enhanced visual design and Christmas theming.
+
+**Solution Implemented**:
+- ✅ Complete ButtonFactory implementation with elegant Christmas design
+- ✅ Primary, accent, danger button variants with festive styling
+- ✅ Interactive states with proper feedback and mobile optimization
+- ✅ WCAG contrast compliance and 44x44 minimum hit targets
+
+### UI-013: Background Image Research & Enhancement ✅
+**Priority**: Low  
+**Category**: Visual Design Research  
+**Status**: Resolved (August 14, 2025)
+
+**Problem**: Background image was visually busy and competed with game elements for attention.
+
+**Solution Implemented**:
+- ✅ Replaced busy Christmas scene with professional Christmas gradient
+- ✅ Created deep forest green vertical gradient (#0d3820 → #051610)
+- ✅ Added subtle snowflake overlay at 8% opacity for Christmas atmosphere
+- ✅ Improved contrast ratios and readability while maintaining festive spirit
 
 ### MOBILE-001: Mobile PWA Safe Area Implementation ✅  
 **Priority**: High  
 **Category**: Mobile UX  
 **Status**: Resolved (August 11, 2025)
 
-**Problem**: Footer and active row positioned too close to bottom edge on mobile PWA fullscreen mode, causing:
-- Active row disappearing when swiping on iOS/Android gesture areas
-- Poor UX with elements too close to screen edge
-- Overlap between active row and Christmas legend
-- Touch conflicts between history scrolling and footer elements
+**Problem**: Footer and active row positioned too close to bottom edge on mobile PWA fullscreen mode.
 
 **Solution Implemented**:
 - ✅ Created SafeAreaManager.js for cross-platform safe area detection
 - ✅ Implemented CSS env() API with intelligent fallbacks  
-- ✅ Added 20px swipe gesture margin for iOS/Android bottom swipe prevention
-- ✅ Increased FOOTER_HEIGHT_GAME from 120px to 160px for better spacing
+- ✅ Added swipe gesture margin for iOS/Android bottom swipe prevention
 - ✅ Fixed HistoryScroller touch area to respect footer positioning
-- ✅ Adjusted active row Y position from 60 to 40 within footer container
-- ✅ Updated legend positioning to calculate based on footer container position
-
-**Technical Implementation**:
-- Footer positioned at: `height - footerHeight - safeAreaBottom - gestureMargin`
-- Legend positioned at: `footerTopY - legendHeight - 15px` for proper spacing
-- Touch areas properly separated to prevent conflicts
-- Real-device testing confirmed proper positioning and functionality
-
-**Files Modified**: 
-- `js/utils/SafeAreaManager.js` (new)
-- `js/config/LayoutConfig.js` (updated constants)
-- `js/scenes/GameScene.js` (footer positioning)
-- `js/managers/ActiveRowManager.js` (active row positioning)
-- `js/managers/UILayoutManager.js` (legend positioning)
-- `js/managers/HistoryScroller.js` (touch area fixes)
-
-**Acceptance Criteria Completed**:
-- ✅ Mobile PWA footer properly positioned above safe areas
-- ✅ No conflicts with iOS/Android bottom swipe gestures
-- ✅ Active row and legend properly spaced without overlap
-- ✅ Touch areas separated to prevent interaction conflicts
 - ✅ Cross-platform compatibility verified
 
-**Recent Major Completions**:
-- ✅ UI-012: Button Graphics Enhancement (August 14, 2025)
-- ✅ TECH-001: Centralized Layout & Constants Module (August 11, 2025)
-- ✅ MOBILE-001: Mobile PWA safe area implementation (August 11, 2025)
-- ✅ PERF-001: Game transition performance optimization (August 8, 2025)  
-- ✅ UI-010: Real-time score display implementation (August 8, 2025)
+---
 
-**Archived History Note**: Previous session archives available in git history (commits prior to August 14, 2025)
+## 🗂️ Closed/Deprioritized Issues
+
+### TECH-002: Scene Lifecycle Listener Cleanup 🚫
+**Status**: Closed - Not Needed for Current Scope  
+**Reason**: Deferred until replay/multi-session features added. Simple family game doesn't require this complexity. Current `_debugKeysRegistered` guard is sufficient mitigation.
+
+### TECH-003: Lightweight Logger Abstraction 🚫
+**Status**: Closed - Sufficient Solution Implemented  
+**Reason**: Console log cleanup completed with TestConfig guards. Current solution sufficient for family game scope.
+
+### TECH-004: ESLint + Prettier Integration 🚫
+**Status**: Closed - Over-Engineering  
+**Reason**: Overkill for small family Christmas game. Code already well-structured and consistent.
+
+### TECH-005: Asset Loading Manifest 🚫
+**Status**: Closed - Premature Optimization  
+**Reason**: Current asset count manageable without manifest. Loading performance already acceptable.
+
+### TECH-006: Debug Key Map Documentation 🚫
+**Status**: Closed - Low Value  
+**Reason**: Debug keys simple and self-explanatory. README covers basics sufficiently.
+
+### UI-015: Random Guess Feature 🚫
+**Status**: Closed - Could Undermine Game Experience  
+**Reason**: Feature request that might reduce strategic thinking aspect. Hint system already provides assistance.
 
 ---
 
@@ -564,6 +360,9 @@
 - **Mobile Optimization**: Complete ✅
 - **Layout System**: Centralized ✅
 - **Core Functionality**: Working ✅
-- **User Experience**: Polished ✅
+- **User Experience**: Focused on high-impact improvements ✅
+- **Technical Debt**: Cleaned up ✅
 
-**Next Focus**: UI-011 Christmas Title Enhancement, then AUDIO-001 Christmas Audio Integration, then TECH-002 ListenerCleanup, then DEPLOY-001 Final Testing
+**Next Focus**: UI-019 (Score Logic) and UI-021 (Element Picker) for maximum UX impact, then AUDIO-001 (Christmas Audio), then DEPLOY-001 (Final Testing)
+
+**Project Status**: Ready for final UX polish and family deployment! 🎄🎮
