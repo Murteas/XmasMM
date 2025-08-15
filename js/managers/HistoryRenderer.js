@@ -199,8 +199,6 @@ class HistoryRenderer {
     // Feedback positioned closer to guess elements for better screen utilization
     const feedbackStartX = startX + (codeLength * elementSpacing) + 5; // Reduced from 8 to 5px gap
     
-    console.log(`🎯 Feedback positioning: startX=${startX}, codeLength=${codeLength}, spacing=${elementSpacing}, feedbackStartX=${feedbackStartX}`);
-    
     // Create bigger Christmas feedback symbols with closer positioning
     this.renderChristmasFeedback(feedback, feedbackStartX, y, depth, opacity);
   }

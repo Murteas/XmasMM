@@ -175,13 +175,17 @@ class GameScene extends Phaser.Scene {
     this.safeAreaManager.onInsetsChanged((insets) => {
       const newFooterY = height - footerHeight - insets.bottom - swipeGestureMargin;
       this.footerContainer.y = newFooterY;
-      console.log(`📱 Footer position updated: y=${newFooterY} (safe bottom: ${insets.bottom}px + ${swipeGestureMargin}px gesture margin)`);
+      if (TestConfig.shouldShowDebugLogs()) {
+        console.log(`📱 Footer position updated: y=${newFooterY} (safe bottom: ${insets.bottom}px + ${swipeGestureMargin}px gesture margin)`);
+      }
     });
     
-    console.log('📱 Simple Phaser three-zone layout created with safe area support');
-    console.log(`  - Header: y=0, depth=1000`);
-    console.log(`  - Scrollable: y=${headerHeight}, depth=500`);
-    console.log(`  - Footer: y=${footerY}, depth=1000 (safe bottom: ${safeAreaInsets.bottom}px + gesture margin: ${swipeGestureMargin}px)`);
+    if (TestConfig.shouldShowDebugLogs()) {
+      console.log('📱 Simple Phaser three-zone layout created with safe area support');
+      console.log(`  - Header: y=0, depth=1000`);
+      console.log(`  - Scrollable: y=${headerHeight}, depth=500`);
+      console.log(`  - Footer: y=${footerY}, depth=1000 (safe bottom: ${safeAreaInsets.bottom}px + gesture margin: ${swipeGestureMargin}px)`);
+    }
   }
 
   setupGameComponents() {

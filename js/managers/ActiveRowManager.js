@@ -59,17 +59,11 @@ class ActiveRowManager {
     // MOBILE EXPERT FIX: Position active row higher in footer to prevent overlap
     const footerActiveRowY = 30;
     
-    // Create clean background in footer container - no border for modern design
-    this.activeRowBackground = this.scene.add.rectangle(
-      width / 2,
-      footerActiveRowY,
-      width - 20,
-      60,
-      0x4a4a4a,
-      0.8
-    ); // REMOVED: .setStrokeStyle(3, 0xffd700) for clean borderless design
-    
-    this.scene.footerContainer.add(this.activeRowBackground);
+    // EXPERT UX DECISION: Remove grey background for clean, modern design
+    // Benefits: Works perfectly with any number of elements (4, 5, 6+)
+    // Matches our borderless design philosophy throughout the game
+    // Eliminates container sizing issues and focuses attention on game elements
+    // this.activeRowBackground = removed for clean mobile-first design
     
     // CORRECTED: Right-side submit button approach with PROPER SPACING
     const submitBtnWidth = 75; // Compact width for right side

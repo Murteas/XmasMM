@@ -2,17 +2,17 @@
 
 ## 📊 Current Status Summary
 
-**Total Active Issues**: 11 (UI enhancements + audio integration + deployment + technical debt)
+**Total Active Issues**: 17 (UI enhancements + audio integration + deployment + technical debt + new UX improvements)
 
 **Overall Project Health**: 🟢 **Excellent**
 - Core functionality complete and mobile-optimized  
 - Mobile PWA safe area implementation completed ✅
 - Centralized layout constants system implemented ✅
 - Button theming and typography enhancement completed ✅
-- Ready for audio integration and final testing phase
-- Focus on final polish and family-ready deployment
+- Ready for UI polish and family-ready deployment
+- Focus on final polish and user experience optimization
 
-**Last Updated**: August 14, 2025 (Complete task/issue consolidation to single ISSUES.md system)
+**Last Updated**: August 14, 2025 (Added 6 new UI/UX improvement issues)
 
 ---
 
@@ -311,6 +311,144 @@
 - [ ] Complete documentation for players and maintainers
 - [ ] Edge cases handled gracefully
 - [ ] Deployment ready with family-tested experience
+
+### UI-016: Inconsistent Font Usage Across Screens 🟡
+**Priority**: Medium  
+**Category**: Visual Consistency  
+**Status**: Open
+
+**Problem**: Font usage is inconsistent across game screens, with the game end (RoundOver) screen not using the same font family as other screens
+**Impact**: Breaks visual consistency and professional appearance
+**Location**: RoundOver scene vs other game screens
+**Current State**: MainMenu and GameScene use consistent fonts, but RoundOver diverges
+
+**Investigation Needed**:
+- Audit all font declarations across scenes
+- Identify which font should be the standard (likely Comic Sans MS based on Christmas theme)
+- Update RoundOver and any other inconsistent screens
+
+**Acceptance Criteria**:
+- [ ] All screens use consistent font family
+- [ ] Documentation of standard font choices
+- [ ] Visual consistency verified across all scenes
+
+### UI-017: Button Corner Visibility Issues 🟡
+**Priority**: Medium  
+**Category**: Visual Polish  
+**Status**: Open
+
+**Problem**: Buttons are not properly rounded and show corners extending past the border styling
+**Impact**: Unprofessional appearance, breaks visual design integrity
+**Location**: All button elements across scenes
+**Current State**: Button corners are visible outside the intended border radius
+
+**Investigation Needed**:
+- Check ButtonFactory border radius implementation
+- Verify proper clipping/masking of button backgrounds
+- Test across different screen sizes and browsers
+
+**Acceptance Criteria**:
+- [ ] All buttons properly rounded without visible corners
+- [ ] Consistent border radius across all button types
+- [ ] Professional appearance maintained across devices
+
+### UI-018: Theme Selector Usability Enhancement 🟡
+**Priority**: Medium  
+**Category**: User Experience  
+**Status**: Open
+
+**Problem**: The theme change button isn't intuitive - "Traditional" doesn't clearly communicate what that theme looks like to users
+**Impact**: Users may not understand what themes are available or how they differ
+**Location**: Main menu theme selector button
+**Current State**: Cycles through themes with unclear labels
+
+**Design Considerations**:
+- Show preview thumbnails or color swatches
+- Use more descriptive names (e.g., "Classic Red & Green" instead of "Traditional")
+- Add visual indicators showing current theme
+- Consider expandable selector showing all options at once
+
+**Acceptance Criteria**:
+- [ ] Theme names are clear and descriptive
+- [ ] Users can preview theme appearance before selecting
+- [ ] Current theme is clearly indicated
+- [ ] Intuitive selection method implemented
+
+### UI-019: Score Display Logic Review 🔴
+**Priority**: High  
+**Category**: Game Logic  
+**Status**: Open
+
+**Problem**: The score shown after each guess doesn't seem correct or logical to users
+**Impact**: Confusing feedback undermines game experience and learning
+**Location**: Score calculation and display after each guess
+**Current State**: Score calculation exists but may not be intuitive to players
+
+**Discussion Required**:
+- Review current scoring algorithm for clarity
+- Determine what score should represent (total game score vs guess-specific feedback)
+- Consider if score should be cumulative or per-guess
+- Evaluate whether current scoring system aids or confuses gameplay
+
+**Investigation Needed**:
+- Document current scoring logic
+- Gather user feedback on score expectations
+- Consider alternative scoring presentations
+
+**Acceptance Criteria**:
+- [ ] Score calculation logic is documented and logical
+- [ ] Score display clearly communicates what it represents
+- [ ] Users understand the scoring system without confusion
+- [ ] Score enhances rather than detracts from game experience
+
+### UI-020: Game Scene Header Simplification 🟡
+**Priority**: Low  
+**Category**: UI Simplification  
+**Status**: Open
+
+**Problem**: The "CM" title in the game scene header is unnecessary and takes up space
+**Impact**: Minor visual clutter, could be removed for cleaner design
+**Location**: GameScene header area
+**Current State**: Shows abbreviated "CM" title during gameplay
+
+**Consideration**: 
+- Remove title entirely for cleaner header
+- Use space for more useful information
+- Maintain Christmas theme without redundant text
+
+**Acceptance Criteria**:
+- [ ] Header simplified by removing unnecessary "CM" title
+- [ ] Clean, uncluttered header design
+- [ ] No loss of important functionality or branding
+
+### UI-021: Element Picker Interaction Enhancement 🔴
+**Priority**: High  
+**Category**: User Experience  
+**Status**: Open
+
+**Problem**: Element picker interaction is awkward - users must click a box then move finger/mouse up to screen center to choose an element
+**Impact**: Poor user experience, especially on mobile devices where this gesture is unnatural
+**Location**: Element selection interface during gameplay
+**Current State**: Click slot → picker appears in center → select element
+
+**Discussion Required**:
+- Evaluate current picker positioning and interaction model
+- Consider alternative approaches (inline picker, bottom sheet, adjacent popup)
+- Balance mobile vs desktop usability
+- Consider accessibility implications
+
+**Design Alternatives to Evaluate**:
+- Bottom sheet picker that slides up from element slot
+- Inline picker that appears directly above/below selected slot
+- Side panel picker for desktop
+- Tap-and-hold vs click interaction models
+
+**Acceptance Criteria**:
+- [ ] Element selection interaction is intuitive and comfortable
+- [ ] Works well on both mobile and desktop
+- [ ] Reduced finger/mouse travel distance
+- [ ] Maintains accessibility standards
+- [ ] Expert UX evaluation confirms improvement
 
 ### UI-015: Random Guess Feature for Players 🟡
 **Priority**: Low  
