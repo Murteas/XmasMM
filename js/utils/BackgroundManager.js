@@ -235,15 +235,15 @@ class BackgroundManager {
     for (let i = 0; i < snowflakeCount; i++) {
       const x = Math.random() * width;
       const y = Math.random() * height;
-      const size = Math.random() * 3 + 0.5; // Varied sizes (0.5-3.5px)
+      const size = Math.random() * 3.5 + 0.8; // Increased sizes (0.8-4.3px)
       const opacity = Math.random() * 0.12 + 0.03; // Varied opacity (3-15%)
       
       // Create snowflakes with different opacities for depth
       snowGraphics.fillStyle(0xffffff, opacity);
       snowGraphics.fillCircle(x, y, size);
       
-      // Add some star-shaped snowflakes for variety (more visible)
-      if (Math.random() < 0.15) { // Increased to 15% chance for more stars
+      // Add more star-shaped snowflakes for variety (doubled from 15% to 30%)
+      if (Math.random() < 0.30) { // Doubled star frequency!
         this.drawSnowflakeShape(snowGraphics, x, y, Math.max(size * 1.5, 2), Math.min(opacity * 1.5, 0.3));
       }
       
@@ -290,7 +290,7 @@ class BackgroundManager {
       // Random starting positions (some start above screen)
       const x = Math.random() * (width + 100) - 50;
       const y = Math.random() * height - Math.random() * 200;
-      const size = Math.random() * 2.5 + 0.5; // 0.5-3px
+      const size = Math.random() * 3 + 0.8; // Increased animated sizes (0.8-3.8px)
       const opacity = Math.random() * 0.4 + 0.1; // 10-50% opacity
       
       // Create snowflake with random characteristics

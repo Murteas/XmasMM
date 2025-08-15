@@ -28,8 +28,12 @@ class MainMenu extends Phaser.Scene {
   create() {
     const { width, height } = this.cameras.main;
 
-    // Blizzard Christmas background with animated snowflakes for main menu
-    BackgroundManager.setupBlizzardChristmas(this, 'mainmenu');
+    // Initialize settings first to get theme
+    this.initializeSettings();
+    
+    // Christmas background with user's selected theme
+    const currentTheme = this.registry.get('backgroundTheme') || 'traditional';
+    this.updateBackground(currentTheme);
 
     // Playful Christmas title with clean styling
     this.add
@@ -54,7 +58,6 @@ class MainMenu extends Phaser.Scene {
       .setDepth(GameUtils.getDepthLayers().UI);
 
     this.createButtons(width, height);
-    this.initializeSettings();
   }
 
   createButtons(width, height) {
@@ -76,9 +79,25 @@ class MainMenu extends Phaser.Scene {
     });
     this.helpBtn.setDepth(GameUtils.getDepthLayers().UI);
 
+    // Theme Switcher button (new family-friendly feature!)
+    const currentTheme = this.registry.get('backgroundTheme') || 'traditional';
+    const themeNames = {
+      traditional: 'Traditional 🌲',
+      festive: 'Festive 🎁', 
+      winter: 'Winter ❄️',
+      red: 'Red 🎅'
+    };
+    this.themeBtn = ButtonFactory.createButton(this, width / 2, height * 0.58, themeNames[currentTheme], 'accent', {
+      icon: '🎨',
+      gradient: true,
+      border: true,
+      onClick: () => this.switchBackgroundTheme()
+    });
+    this.themeBtn.setDepth(GameUtils.getDepthLayers().UI);
+
     // SFX Toggle (danger variant for visual differentiation)
     const sfxLabel = 'SFX: ON';
-    this.sfxBtn = ButtonFactory.createButton(this, width / 2, height * 0.65, sfxLabel, 'danger', {
+    this.sfxBtn = ButtonFactory.createButton(this, width / 2, height * 0.68, sfxLabel, 'danger', {
       icon: '🔊',
       onClick: () => {
         const current = this.registry.get('sfxOn');
@@ -90,7 +109,7 @@ class MainMenu extends Phaser.Scene {
     this.sfxBtn.setDepth(GameUtils.getDepthLayers().UI);
 
     // Music Toggle (danger variant too; could differentiate later)
-    this.musicBtn = ButtonFactory.createButton(this, width / 2, height * 0.75, 'Music: ON', 'danger', {
+    this.musicBtn = ButtonFactory.createButton(this, width / 2, height * 0.78, 'Music: ON', 'danger', {
       icon: '🎵',
       onClick: () => {
         const current = this.registry.get('musicOn');
@@ -105,6 +124,59 @@ class MainMenu extends Phaser.Scene {
   initializeSettings() {
     this.registry.set('sfxOn', true);
     this.registry.set('musicOn', true);
+    // Initialize background theme if not set
+    if (!this.registry.get('backgroundTheme')) {
+      this.registry.set('backgroundTheme', 'traditional');
+    }
+  }
+
+  switchBackgroundTheme() {
+    const themes = BackgroundManager.getAvailableThemes();
+    const currentTheme = this.registry.get('backgroundTheme') || 'traditional';
+    const currentIndex = themes.indexOf(currentTheme);
+    const nextIndex = (currentIndex + 1) % themes.length;
+    const nextTheme = themes[nextIndex];
+    
+    // Update registry
+    this.registry.set('backgroundTheme', nextTheme);
+    
+    // Update button label with nice names and icons
+    const themeNames = {
+      traditional: 'Traditional 🌲',
+      festive: 'Festive 🎁', 
+      winter: 'Winter ❄️',
+      red: 'Red 🎅'
+    };
+    this.themeBtn.setLabel(themeNames[nextTheme]);
+    
+    // Regenerate background with new theme
+    this.updateBackground(nextTheme);
+  }
+
+  updateBackground(theme) {
+    const { width, height } = this.cameras.main;
+    
+    // Clear existing background elements
+    this.children.getAll().forEach(child => {
+      if (child.texture && (
+        child.texture.key.includes('christmas_gradient') || 
+        child.texture.key.includes('snowflake') ||
+        child.texture.key.includes('mainmenu')
+      )) {
+        child.destroy();
+      }
+    });
+    
+    // Create new background with selected theme
+    BackgroundManager.createChristmasGradientBackground(this, width, height, `mainmenu_bg_${theme}`, theme);
+    BackgroundManager.createEnhancedSnowflakeOverlay(this, width, height, `mainmenu_snow_${theme}`);
+    
+    // Add some magical animated snowflakes for extra atmosphere
+    BackgroundManager.createMagicalSnowflakes(this, {
+      count: 25,
+      speed: 'medium',
+      intensity: 'magical'
+    });
   }
 
   addButtonTouchFeedback(button, config = {}) {
