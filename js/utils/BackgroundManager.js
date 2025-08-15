@@ -242,17 +242,17 @@ class BackgroundManager {
       snowGraphics.fillStyle(0xffffff, opacity);
       snowGraphics.fillCircle(x, y, size);
       
-      // Add some star-shaped snowflakes for variety
-      if (Math.random() < 0.1) { // 10% chance for star shapes
-        this.drawSnowflakeShape(snowGraphics, x, y, size, opacity);
+      // Add some star-shaped snowflakes for variety (more visible)
+      if (Math.random() < 0.15) { // Increased to 15% chance for more stars
+        this.drawSnowflakeShape(snowGraphics, x, y, Math.max(size * 1.5, 2), Math.min(opacity * 1.5, 0.3));
       }
       
-      // Add family-friendly golden sparkles for magical atmosphere (5% chance)
-      if (Math.random() < 0.05) {
-        const sparkleSize = Math.random() * 1.5 + 0.3; // Smaller sparkles (0.3-1.8px)
-        const sparkleOpacity = Math.random() * 0.08 + 0.02; // Subtle sparkles (2-10%)
+      // Add family-friendly golden sparkles for magical atmosphere (more visible)
+      if (Math.random() < 0.08) { // Increased to 8% chance
+        const sparkleSize = Math.random() * 2.5 + 1; // Larger sparkles (1-3.5px)
+        const sparkleOpacity = Math.random() * 0.15 + 0.05; // More visible sparkles (5-20%)
         snowGraphics.fillStyle(0xffd700, sparkleOpacity); // Golden color
-        snowGraphics.fillCircle(x + (Math.random() - 0.5) * 10, y + (Math.random() - 0.5) * 10, sparkleSize);
+        snowGraphics.fillCircle(x + (Math.random() - 0.5) * 6, y + (Math.random() - 0.5) * 6, sparkleSize);
       }
     }
     
@@ -295,6 +295,35 @@ class BackgroundManager {
       
       // Create snowflake with random characteristics
       const snowflake = scene.add.circle(x, y, size, 0xffffff, opacity);
+      
+      // Add some golden animated sparkles for extra magic (10% chance)
+      if (Math.random() < 0.1) {
+        const sparkleX = x + (Math.random() - 0.5) * 30;
+        const sparkleY = y + (Math.random() - 0.5) * 30;
+        const sparkleSize = Math.random() * 1.5 + 0.5;
+        const sparkleOpacity = Math.random() * 0.3 + 0.1;
+        const sparkle = scene.add.circle(sparkleX, sparkleY, sparkleSize, 0xffd700, sparkleOpacity);
+        
+        // Make sparkles fall with the same pattern as snowflakes
+        sparkle.startX = sparkleX;
+        sparkle.resetY = -20;
+        sparkle.fallSpeed = config.fallSpeed * (0.8 + Math.random() * 0.4);
+        snowflakeGroup.add(sparkle);
+        
+        // Add sparkle falling animation
+        scene.tweens.add({
+          targets: sparkle,
+          y: height + 50,
+          duration: (height + 70) / sparkle.fallSpeed * 100,
+          ease: 'Linear',
+          repeat: -1,
+          delay: Math.random() * 3000,
+          onRepeat: () => {
+            sparkle.x = sparkle.startX + (Math.random() - 0.5) * 50;
+            sparkle.y = sparkle.resetY;
+          }
+        });
+      }
       
       // Store original position for reset
       snowflake.startX = x;
@@ -370,7 +399,7 @@ class BackgroundManager {
    * @param {number} opacity - Opacity of the snowflake
    */
   static drawSnowflakeShape(graphics, x, y, size, opacity) {
-    graphics.lineStyle(0.5, 0xffffff, opacity * 0.8);
+    graphics.lineStyle(1.2, 0xffffff, Math.min(opacity, 0.4)); // Thicker lines, capped opacity
     
     // Draw 6-pointed star shape
     for (let i = 0; i < 6; i++) {
@@ -380,7 +409,9 @@ class BackgroundManager {
       const x2 = x + Math.cos(angle) * size * 0.3;
       const y2 = y + Math.sin(angle) * size * 0.3;
       
+      // Main spokes
       graphics.lineBetween(x, y, x1, y1);
+      // Cross pieces for more definition
       graphics.lineBetween(x2, y2, x + Math.cos(angle + Math.PI/6) * size * 0.6, y + Math.sin(angle + Math.PI/6) * size * 0.6);
     }
   }
