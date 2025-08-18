@@ -2,7 +2,7 @@
 
 ## 📊 Current Status Summary
 
-**Total Active Issues**: 7 (focused on UX improvements + audio integration + deployment)
+**Total Active Issues**: 8 (focused on UX improvements + accessibility + audio integration + deployment)
 
 **Overall Project Health**: 🟢 **Excellent**
 - Core functionality complete and mobile-optimized  
@@ -13,7 +13,7 @@
 - Technical debt cleaned up - focus on user experience
 - Ready for final polish and family-ready deployment
 
-**Last Updated**: August 15, 2025 (Fixed score display logic - UI-019 resolved)
+**Last Updated**: August 18, 2025 (Added UI-022: Tablet and Large Screen Accessibility for discussion)
 
 ---
 
@@ -75,6 +75,44 @@
 - [ ] Complete documentation for players and maintainers
 - [ ] Edge cases handled gracefully
 - [ ] Deployment ready with family-tested experience
+
+### UI-022: Tablet and Large Screen Accessibility 🟡
+**Priority**: Medium  
+**Category**: Accessibility & Responsive Design  
+**Status**: Open
+
+**Problem**: Application is optimized for mobile (375x667) but doesn't scale well for larger devices like iPads
+**Impact**: Poor user experience on tablets and larger screens - interface elements may be too small or poorly positioned
+**Location**: All scenes - responsive layout system needs evaluation
+
+**Current State**: 
+- Works perfectly on intended smallest mobile device
+- Mobile-first design approach implemented
+- Fixed viewport approach may not be ideal for larger screens
+
+**Discussion Points**:
+- **Value Assessment**: Is tablet support worth the development effort for a family Christmas game?
+- **Target Audience**: Do families typically play on tablets vs phones during Christmas gatherings?
+- **Development Scope**: How much refactoring would responsive scaling require?
+- **Alternative Solutions**: Could we add simple "zoom" scaling vs full responsive redesign?
+
+**Technical Considerations**:
+- Current LayoutConfig.js uses fixed constants optimized for mobile
+- Three-zone container system (header/scrollable/footer) may need scaling logic
+- Button touch targets (44px minimum) work on mobile but may be small on tablets
+- Christmas theming and visual elements sized for mobile viewport
+
+**Investigation Needed**:
+- Test current experience on iPad/larger devices to document specific issues
+- Research family gaming patterns - phone vs tablet usage during Christmas
+- Evaluate effort vs benefit for tablet optimization
+- Consider simple scaling solutions vs full responsive design
+
+**Acceptance Criteria** (To be defined based on discussion):
+- [ ] Document current large screen experience and specific issues
+- [ ] Determine if tablet support aligns with family use cases
+- [ ] Define scope: simple scaling vs responsive redesign vs no action
+- [ ] If proceeding: implement solution that maintains mobile performance
 
 ### UI-016: Inconsistent Font Usage Across Screens 🟡
 **Priority**: Medium  
