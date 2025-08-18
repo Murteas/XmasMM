@@ -133,6 +133,10 @@ class GameScene extends Phaser.Scene {
     this.scoreManager = new ScoreManager(this);
     this.safeAreaManager = new SafeAreaManager(this);
     
+    // Initialize audio manager for Christmas sound effects
+    this.audioManager = new AudioManager(this);
+    this.audioManager.initializeSounds();
+    
     // SIMPLIFIED: Always use standard HistoryManager with Phaser containers
     // Create simple three-zone layout using pure Phaser containers
     this.createSimplePhaserLayout();

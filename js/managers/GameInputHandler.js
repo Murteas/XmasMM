@@ -15,6 +15,11 @@ class GameInputHandler {
       return false;
     }
     
+    // Play jingle bells sound for guess submission
+    if (this.scene.audioManager) {
+      this.scene.audioManager.playGuessSubmission();
+    }
+    
     // Process the guess through game state manager
     const result = this.scene.gameStateManager.processGuess(currentGuess);
     
@@ -41,6 +46,11 @@ class GameInputHandler {
   }
 
   handleGameWon() {
+    // Play Christmas celebration sound
+    if (this.scene.audioManager) {
+      this.scene.audioManager.playGameWon();
+    }
+    
     // Game won - transition to RoundOver scene (no more overlay)
     this.endGame();
   }
@@ -99,6 +109,11 @@ class GameInputHandler {
     );
     
     if (hintResult) {
+      // Play Santa chuckle sound for hint usage
+      if (this.scene.audioManager) {
+        this.scene.audioManager.playHintUsed();
+      }
+      
       // Apply the hint to the active row
       this.scene.historyManager.selectElement(hintResult.position, hintResult.element);
       

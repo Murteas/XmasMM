@@ -41,7 +41,8 @@ class ModuleLoader {
       'js/utils/SafeAreaManager.js',
       'js/utils/BackgroundManager.js',
       'js/config/LayoutConfig.js',
-      'js/utils/ButtonFactory.js'
+      'js/utils/ButtonFactory.js',
+      'js/services/AudioManager.js'
     ];
     
     // Group 2: Managers (load in parallel)

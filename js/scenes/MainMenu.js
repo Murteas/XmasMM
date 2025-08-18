@@ -23,6 +23,10 @@ class MainMenu extends Phaser.Scene {
     // Preload feedback images for help overlay
     this.load.image('feedback_perfect_star_1x', `${assetPath}feedback_perfect_star_1x.png`);
     this.load.image('feedback_close_bell_1x', `${assetPath}feedback_close_bell_1x.png`);
+    
+    // Preload Christmas audio effects
+    this.audioManager = new AudioManager(this);
+    this.audioManager.preloadSounds();
   }
 
   create() {
@@ -30,6 +34,11 @@ class MainMenu extends Phaser.Scene {
 
     // Initialize settings first to get theme
     this.initializeSettings();
+    
+    // Initialize audio manager for Christmas sound effects
+    if (this.audioManager) {
+      this.audioManager.initializeSounds();
+    }
     
     // Christmas background with user's selected theme
     const currentTheme = this.registry.get('backgroundTheme') || 'traditional';
@@ -96,34 +105,27 @@ class MainMenu extends Phaser.Scene {
     this.themeBtn.setDepth(GameUtils.getDepthLayers().UI);
 
     // SFX Toggle (danger variant for visual differentiation)
-    const sfxLabel = 'SFX: ON';
+    const sfxLabel = 'Audio: ' + (this.registry.get('sfxOn') ? 'ON' : 'OFF');
     this.sfxBtn = ButtonFactory.createButton(this, width / 2, height * 0.68, sfxLabel, 'danger', {
       icon: '🔊',
       onClick: () => {
         const current = this.registry.get('sfxOn');
         this.registry.set('sfxOn', !current);
-        const newLabel = 'SFX: ' + (this.registry.get('sfxOn') ? 'ON' : 'OFF');
+        const newLabel = 'Audio: ' + (this.registry.get('sfxOn') ? 'ON' : 'OFF');
         this.sfxBtn.setLabel(newLabel);
+        
+        // Update audio manager if available
+        if (this.audioManager) {
+          this.audioManager.updateEnabledState();
+        }
       }
     });
     this.sfxBtn.setDepth(GameUtils.getDepthLayers().UI);
-
-    // Music Toggle (danger variant too; could differentiate later)
-    this.musicBtn = ButtonFactory.createButton(this, width / 2, height * 0.78, 'Music: ON', 'danger', {
-      icon: '🎵',
-      onClick: () => {
-        const current = this.registry.get('musicOn');
-        this.registry.set('musicOn', !current);
-        const newLabel = 'Music: ' + (this.registry.get('musicOn') ? 'ON' : 'OFF');
-        this.musicBtn.setLabel(newLabel);
-      }
-    });
-    this.musicBtn.setDepth(GameUtils.getDepthLayers().UI);
   }
 
   initializeSettings() {
     this.registry.set('sfxOn', true);
-    this.registry.set('musicOn', true);
+    // Removed musicOn - using sfxOn for sound effects only
     // Initialize background theme if not set
     if (!this.registry.get('backgroundTheme')) {
       this.registry.set('backgroundTheme', 'traditional');

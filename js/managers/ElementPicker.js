@@ -222,6 +222,11 @@ class ElementPicker {
   }
 
   selectElement(slotIndex, element) {
+    // Play gentle element selection sound
+    if (this.scene.audioManager) {
+      this.scene.audioManager.playElementSelect();
+    }
+    
     this.activeRowManager.selectElement(slotIndex, element);
   }
 

@@ -24,28 +24,33 @@
 **Category**: Feature Enhancement  
 **Status**: Open
 
-**Problem**: Game lacks festive audio atmosphere that would enhance family gameplay experience
-**Impact**: Missing opportunity for Christmas immersion and family engagement
+**Problem**: Game lacks festive audio feedback that would enhance family gameplay experience
+**Impact**: Missing opportunity for Christmas atmosphere and functional audio feedback
 **Location**: Audio integration across all scenes
 
 **Design Requirements**:
+- **Essential sound effects only** (no background music - family/quiet environment friendly)
 - Family-friendly audio (gentle, not startling)
 - Optional/toggleable (families may play in quiet environments)
-- Small file sizes (< 1MB total for mobile performance)
+- Small file sizes (< 500KB total for mobile performance)
 - iOS Safari compatibility (requires user interaction)
 
 **Implementation Plan**:
-- **Audio Files Needed**: Gentle jingle bells (guess submission), "Ho ho ho" (correct solutions), Santa chuckle (hint usage), soft Christmas background music loop
+- **Audio Files Needed**: 
+  - Gentle jingle bells (guess submission - functional feedback)
+  - "Ho ho ho" or success chime (correct guess/win - celebration)
+  - Santa chuckle (hint usage - character reinforcement)
+  - Optional soft "ding" (element selection - tactile feedback)
 - **Integration Points**: MainMenu.js (preload), GameScene.js (event triggers), existing sound toggle state
 - **Technical Considerations**: User interaction requirement for iOS, volume level testing, graceful fallback when disabled
 
 **Acceptance Criteria**:
-- [ ] Christmas-themed sound effects for key game events
-- [ ] Optional background music during gameplay
+- [ ] Christmas-themed sound effects for key game events (no background music)
 - [ ] Proper iOS Safari audio handling with user interaction
 - [ ] Audio toggle integration with existing menu controls
 - [ ] Game fully playable with audio disabled
 - [ ] Family-appropriate volume levels and sound selection
+- [ ] Functional feedback improves gameplay without being intrusive
 
 ### DEPLOY-001: Final Testing and Deployment 🟡
 **Priority**: Low (Final Phase)  
