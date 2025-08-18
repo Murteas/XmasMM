@@ -222,10 +222,8 @@ class ElementPicker {
   }
 
   selectElement(slotIndex, element) {
-    // Play gentle element selection sound
-    if (this.scene.audioManager) {
-      this.scene.audioManager.playElementSelect();
-    }
+    // Element selection sound removed for quieter family-friendly experience
+    // Audio feedback limited to essential game events only
     
     this.activeRowManager.selectElement(slotIndex, element);
   }

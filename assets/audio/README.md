@@ -14,21 +14,19 @@
 - **Volume**: Cheerful but not loud
 - **Description**: Classic Santa "Ho ho ho" or gentle success chime
 
-### 3. santa_chuckle.mp3/ogg
+### 3. tada.mp3/ogg
 - **Purpose**: Hint usage feedback
 - **Duration**: 0.5-1 seconds  
-- **Volume**: Gentle, friendly
-- **Description**: Warm Santa chuckle when player uses hint
+- **Volume**: Gentle, celebratory
+- **Description**: Pleasant "tada" sound when player uses hint (replaces Santa chuckle for broader appeal)
 
-### 4. soft_ding.mp3/ogg
-- **Purpose**: Element selection feedback (optional)
-- **Duration**: 0.2-0.5 seconds
-- **Volume**: Very soft
-- **Description**: Subtle ding when selecting Christmas elements
+### 4. ~~Element Selection Sound~~ (Removed)
+- **Decision**: Removed for quieter family-friendly experience
+- **Reasoning**: Element selection happens frequently and could become repetitive/annoying
 
 ## Technical Requirements
 
-- **File Size**: <100KB per file (total <500KB)
+- **File Size**: <100KB per file (total <300KB for 3 files)
 - **Format**: MP3 primary, OGG fallback for browser compatibility
 - **Sample Rate**: 44.1kHz recommended
 - **Bit Rate**: 128kbps for good quality/size balance
@@ -42,23 +40,25 @@
 - Adobe Audition sound effects library
 - YouTube Audio Library
 
-### Custom Generation:
-- Use AI audio generation tools
-- Record custom sounds with family-friendly approach
+### Search Terms:
+- `jingle bells short` - for guess submission
+- `santa ho ho ho` OR `success chime` - for celebration  
+- `tada celebration` OR `achievement sound` - for hints
 
 ## Implementation Status
 
 - [ ] jingle_bells audio files
 - [ ] ho_ho_ho audio files  
-- [ ] santa_chuckle audio files
-- [ ] soft_ding audio files
+- [ ] tada audio files
 - [x] AudioManager service created
-- [ ] Integration with game scenes
-- [ ] Audio toggle functionality
+- [x] Integration with game scenes
+- [x] Audio toggle functionality
 - [ ] iOS Safari testing
 
 ## Notes
 
 - Background music intentionally excluded for family/quiet environment compatibility
+- Element selection sound removed to reduce audio frequency/repetition
+- Only 3 essential sounds needed for complete experience
 - All sounds designed to enhance, not distract from gameplay
 - Graceful fallback when audio unavailable or disabled

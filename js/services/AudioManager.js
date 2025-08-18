@@ -18,8 +18,8 @@ class AudioManager {
     // Functional feedback sounds
     this.scene.load.audio('jingleBells', ['assets/audio/jingle_bells.mp3', 'assets/audio/jingle_bells.ogg']);
     this.scene.load.audio('successChime', ['assets/audio/ho_ho_ho.mp3', 'assets/audio/ho_ho_ho.ogg']);
-    this.scene.load.audio('santaChuckle', ['assets/audio/santa_chuckle.mp3', 'assets/audio/santa_chuckle.ogg']);
-    this.scene.load.audio('elementSelect', ['assets/audio/soft_ding.mp3', 'assets/audio/soft_ding.ogg']);
+    this.scene.load.audio('tada', ['assets/audio/tada.mp3', 'assets/audio/tada.ogg']);
+    // Element selection sound is optional - can be disabled for quieter experience
   }
 
   /**
@@ -31,8 +31,8 @@ class AudioManager {
       // Create sound objects with family-friendly volume levels
       this.sounds.jingleBells = this.scene.sound.add('jingleBells', { volume: 0.3 });
       this.sounds.successChime = this.scene.sound.add('successChime', { volume: 0.4 });
-      this.sounds.santaChuckle = this.scene.sound.add('santaChuckle', { volume: 0.3 });
-      this.sounds.elementSelect = this.scene.sound.add('elementSelect', { volume: 0.2 });
+      this.sounds.tada = this.scene.sound.add('tada', { volume: 0.3 });
+      // Element selection sound removed for quieter experience
     } catch (error) {
       console.warn('AudioManager: Could not initialize sounds', error);
       // Graceful fallback - game still playable without audio
@@ -91,11 +91,12 @@ class AudioManager {
   }
 
   playHintUsed() {
-    this.playSound('santaChuckle');
+    this.playSound('tada');
   }
 
   playElementSelect() {
-    this.playSound('elementSelect');
+    // Element selection sound disabled for quieter family-friendly experience
+    // this.playSound('elementSelect');
   }
 
   /**
