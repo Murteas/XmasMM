@@ -6,24 +6,13 @@ class HistoryManager {
     this.guessHistory = [];
     this.feedbackHistory = [];
     
-    // Initialize specialized managers
+    // Initialize specialized managers (SLIDING WINDOW: No scroller needed)
     this.renderer = new HistoryRenderer(scene, this);
-    this.scroller = new HistoryScroller(scene, this);
     this.activeRowManager = new ActiveRowManager(scene, this);
   }
 
-  // Delegation methods to specialized managers
-  scrollHistory(delta) {
-    this.scroller.scrollHistory(delta);
-  }
-
-  getScrollOffset() {
-    return this.scroller.getScrollOffset();
-  }
-
-  scrollToActiveRow() {
-    this.scroller.scrollToActiveRow();
-  }
+  // REMOVED: Scroll-related methods no longer needed with sliding window approach
+  // scrollHistory, getScrollOffset, scrollToActiveRow, adjustScrollForVisibility
 
   createActiveRow(prefillGuess = null) {
     return this.activeRowManager.createActiveRow(prefillGuess);
@@ -41,9 +30,7 @@ class HistoryManager {
     this.activeRowManager.removeActiveRow();
   }
 
-  updateActiveRowPosition() {
-    this.activeRowManager.updateActiveRowPosition();
-  }
+  // REMOVED: updateActiveRowPosition() - no longer needed with sliding window approach
 
   selectElement(slotIndex, element) {
     this.activeRowManager.selectElement(slotIndex, element);
@@ -64,35 +51,22 @@ class HistoryManager {
     this.guessHistory.push([...guess]);
     this.feedbackHistory.push(feedback);
     
-    // Auto-scroll to show the newest guess
-    this.scroller.autoScrollToNewest();
+    // SLIDING WINDOW: Simply refresh display - no scroll management needed
     this.refreshDisplay();
-    
-    // Update active row position if it exists
-    if (this.hasActiveRow) {
-      this.updateActiveRowPosition();
-      // Ensure active row and element bar remain visible after adding new guess
-      this.scrollToActiveRow();
-    }
   }
 
   refreshDisplay() {
-    // CRITICAL DEBUG: Track refresh display calls
+    // SLIDING WINDOW: Simple display refresh - no scroll offset management
     console.log('🔧 DEBUG: HistoryManager.refreshDisplay() called');
     console.log('🔧 DEBUG: hasActiveRow before refresh:', this.hasActiveRow);
     
-    const validatedScrollOffset = this.renderer.displayGuessHistory(
+    this.renderer.displayGuessHistory(
       this.guessHistory, 
       this.feedbackHistory, 
-      this.scroller.getScrollOffset()
+      0 // No scroll offset needed with sliding window
     );
     
     console.log('🔧 DEBUG: hasActiveRow after renderer.displayGuessHistory:', this.hasActiveRow);
-    
-    // Update scroller with validated offset
-    this.scroller.setScrollOffset(validatedScrollOffset);
-    
-    console.log('🔧 DEBUG: hasActiveRow after setScrollOffset:', this.hasActiveRow);
   }
 
   displayGuessHistory() {

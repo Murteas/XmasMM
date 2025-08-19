@@ -12,7 +12,7 @@ class ModuleLoader {
       // Managers (depend on utilities)
       'js/managers/ScoreManager.js',
       'js/managers/HistoryRenderer.js',
-      'js/managers/HistoryScroller.js',
+      // REMOVED: 'js/managers/HistoryScroller.js' - no longer needed with sliding window
       'js/managers/ElementBar.js',
       'js/managers/ActiveRowManager.js',
       'js/managers/HistoryManager.js',
@@ -47,7 +47,7 @@ class ModuleLoader {
     const managerModules = [
       'js/managers/ScoreManager.js',
       'js/managers/HistoryRenderer.js',
-      'js/managers/HistoryScroller.js',
+      // REMOVED: 'js/managers/HistoryScroller.js' - no longer needed with sliding window
       'js/managers/ElementBar.js'
     ];
     

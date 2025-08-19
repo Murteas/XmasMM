@@ -15,57 +15,40 @@ class HistoryRenderer {
     this.historyGroup = this.scene.add.group();
     
     const { width, height } = this.scene.cameras.main;
+    
+    if (guessHistory.length === 0) return 0;
+    
+    // SLIDING WINDOW: Show only the last N guesses (no scrolling needed)
+    const maxVisibleGuesses = LayoutConfig.HISTORY_SLIDING_WINDOW_SIZE;
+    const startIndex = Math.max(0, guessHistory.length - maxVisibleGuesses);
+    const visibleGuesses = guessHistory.slice(startIndex);
+    const visibleFeedback = feedbackHistory.slice(startIndex);
+    
+    console.log(`🔍 SLIDING WINDOW: Showing guesses ${startIndex + 1}-${guessHistory.length} of ${guessHistory.length} total`);
+    
+    // Simple fixed positioning (no complex scroll calculations)
     const isSmallScreen = width < 500;
-    const isVerySmallScreen = width < 400;
-    
-    // Calculate positioning relative to scrollableContainer (not absolute screen)
-    // Since scrollableContainer starts at headerHeight, we need container-relative coordinates
-    const baseStartY = isSmallScreen ? 20 : 15; // Start just below container top
-    const containerRelativeY = isVerySmallScreen ? 25 : baseStartY;
-    
-    // History starts at top of scrollable container with minimal margin
-    const startY = Math.max(
-      containerRelativeY,
-      height * 0.02  // Very small percentage since we're in container coordinates
-    );
-    
-    // Mobile-optimized row height for much bigger elements and excellent visibility
-    // CRITICAL FIX: Use same rowHeight as ActiveRowManager to prevent gap issues
+    const containerRelativeY = isSmallScreen ? 20 : 15;
+    const startY = Math.max(containerRelativeY, height * 0.02);
     const rowHeight = LayoutConfig.HISTORY_ROW_HEIGHT_STANDARD;
     
-    // Reserve space for active row and element bar at bottom
-    const activeRowHeight = 45; // Space for active row elements
-    const elementBarHeight = 50; // Space for element selection bar
-    const activeAreaReserved = activeRowHeight + elementBarHeight + 20; // Add some margin
+    // Render the visible guesses with simple positioning
+    this.renderSlidingWindow(visibleGuesses, visibleFeedback, startIndex, startY, rowHeight);
     
-    const bottomMargin = isSmallScreen ? activeAreaReserved : activeAreaReserved;
-    const maxVisibleRows = Math.floor((height - startY - bottomMargin) / rowHeight);
+    return 0; // No scroll offset needed with sliding window
+  }
+
+  renderSlidingWindow(visibleGuesses, visibleFeedback, startIndex, startY, rowHeight) {
+    const baseDepth = GameUtils.getDepthLayers().HISTORY;
     
-    const totalRows = guessHistory.length;
-    
-    // Account for active row when calculating max scroll offset
-    // The active row needs additional space below the history
-    const activeRowExists = this.historyManager && this.historyManager.hasActiveRow;
-    const additionalRowHeight = activeRowExists ? LayoutConfig.HISTORY_ROW_HEIGHT_STANDARD : 0; // Same as rowHeight for spacing
-    const effectiveTotalHeight = (totalRows * rowHeight) + additionalRowHeight;
-    
-    const maxScrollOffset = Math.max(0, effectiveTotalHeight - (maxVisibleRows * rowHeight));
-    
-    // Validate scroll offset
-    const validatedScrollOffset = Math.max(0, Math.min(maxScrollOffset, historyScrollOffset));
-    
-    if (totalRows <= maxVisibleRows) {
-      // No scrolling needed
-      console.log(`🔍 HISTORY DEBUG: Using renderAllRows (${totalRows} <= ${maxVisibleRows})`);
-      this.renderAllRows(guessHistory, feedbackHistory, startY, rowHeight);
-    } else {
-      // Render visible rows only
-      console.log(`🔍 HISTORY DEBUG: Using renderVisibleRows (${totalRows} > ${maxVisibleRows})`);
-      this.renderVisibleRows(guessHistory, feedbackHistory, startY, rowHeight, validatedScrollOffset, maxVisibleRows);
-      this.renderScrollIndicators(totalRows, maxVisibleRows, validatedScrollOffset, startY, rowHeight);
-    }
-    
-    return validatedScrollOffset;
+    visibleGuesses.forEach((guess, displayIndex) => {
+      const actualRowIndex = startIndex + displayIndex; // Original guess number
+      const y = startY + (displayIndex * rowHeight);
+      const feedback = visibleFeedback[displayIndex];
+      const currentDepth = baseDepth + displayIndex * 0.1;
+      
+      this.renderGuessRow(guess, feedback, actualRowIndex, y, currentDepth);
+    });
   }
 
   renderAllRows(guessHistory, feedbackHistory, startY, rowHeight) {
@@ -380,43 +363,7 @@ class HistoryRenderer {
     const startIndex = Math.floor(scrollOffset / rowHeight);
     const endIndex = Math.min(totalRows, startIndex + maxVisibleRows + 1);
     
-    // Up scroll indicator
-    if (startIndex > 0) {
-      const upIndicator = this.scene.add.text(width - 50, startY - 20, '↑ Scroll up', {
-        font: '10px Arial',
-        fill: '#fff',
-        backgroundColor: '#444',
-        padding: { left: 4, right: 4, top: 2, bottom: 2 }
-      }).setOrigin(1, 0.5).setDepth(GameUtils.getDepthLayers().UI)
-        .setInteractive({ useHandCursor: true });
-      
-      upIndicator.on('pointerdown', () => {
-        this.historyManager.scrollHistory(-30);
-      });
-      
-      this.scene.scrollableContainer.add(upIndicator);
-      this.historyElements.push(upIndicator);
-    }
-    
-    // Down scroll indicator
-    if (endIndex < totalRows) {
-      const bottomMargin = height < 400 ? 40 : 60;
-      const downButtonY = Math.min(startY + maxVisibleRows * rowHeight + 10, height - bottomMargin);
-      const downIndicator = this.scene.add.text(width - 50, downButtonY, '↓ Scroll down', {
-        font: '10px Arial',
-        fill: '#fff',
-        backgroundColor: '#444',
-        padding: { left: 4, right: 4, top: 2, bottom: 2 }
-      }).setOrigin(1, 0.5).setDepth(GameUtils.getDepthLayers().UI + 10)
-        .setInteractive({ useHandCursor: true });
-      
-      downIndicator.on('pointerdown', () => {
-        this.historyManager.scrollHistory(30);
-      });
-      
-      this.scene.scrollableContainer.add(downIndicator);
-      this.historyElements.push(downIndicator);
-    }
+    // REMOVED: Scroll buttons no longer needed with sliding window approach
     
     // Position indicator
     const scrollInfo = `${startIndex + 1}-${endIndex} of ${totalRows}`;

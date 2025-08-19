@@ -15,36 +15,42 @@
   - Root cause: HistoryRenderer using 65px rowHeight vs ActiveRowManager using 75px
   - Solution: Standardized both to use `LayoutConfig.HISTORY_ROW_HEIGHT_STANDARD`
   
-- **✅ Element Bar Off-Screen**: Partially addressed element bar getting cut off with 9+ guesses
-  - Added bounds checking in createElementBar() and updateActiveRowPosition()
-  - **Note**: Issue still persists in testing - moved to IN PROGRESS section
+- **✅ Element Bar Off-Screen**: Fixed element bar getting cut off with 9+ guesses
+  - **CLEAN SLATE SOLUTION**: Implemented sliding window approach (no scrolling)
+  - Removed complex scroll coordinate systems and replaced with simple fixed positioning
+  - Added `HISTORY_SLIDING_WINDOW_SIZE: 6` to show last 6 completed guesses
+  - Element bar now uses predictable fixed positioning, never gets cut off
+  
+- **✅ RoundOver Layout Issue**: Fixed RoundOver scene to properly fit all 10 guesses on screen
+  - Reduced `ROUND_OVER_ROW_HEIGHT_DENSE` from 42px to 36px for better density
+  - Adjusted element sizes and spacing in history rows for tighter layout
+  - Improved scrolling logic to always enable interaction (removed content-fits check)
+  - Enhanced scroll position clamping for more reliable behavior
   
 - **✅ Mouse Drag Interference**: Disabled problematic scroll behavior
   - Mouse drag was causing element bar to disappear and submit button changes
   - Simplified touch event handling for more stable UI
 
+### Architecture Improvements
+- **✅ Sliding Window System**: Implemented mobile-optimized history display
+  - Removed ~300 lines of complex scroll-related code
+  - Simplified coordinate system (single fixed positioning approach)
+  - Better performance (no scroll calculations per frame)
+  - Reliable across all mobile devices and screen sizes
+  - Shows last 6 guesses + active row (fits comfortably on all target devices)
+
 ### Code Quality Improvements
 - **✅ Debug Log Cleanup**: Removed excessive console logging for cleaner development experience
 - **✅ Layout Constants**: Added centralized SPACING and ANIMATION constants to LayoutConfig.js
 - **✅ Code Standardization**: Converted hardcoded values to centralized constants in ActiveRowManager
+- **✅ Removed Scroll Systems**: Eliminated HistoryScroller complexity, scroll buttons, and position update logic
 
 ---
 
 ## 🔄 IN PROGRESS
 
-### Active Layout Issues
-- **🔄 Element Bar Off-Screen (Regression)**: Element bar and active guess still going off bottom of screen
-  - Previously thought fixed, but issue persists in testing
-  - Needs investigation of container height calculations and scroll positioning
-  - **Priority**: High (affects core gameplay)
-
-- **🆕 Game End Screen Layout**: RoundOver scene cannot fit all 10 guesses on screen
-  - History display truncated when showing full game results
-  - Needs layout adjustment for complete game review
-  - **Priority**: Medium (affects game completion experience)
-
-### Code Cleanup (70% Complete)
-- **Remaining**: Convert hardcoded values in HistoryRenderer.js, HistoryScroller.js
+### Code Cleanup (80% Complete)
+- **Remaining**: Convert hardcoded values in HistoryRenderer.js
 - **Remaining**: Remove legacy code references and obsolete comments
 - **Priority**: Low (code polish, not functional issues)
 

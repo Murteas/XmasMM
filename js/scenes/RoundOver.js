@@ -368,21 +368,21 @@ class RoundOver extends Phaser.Scene {
 
     // Background with subtle quality tint
     const bgWidth = width - 32;
-    const rowBackground = this.add.rectangle(width / 2, y, bgWidth, rowHeight - 4, quality.colorHex, 0.12)
+    const rowBackground = this.add.rectangle(width / 2, y, bgWidth, rowHeight - 2, quality.colorHex, 0.12)
       .setStrokeStyle(1, 0x444444, 0.4);
     container.add(rowBackground);
 
-    // Row number & quality bar
-    const numberX = 22;
+    // Row number & quality bar (smaller for dense layout)
+    const numberX = 18;
     const rowText = this.add.text(numberX, y, `${rowNumber}`, {
-      font: '13px Arial',
+      font: '12px Arial',
       fill: '#ffffff'
     }).setOrigin(0, 0.5);
 
-    // Guess elements (slightly reduced spacing for density)
-    const elementSize = 28;
-    const elementSpacing = 32;
-    const startX = 60;
+    // Guess elements (reduced spacing and size for dense layout)
+    const elementSize = 24; // Reduced from 28
+    const elementSpacing = 28; // Reduced from 32
+    const startX = 50; // Moved left to make room
 
     guess.forEach((element, index) => {
       const x = startX + (index * elementSpacing);
@@ -394,41 +394,41 @@ class RoundOver extends Phaser.Scene {
           container.add(elementImage);
         } else {
           const elementText = this.add.text(x, y, element.charAt(0).toUpperCase(), {
-            font: '12px Arial',
+            font: '11px Arial',
             fill: '#fff',
             backgroundColor: '#666',
-            padding: { left: 4, right: 4, top: 3, bottom: 3 }
+            padding: { left: 3, right: 3, top: 2, bottom: 2 }
           }).setOrigin(0.5);
           container.add(elementText);
         }
       } catch (error) {
         const elementText = this.add.text(x, y, element.charAt(0).toUpperCase(), {
-          font: '12px Arial',
+          font: '11px Arial',
           fill: '#fff',
           backgroundColor: '#666',
-          padding: { left: 4, right: 4, top: 3, bottom: 3 }
+          padding: { left: 3, right: 3, top: 2, bottom: 2 }
         }).setOrigin(0.5);
         container.add(elementText);
       }
     });
 
-    // Feedback symbols (stars/bells)
-    const feedbackStartX = startX + (guess.length * elementSpacing) + 16;
+    // Feedback symbols (stars/bells) - smaller for dense layout
+    const feedbackStartX = startX + (guess.length * elementSpacing) + 12;
     let feedbackX = feedbackStartX;
     for (let i = 0; i < feedback.black; i++) {
-      this.createFeedbackSymbol('perfect', feedbackX, y, 14, container);
-      feedbackX += 16;
+      this.createFeedbackSymbol('perfect', feedbackX, y, 12, container); // Reduced from 14
+      feedbackX += 14; // Reduced from 16
     }
     for (let i = 0; i < feedback.white; i++) {
-      this.createFeedbackSymbol('close', feedbackX, y, 14, container);
-      feedbackX += 16;
+      this.createFeedbackSymbol('close', feedbackX, y, 12, container); // Reduced from 14
+      feedbackX += 14; // Reduced from 16
     }
 
-    // Quality label at far right (truncate if space constrained)
+    // Quality label at far right (smaller font for dense layout)
     const remainingSpace = (width - 20) - feedbackX;
-    if (remainingSpace > 60) {
-      const qualityLabel = this.add.text(width - 24, y, quality.label, {
-        font: '12px Arial',
+    if (remainingSpace > 50) { // Reduced threshold from 60
+      const qualityLabel = this.add.text(width - 20, y, quality.label, {
+        font: '11px Arial', // Reduced from 12px
         fill: quality.color
       }).setOrigin(1, 0.5);
       container.add(qualityLabel);
@@ -438,9 +438,7 @@ class RoundOver extends Phaser.Scene {
   }
 
   enableScrollableInteraction(contentHeight) {
-    // Skip if content fits
-    if (!this.totalScrollableContentHeight || this.totalScrollableContentHeight <= contentHeight) return;
-
+    // Always enable scrolling for RoundOver to handle edge cases
     this.isDraggingScroll = false;
     this.scrollDragStartY = 0;
     this.scrollContainerStartY = this.scrollableContainer.y;
@@ -471,10 +469,17 @@ class RoundOver extends Phaser.Scene {
   }
 
   clampScrollPosition(desiredY, contentHeight) {
-  const headerY = 150; // adjusted to include legend line spacing
-    const minY = headerY - (this.totalScrollableContentHeight - contentHeight); // max scroll up (content moves up, container y decreases)
-    const maxY = headerY; // original position
-    if (this.totalScrollableContentHeight <= contentHeight) return headerY;
+    const headerY = LayoutConfig.THREE_ZONE_HEADER; // Use consistent header height
+    
+    // If content fits within available height, don't allow scrolling
+    if (!this.totalScrollableContentHeight || this.totalScrollableContentHeight <= contentHeight) {
+      return headerY;
+    }
+    
+    // Calculate scroll bounds
+    const maxY = headerY; // original position (no scroll)
+    const minY = headerY - (this.totalScrollableContentHeight - contentHeight); // max scroll up
+    
     return Phaser.Math.Clamp(desiredY, minY, maxY);
   }
 

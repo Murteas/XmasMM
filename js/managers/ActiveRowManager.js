@@ -45,51 +45,36 @@ class ActiveRowManager {
     this.hasActiveRow = true;
     
     // Ensure the new active row and element bar are visible
-    this.scrollToActiveRow();
+    // No scrolling needed with sliding window approach
     
     return activeRowY; // Return position for reference
   }
 
   calculateInlineActiveRowPosition() {
-    // Calculate position for active row inline after the last completed guess
+    // SLIDING WINDOW: Simple fixed positioning - no scroll calculations needed
     const { width, height } = this.scene.cameras.main;
     const isSmallScreen = width < 500;
-    const isVerySmallScreen = width < 400;
     
-    // Use same coordinate system as HistoryRenderer (container-relative)
-    const baseStartY = isSmallScreen ? LayoutConfig.SPACING.CONTAINER_TOP_SMALL : LayoutConfig.SPACING.CONTAINER_TOP_DEFAULT;
-    const containerRelativeY = isVerySmallScreen ? LayoutConfig.SPACING.CONTAINER_TOP_VERY_SMALL : baseStartY;
+    // Use same starting coordinates as HistoryRenderer
+    const containerRelativeY = isSmallScreen ? 20 : 15;
+    const historyStartY = Math.max(containerRelativeY, height * 0.02);
     
-    const historyStartY = Math.max(
-      containerRelativeY,
-      height * 0.02  // Same as HistoryRenderer
-    );
-    
+    // Calculate position after visible history rows
     const rowHeight = LayoutConfig.HISTORY_ROW_HEIGHT_STANDARD;
+    const maxVisibleGuesses = LayoutConfig.HISTORY_SLIDING_WINDOW_SIZE;
     const guessHistory = this.historyManager.getGuessHistory();
-    const scrollOffset = this.historyManager.getScrollOffset();
     
-    // Match HistoryRenderer logic: only apply scroll offset when scrolling is actually happening
-    const activeAreaReserved = LayoutConfig.SPACING.ACTIVE_ROW_HEIGHT + LayoutConfig.SPACING.ELEMENT_BAR_HEIGHT + LayoutConfig.SPACING.CONTENT_MARGIN;
-    const bottomMargin = isSmallScreen ? activeAreaReserved : activeAreaReserved;
-    const maxVisibleRows = Math.floor((height - historyStartY - bottomMargin) / rowHeight);
+    // Only count visible rows (sliding window)
+    const visibleRowCount = Math.min(guessHistory.length, maxVisibleGuesses);
+    const activeRowY = historyStartY + (visibleRowCount * rowHeight);
     
-    const nextRowIndex = guessHistory.length;
-    let activeRowY;
-    
-    if (guessHistory.length <= maxVisibleRows) {
-      // No scrolling needed - match renderAllRows behavior
-      activeRowY = historyStartY + (nextRowIndex * rowHeight);
-    } else {
-      // Scrolling needed - match renderVisibleRows behavior  
-      activeRowY = historyStartY + (nextRowIndex * rowHeight) - scrollOffset;
-    }
+    console.log(`🔍 ACTIVE ROW: Positioned at Y=${activeRowY} after ${visibleRowCount} visible history rows`);
     
     return activeRowY;
   }
 
   createElementBar(activeRowY) {
-    // Create element bar BELOW active row slots with proper mobile spacing
+    // SLIDING WINDOW: Simple fixed positioning below active row
     const { height } = this.scene.cameras.main;
     const elementBarHeight = LayoutConfig.SPACING.ELEMENT_BAR_HEIGHT;
     const safeAreaInsets = this.scene.safeAreaManager ? this.scene.safeAreaManager.getInsets() : { bottom: 0 };
@@ -98,11 +83,13 @@ class ActiveRowManager {
     // Calculate ideal position below active row
     const idealElementBarY = activeRowY + LayoutConfig.SPACING.ELEMENT_BAR_OFFSET;
     
-    // Calculate maximum allowed Y position to keep element bar visible
-    const maxElementBarY = height - safeAreaInsets.bottom - elementBarHeight - minBottomMargin;
+    // Calculate maximum allowed position
+    const maxElementBarY = height - safeAreaInsets.bottom - (elementBarHeight / 2) - minBottomMargin;
     
-    // Use the lower of the two positions to ensure visibility
+    // Use the lower position to ensure visibility
     const elementBarY = Math.min(idealElementBarY, maxElementBarY);
+    
+    console.log(`🔍 ELEMENT BAR: Positioned at Y=${elementBarY} (ideal: ${idealElementBarY}, max: ${maxElementBarY})`);
     
     this.elementBar.create(this.scene.scrollableContainer, elementBarY);
   }
@@ -351,75 +338,11 @@ class ActiveRowManager {
     }
   }
 
+  // REMOVED: updateActiveRowPosition() - no longer needed with sliding window fixed positioning
+
   // Note: addSubmitButtonTouchFeedback method removed - ButtonFactory handles touch feedback automatically
 
-  updateActiveRowPosition() {
-    if (!this.hasActiveRow) {
-      console.error('CRITICAL: updateActiveRowPosition() called but hasActiveRow=false');
-      return;
-    }
-    
-    // CRITICAL FIX: Prevent excessive position updates
-    const now = Date.now();
-    if (this.lastPositionUpdate && (now - this.lastPositionUpdate) < LayoutConfig.ANIMATION.THROTTLE_60FPS) {
-      return;
-    }
-    this.lastPositionUpdate = now;
-    
-    const activeRowY = this.calculateInlineActiveRowPosition();
-    const { width } = this.scene.cameras.main;
-    const codeLength = this.scene.codeLength;
-    const isSmallScreen = width < 500;
-    
-    // Update background positions
-    if (this.activeRowBackground) {
-      this.activeRowBackground.setY(activeRowY);
-    }
-    
-    if (this.activeRowGlowEffect) {
-      this.activeRowGlowEffect.setY(activeRowY);
-    }
-    
-    // Update slot positions
-    if (this.activeRowElements) {
-      const positioning = this.calculateSlotPositioning(codeLength, width, isSmallScreen);
-      
-      this.activeRowElements.forEach((elementData, i) => {
-        const x = positioning.startX + i * positioning.elementSpacing;
-        elementData.slot.setPosition(x, activeRowY);
-        elementData.displayElement.setPosition(x, activeRowY);
-      });
-    }
-    
-    // Update submit button position
-    if (this.activeRowSubmitBtn) {
-      const positioning = this.calculateSlotPositioning(codeLength, width, isSmallScreen);
-      const submitButtonX = positioning.startX + (codeLength * positioning.elementSpacing) + 10;
-      this.activeRowSubmitBtn.setPosition(submitButtonX, activeRowY);
-    }
-    
-    // CRITICAL FIX: Update element bar position when active row moves
-    if (this.elementBar) {
-      const { height } = this.scene.cameras.main;
-      const elementBarHeight = 50; // Height of element bar
-      const safeAreaInsets = this.scene.safeAreaManager ? this.scene.safeAreaManager.getInsets() : { bottom: 0 };
-      const minBottomMargin = 10; // Minimum margin from bottom
-      
-      // Calculate ideal position below active row
-      const idealElementBarY = activeRowY + 55; // Same spacing as createElementBar
-      
-      // Calculate maximum allowed Y position to keep element bar visible
-      const maxElementBarY = height - safeAreaInsets.bottom - elementBarHeight - minBottomMargin;
-      
-      // Use the lower of the two positions to ensure visibility
-      const elementBarY = Math.min(idealElementBarY, maxElementBarY);
-      this.elementBar.updatePosition(elementBarY);
-    }
-  }
-
-  scrollToActiveRow() {
-    this.historyManager.scrollToActiveRow();
-  }
+  // REMOVED: scrollToActiveRow() - no longer needed with sliding window approach
 
   submitActiveRowGuess() {
     if (!this.hasActiveRow) return null;
