@@ -174,7 +174,7 @@ class GameInputHandler {
     const targetSlot = this.scene.historyManager.activeRowManager.activeRowElements[hintResult.position];
     
     if (targetSlot && targetSlot.slot) {
-      // Add glow directly to footer container (same coordinate space as the slot)
+      // Add glow effect to scrollable container (unified layout)
       glowEffect = this.scene.add.rectangle(
         targetSlot.slot.x, 
         targetSlot.slot.y, 
@@ -184,10 +184,10 @@ class GameInputHandler {
         0.7
       );
       
-      // Add to footer container so it uses the same coordinate space
-      this.scene.footerContainer.add(glowEffect);
+      // Add to scrollable container (unified layout)
+      this.scene.scrollableContainer.add(glowEffect);
       
-      // Set depth relative to other footer elements
+      // Set depth relative to other elements
       glowEffect.setDepth(targetSlot.slot.depth + 1);
       
       // Pulsing animation

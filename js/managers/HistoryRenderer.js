@@ -18,41 +18,49 @@ class HistoryRenderer {
     const isSmallScreen = width < 500;
     const isVerySmallScreen = width < 400;
     
-    // Calculate consistent positioning with ActiveRowManager and UILayoutManager
-    const baseHeaderHeight = isSmallScreen ? 140 : 120;
-    const headerBottomY = isVerySmallScreen ? 145 : (isSmallScreen ? 120 : 95);
+    // Calculate positioning relative to scrollableContainer (not absolute screen)
+    // Since scrollableContainer starts at headerHeight, we need container-relative coordinates
+    const baseStartY = isSmallScreen ? 20 : 15; // Start just below container top
+    const containerRelativeY = isVerySmallScreen ? 25 : baseStartY;
     
-    // MOBILE OPTIMIZATION: No longer account for Christmas legend space (GameScreenMobileLayoutFix)
-    // Legend removed to reclaim 65px of valuable header space
-    // const legendItemHeight = 20;
-    // const legendItems = 2; // perfect and close feedback symbols
-    // const legendHeight = (legendItems * legendItemHeight) + 25;
-    // const legendSpacing = 10;
-    
-    // History starts much higher for maximum space usage - expert mobile optimization
+    // History starts at top of scrollable container with minimal margin
     const startY = Math.max(
-      baseHeaderHeight, 
-      height * 0.14, // Reduced from 0.18 to 0.14 for even higher positioning
-      headerBottomY + 2 // Reduced from 5 to 2 for minimal gap
+      containerRelativeY,
+      height * 0.02  // Very small percentage since we're in container coordinates
     );
     
     // Mobile-optimized row height for much bigger elements and excellent visibility
-    // Increased from 55px to 65px to accommodate larger elements (45px + padding)
-    const rowHeight = 65;
-    const bottomMargin = isSmallScreen ? 40 : 50; // Reduced to use more space
+    // CRITICAL FIX: Use same rowHeight as ActiveRowManager to prevent gap issues
+    const rowHeight = LayoutConfig.HISTORY_ROW_HEIGHT_STANDARD;
+    
+    // Reserve space for active row and element bar at bottom
+    const activeRowHeight = 45; // Space for active row elements
+    const elementBarHeight = 50; // Space for element selection bar
+    const activeAreaReserved = activeRowHeight + elementBarHeight + 20; // Add some margin
+    
+    const bottomMargin = isSmallScreen ? activeAreaReserved : activeAreaReserved;
     const maxVisibleRows = Math.floor((height - startY - bottomMargin) / rowHeight);
     
     const totalRows = guessHistory.length;
-    const maxScrollOffset = Math.max(0, (totalRows * rowHeight) - (maxVisibleRows * rowHeight));
+    
+    // Account for active row when calculating max scroll offset
+    // The active row needs additional space below the history
+    const activeRowExists = this.historyManager && this.historyManager.hasActiveRow;
+    const additionalRowHeight = activeRowExists ? LayoutConfig.HISTORY_ROW_HEIGHT_STANDARD : 0; // Same as rowHeight for spacing
+    const effectiveTotalHeight = (totalRows * rowHeight) + additionalRowHeight;
+    
+    const maxScrollOffset = Math.max(0, effectiveTotalHeight - (maxVisibleRows * rowHeight));
     
     // Validate scroll offset
     const validatedScrollOffset = Math.max(0, Math.min(maxScrollOffset, historyScrollOffset));
     
     if (totalRows <= maxVisibleRows) {
       // No scrolling needed
+      console.log(`🔍 HISTORY DEBUG: Using renderAllRows (${totalRows} <= ${maxVisibleRows})`);
       this.renderAllRows(guessHistory, feedbackHistory, startY, rowHeight);
     } else {
       // Render visible rows only
+      console.log(`🔍 HISTORY DEBUG: Using renderVisibleRows (${totalRows} > ${maxVisibleRows})`);
       this.renderVisibleRows(guessHistory, feedbackHistory, startY, rowHeight, validatedScrollOffset, maxVisibleRows);
       this.renderScrollIndicators(totalRows, maxVisibleRows, validatedScrollOffset, startY, rowHeight);
     }
@@ -99,7 +107,7 @@ class HistoryRenderer {
     
     // Add subtle row background for better visibility against Christmas background
     const rowWidth = width * 0.95;
-    const rowHeight = 65; // Current row height
+    const rowHeight = LayoutConfig.HISTORY_ROW_HEIGHT_STANDARD; // Use consistent row height
     const rowBackground = this.scene.add.rectangle(
       width / 2, 
       y, 
@@ -109,7 +117,7 @@ class HistoryRenderer {
       0.15 // Very subtle transparency
     ).setOrigin(0.5).setDepth(depth - 0.1);
     
-    this.historyGroup.add(rowBackground);
+    this.scene.scrollableContainer.add(rowBackground);
     this.historyElements.push(rowBackground);
     
     // MOBILE EXPERT DESIGN: Use much more screen width (90% vs ~60%)
@@ -146,7 +154,7 @@ class HistoryRenderer {
       // Create element image with fallback and opacity
       const elementImage = this.createElementImage(element, x, y, elementSize, depth, opacity);
       
-      this.historyGroup.add(elementImage);
+      this.scene.scrollableContainer.add(elementImage);
       this.historyElements.push(elementImage);
     });
   }
@@ -189,7 +197,7 @@ class HistoryRenderer {
       fontStyle: 'bold'
     }).setOrigin(0.5).setDepth(depth + 0.02).setAlpha(opacity);
     
-    this.historyGroup.add(elementText);
+    this.scene.scrollableContainer.add(elementText);
     this.historyElements.push(elementText);
     
     return fallbackRect;
@@ -306,7 +314,7 @@ class HistoryRenderer {
       symbolImage.setScale(imageScale);
       symbolImage.setOrigin(0.5).setDepth(depth).setAlpha(opacity);
       
-      this.historyGroup.add(symbolImage);
+      this.scene.scrollableContainer.add(symbolImage);
       this.historyElements.push(symbolImage);
       
     } catch (error) {
@@ -349,8 +357,8 @@ class HistoryRenderer {
       fontStyle: 'bold'
     }).setOrigin(0.5).setDepth(depth + 0.01).setAlpha(opacity);
     
-    this.historyGroup.add(circle);
-    this.historyGroup.add(symbolText);
+    this.scene.scrollableContainer.add(circle);
+    this.scene.scrollableContainer.add(symbolText);
     this.historyElements.push(circle, symbolText);
   }
 
@@ -363,7 +371,7 @@ class HistoryRenderer {
       fontStyle: 'bold'   
     }).setOrigin(0.5).setDepth(depth).setAlpha(opacity);
     
-    this.historyGroup.add(rowNumberText);
+    this.scene.scrollableContainer.add(rowNumberText);
     this.historyElements.push(rowNumberText);
   }
 
@@ -386,7 +394,7 @@ class HistoryRenderer {
         this.historyManager.scrollHistory(-30);
       });
       
-      this.historyGroup.add(upIndicator);
+      this.scene.scrollableContainer.add(upIndicator);
       this.historyElements.push(upIndicator);
     }
     
@@ -406,7 +414,7 @@ class HistoryRenderer {
         this.historyManager.scrollHistory(30);
       });
       
-      this.historyGroup.add(downIndicator);
+      this.scene.scrollableContainer.add(downIndicator);
       this.historyElements.push(downIndicator);
     }
     
@@ -417,7 +425,7 @@ class HistoryRenderer {
       fill: '#ccc'
     }).setOrigin(1, 0.5).setDepth(GameUtils.getDepthLayers().UI);
     
-    this.historyGroup.add(positionIndicator);
+    this.scene.scrollableContainer.add(positionIndicator);
     this.historyElements.push(positionIndicator);
   }
 
@@ -427,6 +435,7 @@ class HistoryRenderer {
     console.log('🔧 DEBUG: historyGroup exists:', !!this.historyGroup);
     console.log('🔧 DEBUG: historyElements count:', this.historyElements ? this.historyElements.length : 0);
     
+    // Clean up historyGroup (used for organization but not as container)
     if (this.historyGroup) {
       console.log('🔧 DEBUG: Clearing historyGroup with', this.historyGroup.children.size, 'children');
       this.historyGroup.clear(true, true);
@@ -434,6 +443,7 @@ class HistoryRenderer {
       this.historyGroup = null;
     }
     
+    // Clean up individual elements (added directly to scrollableContainer)
     if (this.historyElements) {
       console.log('🔧 DEBUG: Destroying', this.historyElements.length, 'history elements');
       this.historyElements.forEach(element => {

@@ -14,9 +14,7 @@ class ModuleLoader {
       'js/managers/HistoryRenderer.js',
       'js/managers/HistoryScroller.js',
       'js/managers/ElementBar.js',
-      'js/managers/ElementPicker.js',
       'js/managers/ActiveRowManager.js',
-      'js/managers/ScrollableHistoryManager.js',
       'js/managers/HistoryManager.js',
       'js/managers/GameStateManager.js',
       'js/managers/UILayoutManager.js',
@@ -50,14 +48,12 @@ class ModuleLoader {
       'js/managers/ScoreManager.js',
       'js/managers/HistoryRenderer.js',
       'js/managers/HistoryScroller.js',
-      'js/managers/ElementBar.js',
-      'js/managers/ElementPicker.js'
+      'js/managers/ElementBar.js'
     ];
     
     // Group 3: Dependent managers (sequential)
     const dependentManagerModules = [
       'js/managers/ActiveRowManager.js',
-      'js/managers/ScrollableHistoryManager.js',
       'js/managers/HistoryManager.js',
       'js/managers/GameStateManager.js',
       'js/managers/UILayoutManager.js',

@@ -71,6 +71,8 @@ class HistoryManager {
     // Update active row position if it exists
     if (this.hasActiveRow) {
       this.updateActiveRowPosition();
+      // Ensure active row and element bar remain visible after adding new guess
+      this.scrollToActiveRow();
     }
   }
 

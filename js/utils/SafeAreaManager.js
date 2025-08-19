@@ -150,19 +150,7 @@ class SafeAreaManager {
     return container;
   }
   
-  positionFooter(container, baseY) {
-    // Position footer above safe area bottom
-    const safeY = baseY - this.insets.bottom;
-    container.y = safeY;
-    
-    // Auto-update when safe areas change
-    const unsubscribe = this.onInsetsChanged((insets) => {
-      container.y = baseY - insets.bottom;
-    });
-    
-    container.on('destroy', unsubscribe);
-    return container;
-  }
+  // Note: positionFooter method removed - no longer needed in unified layout
 }
 
 // Global availability for module loading system

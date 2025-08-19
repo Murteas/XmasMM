@@ -35,166 +35,68 @@ class ActiveRowManager {
       }
     }
     
-    // SIMPLIFIED: Use footer container if available, otherwise use calculated position
-    if (this.scene.footerContainer) {
-      console.log('📱 Using simple footer container for active row');
-      this.createActiveRowInFooter();
-    } else {
-      console.log('🖥️ Using calculated position for active row');
-      const activeRowY = this.calculateActiveRowPosition();
-      this.createActiveRowVisuals(activeRowY);
-      this.createActiveRowSlots(activeRowY);
-      this.createSubmitButton(activeRowY);
-    }
+    // UNIFIED SCROLLABLE LAYOUT: Always position inline after last guess in scrollable container
+    console.log('📱 Creating active row inline in scrollable container');
+    const activeRowY = this.calculateInlineActiveRowPosition();
+    this.createActiveRowVisuals(activeRowY);
+    this.createActiveRowSlots(activeRowY);
+    this.createSubmitButton(activeRowY);
+    this.createElementBar(activeRowY);
     
     this.hasActiveRow = true;
     
-    return this.scene.footerContainer ? 40 : this.calculateActiveRowPosition(); // Return relative position
+    // Ensure the new active row and element bar are visible
+    this.scrollToActiveRow();
+    
+    return activeRowY; // Return position for reference
   }
 
-  createActiveRowInFooter() {
-    // Create element bar first (top row of footer)
-    this.elementBar.create(this.scene.footerContainer);
-    
-    // CORRECTED: Submit button on FAR RIGHT as requested
-    const { width } = this.scene.cameras.main;
-    const codeLength = this.scene.codeLength;
-    
-    // Adjusted for two-row footer layout with better spacing
-    const footerActiveRowY = 15; // Moved down to give element bar more space
-    
-    // Better centered layout for professional appearance
-    const submitBtnWidth = 70;
-    const buttonSlotGap = 15;
-    const sideMargins = 12;
-    
-    // Calculate optimal slot size for centered layout
-    const maxSlotSize = 42;
-    const totalSlotArea = codeLength * maxSlotSize;
-    const totalFooterWidth = totalSlotArea + buttonSlotGap + submitBtnWidth;
-    
-    // Center the entire active row group
-    const centerStartX = (width - totalFooterWidth) / 2;
-    const slotSize = Math.min(maxSlotSize, Math.floor(totalSlotArea / codeLength));
-    const slotsStartX = centerStartX;
-    const submitX = slotsStartX + (codeLength * slotSize) + buttonSlotGap + (submitBtnWidth / 2);
-    
-    console.log(`🔧 Centered Layout: width=${width}, centerStart=${centerStartX}, submitX=${submitX}`);
-    
-    // CREATE SLOTS FIRST (properly spaced from left)
-    this.activeRowElements = [];
-    
-    for (let i = 0; i < codeLength; i++) {
-      const slotX = slotsStartX + (i * slotSize) + (slotSize / 2);
-      // Smaller, more compact slots since element bar is primary interaction
-      const slot = this.scene.add.rectangle(slotX, footerActiveRowY, slotSize - 2, slotSize - 2, 0x2a2a2a)
-        .setStrokeStyle(2, 0xffffff, 0.9) // Thinner border for compact look
-        .setInteractive()
-        .on('pointerdown', () => this.selectSlot(i));
-      
-      const displayElement = this.createSlotDisplay(slotX, footerActiveRowY, i);
-      
-      this.scene.footerContainer.add([slot, displayElement]);
-      this.activeRowElements.push({ slot, displayElement });
-    }
-    
-    // CREATE SUBMIT BUTTON (far right, with guaranteed gap)
-    this.activeRowSubmitBtn = this.scene.add.rectangle(submitX, footerActiveRowY, submitBtnWidth, 45, 0x0d5016) // Reduced height
-      .setStrokeStyle(2, 0x0a4012)
-      .setInteractive()
-      .on('pointerdown', () => this.scene.submitGuess());
-
-    const submitText = this.scene.add.text(submitX, footerActiveRowY, '🎁 Submit', {
-      fontSize: '11px', // Slightly smaller font
-      fill: '#ffffff',
-      fontFamily: 'Arial'
-    }).setOrigin(0.5);
-    
-    this.scene.footerContainer.add([this.activeRowSubmitBtn, submitText]);
-    
-    console.log(`📱 Fixed layout: ${codeLength} slots of ${slotSize}px each, ${buttonSlotGap}px gap, submit at x=${submitX}`);
-  }
-
-  calculateActiveRowPosition() {
-    // CRITICAL DEBUG: Track what's triggering multiple calculations
-    console.log('🔧 DEBUG: calculateActiveRowPosition() called - checking hasActiveRow:', this.hasActiveRow);
-    
-    // Use mobile viewport for proper device simulation support
-    const viewport = GameUtils.getMobileViewport();
-    const { width, height } = viewport;
+  calculateInlineActiveRowPosition() {
+    // Calculate position for active row inline after the last completed guess
+    const { width, height } = this.scene.cameras.main;
     const isSmallScreen = width < 500;
     const isVerySmallScreen = width < 400;
     
-    // Get responsive layout with safe area consideration
-    const layout = GameUtils.getResponsiveLayout(width, height);
+    // Use same coordinate system as HistoryRenderer (container-relative)
+    const baseStartY = isSmallScreen ? 20 : 15; // Start just below container top
+    const containerRelativeY = isVerySmallScreen ? 25 : baseStartY;
     
-    // Calculate header layout (same as UILayoutManager)
-  // Use centralized layout constants
-  const baseHeaderHeight = LayoutConfig.getBaseHeaderHeight(isSmallScreen);
-    const headerBottomY = isVerySmallScreen ? 145 : (isSmallScreen ? 120 : 95);
-    
-    // EXPERT UX: Legend removed - no legend space calculations needed
-    // Reclaimed 65px of valuable mobile screen space for better game layout
-    
-    // History starts below header only - legend space reclaimed
     const historyStartY = Math.max(
-      baseHeaderHeight, 
-      layout.contentStartY, // Use safe area aware content start
-      headerBottomY + 10 // Minimal padding since legend removed
+      containerRelativeY,
+      height * 0.02  // Same as HistoryRenderer
     );
     
-  const rowHeight = LayoutConfig.HISTORY_ROW_HEIGHT_STANDARD;
+    const rowHeight = LayoutConfig.HISTORY_ROW_HEIGHT_STANDARD;
     const guessHistory = this.historyManager.getGuessHistory();
     const scrollOffset = this.historyManager.getScrollOffset();
     
-    // CRITICAL FIX: Calculate active row position AFTER the last completed guess
-    // Position active row below the last visible completed guess
-    const completedGuessesHeight = guessHistory.length * rowHeight;
-    const lastCompletedGuessY = historyStartY + completedGuessesHeight - scrollOffset;
+    // Match HistoryRenderer logic: only apply scroll offset when scrolling is actually happening
+    const activeAreaReserved = 45 + 50 + 20; // Same calculation as HistoryRenderer
+    const bottomMargin = isSmallScreen ? activeAreaReserved : activeAreaReserved;
+    const maxVisibleRows = Math.floor((height - historyStartY - bottomMargin) / rowHeight);
     
-    // Add proper spacing AFTER the last completed guess
-    const activeRowSeparation = 15; // Extra space to prevent overlap
-    let activeRowY = lastCompletedGuessY + activeRowSeparation;
+    const nextRowIndex = guessHistory.length;
+    let activeRowY;
     
-    // MOBILE EXPERT FIX: Don't constrain active row by contentEndY when there are many guesses
-    // The content area needs to expand to accommodate all guesses
-    const guessCount = guessHistory.length;
-    
-    if (guessCount >= 7) {
-      // MOBILE EXPERT DESIGN: Push active row very close to safe area for maximum space usage
-      const safeAreaInsets = this.scene.safeAreaManager ? this.scene.safeAreaManager.getInsets() : { bottom: 0 };
-      const footerHeight = LayoutConfig.FOOTER_HEIGHT_GAME; // Use updated footer height
-      const footerBuffer = 5; // Minimal buffer - just barely above safe area
-      const absoluteMaxY = height - footerHeight - footerBuffer - safeAreaInsets.bottom;
-      activeRowY = Math.min(activeRowY, absoluteMaxY);
-      
-      console.log(`🎯 ActiveRowManager: Many guesses (${guessCount}), pushing to barely above safe area`);
-      console.log(`  - Calculated activeRowY: ${lastCompletedGuessY + activeRowSeparation}`);
-      console.log(`  - Footer height: ${footerHeight}px`);
-      console.log(`  - Footer buffer: ${footerBuffer}px (minimal - barely above safe area)`);
-      console.log(`  - Absolute max Y: ${absoluteMaxY} (safe bottom: ${safeAreaInsets.bottom}px)`);
-      console.log(`  - Final activeRowY: ${activeRowY}`);
+    if (guessHistory.length <= maxVisibleRows) {
+      // No scrolling needed - match renderAllRows behavior
+      activeRowY = historyStartY + (nextRowIndex * rowHeight);
     } else {
-      // MOBILE EXPERT DESIGN: For normal games, also push closer to safe area
-      const safeAreaInsets = this.scene.safeAreaManager ? this.scene.safeAreaManager.getInsets() : { bottom: 0 };
-      const footerHeight = LayoutConfig.FOOTER_HEIGHT_GAME;
-      const footerBuffer = 5; // REDUCED from 8px to 5px - reclaim more space
-      const maxActiveRowY = height - footerHeight - footerBuffer - safeAreaInsets.bottom;
-      activeRowY = Math.min(activeRowY, maxActiveRowY);
-      
-      console.log(`🎯 ActiveRowManager: Normal game (${guessCount} guesses), pushing closer to safe area`);
-      console.log(`  - Footer height: ${footerHeight}px`);
-      console.log(`  - Footer buffer: ${footerBuffer}px (reduced for more space)`);
-      console.log(`  - Max active row Y: ${maxActiveRowY} (safe bottom: ${safeAreaInsets.bottom}px)`);
-      console.log(`  - Final activeRowY: ${activeRowY}`);
+      // Scrolling needed - match renderVisibleRows behavior  
+      activeRowY = historyStartY + (nextRowIndex * rowHeight) - scrollOffset;
     }
-    
-    // Ensure it doesn't go above the content area (this constraint is always valid)
-    const minActiveRowY = layout.contentStartY + 50;
-    activeRowY = Math.max(activeRowY, minActiveRowY);
     
     return activeRowY;
   }
+
+  createElementBar(activeRowY) {
+    // Create element bar BELOW active row slots with proper mobile spacing
+    const elementBarY = activeRowY + 55; // Proper spacing for mobile touch targets
+    this.elementBar.create(this.scene.scrollableContainer, elementBarY);
+  }
+
+  // Old calculateActiveRowPosition method removed - was causing conflicts with unified layout
+  // Now using calculateInlineActiveRowPosition for all positioning
 
   createActiveRowVisuals(activeRowY) {
     const { width } = this.scene.cameras.main;
@@ -220,6 +122,9 @@ class ActiveRowManager {
     )
       .setStrokeStyle(4, 0xffd700) // Thicker gold border
       .setDepth(GameUtils.getDepthLayers().HISTORY + 0.1);
+    
+    // Add visual elements to scrollable container
+    this.scene.scrollableContainer.add([this.activeRowGlowEffect, this.activeRowBackground]);
   }
 
   createActiveRowSlots(activeRowY) {
@@ -238,6 +143,12 @@ class ActiveRowManager {
       const displayElement = this.createSlotDisplay(x, activeRowY, i);
       
       this.setupSlotInteraction(slot, i);
+      
+      // Add slot elements to scrollable container
+      this.scene.scrollableContainer.add(slot);
+      if (displayElement) {
+        this.scene.scrollableContainer.add(displayElement);
+      }
       
       this.activeRowElements.push({ slot, displayElement });
     }
@@ -319,7 +230,7 @@ class ActiveRowManager {
   setupSlotInteraction(slot, slotIndex) {
     slot.on('pointerdown', (pointer) => {
       this.addSlotTouchFeedback(slot, slotIndex);
-      this.showElementPicker(slotIndex);
+      this.selectSlot(slotIndex);
     });
   }
 
@@ -329,7 +240,9 @@ class ActiveRowManager {
     const isSmallScreen = width < 500;
     const positioning = this.calculateSlotPositioning(codeLength, width, isSmallScreen);
     
-    const submitButtonX = positioning.startX + (codeLength * positioning.elementSpacing) + 10;
+    // Calculate position after the last element with proper spacing
+    const lastElementRightEdge = positioning.startX + ((codeLength - 1) * positioning.elementSpacing) + (positioning.elementWidth / 2);
+    const submitButtonX = lastElementRightEdge + 20 + 40; // 20px gap + half button width
     
     // Use ButtonFactory for consistent festive styling with candy cane stripes
     this.activeRowSubmitBtn = ButtonFactory.createButton(
@@ -347,17 +260,18 @@ class ActiveRowManager {
       }
     );
     
-    // Set depth and data tag for ScrollableHistoryManager
+    // Set depth and data tag
     this.activeRowSubmitBtn.setDepth(GameUtils.getDepthLayers().TOUCH_AREA + 1.2);
     this.activeRowSubmitBtn.setData('uiType', 'submitButton');
+    
+    // Add submit button to scrollable container
+    this.scene.scrollableContainer.add(this.activeRowSubmitBtn);
     
     // ButtonFactory handles touch feedback automatically, no need for addSubmitButtonTouchFeedback
   }
 
-  showElementPicker(slotIndex) {
-    this.elementPicker.showElementPicker(slotIndex, this.activeRowGuess);
-  }
-
+  // Element selection is handled by ElementBar, no separate picker needed
+  
   selectElement(slotIndex, element) {
     this.activeRowGuess[slotIndex] = element;
     
@@ -386,10 +300,8 @@ class ActiveRowManager {
     const newDisplay = this.createElementDisplay(element, x, y);
     elementData.displayElement = newDisplay;
     
-    // Add to footer container if using footer layout
-    if (this.scene.footerContainer) {
-      this.scene.footerContainer.add(newDisplay);
-    }
+    // Add to scrollable container (unified layout)
+    this.scene.scrollableContainer.add(newDisplay);
   }
 
   addSlotTouchFeedback(slot, slotIndex) {
@@ -447,7 +359,7 @@ class ActiveRowManager {
     console.log('🔧 DEBUG: updateActiveRowPosition() called');
     console.trace('updateActiveRowPosition call stack');
     
-    const activeRowY = this.calculateActiveRowPosition();
+    const activeRowY = this.calculateInlineActiveRowPosition();
     const { width } = this.scene.cameras.main;
     const codeLength = this.scene.codeLength;
     const isSmallScreen = width < 500;
@@ -463,13 +375,6 @@ class ActiveRowManager {
     
     // Update slot positions
     if (this.activeRowElements) {
-      // CRITICAL FIX: Check if we're using footer container (different coordinate system)
-      if (this.scene.footerContainer) {
-        console.log('🔧 DEBUG: Active row in footer container - elements should NOT be repositioned');
-        // Don't reposition elements when using footer container - they're already positioned correctly
-        return;
-      }
-      
       const positioning = this.calculateSlotPositioning(codeLength, width, isSmallScreen);
       
       this.activeRowElements.forEach((elementData, i) => {
@@ -481,16 +386,15 @@ class ActiveRowManager {
     
     // Update submit button position
     if (this.activeRowSubmitBtn) {
-      // CRITICAL FIX: Check if we're using footer container (different coordinate system)
-      if (this.scene.footerContainer) {
-        console.log('🔧 DEBUG: Submit button in footer container - should NOT be repositioned');
-        // Don't reposition submit button when using footer container
-        return;
-      }
-      
       const positioning = this.calculateSlotPositioning(codeLength, width, isSmallScreen);
       const submitButtonX = positioning.startX + (codeLength * positioning.elementSpacing) + 10;
       this.activeRowSubmitBtn.setPosition(submitButtonX, activeRowY);
+    }
+    
+    // CRITICAL FIX: Update element bar position when active row moves
+    if (this.elementBar) {
+      const elementBarY = activeRowY + 50; // Same offset as in createElementBar
+      this.elementBar.updatePosition(elementBarY);
     }
   }
 
@@ -549,9 +453,17 @@ class ActiveRowManager {
       this.activeRowSubmitBtn = null;
     }
     
+    // Clean up element bar
+    if (this.elementBar) {
+      this.elementBar.destroy();
+    }
+    
     // Reset state
     this.hasActiveRow = false;
     this.activeRowGuess = [];
+    
+    // Recreate element bar for next use
+    this.elementBar = new ElementBar(this.scene, this);
   }
 
   // === DEBUG HELPER METHODS ===

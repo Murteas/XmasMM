@@ -16,19 +16,13 @@ class HistoryScroller {
   setupHistoryScroll() {
     const { width, height } = this.scene.cameras.main;
     
-    // Calculate touch area dimensions with proper footer avoidance
-    const isSmallScreen = width < 500;
-    const baseHeaderHeight = isSmallScreen ? 140 : 120;
-    const historyStartY = Math.max(baseHeaderHeight, height * 0.22);
-    
-    // CRITICAL FIX: Use EXACT same footer calculations as GameScene to avoid overlap
-    const footerHeight = LayoutConfig.FOOTER_HEIGHT_GAME;
+    // UNIFIED SCROLLABLE LAYOUT: Full-height touch area with no footer constraints
+    const headerHeight = LayoutConfig.THREE_ZONE_HEADER;
+    const historyStartY = headerHeight;
     const safeAreaInsets = this.scene.safeAreaManager ? this.scene.safeAreaManager.getInsets() : { bottom: 0 };
-    const swipeGestureMargin = 5; // REDUCED: Use same 5px margin as GameScene
-    const footerTopY = height - footerHeight - safeAreaInsets.bottom - swipeGestureMargin;
-    const historyEndY = footerTopY - 30; // INCREASED buffer to prevent touch overlap with footer
+    const historyEndY = height - safeAreaInsets.bottom; // Use full available height
     
-    // Create invisible touch area for history scrolling
+    // Create invisible touch area for history scrolling covering full scrollable area
     this.historyTouchArea = this.scene.add.rectangle(
       width / 2, 
       (historyStartY + historyEndY) / 2, 
@@ -40,23 +34,16 @@ class HistoryScroller {
      .setInteractive(); // Make it interactive to receive pointer events
     
     this.setupTouchEvents();
+    
+    if (TestConfig.shouldShowDebugLogs()) {
+      console.log('📱 Unified scrollable touch area created');
+      console.log(`  - Full height: ${historyStartY} to ${historyEndY} (${historyEndY - historyStartY}px)`);
+      console.log(`  - No footer constraints`);
+    }
   }
 
   setupTouchEvents() {
     this.historyTouchArea.on('pointerdown', (pointer) => {
-      // CRITICAL FIX: Ensure we're not in footer area before starting scroll
-      const { height } = this.scene.cameras.main;
-      const footerHeight = LayoutConfig.FOOTER_HEIGHT_GAME;
-      const safeAreaInsets = this.scene.safeAreaManager ? this.scene.safeAreaManager.getInsets() : { bottom: 0 };
-      const swipeGestureMargin = 5; // UPDATED: Use same 5px margin as GameScene
-      const footerTopY = height - footerHeight - safeAreaInsets.bottom - swipeGestureMargin;
-      
-      // Don't start dragging if touch is in or near footer area
-      if (pointer.y >= footerTopY - 20) {
-        console.log(`🚫 HistoryScroller: Ignoring touch in footer area (y=${pointer.y}, footerTopY=${footerTopY})`);
-        return;
-      }
-      
       this.startY = pointer.y;
       this.isDragging = true;
     });
@@ -64,27 +51,14 @@ class HistoryScroller {
     this.historyTouchArea.on('pointermove', (pointer) => {
       if (!this.isDragging) return;
       
-      // CRITICAL FIX: Stop dragging if we move into footer area
-      const { height } = this.scene.cameras.main;
-      const footerHeight = LayoutConfig.FOOTER_HEIGHT_GAME;
-      const safeAreaInsets = this.scene.safeAreaManager ? this.scene.safeAreaManager.getInsets() : { bottom: 0 };
-      const swipeGestureMargin = 5; // UPDATED: Use same 5px margin as GameScene
-      const footerTopY = height - footerHeight - safeAreaInsets.bottom - swipeGestureMargin;
-      
-      if (pointer.y >= footerTopY - 20) {
-        console.log(`🚫 HistoryScroller: Stopping drag in footer area (y=${pointer.y}, footerTopY=${footerTopY})`);
-        this.isDragging = false;
-        return;
-      }
-      
       const deltaY = pointer.y - this.startY;
       const sensitivity = 0.05;
       
-      // CRITICAL FIX: Only process significant movements to prevent unnecessary refreshes
+      // Only process significant movements to prevent unnecessary refreshes
       if (Math.abs(deltaY) > 10) {
         const scrollDelta = Math.floor(deltaY * sensitivity);
         
-        // CRITICAL FIX: Only call scrollHistory if there's actually a meaningful delta
+        // Only call scrollHistory if there's actually a meaningful delta
         if (Math.abs(scrollDelta) > 0) {
           this.scrollHistory(-scrollDelta);
           this.startY = pointer.y;
@@ -146,19 +120,18 @@ class HistoryScroller {
 
   calculateScrollParameters() {
     const { width, height } = this.scene.cameras.main;
-    const isSmallScreen = width < 500;
-    const baseHeaderHeight = isSmallScreen ? 140 : 120;
-    const historyStartY = Math.max(baseHeaderHeight, height * 0.22);
+    const headerHeight = LayoutConfig.THREE_ZONE_HEADER;
+    const historyStartY = headerHeight + 20; // Space below header
     
-    // MOBILE EXPERT DESIGN: Use optimized footer height for better positioning
-    const footerHeight = LayoutConfig.FOOTER_HEIGHT_GAME; // Now 150px
-    const bottomMargin = footerHeight + 15; // Reduced buffer for closer positioning 
-    const rowHeight = LayoutConfig.HISTORY_ROW_HEIGHT_STANDARD; // Now 75px for larger elements
-    const maxVisibleRows = Math.floor((height - historyStartY - bottomMargin) / rowHeight);
+    // UNIFIED SCROLLABLE LAYOUT: Use full available height with safe area consideration
+    const safeAreaInsets = this.scene.safeAreaManager ? this.scene.safeAreaManager.getInsets() : { bottom: 0 };
+    const availableHeight = height - historyStartY - safeAreaInsets.bottom - 20; // Small margin
+    const rowHeight = LayoutConfig.HISTORY_ROW_HEIGHT_STANDARD;
+    const maxVisibleRows = Math.floor(availableHeight / rowHeight);
     
     return {
       historyStartY,
-      bottomMargin,
+      availableHeight,
       rowHeight,
       maxVisibleRows
     };
@@ -187,51 +160,35 @@ class HistoryScroller {
     const hasActiveRow = this.historyManager.hasActiveRow;
     if (!hasActiveRow) return;
     
-    // Use mobile viewport for proper device simulation support
-    const viewport = GameUtils.getMobileViewport();
-    const { width, height } = viewport;
-    const layout = GameUtils.getResponsiveLayout(width, height);
-    
+    // UNIFIED SCROLLABLE LAYOUT: Use container-relative coordinates
+    const { width, height } = this.scene.cameras.main;
     const isSmallScreen = width < 500;
     const isVerySmallScreen = width < 400;
     
-    // Calculate header layout (consistent with ActiveRowManager)
-    const baseHeaderHeight = isSmallScreen ? 140 : 120;
-    const headerBottomY = isVerySmallScreen ? 145 : (isSmallScreen ? 120 : 95);
+    // Use same coordinate system as HistoryRenderer and ActiveRowManager
+    const baseStartY = isSmallScreen ? 20 : 15;
+    const containerRelativeY = isVerySmallScreen ? 25 : baseStartY;
+    const historyStartY = Math.max(containerRelativeY, height * 0.02);
     
-    // EXPERT UX: Legend removed - no legend space calculations needed
-    // Mobile space optimization: Reclaimed 65px for better layout
-    
-    // History starts below header only - legend space reclaimed
-    const historyStartY = Math.max(
-      baseHeaderHeight, 
-      layout.contentStartY,
-      headerBottomY + 10 // Minimal padding since legend removed
-    );
-    
-    const rowHeight = LayoutConfig.HISTORY_ROW_HEIGHT_STANDARD; // Use updated 75px height
+    const rowHeight = LayoutConfig.HISTORY_ROW_HEIGHT_STANDARD;
     const guessHistory = this.historyManager.getGuessHistory();
     
-    // CRITICAL FIX: Calculate active row position AFTER the last completed guess
+    // Calculate active row position after completed guesses (match ActiveRowManager calculation)
     const completedGuessesHeight = guessHistory.length * rowHeight;
-    const lastCompletedGuessY = historyStartY + completedGuessesHeight;
-    const activeRowSeparation = 15; // Extra space between completed guesses and active row
-    const activeRowY = lastCompletedGuessY + activeRowSeparation;
+    const scrollOffset = this.historyScrollOffset;
+    const activeRowY = historyStartY + completedGuessesHeight - scrollOffset + 10;
     
-    // MOBILE EXPERT FIX: Use optimized footer spacing for closer positioning
-    const footerHeight = LayoutConfig.FOOTER_HEIGHT_GAME;
-    const footerBuffer = 25; // Reduced for closer footer positioning
-    const historyEndY = height - footerHeight - footerBuffer; // Respect footer and add buffer
+    // Ensure active row AND element bar are visible within available space
+    const activeRowHeight = 45; // Height of active row elements
+    const elementBarHeight = 50; // Height of element selection bar
+    const activeAreaReserved = activeRowHeight + elementBarHeight + 20; // Total space needed
+    const maxVisibleY = height - activeAreaReserved;
     
-    // Check if active row needs scrolling with better logic
-    const activeRowBottomY = activeRowY + 30; // Account for active row height
-    
-    if (activeRowBottomY > historyEndY) {
-      // Calculate scroll needed to fit active row properly in safe area
-      const targetScroll = activeRowBottomY - historyEndY + 20; // Extra margin
+    if (activeRowY > maxVisibleY) {
+      const targetScroll = activeRowY - maxVisibleY + 10; // Reduced extra margin
       this.historyScrollOffset = Math.max(0, targetScroll);
       
-      console.log(`🔄 Mobile scroll adjustment: activeRowY=${activeRowY}, historyEndY=${historyEndY}, scroll=${this.historyScrollOffset}`);
+      console.log(`🔄 Unified scroll adjustment: activeRowY=${activeRowY}, maxVisibleY=${maxVisibleY}, scroll=${this.historyScrollOffset}`);
       
       this.historyManager.refreshDisplay();
       this.historyManager.updateActiveRowPosition();

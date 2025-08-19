@@ -8,19 +8,19 @@ class ElementBar {
     this.container = null;
   }
 
-  create(footerContainer) {
+  create(container, yPosition = -35) {
     const { width } = this.scene.cameras.main;
     const elements = this.scene.elements;
     
     // Enhanced element bar - larger and more prominent
-    const elementBarY = -35; // Move further up to prevent overlap
+    const elementBarY = yPosition; // Use provided position (for inline positioning)
     const elementSize = 45; // Increased from 40 for better prominence  
     const spacing = 8; // Slightly more spacing
     const totalWidth = elements.length * elementSize + (elements.length - 1) * spacing;
     const startX = -totalWidth / 2 + elementSize / 2;
     
     this.container = this.scene.add.container(width / 2, 0);
-    footerContainer.add(this.container);
+    container.add(this.container);
     
     // Create element buttons
     elements.forEach((element, index) => {
@@ -105,6 +105,13 @@ class ElementBar {
       button.bg.setAlpha(isUsed ? 0.6 : 1.0);
       button.display.setAlpha(isUsed ? 0.7 : 1.0);
     });
+  }
+
+  updatePosition(yPosition) {
+    if (this.container) {
+      // Update the container's Y position to move the entire element bar
+      this.container.setY(yPosition);
+    }
   }
 
   destroy() {

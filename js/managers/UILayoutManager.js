@@ -454,11 +454,9 @@ class UILayoutManager {
     const legendHeight = 40; // Increased from 35px
     const safeAreaInsets = this.scene.safeAreaManager ? this.scene.safeAreaManager.getInsets() : { bottom: 0 };
     
-    // Position legend to avoid footer overlap - account for footer container positioning
-    const footerHeight = LayoutConfig.FOOTER_HEIGHT_GAME;
-    const swipeGestureMargin = 20;
-    const footerTopY = height - footerHeight - safeAreaInsets.bottom - swipeGestureMargin;
-    const legendY = footerTopY - legendHeight - 15; // 15px gap above footer container
+    // Position legend at bottom with safe margins (unified layout - no footer)
+    const bottomMargin = 20;
+    const legendY = height - safeAreaInsets.bottom - bottomMargin - (legendHeight / 2);
     
     // Horizontal layout for compactness
     const totalWidth = isSmallScreen ? width - 40 : 300;

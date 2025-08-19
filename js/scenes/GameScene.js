@@ -154,41 +154,31 @@ class GameScene extends Phaser.Scene {
   }
 
   createSimplePhaserLayout() {
-    // Simplified three-zone layout using pure Phaser containers
+    // UNIFIED SCROLLABLE LAYOUT - Single scrollable container with no footer
     const { width, height } = this.cameras.main;
     const safeAreaInsets = this.safeAreaManager.getInsets();
     
-    // === SIMPLE THREE-ZONE LAYOUT WITH SAFE AREA SUPPORT ===
+    // === UNIFIED TWO-ZONE LAYOUT ===
     // Header container (fixed at top)
     this.headerContainer = this.add.container(0, 0);
     this.headerContainer.setDepth(1000);
     
-    // Scrollable content container (middle area)
-  const headerHeight = LayoutConfig.THREE_ZONE_HEADER;
-  const footerHeight = LayoutConfig.FOOTER_HEIGHT_GAME;
+    // Single scrollable content container (full available height below header)
+    const headerHeight = LayoutConfig.THREE_ZONE_HEADER;
+    const availableHeight = height - headerHeight - safeAreaInsets.bottom;
+    
     this.scrollableContainer = this.add.container(0, headerHeight);
     this.scrollableContainer.setDepth(500);
     
-    // Footer container (fixed at bottom with safe area support + minimal gesture margin)
-    const swipeGestureMargin = 5; // REDUCED from 10px to 5px - Reclaim more space for gameplay area
-    const footerY = height - footerHeight - safeAreaInsets.bottom - swipeGestureMargin;
-    this.footerContainer = this.add.container(0, footerY);
-    this.footerContainer.setDepth(1000);
-    
-    // Auto-update footer position when safe areas change
-    this.safeAreaManager.onInsetsChanged((insets) => {
-      const newFooterY = height - footerHeight - insets.bottom - swipeGestureMargin;
-      this.footerContainer.y = newFooterY;
-      if (TestConfig.shouldShowDebugLogs()) {
-        console.log(`📱 Footer position updated: y=${newFooterY} (safe bottom: ${insets.bottom}px + ${swipeGestureMargin}px gesture margin)`);
-      }
-    });
+    // Remove footerContainer - all content now goes in scrollableContainer
+    // Active row will be positioned inline after last guess
+    this.footerContainer = null;
     
     if (TestConfig.shouldShowDebugLogs()) {
-      console.log('📱 Simple Phaser three-zone layout created with safe area support');
+      console.log('📱 Unified scrollable layout created');
       console.log(`  - Header: y=0, depth=1000`);
-      console.log(`  - Scrollable: y=${headerHeight}, depth=500`);
-      console.log(`  - Footer: y=${footerY}, depth=1000 (safe bottom: ${safeAreaInsets.bottom}px + gesture margin: ${swipeGestureMargin}px)`);
+      console.log(`  - Scrollable: y=${headerHeight}, available height=${availableHeight}, depth=500`);
+      console.log(`  - Footer: REMOVED (unified layout)`);
     }
   }
 
