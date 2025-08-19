@@ -75,14 +75,22 @@ class HistoryManager {
   }
 
   refreshDisplay() {
+    // CRITICAL DEBUG: Track refresh display calls
+    console.log('🔧 DEBUG: HistoryManager.refreshDisplay() called');
+    console.log('🔧 DEBUG: hasActiveRow before refresh:', this.hasActiveRow);
+    
     const validatedScrollOffset = this.renderer.displayGuessHistory(
       this.guessHistory, 
       this.feedbackHistory, 
       this.scroller.getScrollOffset()
     );
     
+    console.log('🔧 DEBUG: hasActiveRow after renderer.displayGuessHistory:', this.hasActiveRow);
+    
     // Update scroller with validated offset
     this.scroller.setScrollOffset(validatedScrollOffset);
+    
+    console.log('🔧 DEBUG: hasActiveRow after setScrollOffset:', this.hasActiveRow);
   }
 
   displayGuessHistory() {

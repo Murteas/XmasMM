@@ -116,6 +116,9 @@ class ActiveRowManager {
   }
 
   calculateActiveRowPosition() {
+    // CRITICAL DEBUG: Track what's triggering multiple calculations
+    console.log('🔧 DEBUG: calculateActiveRowPosition() called - checking hasActiveRow:', this.hasActiveRow);
+    
     // Use mobile viewport for proper device simulation support
     const viewport = GameUtils.getMobileViewport();
     const { width, height } = viewport;
@@ -428,6 +431,10 @@ class ActiveRowManager {
 
   updateActiveRowPosition() {
     if (!this.hasActiveRow) return;
+    
+    // CRITICAL DEBUG: Track what's triggering multiple position updates
+    console.log('🔧 DEBUG: updateActiveRowPosition() called');
+    console.trace('updateActiveRowPosition call stack');
     
     const activeRowY = this.calculateActiveRowPosition();
     const { width } = this.scene.cameras.main;

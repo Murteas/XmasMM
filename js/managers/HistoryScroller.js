@@ -97,8 +97,14 @@ class HistoryScroller {
   }
 
   scrollHistory(delta) {
+    // CRITICAL DEBUG: Track scroll events that might be causing active row issues
+    console.log('🔧 DEBUG: scrollHistory() called with delta:', delta);
+    console.log('🔧 DEBUG: isDragging:', this.isDragging);
+    
     const guessHistory = this.historyManager.getGuessHistory();
     const hasActiveRow = this.historyManager.hasActiveRow;
+    
+    console.log('🔧 DEBUG: guessHistory.length:', guessHistory.length, 'hasActiveRow:', hasActiveRow);
     
     if (guessHistory.length === 0 && !hasActiveRow) return;
     
@@ -107,12 +113,23 @@ class HistoryScroller {
     
     this.historyScrollOffset = Math.max(0, Math.min(maxScrollOffset, this.historyScrollOffset + delta));
     
+    console.log('🔧 DEBUG: Before refreshDisplay() - hasActiveRow:', hasActiveRow);
+    
     // Notify history manager to refresh display
     this.historyManager.refreshDisplay();
     
+    console.log('🔧 DEBUG: After refreshDisplay() - hasActiveRow:', this.historyManager.hasActiveRow);
+    
     // Update active row position if it exists
     if (hasActiveRow) {
-      this.historyManager.updateActiveRowPosition();
+      console.log('🔧 DEBUG: Calling updateActiveRowPosition() - confirming hasActiveRow:', this.historyManager.hasActiveRow);
+      if (this.historyManager.hasActiveRow) {
+        this.historyManager.updateActiveRowPosition();
+      } else {
+        console.log('🚨 CRITICAL: hasActiveRow mismatch! Local hasActiveRow=true but historyManager.hasActiveRow=false');
+      }
+    } else {
+      console.log('🔧 DEBUG: Skipping updateActiveRowPosition() - no active row');
     }
   }
 

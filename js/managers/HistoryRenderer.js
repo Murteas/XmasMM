@@ -422,13 +422,20 @@ class HistoryRenderer {
   }
 
   clearHistory() {
+    // CRITICAL DEBUG: Track what's being cleared during refresh
+    console.log('🔧 DEBUG: HistoryRenderer.clearHistory() called');
+    console.log('🔧 DEBUG: historyGroup exists:', !!this.historyGroup);
+    console.log('🔧 DEBUG: historyElements count:', this.historyElements ? this.historyElements.length : 0);
+    
     if (this.historyGroup) {
+      console.log('🔧 DEBUG: Clearing historyGroup with', this.historyGroup.children.size, 'children');
       this.historyGroup.clear(true, true);
       this.historyGroup.destroy();
       this.historyGroup = null;
     }
     
     if (this.historyElements) {
+      console.log('🔧 DEBUG: Destroying', this.historyElements.length, 'history elements');
       this.historyElements.forEach(element => {
         if (element && element.destroy) {
           element.destroy();
@@ -436,6 +443,8 @@ class HistoryRenderer {
       });
       this.historyElements = [];
     }
+    
+    console.log('🔧 DEBUG: clearHistory() completed');
   }
 
   reset() {
