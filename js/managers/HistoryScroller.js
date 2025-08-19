@@ -21,12 +21,12 @@ class HistoryScroller {
     const baseHeaderHeight = isSmallScreen ? 140 : 120;
     const historyStartY = Math.max(baseHeaderHeight, height * 0.22);
     
-    // Respect footer container positioning to avoid touch conflicts
+    // CRITICAL FIX: Use EXACT same footer calculations as GameScene to avoid overlap
     const footerHeight = LayoutConfig.FOOTER_HEIGHT_GAME;
     const safeAreaInsets = this.scene.safeAreaManager ? this.scene.safeAreaManager.getInsets() : { bottom: 0 };
-    const swipeGestureMargin = 20;
+    const swipeGestureMargin = 10; // FIXED: Use same 10px margin as GameScene
     const footerTopY = height - footerHeight - safeAreaInsets.bottom - swipeGestureMargin;
-    const historyEndY = footerTopY - 10; // 10px buffer above footer
+    const historyEndY = footerTopY - 30; // INCREASED buffer to prevent touch overlap with footer
     
     // Create invisible touch area for history scrolling
     this.historyTouchArea = this.scene.add.rectangle(
@@ -44,12 +44,38 @@ class HistoryScroller {
 
   setupTouchEvents() {
     this.historyTouchArea.on('pointerdown', (pointer) => {
+      // CRITICAL FIX: Ensure we're not in footer area before starting scroll
+      const { height } = this.scene.cameras.main;
+      const footerHeight = LayoutConfig.FOOTER_HEIGHT_GAME;
+      const safeAreaInsets = this.scene.safeAreaManager ? this.scene.safeAreaManager.getInsets() : { bottom: 0 };
+      const swipeGestureMargin = 10;
+      const footerTopY = height - footerHeight - safeAreaInsets.bottom - swipeGestureMargin;
+      
+      // Don't start dragging if touch is in or near footer area
+      if (pointer.y >= footerTopY - 20) {
+        console.log(`🚫 HistoryScroller: Ignoring touch in footer area (y=${pointer.y}, footerTopY=${footerTopY})`);
+        return;
+      }
+      
       this.startY = pointer.y;
       this.isDragging = true;
     });
     
     this.historyTouchArea.on('pointermove', (pointer) => {
       if (!this.isDragging) return;
+      
+      // CRITICAL FIX: Stop dragging if we move into footer area
+      const { height } = this.scene.cameras.main;
+      const footerHeight = LayoutConfig.FOOTER_HEIGHT_GAME;
+      const safeAreaInsets = this.scene.safeAreaManager ? this.scene.safeAreaManager.getInsets() : { bottom: 0 };
+      const swipeGestureMargin = 10;
+      const footerTopY = height - footerHeight - safeAreaInsets.bottom - swipeGestureMargin;
+      
+      if (pointer.y >= footerTopY - 20) {
+        console.log(`🚫 HistoryScroller: Stopping drag in footer area (y=${pointer.y}, footerTopY=${footerTopY})`);
+        this.isDragging = false;
+        return;
+      }
       
       const deltaY = pointer.y - this.startY;
       const sensitivity = 0.05;

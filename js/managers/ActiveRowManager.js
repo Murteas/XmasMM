@@ -486,6 +486,10 @@ class ActiveRowManager {
   removeActiveRow() {
     if (!this.hasActiveRow) return;
     
+    // CRITICAL DEBUG: Log when active row is being removed to track the bug
+    console.log('🔧 DEBUG: removeActiveRow() called');
+    console.trace('removeActiveRow call stack');
+    
     // Clean up active row elements
     if (this.activeRowElements) {
       this.activeRowElements.forEach(elementData => {
