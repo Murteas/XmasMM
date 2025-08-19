@@ -34,15 +34,12 @@ class HistoryScroller {
      .setInteractive(); // Make it interactive to receive pointer events
     
     this.setupTouchEvents();
-    
-    if (TestConfig.shouldShowDebugLogs()) {
-      console.log('📱 Unified scrollable touch area created');
-      console.log(`  - Full height: ${historyStartY} to ${historyEndY} (${historyEndY - historyStartY}px)`);
-      console.log(`  - No footer constraints`);
-    }
   }
 
   setupTouchEvents() {
+    // DISABLED: Mouse drag scrolling was causing element bar to disappear and submit button changes
+    // If scrolling is needed in the future, implement proper touch/wheel events instead
+    
     this.historyTouchArea.on('pointerdown', (pointer) => {
       this.startY = pointer.y;
       this.isDragging = true;
@@ -50,20 +47,7 @@ class HistoryScroller {
     
     this.historyTouchArea.on('pointermove', (pointer) => {
       if (!this.isDragging) return;
-      
-      const deltaY = pointer.y - this.startY;
-      const sensitivity = 0.05;
-      
-      // Only process significant movements to prevent unnecessary refreshes
-      if (Math.abs(deltaY) > 10) {
-        const scrollDelta = Math.floor(deltaY * sensitivity);
-        
-        // Only call scrollHistory if there's actually a meaningful delta
-        if (Math.abs(scrollDelta) > 0) {
-          this.scrollHistory(-scrollDelta);
-          this.startY = pointer.y;
-        }
-      }
+      // DISABLED: Pointer move scrolling functionality removed
     });
     
     this.historyTouchArea.on('pointerup', () => {
@@ -76,20 +60,11 @@ class HistoryScroller {
   }
 
   scrollHistory(delta) {
-    // CRITICAL FIX: Don't process meaningless scroll deltas
-    if (Math.abs(delta) === 0) {
-      console.log('🔧 DEBUG: Ignoring zero delta scroll');
-      return;
-    }
-    
-    // CRITICAL DEBUG: Track scroll events that might be causing active row issues
-    console.log('🔧 DEBUG: scrollHistory() called with delta:', delta);
-    console.log('🔧 DEBUG: isDragging:', this.isDragging);
+    // NOTE: This method is largely disabled due to issues with element bar visibility
+    if (Math.abs(delta) === 0) return;
     
     const guessHistory = this.historyManager.getGuessHistory();
     const hasActiveRow = this.historyManager.hasActiveRow;
-    
-    console.log('🔧 DEBUG: guessHistory.length:', guessHistory.length, 'hasActiveRow:', hasActiveRow);
     
     if (guessHistory.length === 0 && !hasActiveRow) return;
     
@@ -98,23 +73,12 @@ class HistoryScroller {
     
     this.historyScrollOffset = Math.max(0, Math.min(maxScrollOffset, this.historyScrollOffset + delta));
     
-    console.log('🔧 DEBUG: Before refreshDisplay() - hasActiveRow:', hasActiveRow);
-    
     // Notify history manager to refresh display
     this.historyManager.refreshDisplay();
     
-    console.log('🔧 DEBUG: After refreshDisplay() - hasActiveRow:', this.historyManager.hasActiveRow);
-    
     // Update active row position if it exists
-    if (hasActiveRow) {
-      console.log('🔧 DEBUG: Calling updateActiveRowPosition() - confirming hasActiveRow:', this.historyManager.hasActiveRow);
-      if (this.historyManager.hasActiveRow) {
-        this.historyManager.updateActiveRowPosition();
-      } else {
-        console.log('🚨 CRITICAL: hasActiveRow mismatch! Local hasActiveRow=true but historyManager.hasActiveRow=false');
-      }
-    } else {
-      console.log('🔧 DEBUG: Skipping updateActiveRowPosition() - no active row');
+    if (hasActiveRow && this.historyManager.hasActiveRow) {
+      this.historyManager.updateActiveRowPosition();
     }
   }
 
@@ -187,8 +151,6 @@ class HistoryScroller {
     if (activeRowY > maxVisibleY) {
       const targetScroll = activeRowY - maxVisibleY + 10; // Reduced extra margin
       this.historyScrollOffset = Math.max(0, targetScroll);
-      
-      console.log(`🔄 Unified scroll adjustment: activeRowY=${activeRowY}, maxVisibleY=${maxVisibleY}, scroll=${this.historyScrollOffset}`);
       
       this.historyManager.refreshDisplay();
       this.historyManager.updateActiveRowPosition();

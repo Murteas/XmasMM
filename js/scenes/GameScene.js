@@ -83,20 +83,7 @@ class GameScene extends Phaser.Scene {
     
     // When all assets are loaded, verify they're accessible
     this.load.on('complete', () => {
-      if (TestConfig.shouldShowDebugLogs()) {
-        console.log('🎄 Asset loading complete. Verifying textures...');
-        const elements = ['santa', 'present', 'candycane', 'star', 'tree', 'snowflake'];
-        elements.forEach(element => {
-          const key1x = `${element}_1x`;
-          const key2x = `${element}_2x`;
-          const key3x = `${element}_3x`;
-          
-          console.log(`🔍 Checking ${element}:`);
-          console.log(`  ${key1x}: ${this.textures.exists(key1x) ? '✅' : '❌'}`);
-          console.log(`  ${key2x}: ${this.textures.exists(key2x) ? '✅' : '❌'}`);
-          console.log(`  ${key3x}: ${this.textures.exists(key3x) ? '✅' : '❌'}`);
-        });
-      }
+      // Asset loading complete - textures are verified internally
     });
   }
   
@@ -173,13 +160,6 @@ class GameScene extends Phaser.Scene {
     // Remove footerContainer - all content now goes in scrollableContainer
     // Active row will be positioned inline after last guess
     this.footerContainer = null;
-    
-    if (TestConfig.shouldShowDebugLogs()) {
-      console.log('📱 Unified scrollable layout created');
-      console.log(`  - Header: y=0, depth=1000`);
-      console.log(`  - Scrollable: y=${headerHeight}, available height=${availableHeight}, depth=500`);
-      console.log(`  - Footer: REMOVED (unified layout)`);
-    }
   }
 
   setupGameComponents() {

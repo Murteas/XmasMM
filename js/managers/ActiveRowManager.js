@@ -36,7 +36,6 @@ class ActiveRowManager {
     }
     
     // UNIFIED SCROLLABLE LAYOUT: Always position inline after last guess in scrollable container
-    console.log('📱 Creating active row inline in scrollable container');
     const activeRowY = this.calculateInlineActiveRowPosition();
     this.createActiveRowVisuals(activeRowY);
     this.createActiveRowSlots(activeRowY);
@@ -91,7 +90,20 @@ class ActiveRowManager {
 
   createElementBar(activeRowY) {
     // Create element bar BELOW active row slots with proper mobile spacing
-    const elementBarY = activeRowY + 55; // Proper spacing for mobile touch targets
+    const { height } = this.scene.cameras.main;
+    const elementBarHeight = 50; // Height of element bar
+    const safeAreaInsets = this.scene.safeAreaManager ? this.scene.safeAreaManager.getInsets() : { bottom: 0 };
+    const minBottomMargin = 10; // Minimum margin from bottom
+    
+    // Calculate ideal position below active row
+    const idealElementBarY = activeRowY + 55; // Proper spacing for mobile touch targets
+    
+    // Calculate maximum allowed Y position to keep element bar visible
+    const maxElementBarY = height - safeAreaInsets.bottom - elementBarHeight - minBottomMargin;
+    
+    // Use the lower of the two positions to ensure visibility
+    const elementBarY = Math.min(idealElementBarY, maxElementBarY);
+    
     this.elementBar.create(this.scene.scrollableContainer, elementBarY);
   }
 
@@ -343,21 +355,16 @@ class ActiveRowManager {
 
   updateActiveRowPosition() {
     if (!this.hasActiveRow) {
-      console.log('🚨 CRITICAL: updateActiveRowPosition() called but hasActiveRow=false');
+      console.error('CRITICAL: updateActiveRowPosition() called but hasActiveRow=false');
       return;
     }
     
     // CRITICAL FIX: Prevent excessive position updates
     const now = Date.now();
     if (this.lastPositionUpdate && (now - this.lastPositionUpdate) < 16) { // 60fps throttle
-      console.log('🔧 DEBUG: Throttling position update - too frequent');
       return;
     }
     this.lastPositionUpdate = now;
-    
-    // CRITICAL DEBUG: Track what's triggering multiple position updates
-    console.log('🔧 DEBUG: updateActiveRowPosition() called');
-    console.trace('updateActiveRowPosition call stack');
     
     const activeRowY = this.calculateInlineActiveRowPosition();
     const { width } = this.scene.cameras.main;
@@ -393,7 +400,19 @@ class ActiveRowManager {
     
     // CRITICAL FIX: Update element bar position when active row moves
     if (this.elementBar) {
-      const elementBarY = activeRowY + 50; // Same offset as in createElementBar
+      const { height } = this.scene.cameras.main;
+      const elementBarHeight = 50; // Height of element bar
+      const safeAreaInsets = this.scene.safeAreaManager ? this.scene.safeAreaManager.getInsets() : { bottom: 0 };
+      const minBottomMargin = 10; // Minimum margin from bottom
+      
+      // Calculate ideal position below active row
+      const idealElementBarY = activeRowY + 55; // Same spacing as createElementBar
+      
+      // Calculate maximum allowed Y position to keep element bar visible
+      const maxElementBarY = height - safeAreaInsets.bottom - elementBarHeight - minBottomMargin;
+      
+      // Use the lower of the two positions to ensure visibility
+      const elementBarY = Math.min(idealElementBarY, maxElementBarY);
       this.elementBar.updatePosition(elementBarY);
     }
   }
@@ -421,10 +440,6 @@ class ActiveRowManager {
 
   removeActiveRow() {
     if (!this.hasActiveRow) return;
-    
-    // CRITICAL DEBUG: Log when active row is being removed to track the bug
-    console.log('🔧 DEBUG: removeActiveRow() called');
-    console.trace('removeActiveRow call stack');
     
     // Clean up active row elements
     if (this.activeRowElements) {
@@ -487,8 +502,6 @@ class ActiveRowManager {
         this.selectElement(i, elements[i]);
       }
     }
-    
-    console.log('🔧 DEBUG: Filled active row with:', elements.slice(0, maxSlots));
   }
 
   reset() {
