@@ -430,7 +430,18 @@ class ActiveRowManager {
   // Note: addSubmitButtonTouchFeedback method removed - ButtonFactory handles touch feedback automatically
 
   updateActiveRowPosition() {
-    if (!this.hasActiveRow) return;
+    if (!this.hasActiveRow) {
+      console.log('🚨 CRITICAL: updateActiveRowPosition() called but hasActiveRow=false');
+      return;
+    }
+    
+    // CRITICAL FIX: Prevent excessive position updates
+    const now = Date.now();
+    if (this.lastPositionUpdate && (now - this.lastPositionUpdate) < 16) { // 60fps throttle
+      console.log('🔧 DEBUG: Throttling position update - too frequent');
+      return;
+    }
+    this.lastPositionUpdate = now;
     
     // CRITICAL DEBUG: Track what's triggering multiple position updates
     console.log('🔧 DEBUG: updateActiveRowPosition() called');
@@ -452,6 +463,13 @@ class ActiveRowManager {
     
     // Update slot positions
     if (this.activeRowElements) {
+      // CRITICAL FIX: Check if we're using footer container (different coordinate system)
+      if (this.scene.footerContainer) {
+        console.log('🔧 DEBUG: Active row in footer container - elements should NOT be repositioned');
+        // Don't reposition elements when using footer container - they're already positioned correctly
+        return;
+      }
+      
       const positioning = this.calculateSlotPositioning(codeLength, width, isSmallScreen);
       
       this.activeRowElements.forEach((elementData, i) => {
@@ -463,6 +481,13 @@ class ActiveRowManager {
     
     // Update submit button position
     if (this.activeRowSubmitBtn) {
+      // CRITICAL FIX: Check if we're using footer container (different coordinate system)
+      if (this.scene.footerContainer) {
+        console.log('🔧 DEBUG: Submit button in footer container - should NOT be repositioned');
+        // Don't reposition submit button when using footer container
+        return;
+      }
+      
       const positioning = this.calculateSlotPositioning(codeLength, width, isSmallScreen);
       const submitButtonX = positioning.startX + (codeLength * positioning.elementSpacing) + 10;
       this.activeRowSubmitBtn.setPosition(submitButtonX, activeRowY);

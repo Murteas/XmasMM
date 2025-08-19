@@ -80,10 +80,15 @@ class HistoryScroller {
       const deltaY = pointer.y - this.startY;
       const sensitivity = 0.05;
       
+      // CRITICAL FIX: Only process significant movements to prevent unnecessary refreshes
       if (Math.abs(deltaY) > 10) {
         const scrollDelta = Math.floor(deltaY * sensitivity);
-        this.scrollHistory(-scrollDelta);
-        this.startY = pointer.y;
+        
+        // CRITICAL FIX: Only call scrollHistory if there's actually a meaningful delta
+        if (Math.abs(scrollDelta) > 0) {
+          this.scrollHistory(-scrollDelta);
+          this.startY = pointer.y;
+        }
       }
     });
     
@@ -97,6 +102,12 @@ class HistoryScroller {
   }
 
   scrollHistory(delta) {
+    // CRITICAL FIX: Don't process meaningless scroll deltas
+    if (Math.abs(delta) === 0) {
+      console.log('🔧 DEBUG: Ignoring zero delta scroll');
+      return;
+    }
+    
     // CRITICAL DEBUG: Track scroll events that might be causing active row issues
     console.log('🔧 DEBUG: scrollHistory() called with delta:', delta);
     console.log('🔧 DEBUG: isDragging:', this.isDragging);
