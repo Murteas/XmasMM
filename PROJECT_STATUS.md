@@ -15,9 +15,9 @@
   - Root cause: HistoryRenderer using 65px rowHeight vs ActiveRowManager using 75px
   - Solution: Standardized both to use `LayoutConfig.HISTORY_ROW_HEIGHT_STANDARD`
   
-- **✅ Element Bar Off-Screen**: Fixed element bar getting cut off with 9+ guesses
+- **✅ Element Bar Off-Screen**: Partially addressed element bar getting cut off with 9+ guesses
   - Added bounds checking in createElementBar() and updateActiveRowPosition()
-  - Element bar now constrained to stay within screen bounds
+  - **Note**: Issue still persists in testing - moved to IN PROGRESS section
   
 - **✅ Mouse Drag Interference**: Disabled problematic scroll behavior
   - Mouse drag was causing element bar to disappear and submit button changes
@@ -31,6 +31,17 @@
 ---
 
 ## 🔄 IN PROGRESS
+
+### Active Layout Issues
+- **🔄 Element Bar Off-Screen (Regression)**: Element bar and active guess still going off bottom of screen
+  - Previously thought fixed, but issue persists in testing
+  - Needs investigation of container height calculations and scroll positioning
+  - **Priority**: High (affects core gameplay)
+
+- **🆕 Game End Screen Layout**: RoundOver scene cannot fit all 10 guesses on screen
+  - History display truncated when showing full game results
+  - Needs layout adjustment for complete game review
+  - **Priority**: Medium (affects game completion experience)
 
 ### Code Cleanup (70% Complete)
 - **Remaining**: Convert hardcoded values in HistoryRenderer.js, HistoryScroller.js
