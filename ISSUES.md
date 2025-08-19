@@ -28,17 +28,25 @@
 **Impact**: Code complexity, potential maintenance challenges, harder to debug layout issues
 **Context**: Originally had scrolling with inline active row, now uses footer container with fixed positioning
 
+**OBSERVED ISSUE** (Screenshot Evidence):
+- Browser testing shows 10th guess will overlap with history area and footer
+- 9 completed guesses visible, active row in footer
+- Question: Is this overlap behavior acceptable or does it indicate layout architecture problems?
+- Suggests possible need for dynamic layout switching or better space management
+
 **Analysis Required**:
 - Evaluate current footer container vs original inline active row approach  
 - Compare complexity of current vs previous architecture
 - Identify opportunities for simplification without losing mobile UX benefits
 - Consider unified layout approach vs current hybrid system
+- **NEW**: Analyze overlap behavior for games with 10+ guesses
 
 **Questions to Investigate**:
 - Is footer container approach better than inline for mobile UX?
 - Can we simplify the coordinate system management?
 - Are there unused/redundant layout managers?
 - Would a single layout approach be more maintainable?
+- **NEW**: Should 10+ guess games auto-switch to different layout mode?
 
 **Research Phase**: Expert architecture review needed before any changes
 
