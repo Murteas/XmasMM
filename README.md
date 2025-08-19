@@ -5,11 +5,11 @@
 ## 🤖 AI Agent Quick Rules
 **Critical guidelines for AI agents working on this project:**
 
-1. 🚨 **Check [ISSUES.md](ISSUES.md) first** - Single source of truth for all project tracking
+1. 🚨 **Check [PROJECT_STATUS.md](PROJECT_STATUS.md) first** - Current project state and priorities
 2. 🚫 **NEVER start servers** - Always ask user: `python -m http.server 8000`
 3. 🚫 **NEVER use isBackground=true** - Always use `isBackground=false` in terminals
 4. 🤝 **ASK clarifying questions** - Collaborate, don't just comply with requests
-5. � **Mobile-first development** - Test 375x667 minimum viewport
+5. 📱 **Mobile-first development** - Test 375x667 minimum viewport
 6. ✅ **Follow test protocol**: Agent changes → User tests → Agent fixes based on feedback
 7. 📁 **Use LayoutConfig.js** - No magic numbers for heights/spacing
 8. 🎨 **Christmas theming** - Forest green (#0d5016) and gold (#ffd700) color scheme
@@ -17,9 +17,9 @@
 > **🤖 Full Guidelines**: See [AI_AGENT_BRIEFING.md](AI_AGENT_BRIEFING.md) for complete onboarding
 
 ## ✨ Current Status
-🎉 **Mobile foundation complete!** Christmas feature development in progress.
+🎉 **STABLE & READY FOR TESTING!** All critical functionality completed and tested.
 
-**📊 Live Status**: See [ISSUES.md](ISSUES.md) for all project tracking - single source of truth for issues, tasks, and priorities.
+**📊 Live Status**: See [PROJECT_STATUS.md](PROJECT_STATUS.md) for complete current state and testing focus.
 
 ### **Key Achievements**
 - ✅ **Mobile Excellence**: Complete viewport utilization (100vw x 100vh) 
@@ -75,7 +75,7 @@ See [AI_AGENT_BRIEFING.md](AI_AGENT_BRIEFING.md) for complete development setup,
 **Key Points:**
 - ⚠️ **Phaser.js games require HTTP server** (file:// URLs show white screen)
 - 🧪 **Testing suite**: See AI briefing for detailed testing procedures
-- 📋 **Issue tracking**: [ISSUES.md](ISSUES.md) single source of truth for all project management
+- 📋 **Issue tracking**: [PROJECT_STATUS.md](PROJECT_STATUS.md) single source of truth for all project management
 
 ### **🔧 Debug Mode (Development)**
 For rapid testing and development, the game includes a debug mode:
@@ -108,7 +108,7 @@ For rapid testing and development, the game includes a debug mode:
 	- `js/config/LayoutConfig.js` centralized layout constants
 - **🎨 Assets**: `assets/` - Christmas-themed graphics and audio
 - **🧪 Testing**: `tests/` - Comprehensive test suite
-- **📋 Issues**: [ISSUES.md](ISSUES.md) - Complete project tracking
+- **📋 Issues**: [PROJECT_STATUS.md](PROJECT_STATUS.md) - Complete project tracking
 - **🤖 AI System**: [AI_AGENT_BRIEFING.md](AI_AGENT_BRIEFING.md) - Developer onboarding
 
 ## 🔧 Technology Stack

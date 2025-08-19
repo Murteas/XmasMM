@@ -11,7 +11,7 @@
 - **Collaborator**:  Technical collaborator, not order-taker. The user wants engineering dialogue, not compliance.
 
 ## 🚀 Quick Start (Do in Order)
-1. **🚨 CRITICAL**: Read `ISSUES.md` for all project tracking - single source of truth
+1. **🚨 CRITICAL**: Read `PROJECT_STATUS.md` for all project tracking - single source of truth
 2. **🧪 VERIFY**: Run `cd tests && bash verify_tests.sh` to establish baseline
 3. **ASK USER** to start server: `python -m http.server 8000` (agents cannot start servers)
 4. **VALIDATE**: Basic file syntax checks with `node -c filename.js` if needed
@@ -23,7 +23,7 @@
 - **Safe Area Implementation**: Mobile PWA fullscreen viewport clipping resolved 
 - **Layout Constants**: Centralized LayoutConfig.js system implemented
 - **Button Theming**: Complete festive button system with Christmas styling
-- **Issues Consolidation**: Single source of truth established in ISSUES.md
+- **Issues Consolidation**: Single source of truth established in PROJECT_STATUS.md
 - **Game Over Flow**: Clean transitions to RoundOver scene  
 - **Documentation Cleanup**: Streamlined project organization
 - **Hint System Perfection**: 
@@ -47,7 +47,7 @@ Enhance the "XmasMM" title with festive Christmas theming for improved visual ap
 - `js/scenes/GameScene.js` - Title creation and styling
 - Consider existing Christmas color scheme (#0d5016 forest green, #ffd700 gold)
 
-### 🔧 **OTHER ACTIVE PRIORITIES** (See ISSUES.md for complete list)
+### 🔧 **OTHER ACTIVE PRIORITIES** (See PROJECT_STATUS.md for complete list)
 - **AUDIO-001**: Christmas Audio Integration - Family-friendly sound effects
 - **TECH-002**: Scene Lifecycle Listener Cleanup - Event handler management  
 - **UI-014**: Share Score Double-Tap Bug - Fix share button behavior
@@ -172,13 +172,13 @@ ls -la js/managers/
 ## 📁 Critical Files
 
 ### **Core Documentation**
-- `ISSUES.md` - 🚨 **COMPLETE PROJECT TRACKER** - All issues, priorities, and project management (single source of truth)
+- `PROJECT_STATUS.md` - 🚨 **COMPLETE PROJECT TRACKER** - All issues, priorities, and project management (single source of truth)
 - `README.md` - Project overview and quick start guide
 - `AI_AGENT_BRIEFING.md` - This file - Complete developer onboarding
 
 ### **Issue Management for AI Agents**
-- **ALWAYS check ISSUES.md first** - Single source of truth for all project tracking
-- **Update workflow**: Modify ISSUES.md for all status changes and priority updates
+- **ALWAYS check PROJECT_STATUS.md first** - Single source of truth for all project tracking
+- **Update workflow**: Modify PROJECT_STATUS.md for all status changes and priority updates
 - **Complete tracking**: All issues, priorities, and implementation details in one file
 
 ### **Mobile Architecture** (ESSENTIAL)
@@ -191,7 +191,7 @@ ls -la js/managers/
 - `tests/index.html` - **MANUAL TESTING**: Test navigation hub for browser testing
 
 ### **Project Structure**
-- **ISSUES.md** - Complete project tracking (single source of truth)
+- **PROJECT_STATUS.md** - Complete project tracking (single source of truth)
 - **js/config/LayoutConfig.js** - Centralized layout constants
 - **docs/** - Technical architecture documentation
 
