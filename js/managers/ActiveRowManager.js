@@ -178,13 +178,13 @@ class ActiveRowManager {
       // MOBILE EXPERT DESIGN: For normal games, also push closer to safe area
       const safeAreaInsets = this.scene.safeAreaManager ? this.scene.safeAreaManager.getInsets() : { bottom: 0 };
       const footerHeight = LayoutConfig.FOOTER_HEIGHT_GAME;
-      const footerBuffer = 8; // Small buffer to move very close to safe area
+      const footerBuffer = 5; // REDUCED from 8px to 5px - reclaim more space
       const maxActiveRowY = height - footerHeight - footerBuffer - safeAreaInsets.bottom;
       activeRowY = Math.min(activeRowY, maxActiveRowY);
       
       console.log(`🎯 ActiveRowManager: Normal game (${guessCount} guesses), pushing closer to safe area`);
       console.log(`  - Footer height: ${footerHeight}px`);
-      console.log(`  - Footer buffer: ${footerBuffer}px (small - close to safe area)`);
+      console.log(`  - Footer buffer: ${footerBuffer}px (reduced for more space)`);
       console.log(`  - Max active row Y: ${maxActiveRowY} (safe bottom: ${safeAreaInsets.bottom}px)`);
       console.log(`  - Final activeRowY: ${activeRowY}`);
     }

@@ -10,8 +10,8 @@ const LayoutConfig = {
   // Unified fixed header height used in simplified three-zone scenes
   THREE_ZONE_HEADER: 140,
 
-  // Footer heights (MOBILE EXPERT: Significantly reduced for maximum space)
-  FOOTER_HEIGHT_GAME: 90, // Reduced from 150 to 90 - much smaller footer
+  // Footer heights (MOBILE EXPERT: Optimized for minimal space usage)
+  FOOTER_HEIGHT_GAME: 85, // REDUCED from 90 to 85px - reclaim 5px more gameplay space
   FOOTER_HEIGHT_ROUND_OVER: 100,
 
   // History & RoundOver row heights (MOBILE EXPERT: Increased for larger elements)

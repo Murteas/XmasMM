@@ -19,7 +19,32 @@
 
 ## 🚨 Open Issues
 
-### AUDIO-001: Christmas Audio Integration �
+### UI-023: GameScene Architecture Simplification 🎯
+**Priority**: Medium (Future Enhancement)  
+**Category**: Technical Architecture  
+**Status**: Analysis Needed
+
+**Problem**: GameScene may be overly complex with multiple layout systems (footer container vs inline active row, scrolling vs fixed positioning)
+**Impact**: Code complexity, potential maintenance challenges, harder to debug layout issues
+**Context**: Originally had scrolling with inline active row, now uses footer container with fixed positioning
+
+**Analysis Required**:
+- Evaluate current footer container vs original inline active row approach  
+- Compare complexity of current vs previous architecture
+- Identify opportunities for simplification without losing mobile UX benefits
+- Consider unified layout approach vs current hybrid system
+
+**Questions to Investigate**:
+- Is footer container approach better than inline for mobile UX?
+- Can we simplify the coordinate system management?
+- Are there unused/redundant layout managers?
+- Would a single layout approach be more maintainable?
+
+**Research Phase**: Expert architecture review needed before any changes
+
+---
+
+### AUDIO-001: Christmas Audio Integration 🎵
 **Priority**: High (Next Phase)  
 **Category**: Feature Enhancement  
 **Status**: Implementation Complete - Awaiting Audio Files

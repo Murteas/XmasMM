@@ -24,7 +24,7 @@ class HistoryScroller {
     // CRITICAL FIX: Use EXACT same footer calculations as GameScene to avoid overlap
     const footerHeight = LayoutConfig.FOOTER_HEIGHT_GAME;
     const safeAreaInsets = this.scene.safeAreaManager ? this.scene.safeAreaManager.getInsets() : { bottom: 0 };
-    const swipeGestureMargin = 10; // FIXED: Use same 10px margin as GameScene
+    const swipeGestureMargin = 5; // REDUCED: Use same 5px margin as GameScene
     const footerTopY = height - footerHeight - safeAreaInsets.bottom - swipeGestureMargin;
     const historyEndY = footerTopY - 30; // INCREASED buffer to prevent touch overlap with footer
     
@@ -48,7 +48,7 @@ class HistoryScroller {
       const { height } = this.scene.cameras.main;
       const footerHeight = LayoutConfig.FOOTER_HEIGHT_GAME;
       const safeAreaInsets = this.scene.safeAreaManager ? this.scene.safeAreaManager.getInsets() : { bottom: 0 };
-      const swipeGestureMargin = 10;
+      const swipeGestureMargin = 5; // UPDATED: Use same 5px margin as GameScene
       const footerTopY = height - footerHeight - safeAreaInsets.bottom - swipeGestureMargin;
       
       // Don't start dragging if touch is in or near footer area
@@ -68,7 +68,7 @@ class HistoryScroller {
       const { height } = this.scene.cameras.main;
       const footerHeight = LayoutConfig.FOOTER_HEIGHT_GAME;
       const safeAreaInsets = this.scene.safeAreaManager ? this.scene.safeAreaManager.getInsets() : { bottom: 0 };
-      const swipeGestureMargin = 10;
+      const swipeGestureMargin = 5; // UPDATED: Use same 5px margin as GameScene
       const footerTopY = height - footerHeight - safeAreaInsets.bottom - swipeGestureMargin;
       
       if (pointer.y >= footerTopY - 20) {
