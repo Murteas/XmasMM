@@ -58,6 +58,39 @@ const LayoutConfig = {
     SMALL_SCREEN_SCALE(width) { return width < 430 ? 0.9 : 1; }
   },
 
+  // MOBILE EXPERT: Layout spacing constants (centralizing hardcoded values)
+  SPACING: {
+    CONTAINER_TOP_SMALL: 20,      // Start just below container top (small screens)
+    CONTAINER_TOP_DEFAULT: 15,    // Start just below container top (default)
+    CONTAINER_TOP_VERY_SMALL: 25, // Start just below container top (very small screens)
+    
+    ELEMENT_BAR_OFFSET: 55,       // Space between active row and element bar
+    ELEMENT_BAR_HEIGHT: 50,       // Height of element selection bar
+    ACTIVE_ROW_HEIGHT: 45,        // Height of active row elements
+    BOTTOM_MARGIN_MIN: 10,        // Minimum margin from bottom edge
+    CONTENT_MARGIN: 20,           // General content margins
+    
+    SUBMIT_BUTTON_GAP: 20,        // Gap between elements and submit button
+    SUBMIT_BUTTON_HALF_WIDTH: 40, // Half width of submit button for positioning
+    
+    ELEMENT_WIDTH_SMALL: 42,      // Element width on small screens
+    ELEMENT_WIDTH_DEFAULT: 45,    // Element width on default screens
+    ELEMENT_SPACING_SMALL: 48,    // Element spacing on small screens
+    ELEMENT_SPACING_DEFAULT: 55,  // Element spacing on default screens
+    
+    DEBUG_INDICATOR: 10,          // Debug indicator positioning
+    LOADING_TEXT_OFFSET: 20,      // Loading text vertical offset
+    LOADING_SPINNER_OFFSET: 30,   // Loading spinner vertical offset
+  },
+
+  // Animation constants
+  ANIMATION: {
+    FAST_DURATION: 60,            // Fast animations (60ms)
+    STANDARD_DURATION: 100,       // Standard animations (100ms)
+    SCALE_DOWN: 0.95,             // Standard scale down amount
+    THROTTLE_60FPS: 16,           // 60fps throttle (16ms)
+  },
+
   // Utility getters
   getBaseHeaderHeight(isSmallScreen) {
     return isSmallScreen ? this.HEADER_HEIGHT_SMALL : this.HEADER_HEIGHT_DEFAULT;

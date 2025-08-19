@@ -57,8 +57,8 @@ class ActiveRowManager {
     const isVerySmallScreen = width < 400;
     
     // Use same coordinate system as HistoryRenderer (container-relative)
-    const baseStartY = isSmallScreen ? 20 : 15; // Start just below container top
-    const containerRelativeY = isVerySmallScreen ? 25 : baseStartY;
+    const baseStartY = isSmallScreen ? LayoutConfig.SPACING.CONTAINER_TOP_SMALL : LayoutConfig.SPACING.CONTAINER_TOP_DEFAULT;
+    const containerRelativeY = isVerySmallScreen ? LayoutConfig.SPACING.CONTAINER_TOP_VERY_SMALL : baseStartY;
     
     const historyStartY = Math.max(
       containerRelativeY,
@@ -70,7 +70,7 @@ class ActiveRowManager {
     const scrollOffset = this.historyManager.getScrollOffset();
     
     // Match HistoryRenderer logic: only apply scroll offset when scrolling is actually happening
-    const activeAreaReserved = 45 + 50 + 20; // Same calculation as HistoryRenderer
+    const activeAreaReserved = LayoutConfig.SPACING.ACTIVE_ROW_HEIGHT + LayoutConfig.SPACING.ELEMENT_BAR_HEIGHT + LayoutConfig.SPACING.CONTENT_MARGIN;
     const bottomMargin = isSmallScreen ? activeAreaReserved : activeAreaReserved;
     const maxVisibleRows = Math.floor((height - historyStartY - bottomMargin) / rowHeight);
     
@@ -91,12 +91,12 @@ class ActiveRowManager {
   createElementBar(activeRowY) {
     // Create element bar BELOW active row slots with proper mobile spacing
     const { height } = this.scene.cameras.main;
-    const elementBarHeight = 50; // Height of element bar
+    const elementBarHeight = LayoutConfig.SPACING.ELEMENT_BAR_HEIGHT;
     const safeAreaInsets = this.scene.safeAreaManager ? this.scene.safeAreaManager.getInsets() : { bottom: 0 };
-    const minBottomMargin = 10; // Minimum margin from bottom
+    const minBottomMargin = LayoutConfig.SPACING.BOTTOM_MARGIN_MIN;
     
     // Calculate ideal position below active row
-    const idealElementBarY = activeRowY + 55; // Proper spacing for mobile touch targets
+    const idealElementBarY = activeRowY + LayoutConfig.SPACING.ELEMENT_BAR_OFFSET;
     
     // Calculate maximum allowed Y position to keep element bar visible
     const maxElementBarY = height - safeAreaInsets.bottom - elementBarHeight - minBottomMargin;
@@ -168,13 +168,13 @@ class ActiveRowManager {
 
   calculateSlotPositioning(codeLength, width, isSmallScreen) {
     // MOBILE EXPERT DESIGN: Improved sizing for family accessibility
-    const elementWidth = isSmallScreen ? 42 : 45; // Larger touch targets
-    const elementSpacing = isSmallScreen ? 48 : 55; // Better spacing
-    const submitButtonWidth = 85; // Consistent with footer layout
+    const elementWidth = isSmallScreen ? LayoutConfig.SPACING.ELEMENT_WIDTH_SMALL : LayoutConfig.SPACING.ELEMENT_WIDTH_DEFAULT;
+    const elementSpacing = isSmallScreen ? LayoutConfig.SPACING.ELEMENT_SPACING_SMALL : LayoutConfig.SPACING.ELEMENT_SPACING_DEFAULT;
+    const submitButtonWidth = LayoutConfig.SUBMIT_BUTTON_WIDTH;
     
     const totalElementsWidth = (codeLength * elementSpacing) - (elementSpacing - elementWidth);
-    const totalRowWidth = totalElementsWidth + submitButtonWidth + 20;
-    const minMargin = 15;
+    const totalRowWidth = totalElementsWidth + submitButtonWidth + LayoutConfig.SPACING.CONTENT_MARGIN;
+    const minMargin = LayoutConfig.SPACING.CONTAINER_TOP_DEFAULT;
     
     let startX;
     if (totalRowWidth + (minMargin * 2) <= width) {
@@ -254,7 +254,7 @@ class ActiveRowManager {
     
     // Calculate position after the last element with proper spacing
     const lastElementRightEdge = positioning.startX + ((codeLength - 1) * positioning.elementSpacing) + (positioning.elementWidth / 2);
-    const submitButtonX = lastElementRightEdge + 20 + 40; // 20px gap + half button width
+    const submitButtonX = lastElementRightEdge + LayoutConfig.SPACING.SUBMIT_BUTTON_GAP + LayoutConfig.SPACING.SUBMIT_BUTTON_HALF_WIDTH;
     
     // Use ButtonFactory for consistent festive styling with candy cane stripes
     this.activeRowSubmitBtn = ButtonFactory.createButton(
@@ -361,7 +361,7 @@ class ActiveRowManager {
     
     // CRITICAL FIX: Prevent excessive position updates
     const now = Date.now();
-    if (this.lastPositionUpdate && (now - this.lastPositionUpdate) < 16) { // 60fps throttle
+    if (this.lastPositionUpdate && (now - this.lastPositionUpdate) < LayoutConfig.ANIMATION.THROTTLE_60FPS) {
       return;
     }
     this.lastPositionUpdate = now;
