@@ -62,6 +62,11 @@ class GameScene extends Phaser.Scene {
     this.load.image('feedback_perfect_star_3x', `${assetPath}feedback_perfect_star_3x.png`);
     this.load.image('feedback_close_bell_3x', `${assetPath}feedback_close_bell_3x.png`);
     
+    // Load audio files for Christmas sound effects
+    this.load.audio('jingleBells', `${assetPath}audio/jingle_bells.mp3`);
+    this.load.audio('successChime', `${assetPath}audio/ho_ho_ho.mp3`);
+    this.load.audio('tada', `${assetPath}audio/tada.mp3`);
+    
     // Show loading progress
     this.load.on('progress', (value) => {
       if (this.loadingText) {

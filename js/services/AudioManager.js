@@ -13,12 +13,12 @@ class AudioManager {
    */
   preloadSounds() {
     // Preload Christmas sound effects
-    // Note: Actual audio files will be added to assets/ directory
+    // Note: Audio files are in assets/audio/ directory
     
-    // Functional feedback sounds
-    this.scene.load.audio('jingleBells', ['assets/audio/jingle_bells.mp3', 'assets/audio/jingle_bells.ogg']);
-    this.scene.load.audio('successChime', ['assets/audio/ho_ho_ho.mp3', 'assets/audio/ho_ho_ho.ogg']);
-    this.scene.load.audio('tada', ['assets/audio/tada.mp3', 'assets/audio/tada.ogg']);
+    // Functional feedback sounds - MP3 only for compatibility
+    this.scene.load.audio('jingleBells', 'assets/audio/jingle_bells.mp3');
+    this.scene.load.audio('successChime', 'assets/audio/ho_ho_ho.mp3');
+    this.scene.load.audio('tada', 'assets/audio/tada.mp3');
     // Element selection sound is optional - can be disabled for quieter experience
   }
 
