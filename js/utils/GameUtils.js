@@ -51,7 +51,8 @@ class GameUtils {
       HISTORY: 3,
       TOUCH_AREA: 5,
       GAME_OVER: 10,
-      MODAL: 15
+      MODAL: 15,
+      POPUP: 1000  // For hint popups that must appear above all containers
     };
   }
   // Expert Mobile Layout System

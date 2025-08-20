@@ -141,7 +141,7 @@ class GameScene extends Phaser.Scene {
   }
 
   createSimplePhaserLayout() {
-    // UNIFIED SCROLLABLE LAYOUT - Single scrollable container with no footer
+    // UNIFIED SLIDING WINDOW LAYOUT - Single game container with fixed positioning
     const { width, height } = this.cameras.main;
     const safeAreaInsets = this.safeAreaManager.getInsets();
     
@@ -150,15 +150,15 @@ class GameScene extends Phaser.Scene {
     this.headerContainer = this.add.container(0, 0);
     this.headerContainer.setDepth(1000);
     
-    // Single scrollable content container (full available height below header)
+    // Single game content container (full available height below header)
     const headerHeight = LayoutConfig.THREE_ZONE_HEADER;
     const availableHeight = height - headerHeight - safeAreaInsets.bottom;
     
     this.scrollableContainer = this.add.container(0, headerHeight);
     this.scrollableContainer.setDepth(500);
     
-    // Remove footerContainer - all content now goes in scrollableContainer
-    // Active row will be positioned inline after last guess
+    // Uses sliding window approach - shows last 6 completed guesses plus active row
+    // Active row positioned inline after last visible guess
     this.footerContainer = null;
   }
 

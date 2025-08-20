@@ -57,16 +57,10 @@ class HistoryManager {
 
   refreshDisplay() {
     // SLIDING WINDOW: Simple display refresh - no scroll offset management
-    console.log('🔧 DEBUG: HistoryManager.refreshDisplay() called');
-    console.log('🔧 DEBUG: hasActiveRow before refresh:', this.hasActiveRow);
-    
     this.renderer.displayGuessHistory(
       this.guessHistory, 
-      this.feedbackHistory, 
-      0 // No scroll offset needed with sliding window
+      this.feedbackHistory
     );
-    
-    console.log('🔧 DEBUG: hasActiveRow after renderer.displayGuessHistory:', this.hasActiveRow);
   }
 
   displayGuessHistory() {

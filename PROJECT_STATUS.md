@@ -58,6 +58,13 @@
 
 ## 📋 PLANNED FUTURE WORK
 
+### Systematic Code Cleanup (Low Priority)
+- **Documentation**: See `CLEANUP_CHECKLIST.md` for systematic approach
+- **Target areas**: Magic numbers → LayoutConfig, console log cleanup, test file updates
+- **Estimated effort**: 1 hour total across 3 phases
+- **Automation**: Commands provided for finding cleanup opportunities
+- **Safety**: Non-functional changes only, no logic modifications
+
 ### Audio Integration
 - **Status**: Implementation complete, needs audio files
 - **Required**: Source jingle_bells.mp3, ho_ho_ho.mp3, tada.mp3 files

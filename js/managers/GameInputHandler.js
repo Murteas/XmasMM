@@ -85,11 +85,13 @@ class GameInputHandler {
   }
 
   processSantasHint() {
-    // Get current guess from active row
-    const currentGuess = this.scene.historyManager.getActiveRowGuess();
+    // Get current guess from active row - allow empty/partial guesses for hints
+    let currentGuess = this.scene.historyManager.getActiveRowGuess();
     
+    // If no active row exists or it's empty, create an empty guess array for hint calculation
     if (!currentGuess) {
-      return false;
+      const codeLength = this.scene.gameStateManager.getGameStats().codeLength;
+      currentGuess = new Array(codeLength).fill(null);
     }
     
     const secretCode = this.scene.gameStateManager.getSecretCode();
@@ -165,7 +167,7 @@ class GameInputHandler {
       fill: '#ffd700',
       backgroundColor: '#0d5016', // Forest green background
       padding: { left: 10, right: 10, top: 5, bottom: 5 }  // Reduced padding
-    }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI + 10)
+    }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().POPUP)
       .setInteractive({ useHandCursor: true });
     
     let glowEffect = null;
@@ -174,7 +176,7 @@ class GameInputHandler {
     const targetSlot = this.scene.historyManager.activeRowManager.activeRowElements[hintResult.position];
     
     if (targetSlot && targetSlot.slot) {
-      // Add glow effect to scrollable container (unified layout)
+      // Add glow effect to game container
       glowEffect = this.scene.add.rectangle(
         targetSlot.slot.x, 
         targetSlot.slot.y, 
@@ -184,7 +186,7 @@ class GameInputHandler {
         0.7
       );
       
-      // Add to scrollable container (unified layout)
+      // Add to game container
       this.scene.scrollableContainer.add(glowEffect);
       
       // Set depth relative to other elements

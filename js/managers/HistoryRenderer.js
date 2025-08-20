@@ -8,7 +8,7 @@ class HistoryRenderer {
     this.historyGroup = null;
   }
 
-  displayGuessHistory(guessHistory, feedbackHistory, historyScrollOffset) {
+  displayGuessHistory(guessHistory, feedbackHistory) {
     // Clear previous history display
     this.clearHistory();
     
@@ -58,21 +58,6 @@ class HistoryRenderer {
       const y = startY + (rowIndex * rowHeight);
       const feedback = feedbackHistory[rowIndex];
       const currentDepth = baseDepth + rowIndex * 0.1;
-      
-      this.renderGuessRow(guess, feedback, rowIndex, y, currentDepth);
-    });
-  }
-
-  renderVisibleRows(guessHistory, feedbackHistory, startY, rowHeight, scrollOffset, maxVisibleRows) {
-    const startIndex = Math.floor(scrollOffset / rowHeight);
-    const endIndex = Math.min(guessHistory.length, startIndex + maxVisibleRows + 1);
-    const baseDepth = GameUtils.getDepthLayers().HISTORY;
-    
-    guessHistory.slice(startIndex, endIndex).forEach((guess, displayIndex) => {
-      const rowIndex = startIndex + displayIndex;
-      const y = startY + (rowIndex * rowHeight) - scrollOffset;
-      const feedback = feedbackHistory[rowIndex];
-      const currentDepth = baseDepth + displayIndex * 0.1;
       
       this.renderGuessRow(guess, feedback, rowIndex, y, currentDepth);
     });
@@ -358,41 +343,16 @@ class HistoryRenderer {
     this.historyElements.push(rowNumberText);
   }
 
-  renderScrollIndicators(totalRows, maxVisibleRows, scrollOffset, startY, rowHeight) {
-    const { width, height } = this.scene.cameras.main;
-    const startIndex = Math.floor(scrollOffset / rowHeight);
-    const endIndex = Math.min(totalRows, startIndex + maxVisibleRows + 1);
-    
-    // REMOVED: Scroll buttons no longer needed with sliding window approach
-    
-    // Position indicator
-    const scrollInfo = `${startIndex + 1}-${endIndex} of ${totalRows}`;
-    const positionIndicator = this.scene.add.text(width - 50, startY - 40, scrollInfo, {
-      font: '10px Arial',
-      fill: '#ccc'
-    }).setOrigin(1, 0.5).setDepth(GameUtils.getDepthLayers().UI);
-    
-    this.scene.scrollableContainer.add(positionIndicator);
-    this.historyElements.push(positionIndicator);
-  }
-
   clearHistory() {
-    // CRITICAL DEBUG: Track what's being cleared during refresh
-    console.log('🔧 DEBUG: HistoryRenderer.clearHistory() called');
-    console.log('🔧 DEBUG: historyGroup exists:', !!this.historyGroup);
-    console.log('🔧 DEBUG: historyElements count:', this.historyElements ? this.historyElements.length : 0);
-    
     // Clean up historyGroup (used for organization but not as container)
     if (this.historyGroup) {
-      console.log('🔧 DEBUG: Clearing historyGroup with', this.historyGroup.children.size, 'children');
       this.historyGroup.clear(true, true);
       this.historyGroup.destroy();
       this.historyGroup = null;
     }
     
-    // Clean up individual elements (added directly to scrollableContainer)
+    // Clean up individual elements (added directly to game container)
     if (this.historyElements) {
-      console.log('🔧 DEBUG: Destroying', this.historyElements.length, 'history elements');
       this.historyElements.forEach(element => {
         if (element && element.destroy) {
           element.destroy();
@@ -400,8 +360,6 @@ class HistoryRenderer {
       });
       this.historyElements = [];
     }
-    
-    console.log('🔧 DEBUG: clearHistory() completed');
   }
 
   reset() {
