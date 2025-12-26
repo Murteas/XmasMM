@@ -244,13 +244,9 @@ class GameScene extends Phaser.Scene {
   }
 
   createNewActiveRow() {
-    // Determine if we should pre-fill with previous guess
-    const lastGuess = this.historyManager.getGuessHistory().length > 0 
-      ? this.historyManager.getGuessHistory().slice(-1)[0] 
-      : null;
-    
-    // Create the active row in the history area
-    this.historyManager.createActiveRow(lastGuess);
+    // Always start with empty slots - players preferred entering fresh guesses
+    // Tap slot + tap symbol still works to replace/fix mistakes
+    this.historyManager.createActiveRow(null);
   }
   
   submitGuess() {

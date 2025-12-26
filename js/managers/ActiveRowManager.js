@@ -456,16 +456,16 @@ class ActiveRowManager {
   }
 
   handleElementSelection(element) {
-    // Smart selection logic
+    // Smart selection logic - selected slot takes priority over auto-fill
     const emptySlotIndex = this.activeRowGuess.findIndex(guess => guess === null);
     
-    if (emptySlotIndex !== -1) {
+    if (this.selectedSlotIndex !== null) {
+      // Replace explicitly selected slot (user tapped a slot first)
+      this.selectElement(this.selectedSlotIndex, element);
+      this.clearSlotSelection();
+    } else if (emptySlotIndex !== -1) {
       // Auto-fill next empty slot
       this.selectElement(emptySlotIndex, element);
-      this.clearSlotSelection();
-    } else if (this.selectedSlotIndex !== null) {
-      // Replace selected slot
-      this.selectElement(this.selectedSlotIndex, element);
       this.clearSlotSelection();
     } else {
       // All slots full, no slot selected - show feedback
