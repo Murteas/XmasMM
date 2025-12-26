@@ -3,10 +3,6 @@
   "version": "1.0.0",
   "description": "Christmas MasterMind - A mobile-first Christmas puzzle game",
   "scripts": {
-    "install-hooks": "bash scripts/install_hooks.sh",
     "serve": "python -m http.server 8000"
-  },
-  "engines": {
-    "node": ">=18.0.0"
   }
 }
