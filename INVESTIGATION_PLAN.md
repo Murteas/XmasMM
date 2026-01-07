@@ -1,7 +1,8 @@
 # 🎄 XmasMM Layout & UX Investigation Plan
 
 **Created:** December 26, 2025  
-**Status:** Ready for Investigation  
+**Last Updated:** January 7, 2026  
+**Status:** Step 1 Complete - Ready for Step 2  
 **Context:** Based on family party feedback - players want larger UI elements and ability to review all guesses
 
 ---
@@ -65,26 +66,28 @@
 | `GameStateManager.js` | Game state (secret code, etc.) | Low |
 | `SafeAreaManager.js` | Mobile safe area insets | Low |
 
-**Current Layout Flow:**
+**Current Layout Flow (UPDATED Jan 7, 2026):**
 1. `GameScene.createSimplePhaserLayout()` creates:
-   - `headerContainer` (fixed, depth 1000)
-   - `scrollableContainer` (positioned below header, depth 500)
-   - `footerContainer` is set to `null` (not used!)
+   - `headerContainer` (fixed at top, depth 1000)
+   - `scrollableContainer` (content area below header, depth 500)
+   - `footerContainer` (fixed at bottom, depth 1000) ✅ NOW USED
 
 2. `HistoryRenderer.displayGuessHistory()`:
-   - Implements sliding window (last 6 guesses only via `HISTORY_SLIDING_WINDOW_SIZE`)
-   - Calculates absolute Y positions within `scrollableContainer`
+   - Still uses sliding window (last 6 guesses via `HISTORY_SLIDING_WINDOW_SIZE`)
+   - ⚠️ Step 2 will remove this limitation
    
 3. `ActiveRowManager.createActiveRow()`:
-   - Positions after visible history rows
-   - Creates `ElementBar` below the active row (inline, not in footer)
+   - Active row positioned in content area
+   - `ElementBar` + Submit button now in fixed footer ✅ DONE
    
-**Key Findings:**
-- ❌ `footerContainer` exists in code but is set to `null` - never used in GameScene
-- ❌ ElementBar is created inline below active row, not in a fixed footer
-- ❌ Sliding window (`HISTORY_SLIDING_WINDOW_SIZE: 6`) artificially limits visible guesses
-- ❌ Everything is positioned with absolute Y calculations instead of letting CSS/browser handle layout
-- ❌ No native scroll - Phaser handles all rendering in canvas
+**Key Findings (UPDATED):**
+- ✅ `footerContainer` now created and used for ElementBar + Submit
+- ✅ ElementBar is in fixed footer - always visible
+- ✅ Submit button ("GO") next to ElementBar in footer
+- ✅ Active row slots centered and larger (~15% increase)
+- ✅ All footer values consolidated in `LayoutConfig.FOOTER` section
+- ❌ Sliding window still limits visible guesses (Step 2 will fix)
+- ❌ No scroll implemented yet (Step 2)
 
 **Root Cause of Complexity:**
 Phaser.js (game framework) renders to `<canvas>`, not HTML. This means:
@@ -296,43 +299,69 @@ scoringConfig = {
 - Server command: `python -m http.server 8000` from project root
 - Test URL: `http://localhost:8000`
 - Debug mode: Press `D` in game, then `R` for random guess, `W` for auto-win
-- Recent changes: Guess slots now start empty each turn, slot selection priority fixed
-- Git is up to date - all changes pushed to main branch
+- **Step 1 complete** - Footer with ElementBar + Submit button is working
+- Awaiting phone testing before Step 2
 
 ---
 
-## ✅ Ready to Start
+## ✅ Implementation Progress
 
-**Phase 0 Complete!** Architecture audit done. Key insight: Phaser canvas rendering is the root cause of scroll complexity.
+### Step 1: Fixed Footer ✅ COMPLETE (Jan 7, 2026)
 
-### Previous Attempt (Failed)
+**What was done:**
+1. Created three-zone layout in `GameScene.js`: Header + Content + Footer
+2. Moved ElementBar to fixed footer container
+3. Moved Submit button to footer (compact "GO" button next to symbols)
+4. Centered active row slots (no longer offset for inline submit)
+5. Increased active row element sizes ~15% for better visibility
+6. Consolidated all footer config into `LayoutConfig.FOOTER` section
+
+**Files modified:**
+- `js/config/LayoutConfig.js` - Added `FOOTER` section with all footer values
+- `js/scenes/GameScene.js` - Three-zone layout with real footerContainer
+- `js/managers/ActiveRowManager.js` - Footer positioning, uses LayoutConfig.FOOTER
+- `js/managers/ElementBar.js` - Uses LayoutConfig.FOOTER values
+
+**Testing status:** Works in browser dev tools. Awaiting real phone test.
+
+---
+
+### Step 2: Scrollable Content Area ⏳ NEXT
+
+**Goal:** Show all guesses with scroll capability
+
+**What needs to be done:**
+1. Remove sliding window limit in `HistoryRenderer.js`
+2. Implement Phaser-based scroll for content area (mask + touch drag)
+3. Ensure active row stays visible/accessible
+4. Test with 10+ guesses on phone
+
+**Key constraint:** Must work within Phaser canvas (no native browser scroll).
+
+**Implementation approach:**
+- Use Phaser container masking to clip content area
+- Implement touch drag to scroll content
+- Consider scroll indicators (arrows or bar)
+
+**Files to modify:**
+- `HistoryRenderer.js` - Remove sliding window, render all rows
+- `GameScene.js` - Add scroll mask and touch handling
+- `LayoutConfig.js` - Remove or adjust `HISTORY_SLIDING_WINDOW_SIZE`
+
+---
+
+### Previous Attempt (Failed - Dec 30, 2025)
 
 **Tested:** Removing sliding window limit to show all guesses.
 **Result:** Breaks on iPhone X after ~8 guesses. The active row and element bar get pushed off the bottom of the screen, especially problematic when browser footer is visible.
 
 **Why it failed:** Without scroll handling, content simply extends beyond viewport with no way to see or interact with it.
 
-### Recommended Next Step: Implement Fixed Footer + Scroll
+**Solution:** Step 1 (fixed footer) addresses this. Step 2 will add scroll.
 
-The approach needs to be:
-1. **Move ElementBar to a true fixed footer** - Always visible at bottom of viewport
-2. **Create scrollable content area** - Between header and footer, with proper scroll handling
-3. **Active row at top of scroll area** - User fills current guess at top, history scrolls below
+---
 
-**Key constraint:** Must work within Phaser canvas (no native browser scroll available).
-
-**Implementation approach options:**
-1. **Phaser Camera/Viewport** - Use a separate camera for the scrollable area with bounds
-2. **Container masking + drag** - Mask the content area, implement touch drag to scroll
-3. **Hybrid HTML overlay** - Use HTML div for scrollable guess list, Phaser for active row/footer
-
-**Files to modify:**
-- `GameScene.js` - Create proper three-zone layout (header, scroll area, footer)
-- `ActiveRowManager.js` - Position active row in scroll area, move ElementBar creation to footer
-- `HistoryRenderer.js` - Remove sliding window, render all rows in scroll container
-- `LayoutConfig.js` - Add footer height for element bar
-
-**Testing checklist:**
+**Testing checklist for Step 2:**
 - [ ] iPhone X (375x812) with browser chrome visible
 - [ ] iPhone SE (375x667) - smallest supported viewport
 - [ ] Test with 10+ guesses to ensure scroll works
