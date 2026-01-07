@@ -146,25 +146,46 @@ class GameScene extends Phaser.Scene {
   }
 
   createSimplePhaserLayout() {
-    // UNIFIED SLIDING WINDOW LAYOUT - Single game container with fixed positioning
+    // THREE-ZONE LAYOUT: Header (fixed) + Content (scrollable) + Footer (fixed)
     const { width, height } = this.cameras.main;
     const safeAreaInsets = this.safeAreaManager.getInsets();
     
-    // === UNIFIED TWO-ZONE LAYOUT ===
+    // === THREE-ZONE LAYOUT ===
+    const headerHeight = LayoutConfig.THREE_ZONE_HEADER;
+    const footerHeight = LayoutConfig.FOOTER.HEIGHT + safeAreaInsets.bottom;
+    const contentHeight = height - headerHeight - footerHeight;
+    
     // Header container (fixed at top)
     this.headerContainer = this.add.container(0, 0);
     this.headerContainer.setDepth(1000);
     
-    // Single game content container (full available height below header)
-    const headerHeight = LayoutConfig.THREE_ZONE_HEADER;
-    const availableHeight = height - headerHeight - safeAreaInsets.bottom;
-    
+    // Scrollable content container (between header and footer)
     this.scrollableContainer = this.add.container(0, headerHeight);
     this.scrollableContainer.setDepth(500);
     
-    // Uses sliding window approach - shows last 6 completed guesses plus active row
-    // Active row positioned inline after last visible guess
-    this.footerContainer = null;
+    // Store content area bounds for scroll calculations
+    this.contentBounds = {
+      top: headerHeight,
+      height: contentHeight,
+      bottom: height - footerHeight
+    };
+    
+    // Footer container (fixed at bottom) - for ElementBar
+    this.footerContainer = this.add.container(0, height - footerHeight);
+    this.footerContainer.setDepth(1000);
+    
+    // Add footer background
+    const footerBg = this.add.rectangle(
+      width / 2, 
+      footerHeight / 2, 
+      width, 
+      footerHeight, 
+      0x0a3d2a, // Dark Christmas green
+      0.95
+    ).setStrokeStyle(2, 0xffd700, 0.6); // Subtle gold border at top
+    this.footerContainer.add(footerBg);
+    
+    console.log(`📐 THREE-ZONE LAYOUT: Header=${headerHeight}px, Content=${contentHeight}px, Footer=${footerHeight}px`);
   }
 
   setupGameComponents() {

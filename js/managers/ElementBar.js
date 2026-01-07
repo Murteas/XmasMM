@@ -8,24 +8,31 @@ class ElementBar {
     this.container = null;
   }
 
+  // Original method for inline positioning (deprecated but kept for compatibility)
   create(container, yPosition = -35) {
     const { width } = this.scene.cameras.main;
+    this.createInFooter(container, width / 2, yPosition);
+  }
+
+  // New method for footer positioning with explicit X coordinate
+  createInFooter(container, centerX, yPosition) {
     const elements = this.scene.elements;
+    const footer = LayoutConfig.FOOTER; // Use consolidated footer config
     
-    // Enhanced element bar - larger and more prominent
-    const elementBarY = yPosition; // Use provided position (for inline positioning)
-    const elementSize = 45; // Increased from 40 for better prominence  
-    const spacing = 8; // Slightly more spacing
+    // Element button sizing from config
+    const elementSize = footer.ELEMENT_BUTTON_SIZE;
+    const spacing = footer.ELEMENT_BUTTON_SPACING;
     const totalWidth = elements.length * elementSize + (elements.length - 1) * spacing;
     const startX = -totalWidth / 2 + elementSize / 2;
     
-    this.container = this.scene.add.container(width / 2, 0);
+    // Create container at specified X position (not always screen center)
+    this.container = this.scene.add.container(centerX, 0);
     container.add(this.container);
     
     // Create element buttons
     elements.forEach((element, index) => {
       const x = startX + index * (elementSize + spacing);
-      const button = this.createElementButton(element, x, elementBarY, elementSize);
+      const button = this.createElementButton(element, x, yPosition, elementSize);
       this.elementButtons.push(button);
     });
     

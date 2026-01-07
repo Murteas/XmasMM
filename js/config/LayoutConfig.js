@@ -13,6 +13,19 @@ const LayoutConfig = {
   // Footer heights (MOBILE EXPERT: Optimized for minimal space usage)
   FOOTER_HEIGHT_GAME: 85, // REDUCED from 90 to 85px - reclaim 5px more gameplay space
   FOOTER_HEIGHT_ROUND_OVER: 100,
+  
+  // Fixed footer for ElementBar (symbol picker) - always visible at bottom
+  FOOTER_HEIGHT_ELEMENT_BAR: 70, // DEPRECATED: Use FOOTER.HEIGHT instead
+
+  // FOOTER: Consolidated footer layout values (single source of truth)
+  FOOTER: {
+    HEIGHT: 70,                    // Total footer height
+    TOP_PADDING: 8,                // Padding from top edge to avoid border overlap
+    ELEMENT_BUTTON_SIZE: 45,       // Size of each element picker button
+    ELEMENT_BUTTON_SPACING: 8,     // Gap between element buttons
+    SUBMIT_BUTTON_WIDTH: 50,       // Width of GO button
+    SUBMIT_BUTTON_GAP: 12,         // Gap between elements and submit button
+  },
 
   // History & RoundOver row heights (MOBILE EXPERT: Increased for larger elements)
   HISTORY_ROW_HEIGHT_STANDARD: 75, // Increased from 60 to accommodate larger elements
@@ -69,17 +82,17 @@ const LayoutConfig = {
     
     ELEMENT_BAR_OFFSET: 55,       // Space between active row and element bar
     ELEMENT_BAR_HEIGHT: 50,       // Height of element selection bar
-    ACTIVE_ROW_HEIGHT: 45,        // Height of active row elements
+    ACTIVE_ROW_HEIGHT: 50,        // Height of active row elements (increased from 45)
     BOTTOM_MARGIN_MIN: 10,        // Minimum margin from bottom edge
     CONTENT_MARGIN: 20,           // General content margins
     
     SUBMIT_BUTTON_GAP: 20,        // Gap between elements and submit button
     SUBMIT_BUTTON_HALF_WIDTH: 40, // Half width of submit button for positioning
     
-    ELEMENT_WIDTH_SMALL: 42,      // Element width on small screens
-    ELEMENT_WIDTH_DEFAULT: 45,    // Element width on default screens
-    ELEMENT_SPACING_SMALL: 48,    // Element spacing on small screens
-    ELEMENT_SPACING_DEFAULT: 55,  // Element spacing on default screens
+    ELEMENT_WIDTH_SMALL: 48,      // Element width on small screens (increased from 42 - ~15%)
+    ELEMENT_WIDTH_DEFAULT: 50,    // Element width on default screens (increased from 45 - ~11%)
+    ELEMENT_SPACING_SMALL: 52,    // Element spacing on small screens (increased from 48)
+    ELEMENT_SPACING_DEFAULT: 58,  // Element spacing on default screens (increased from 55)
     
     DEBUG_INDICATOR: 10,          // Debug indicator positioning
     LOADING_TEXT_OFFSET: 20,      // Loading text vertical offset

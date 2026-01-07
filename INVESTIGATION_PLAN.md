@@ -201,6 +201,23 @@ scoringConfig = {
 
 ---
 
+### Bonus: Streamlined Game Start (Future Feature)
+**Goal:** Simplify difficulty selection - one tap to start
+
+**Current behavior:**
+- User selects difficulty (Easy/Standard), then clicks "Start Game" button
+- Two-step process is unnecessary
+
+**Proposed changes:**
+1. **Combine selection + start** - Clicking a difficulty button starts the game immediately
+2. **Rename difficulty levels:**
+   - "Easy" → "Standard" (4 elements, fewer combinations)
+   - "Standard" → "Hard" (6 elements, more combinations)
+3. **Files to modify:**
+   - `js/scenes/DifficultySelection.js` - Button handlers, text labels
+
+---
+
 ### Bonus: Theme System (Future Feature)
 **Goal:** Allow the game to be played with different visual themes beyond Christmas
 
