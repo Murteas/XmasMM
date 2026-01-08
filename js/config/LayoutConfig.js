@@ -86,6 +86,7 @@ const LayoutConfig = {
     BOTTOM_MARGIN_MIN: 10,        // Minimum margin from bottom edge
     CONTENT_MARGIN: 20,           // General content margins
     
+    SUBMIT_BUTTON_WIDTH: 80,      // Width of submit button
     SUBMIT_BUTTON_GAP: 20,        // Gap between elements and submit button
     SUBMIT_BUTTON_HALF_WIDTH: 40, // Half width of submit button for positioning
     

@@ -35,12 +35,12 @@ class ActiveRowManager {
       }
     }
     
-    // THREE-ZONE LAYOUT: Active row in content area, controls in fixed footer
+    // INLINE LAYOUT: Active row with Submit button and ElementBar inline
     const activeRowY = this.calculateInlineActiveRowPosition();
     this.createActiveRowVisuals(activeRowY);
     this.createActiveRowSlots(activeRowY);
-    // Submit button now in footer alongside ElementBar
-    this.createElementBarInFooter(); // Creates ElementBar + Submit button in footer
+    this.createSubmitButton(activeRowY);  // Inline submit button next to slots
+    this.createElementBar(activeRowY);    // Inline element bar below active row
     
     this.hasActiveRow = true;
     
@@ -73,65 +73,65 @@ class ActiveRowManager {
     return activeRowY;
   }
 
-  createElementBarInFooter() {
-    // THREE-ZONE LAYOUT: ElementBar + Submit button in fixed footer container
+  // INLINE SUBMIT BUTTON - positioned next to active row slots
+  createSubmitButton(activeRowY) {
     const { width } = this.scene.cameras.main;
-    const footer = LayoutConfig.FOOTER; // Use consolidated footer config
+    const codeLength = this.scene.codeLength;
+    const isSmallScreen = width < 500;
+    const positioning = this.calculateSlotPositioning(codeLength, width, isSmallScreen);
     
-    // The footer container's total height includes safe area at bottom
-    // Center controls in the usable portion (not the safe area padding)
-    const usableHeight = footer.HEIGHT - footer.TOP_PADDING;
-    const controlsY = footer.TOP_PADDING + (usableHeight / 2);
+    // Calculate position after the last element with proper spacing
+    const lastElementRightEdge = positioning.startX + ((codeLength - 1) * positioning.elementSpacing) + (positioning.elementWidth / 2);
+    const submitButtonX = lastElementRightEdge + LayoutConfig.SPACING.SUBMIT_BUTTON_GAP + LayoutConfig.SPACING.SUBMIT_BUTTON_HALF_WIDTH;
     
-    // Calculate ElementBar dimensions from config
-    const numElements = this.scene.elements.length;
-    const elementBarWidth = numElements * footer.ELEMENT_BUTTON_SIZE + 
-                           (numElements - 1) * footer.ELEMENT_BUTTON_SPACING;
-    
-    // Position ElementBar slightly left of center to make room for Submit button
-    const totalWidth = elementBarWidth + footer.SUBMIT_BUTTON_GAP + footer.SUBMIT_BUTTON_WIDTH;
-    const elementBarCenterX = (width - totalWidth) / 2 + elementBarWidth / 2;
-    const submitButtonX = elementBarCenterX + elementBarWidth / 2 + 
-                          footer.SUBMIT_BUTTON_GAP + footer.SUBMIT_BUTTON_WIDTH / 2;
-    
-    console.log(`🔍 FOOTER CONTROLS: ElementBar at X=${elementBarCenterX}, Submit at X=${submitButtonX}, Y=${controlsY}`);
-    
-    // Create ElementBar in footer container (pass custom X position)
-    this.elementBar.createInFooter(this.scene.footerContainer, elementBarCenterX, controlsY);
-    
-    // Create Submit button in footer
-    this.createSubmitButtonInFooter(submitButtonX, controlsY);
-  }
-  
-  createSubmitButtonInFooter(x, y) {
-    // Create compact Submit button in footer container (no icon, just text)
+    // Use ButtonFactory for consistent festive styling
     this.activeRowSubmitBtn = ButtonFactory.createButton(
       this.scene,
-      x,
-      y,
+      submitButtonX,
+      activeRowY,
       'GO',
       'primary',
       {
         pattern: 'candycane',
         gradient: true,
-        font: 'bold 14px Arial',
-        paddingX: 12, // Compact horizontal padding
+        font: 'bold 12px Arial',
         onClick: () => this.scene.submitGuess()
       }
     );
     
+    if (!this.activeRowSubmitBtn) {
+      console.error('❌ SUBMIT BUTTON: ButtonFactory returned null/undefined!');
+      return;
+    }
+    
+    // Set depth and data tag
     this.activeRowSubmitBtn.setDepth(GameUtils.getDepthLayers().TOUCH_AREA + 1.2);
     this.activeRowSubmitBtn.setData('uiType', 'submitButton');
     
-    // Add to footer container (not scrollable container)
-    this.scene.footerContainer.add(this.activeRowSubmitBtn);
+    // Add submit button to scrollable container (inline with active row)
+    this.scene.scrollableContainer.add(this.activeRowSubmitBtn);
   }
 
-  // Legacy method - redirects to new footer-based implementation
+  // INLINE ELEMENT BAR - positioned below active row
   createElementBar(activeRowY) {
-    // DEPRECATED: ElementBar now created in footer via createElementBarInFooter()
-    console.warn('⚠️ createElementBar() is deprecated - use createElementBarInFooter()');
-    this.createElementBarInFooter();
+    const { height } = this.scene.cameras.main;
+    const elementBarHeight = LayoutConfig.SPACING.ELEMENT_BAR_HEIGHT;
+    const safeAreaInsets = this.scene.safeAreaManager ? this.scene.safeAreaManager.getInsets() : { bottom: 0 };
+    const minBottomMargin = LayoutConfig.SPACING.BOTTOM_MARGIN_MIN;
+    
+    // Calculate ideal position below active row
+    const idealElementBarY = activeRowY + LayoutConfig.SPACING.ELEMENT_BAR_OFFSET;
+    
+    // Calculate maximum allowed position (don't go off screen)
+    const maxElementBarY = height - safeAreaInsets.bottom - (elementBarHeight / 2) - minBottomMargin;
+    
+    // Use the lower position to ensure visibility
+    const elementBarY = Math.min(idealElementBarY, maxElementBarY);
+    
+    console.log(`🔍 ELEMENT BAR: Inline at Y=${elementBarY} (ideal: ${idealElementBarY}, max: ${maxElementBarY})`);
+    
+    // Create ElementBar in scrollable container (inline positioning)
+    this.elementBar.create(this.scene.scrollableContainer, elementBarY);
   }
 
   // Old calculateActiveRowPosition method removed - was causing conflicts with unified layout
@@ -195,15 +195,19 @@ class ActiveRowManager {
 
   calculateSlotPositioning(codeLength, width, isSmallScreen) {
     // MOBILE EXPERT DESIGN: Improved sizing for family accessibility
-    // Submit button is now in footer, so slots can be centered
+    // Submit button is INLINE (to the right of slots), so account for its width
     const elementWidth = isSmallScreen ? LayoutConfig.SPACING.ELEMENT_WIDTH_SMALL : LayoutConfig.SPACING.ELEMENT_WIDTH_DEFAULT;
     const elementSpacing = isSmallScreen ? LayoutConfig.SPACING.ELEMENT_SPACING_SMALL : LayoutConfig.SPACING.ELEMENT_SPACING_DEFAULT;
     
-    // Calculate total width of just the element slots (no submit button)
+    // Calculate total width of element slots
     const totalElementsWidth = (codeLength * elementSpacing) - (elementSpacing - elementWidth);
     
-    // Center the slots on screen
-    const startX = (width - totalElementsWidth) / 2 + elementWidth / 2;
+    // Include submit button width + gap in centering calculation
+    const submitButtonTotalWidth = LayoutConfig.SPACING.SUBMIT_BUTTON_GAP + LayoutConfig.SPACING.SUBMIT_BUTTON_WIDTH;
+    const totalRowWidth = totalElementsWidth + submitButtonTotalWidth;
+    
+    // Center the entire row (slots + submit button) on screen
+    const startX = (width - totalRowWidth) / 2 + elementWidth / 2;
     
     return { startX, elementWidth, elementSpacing };
   }
@@ -266,12 +270,6 @@ class ActiveRowManager {
       this.addSlotTouchFeedback(slot, slotIndex);
       this.selectSlot(slotIndex);
     });
-  }
-
-  // DEPRECATED: Submit button now created in footer via createSubmitButtonInFooter()
-  createSubmitButton(activeRowY) {
-    console.warn('⚠️ createSubmitButton() is deprecated - Submit button is now in footer');
-    // No-op: Submit button is now created in createElementBarInFooter()
   }
 
   // Element selection is handled by ElementBar, no separate picker needed

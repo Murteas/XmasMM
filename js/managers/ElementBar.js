@@ -8,14 +8,14 @@ class ElementBar {
     this.container = null;
   }
 
-  // Original method for inline positioning (deprecated but kept for compatibility)
+  // Create element bar at specified position (inline with active row)
   create(container, yPosition = -35) {
     const { width } = this.scene.cameras.main;
-    this.createInFooter(container, width / 2, yPosition);
+    this.createAtPosition(container, width / 2, yPosition);
   }
 
-  // New method for footer positioning with explicit X coordinate
-  createInFooter(container, centerX, yPosition) {
+  // Create element bar at explicit X/Y position
+  createAtPosition(container, centerX, yPosition) {
     const elements = this.scene.elements;
     const footer = LayoutConfig.FOOTER; // Use consolidated footer config
     

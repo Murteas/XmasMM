@@ -1,8 +1,8 @@
 # 🎄 XmasMM Layout & UX Investigation Plan
 
 **Created:** December 26, 2025  
-**Last Updated:** January 7, 2026  
-**Status:** Step 1 Complete - Ready for Step 2  
+**Last Updated:** January 8, 2026  
+**Status:** Step 1 Partial Revert COMPLETE ✅  
 **Context:** Based on family party feedback - players want larger UI elements and ability to review all guesses
 
 ---
@@ -299,16 +299,38 @@ scoringConfig = {
 - Server command: `python -m http.server 8000` from project root
 - Test URL: `http://localhost:8000`
 - Debug mode: Press `D` in game, then `R` for random guess, `W` for auto-win
-- **Step 1 complete** - Footer with ElementBar + Submit button is working
-- Awaiting phone testing before Step 2
+- **Step 1 being partially reverted** - Footer approach failed on older phones
+
+---
+
+## 🚫 Step 1 Phone Testing Results (Jan 8, 2026)
+
+### What We Learned:
+1. **Fixed footer is unreliable** - Works on newer phones (iPhone 17), but obscured by browser bars on older phones
+2. **Users prefer inline ElementBar** - Multiple testers preferred the original inline placement next to the active guess
+3. **Browser bar behavior is unpredictable** - Different phones/browsers handle footer space differently
+
+### Decision: Partial Revert
+
+**KEEP (good changes):**
+- ✅ Larger active row element sizes (~15% increase)
+- ✅ Consolidated `LayoutConfig.FOOTER` section (good architecture cleanup)
+- ✅ Three-zone layout structure (footer can be used for other purposes later)
+
+**REVERT:**
+- ❌ ElementBar moves back to inline (below active row)
+- ❌ Submit button moves back to inline (next to active row slots)
+
+### Key Learning:
+> **Don't rely on fixed footers for critical game controls on mobile web.** Browser bars, safe areas, and device variations make footer visibility unpredictable. Inline controls that scroll with content are more reliable.
 
 ---
 
 ## ✅ Implementation Progress
 
-### Step 1: Fixed Footer ✅ COMPLETE (Jan 7, 2026)
+### Step 1: Fixed Footer → Partial Revert ✅ COMPLETE (Jan 8, 2026)
 
-**What was done:**
+**Original implementation (Jan 7):**
 1. Created three-zone layout in `GameScene.js`: Header + Content + Footer
 2. Moved ElementBar to fixed footer container
 3. Moved Submit button to footer (compact "GO" button next to symbols)
@@ -316,13 +338,25 @@ scoringConfig = {
 5. Increased active row element sizes ~15% for better visibility
 6. Consolidated all footer config into `LayoutConfig.FOOTER` section
 
-**Files modified:**
-- `js/config/LayoutConfig.js` - Added `FOOTER` section with all footer values
-- `js/scenes/GameScene.js` - Three-zone layout with real footerContainer
-- `js/managers/ActiveRowManager.js` - Footer positioning, uses LayoutConfig.FOOTER
-- `js/managers/ElementBar.js` - Uses LayoutConfig.FOOTER values
+**Phone testing result:** Footer obscured on older phones, users prefer inline.
 
-**Testing status:** Works in browser dev tools. Awaiting real phone test.
+**Partial revert completed (Jan 8):**
+- ✅ Reverted ElementBar to inline positioning (below active row)
+- ✅ Reverted Submit button to inline positioning (next to slots)
+- ✅ Restored slot positioning calculation to account for inline submit button
+- ✅ Removed duplicate deprecated method stubs
+- ✅ Cleaned up confusing method names in ElementBar.js
+
+**What was KEPT:**
+- ✅ Larger element sizes (~15% increase): `ELEMENT_WIDTH_SMALL: 48`, `ELEMENT_WIDTH_DEFAULT: 50`
+- ✅ Consolidated `LayoutConfig.FOOTER` section (good architecture)
+- ✅ Three-zone layout structure (footer available for future use)
+- ✅ All centralized spacing constants in `LayoutConfig.SPACING`
+
+**Files modified:**
+- `js/managers/ActiveRowManager.js` - Restored inline Submit + ElementBar methods
+- `js/managers/ElementBar.js` - Renamed method for clarity (`createAtPosition`)
+- `js/config/LayoutConfig.js` - Added `SUBMIT_BUTTON_WIDTH` constant
 
 ---
 
