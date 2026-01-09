@@ -317,7 +317,7 @@ class GameScene extends Phaser.Scene {
     // Check if the entire active row + element bar + padding fits in visible area
     const visibleBottom = this.contentBounds.bottom;
 
-    // DEBUG: Log all calculations
+    // DEBUG: Log all calculations to console
     console.log(`🔍 SCROLL DEBUG [Guess ${guessCount}]:`, {
       activeRowY,
       activeRowHeight,
@@ -335,6 +335,22 @@ class GameScene extends Phaser.Scene {
       viewportHeight: this.cameras.main.height,
       scrollContainerY: this.scrollableContainer.y
     });
+
+    // DEBUG: Show on-screen for iPhone testing
+    if (guessCount >= 8) {
+      this.showScrollDebugOverlay({
+        guess: guessCount,
+        activeRowY: Math.round(activeRowY),
+        totalNeeded: Math.round(totalNeededHeight),
+        activeRowScreenY: Math.round(activeRowScreenY),
+        activeRowBottomY: Math.round(activeRowBottomScreenY),
+        visibleBottom: Math.round(visibleBottom),
+        overflow: Math.round(activeRowBottomScreenY - visibleBottom),
+        scrollY: Math.round(this.scrollableContainer.y),
+        viewportH: Math.round(this.cameras.main.height),
+        contentH: Math.round(this.contentBounds.height)
+      });
+    }
 
     if (activeRowBottomScreenY > visibleBottom) {
       // Need to scroll - calculate how much to move up
@@ -645,5 +661,44 @@ class GameScene extends Phaser.Scene {
     if (this.uiLayoutManager) {
       this.uiLayoutManager.destroy && this.uiLayoutManager.destroy();
     }
+  }
+
+  showScrollDebugOverlay(data) {
+    // Remove previous overlay if exists
+    if (this._debugOverlay) {
+      this._debugOverlay.destroy();
+    }
+
+    const { width, height } = this.cameras.main;
+
+    // Create semi-transparent background
+    const bg = this.add.rectangle(10, 10, 200, 180, 0x000000, 0.8);
+    bg.setOrigin(0, 0);
+    bg.setDepth(9999);
+
+    // Create debug text
+    const debugText = [
+      `Guess: ${data.guess}`,
+      `Viewport H: ${data.viewportH}`,
+      `Content H: ${data.contentH}`,
+      `Active Row Y: ${data.activeRowY}`,
+      `Total Needed: ${data.totalNeeded}`,
+      `Screen Y: ${data.activeRowScreenY}`,
+      `Bottom Y: ${data.activeRowBottomY}`,
+      `Visible Bottom: ${data.visibleBottom}`,
+      `Overflow: ${data.overflow}`,
+      `Scroll Y: ${data.scrollY}`
+    ].join('\n');
+
+    const text = this.add.text(15, 15, debugText, {
+      font: '12px monospace',
+      fill: '#ffff00',
+      backgroundColor: 'transparent'
+    });
+    text.setDepth(10000);
+
+    // Create container to track both elements
+    this._debugOverlay = this.add.container(0, 0, [bg, text]);
+    this._debugOverlay.setDepth(9999);
   }
 }
