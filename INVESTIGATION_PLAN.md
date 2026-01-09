@@ -360,27 +360,48 @@ scoringConfig = {
 
 ---
 
-### Step 2: Scrollable Content Area ⏳ NEXT
+### Step 2: Scrollable Content Area ⚠️ IN PROGRESS (PARTIAL - NEEDS DEBUGGING)
 
-**Goal:** Show all guesses with scroll capability
+**Status:** Core scrolling implemented but has issues with initialization timing
 
-**What needs to be done:**
-1. Remove sliding window limit in `HistoryRenderer.js`
-2. Implement Phaser-based scroll for content area (mask + touch drag)
-3. Ensure active row stays visible/accessible
-4. Test with 10+ guesses on phone
+**What was completed:**
+1. ✅ Removed sliding window limit in `HistoryRenderer.js`
+2. ✅ Added geometry masking to clip content area
+3. ✅ Implemented touch-drag scrolling with pointer events
+4. ✅ Added scroll bounds clamping
+5. ✅ Added content height calculation
+6. ⚠️ Auto-scroll feature implemented but temporarily disabled (needs debugging)
 
-**Key constraint:** Must work within Phaser canvas (no native browser scroll).
+**Known Issues (Jan 8, 2026):**
+- Game takes long time to load after pressing start
+- Active row and element bar not visible on first load
+- Likely timing issue with initialization order
+- Auto-scroll calling methods before managers are ready
 
-**Implementation approach:**
-- Use Phaser container masking to clip content area
-- Implement touch drag to scroll content
-- Consider scroll indicators (arrows or bar)
+**Files Modified:**
+- ✅ `HistoryRenderer.js` - Renders all guesses (no sliding window)
+- ✅ `GameScene.js` - Added scroll system (masking, touch handlers, bounds)
+- ✅ `HistoryManager.js` - Auto-scroll hooks added (temporarily disabled)
+- ✅ `LayoutConfig.js` - Deprecated `HISTORY_SLIDING_WINDOW_SIZE`
 
-**Files to modify:**
-- `HistoryRenderer.js` - Remove sliding window, render all rows
-- `GameScene.js` - Add scroll mask and touch handling
-- `LayoutConfig.js` - Remove or adjust `HISTORY_SLIDING_WINDOW_SIZE`
+**What Works:**
+- All guesses are rendered (no 6-guess limit)
+- Content is masked with clean boundaries
+- Manual touch-drag scrolling works (when content is visible)
+- Scroll bounds prevent over-scrolling
+
+**What Needs Fixing:**
+1. Initialization timing - ensure managers load before scroll setup
+2. Debug why active row/element bar don't appear initially
+3. Re-enable and test auto-scroll after timing fixed
+4. Test with 10+ guesses on actual phone
+
+**Next Steps:**
+1. Add safety checks in `setupGameComponents()`
+2. Move scroll initialization to after all managers ready
+3. Add console logging to debug initialization order
+4. Re-enable auto-scroll with proper guards
+5. Test thoroughly on desktop before mobile
 
 ---
 

@@ -31,8 +31,8 @@ const LayoutConfig = {
   HISTORY_ROW_HEIGHT_STANDARD: 75, // Increased from 60 to accommodate larger elements
   ROUND_OVER_ROW_HEIGHT_DENSE: 36, // Reduced from 42 to 36px for better fit with 10 guesses
 
-  // Sliding window configuration (CLEAN SLATE: No scrolling, simple layout)
-  HISTORY_SLIDING_WINDOW_SIZE: 6, // Show last 6 completed guesses (adjustable based on mobile testing)
+  // DEPRECATED: Sliding window removed in favor of scrolling
+  // HISTORY_SLIDING_WINDOW_SIZE: 6, // No longer used - all guesses now shown with scrolling
 
   // Minimum touch target
   MIN_TOUCH_TARGET: 44,
