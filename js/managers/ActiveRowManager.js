@@ -110,22 +110,12 @@ class ActiveRowManager {
 
   // INLINE ELEMENT BAR - positioned below active row
   createElementBar(activeRowY) {
-    const { height } = this.scene.cameras.main;
-    const elementBarHeight = LayoutConfig.SPACING.ELEMENT_BAR_HEIGHT;
-    const safeAreaInsets = this.scene.safeAreaManager ? this.scene.safeAreaManager.getInsets() : { bottom: 0 };
-    const minBottomMargin = LayoutConfig.SPACING.BOTTOM_MARGIN_MIN;
-    
-    // Calculate ideal position below active row
-    const idealElementBarY = activeRowY + LayoutConfig.SPACING.ELEMENT_BAR_OFFSET;
-    
-    // Calculate maximum allowed position (don't go off screen)
-    const maxElementBarY = height - safeAreaInsets.bottom - (elementBarHeight / 2) - minBottomMargin;
-    
-    // Use the lower position to ensure visibility
-    const elementBarY = Math.min(idealElementBarY, maxElementBarY);
-    
-    console.log(`🔍 ELEMENT BAR: Inline at Y=${elementBarY} (ideal: ${idealElementBarY}, max: ${maxElementBarY})`);
-    
+    // Element bar is positioned INSIDE scrollableContainer, so use container-relative coordinates
+    // Simply position it below the active row - scrolling will handle visibility
+    const elementBarY = activeRowY + LayoutConfig.SPACING.ELEMENT_BAR_OFFSET;
+
+    console.log(`🔍 ELEMENT BAR: Positioned at container Y=${elementBarY} (below active row at ${activeRowY})`);
+
     // Create ElementBar in scrollable container (inline positioning)
     this.elementBar.create(this.scene.scrollableContainer, elementBarY);
   }
