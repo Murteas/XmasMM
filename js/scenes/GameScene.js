@@ -299,6 +299,7 @@ class GameScene extends Phaser.Scene {
     // Get active row position
     if (!this.historyManager || !this.historyManager.activeRowManager) return;
 
+    const guessCount = this.historyManager.getGuessCount();
     const activeRowY = this.historyManager.activeRowManager.calculateInlineActiveRowPosition();
     const activeRowHeight = LayoutConfig.SPACING.ACTIVE_ROW_HEIGHT || 50;
     const elementBarOffset = LayoutConfig.SPACING.ELEMENT_BAR_OFFSET;
@@ -316,20 +317,42 @@ class GameScene extends Phaser.Scene {
     // Check if the entire active row + element bar + padding fits in visible area
     const visibleBottom = this.contentBounds.bottom;
 
+    // DEBUG: Log all calculations
+    console.log(`🔍 SCROLL DEBUG [Guess ${guessCount}]:`, {
+      activeRowY,
+      activeRowHeight,
+      elementBarOffset,
+      elementBarHeight,
+      totalNeededHeight,
+      headerY,
+      currentScrollOffset,
+      activeRowScreenY,
+      activeRowBottomScreenY,
+      visibleBottom,
+      overflow: activeRowBottomScreenY - visibleBottom,
+      needsScroll: activeRowBottomScreenY > visibleBottom,
+      contentBounds: this.contentBounds,
+      viewportHeight: this.cameras.main.height,
+      scrollContainerY: this.scrollableContainer.y
+    });
+
     if (activeRowBottomScreenY > visibleBottom) {
       // Need to scroll - calculate how much to move up
       const overflow = activeRowBottomScreenY - visibleBottom;
       const desiredY = this.scrollableContainer.y - overflow;
+      const clampedY = this.clampScrollPosition(desiredY);
+
+      console.log(`🔍 SCROLL: Scrolling - overflow=${overflow}px, desiredY=${desiredY}, clampedY=${clampedY}`);
 
       // Animate scroll for smooth UX
       this.tweens.add({
         targets: this.scrollableContainer,
-        y: this.clampScrollPosition(desiredY),
+        y: clampedY,
         duration: 300,
         ease: 'Quad.easeOut'
       });
-
-      console.log('🔍 SCROLL: Auto-scrolling to show active row + element bar');
+    } else {
+      console.log('🔍 SCROLL: No scroll needed - content fits');
     }
   }
 
