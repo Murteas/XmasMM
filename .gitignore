@@ -13,6 +13,7 @@ node_modules/
 # IDE files
 .vscode/settings.json
 .idea/
+.claude/settings.local.json
 
 # OS files
 .DS_Store
