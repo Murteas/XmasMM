@@ -17,25 +17,21 @@ class HistoryRenderer {
     const { width, height } = this.scene.cameras.main;
     
     if (guessHistory.length === 0) return 0;
-    
-    // SLIDING WINDOW: Show only the last N guesses (no scrolling needed)
-    const maxVisibleGuesses = LayoutConfig.HISTORY_SLIDING_WINDOW_SIZE;
-    const startIndex = Math.max(0, guessHistory.length - maxVisibleGuesses);
-    const visibleGuesses = guessHistory.slice(startIndex);
-    const visibleFeedback = feedbackHistory.slice(startIndex);
-    
-    console.log(`🔍 SLIDING WINDOW: Showing guesses ${startIndex + 1}-${guessHistory.length} of ${guessHistory.length} total`);
-    
-    // Simple fixed positioning (no complex scroll calculations)
+
+    // SCROLLABLE: Render all guesses (scrolling enabled in GameScene)
+    console.log(`🔍 SCROLLABLE: Rendering all ${guessHistory.length} guesses`);
+
+    // Simple fixed positioning (scroll handled by GameScene)
     const isSmallScreen = width < 500;
-    const containerRelativeY = isSmallScreen ? 20 : 15;
+    // Increased top padding to prevent header overlap (matches ActiveRowManager)
+    const containerRelativeY = isSmallScreen ? 30 : 25;
     const startY = Math.max(containerRelativeY, height * 0.02);
     const rowHeight = LayoutConfig.HISTORY_ROW_HEIGHT_STANDARD;
-    
-    // Render the visible guesses with simple positioning
-    this.renderSlidingWindow(visibleGuesses, visibleFeedback, startIndex, startY, rowHeight);
-    
-    return 0; // No scroll offset needed with sliding window
+
+    // Render all guesses
+    this.renderAllRows(guessHistory, feedbackHistory, startY, rowHeight);
+
+    return 0; // Scroll offset managed by GameScene
   }
 
   renderSlidingWindow(visibleGuesses, visibleFeedback, startIndex, startY, rowHeight) {

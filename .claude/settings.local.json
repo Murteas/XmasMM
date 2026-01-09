@@ -1,23 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python -m http.server:*)",
-      "Bash(timeout 2 cat:*)",
-      "Bash(exit 0)",
-      "Bash(netstat:*)",
-      "Bash(findstr:*)",
-      "Bash(curl:*)",
-      "Bash(powershell -Command \"Invoke-WebRequest -Uri ''http://localhost:8000/'' -UseBasicParsing | Select-Object -ExpandProperty StatusCode\")",
-      "Bash(taskkill:*)",
-      "Bash(timeout:*)",
-      "Bash(ping:*)",
-      "Bash(powershell -Command:*)",
-      "Bash(git add:*)",
-      "Bash(git commit -m \"$\\(cat <<''EOF''\nWIP: Step 2 - Add scrollable content area \\(partial implementation\\)\n\nCore scrolling functionality implemented but needs debugging:\n\nChanges:\n- HistoryRenderer.js: Remove sliding window, render all guesses\n- GameScene.js: Add geometry masking, touch-drag scrolling, scroll bounds\n- HistoryManager.js: Add auto-scroll hooks \\(temporarily disabled\\)\n- LayoutConfig.js: Deprecate HISTORY_SLIDING_WINDOW_SIZE constant\n- INVESTIGATION_PLAN.md: Document Step 2 progress and known issues\n\nWhat works:\n- All guesses rendered \\(no 6-guess limit\\)\n- Content masking with clean boundaries\n- Manual touch-drag scrolling\n- Scroll bounds clamping\n\nKnown issues:\n- Long load time after pressing start\n- Active row and element bar not visible initially\n- Auto-scroll temporarily disabled \\(timing issues\\)\n\nNext: Debug initialization order and re-enable auto-scroll\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
-      "Bash(git commit:*)",
-      "Bash(git checkout:*)",
-      "Bash(git push:*)",
-      "Bash(git reset:*)"
+      "Bash(git merge:*)"
     ]
   }
 }

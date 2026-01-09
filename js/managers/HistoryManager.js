@@ -50,9 +50,19 @@ class HistoryManager {
   addGuess(guess, feedback) {
     this.guessHistory.push([...guess]);
     this.feedbackHistory.push(feedback);
-    
-    // SLIDING WINDOW: Simply refresh display - no scroll management needed
+
+    // Refresh display to show new guess
     this.refreshDisplay();
+
+    // Recalculate content height for scroll bounds after new guess added
+    if (this.scene.calculateTotalContentHeight) {
+      this.scene.calculateTotalContentHeight();
+    }
+
+    // Auto-scroll to ensure active row is visible
+    if (this.scene.scrollToActiveRow) {
+      this.scene.scrollToActiveRow();
+    }
   }
 
   refreshDisplay() {
@@ -88,15 +98,13 @@ class HistoryManager {
   reset() {
     this.guessHistory = [];
     this.feedbackHistory = [];
-    
+
     this.renderer.reset();
-    this.scroller.reset();
     this.activeRowManager.reset();
   }
 
   destroy() {
     this.reset();
-    this.scroller.destroy();
     this.activeRowManager.destroy();
   }
 }

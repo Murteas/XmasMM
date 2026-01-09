@@ -24,52 +24,48 @@ class ActiveRowManager {
     const viewport = GameUtils.getMobileViewport();
     const { width, height } = viewport;
     const codeLength = this.scene.codeLength;
-    
+
     // Initialize the active row guess array
     this.activeRowGuess = new Array(codeLength).fill(null);
-    
+
     // Pre-fill with previous guess if provided
     if (prefillGuess && Array.isArray(prefillGuess)) {
       for (let i = 0; i < Math.min(prefillGuess.length, codeLength); i++) {
         this.activeRowGuess[i] = prefillGuess[i];
       }
     }
-    
+
     // INLINE LAYOUT: Active row with Submit button and ElementBar inline
     const activeRowY = this.calculateInlineActiveRowPosition();
     this.createActiveRowVisuals(activeRowY);
     this.createActiveRowSlots(activeRowY);
     this.createSubmitButton(activeRowY);  // Inline submit button next to slots
     this.createElementBar(activeRowY);    // Inline element bar below active row
-    
+
     this.hasActiveRow = true;
-    
-    // Ensure the new active row and element bar are visible
-    // No scrolling needed with sliding window approach
-    
+
     return activeRowY; // Return position for reference
   }
 
   calculateInlineActiveRowPosition() {
-    // SLIDING WINDOW: Simple fixed positioning - no scroll calculations needed
+    // SCROLLABLE CONTENT: Position after ALL history rows (no sliding window)
     const { width, height } = this.scene.cameras.main;
     const isSmallScreen = width < 500;
-    
-    // Use same starting coordinates as HistoryRenderer
-    const containerRelativeY = isSmallScreen ? 20 : 15;
+
+    // Start with proper padding from top of scrollable container (increased to prevent header overlap)
+    const containerRelativeY = isSmallScreen ? 30 : 25;
     const historyStartY = Math.max(containerRelativeY, height * 0.02);
-    
-    // Calculate position after visible history rows
+
+    // Calculate position after ALL history rows (scrolling enabled)
     const rowHeight = LayoutConfig.HISTORY_ROW_HEIGHT_STANDARD;
-    const maxVisibleGuesses = LayoutConfig.HISTORY_SLIDING_WINDOW_SIZE;
     const guessHistory = this.historyManager.getGuessHistory();
-    
-    // Only count visible rows (sliding window)
-    const visibleRowCount = Math.min(guessHistory.length, maxVisibleGuesses);
+
+    // Position active row after all guesses (no window limit with scrolling)
+    const visibleRowCount = guessHistory.length;
     const activeRowY = historyStartY + (visibleRowCount * rowHeight);
-    
-    console.log(`🔍 ACTIVE ROW: Positioned at Y=${activeRowY} after ${visibleRowCount} visible history rows`);
-    
+
+    console.log(`🔍 ACTIVE ROW: Positioned at Y=${activeRowY} after ${visibleRowCount} history rows`);
+
     return activeRowY;
   }
 

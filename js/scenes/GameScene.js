@@ -93,10 +93,17 @@ class GameScene extends Phaser.Scene {
   }
   
   create() {
+    // Initialize scroll state properties
+    this.isDraggingScroll = false;
+    this.scrollDragStartY = 0;
+    this.scrollContainerStartY = 0;
+    this.totalScrollableContentHeight = 0;
+    this.visibleScrollableHeight = 0;
+
     // Show loading state first (now that camera is ready)
     this.uiLayoutManager = new UILayoutManager(this);
     this.uiLayoutManager.showLoadingState();
-    
+
     // Initialize debug mode
     this.debugMode = false;
     this.setupDebugKeys();
@@ -152,7 +159,8 @@ class GameScene extends Phaser.Scene {
     
     // === THREE-ZONE LAYOUT ===
     const headerHeight = LayoutConfig.THREE_ZONE_HEADER;
-    const footerHeight = LayoutConfig.FOOTER.HEIGHT + safeAreaInsets.bottom;
+    // Footer now only reserves space for safe area (ElementBar is inline after revert)
+    const footerHeight = safeAreaInsets.bottom;
     const contentHeight = height - headerHeight - footerHeight;
     
     // Header container (fixed at top)
@@ -170,21 +178,18 @@ class GameScene extends Phaser.Scene {
       bottom: height - footerHeight
     };
     
-    // Footer container (fixed at bottom) - for ElementBar
+    // Footer container (fixed at bottom) - minimal, just for safe area spacing
     this.footerContainer = this.add.container(0, height - footerHeight);
     this.footerContainer.setDepth(1000);
-    
-    // Add footer background
-    const footerBg = this.add.rectangle(
-      width / 2, 
-      footerHeight / 2, 
-      width, 
-      footerHeight, 
-      0x0a3d2a, // Dark Christmas green
-      0.95
-    ).setStrokeStyle(2, 0xffd700, 0.6); // Subtle gold border at top
-    this.footerContainer.add(footerBg);
-    
+
+    // No visual background needed - footer is now minimal (just safe area insets)
+    // ElementBar is inline within scrollable content after Step 1 revert
+
+    // Add masking for clean scroll boundaries
+    const mask = this.make.graphics();
+    mask.fillRect(0, headerHeight, width, contentHeight);
+    this.scrollableContainer.setMask(mask.createGeometryMask());
+
     console.log(`📐 THREE-ZONE LAYOUT: Header=${headerHeight}px, Content=${contentHeight}px, Footer=${footerHeight}px`);
   }
 
@@ -198,11 +203,128 @@ class GameScene extends Phaser.Scene {
     // Saves 60-80px of valuable screen space - 25% improvement in usable area
     // this.uiLayoutManager.setupChristmasLegend(); // REMOVED for mobile optimization
     this.setupInlineGuessing();
+
+    // Enable scrolling after all content is set up
+    this.calculateTotalContentHeight();
+    this.enableScrollableInteraction(this.contentBounds.height);
   }
-  
+
   setupInlineGuessing() {
     // Create the first active row for inline editing
     this.createNewActiveRow();
+  }
+
+  enableScrollableInteraction(contentHeight) {
+    // Enable touch-drag scrolling for content area
+    this.visibleScrollableHeight = contentHeight;
+    this.scrollContainerStartY = this.contentBounds.top;
+
+    const onPointerDown = (pointer) => {
+      // Ignore touches in header zone
+      if (pointer.y < this.contentBounds.top) return;
+      // Ignore touches in footer zone
+      if (pointer.y > this.contentBounds.bottom) return;
+
+      this.isDraggingScroll = true;
+      this.scrollDragStartY = pointer.y;
+      this.scrollContainerStartY = this.scrollableContainer.y;
+    };
+
+    const onPointerMove = (pointer) => {
+      if (!this.isDraggingScroll) return;
+
+      const delta = pointer.y - this.scrollDragStartY;
+      const desiredY = this.scrollContainerStartY + delta;
+      this.scrollableContainer.y = this.clampScrollPosition(desiredY);
+    };
+
+    const endDrag = () => {
+      this.isDraggingScroll = false;
+    };
+
+    this.input.on('pointerdown', onPointerDown);
+    this.input.on('pointermove', onPointerMove);
+    this.input.on('pointerup', endDrag);
+    this.input.on('pointerupoutside', endDrag);
+
+    // Desktop mouse wheel support
+    this.input.on('wheel', (pointer, gameObjects, dx, dy) => {
+      const desiredY = this.scrollableContainer.y - dy * 0.5;
+      this.scrollableContainer.y = this.clampScrollPosition(desiredY);
+    });
+
+    console.log('🔍 SCROLL: Touch-drag scrolling enabled');
+  }
+
+  clampScrollPosition(desiredY) {
+    const headerY = this.contentBounds.top;
+
+    // If content fits in visible area, don't scroll
+    if (!this.totalScrollableContentHeight ||
+        this.totalScrollableContentHeight <= this.visibleScrollableHeight) {
+      return headerY;
+    }
+
+    // Calculate scroll bounds
+    const maxY = headerY; // Top position (no scroll up past first guess)
+    const minY = headerY - (this.totalScrollableContentHeight - this.visibleScrollableHeight);
+
+    return Phaser.Math.Clamp(desiredY, minY, maxY);
+  }
+
+  calculateTotalContentHeight() {
+    if (!this.historyManager) return 0;
+
+    const guessCount = this.historyManager.getGuessCount();
+    const rowHeight = LayoutConfig.HISTORY_ROW_HEIGHT_STANDARD; // 75px
+    const activeRowHeight = 100; // Approximate active row height
+    const elementBarHeight = LayoutConfig.SPACING.ELEMENT_BAR_HEIGHT; // 50px
+    const elementBarOffset = LayoutConfig.SPACING.ELEMENT_BAR_OFFSET; // 55px
+    const startY = 20; // Initial padding
+
+    // Total: padding + history + active row + element bar + padding
+    this.totalScrollableContentHeight =
+      startY +
+      (guessCount * rowHeight) +
+      activeRowHeight +
+      elementBarOffset +
+      elementBarHeight +
+      20;
+
+    console.log(`🔍 SCROLL: Content height = ${this.totalScrollableContentHeight}px (${guessCount} guesses)`);
+    return this.totalScrollableContentHeight;
+  }
+
+  scrollToActiveRow() {
+    // Get active row position
+    if (!this.historyManager || !this.historyManager.activeRowManager) return;
+
+    const activeRowY = this.historyManager.activeRowManager.calculateInlineActiveRowPosition();
+    const elementBarOffset = LayoutConfig.SPACING.ELEMENT_BAR_OFFSET;
+    const elementBarHeight = LayoutConfig.SPACING.ELEMENT_BAR_HEIGHT;
+    const elementBarY = activeRowY + elementBarOffset;
+    const elementBarBottom = elementBarY + (elementBarHeight / 2);
+
+    // Calculate if element bar is off-screen at bottom
+    const visibleBottom = this.contentBounds.bottom;
+    const currentScroll = this.scrollableContainer.y - this.contentBounds.top;
+    const elementBarScreenY = elementBarBottom + currentScroll;
+
+    if (elementBarScreenY > visibleBottom) {
+      // Need to scroll to show element bar
+      const scrollAmount = elementBarScreenY - visibleBottom + 20; // 20px padding
+      const desiredY = this.scrollableContainer.y - scrollAmount;
+
+      // Animate scroll for smooth UX
+      this.tweens.add({
+        targets: this.scrollableContainer,
+        y: this.clampScrollPosition(desiredY),
+        duration: 300,
+        ease: 'Quad.easeOut'
+      });
+
+      console.log('🔍 SCROLL: Auto-scrolling to show active row');
+    }
   }
 
   setupDebugKeys() {

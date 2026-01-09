@@ -299,7 +299,8 @@ class UILayoutManager {
     }).setOrigin(0.5);
     
     this.errorMessage.add([errorBg, errorText, hintText]);
-    this.errorMessage.setDepth(GameUtils.getDepthLayers().UI + 2);
+    // Set very high depth to ensure modal appears above all content (header/footer are at 1000)
+    this.errorMessage.setDepth(2000);
     
     // Gentle bounce animation
     this.errorMessage.setScale(0.8);
