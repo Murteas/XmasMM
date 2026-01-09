@@ -1,15 +1,28 @@
 # Debugging Notes - Step 2 Scrolling Implementation
 
 **Date:** January 8-9, 2026
-**Status:** ✅ RESOLVED - All Issues Fixed
+**Status:** ⚠️ IN PROGRESS - Auto-scroll issue on iPhone 17
 
 ---
 
-## Resolution Summary
+## Current Issue (January 9, 2026 - Evening)
+
+**Problem:** Element bar overlaps active row on 9th and 10th guesses on iPhone 17
+- **With browser bar visible:** 9th and 10th guesses affected
+- **Fullscreen mode:** Only 10th guess affected
+- **Desktop simulation:** Works fine (no issue)
+
+**Root Cause:** Suspected viewport/safe area calculation issue. Auto-scroll calculation appears correct on desktop but over-scrolls on actual iPhone device.
+
+**Current Status:** Debug overlay deployed (shows on-screen for guesses 8-10) to gather data from iPhone testing.
+
+---
+
+## Previous Resolution Summary (January 9, 2026 - Morning)
 
 **Root Cause Found:** The deprecated `HISTORY_SLIDING_WINDOW_SIZE` constant was removed but code still referenced it, causing `NaN` position calculations.
 
-**All Issues Fixed:**
+**Issues Fixed:**
 1. ✅ Active row positioning (NaN → proper coordinates)
 2. ✅ Header overlap (increased top padding)
 3. ✅ Modal z-index (depth 3 → 2000)
@@ -273,6 +286,41 @@ Removed all temporary debug console.log statements from production code.
 
 ---
 
-## Status: COMPLETE ✅
+---
 
-Step 2 (Scrollable Content) is now fully functional and tested. The game displays all guesses with smooth scrolling, proper auto-scroll on new guesses, and optimal screen space usage.
+## Current Debugging Approach (January 9, 2026 - Evening)
+
+### Debug Overlay Implementation
+
+Added on-screen debug display in `GameScene.js` (commit ca3fa18):
+- **Trigger:** Automatically shows for guesses 8, 9, and 10
+- **Location:** Top-left corner with semi-transparent black background
+- **Depth:** 9999 (appears above all game content)
+
+**Debug Data Shown:**
+- Guess number
+- Viewport height
+- Content height
+- Active row Y position
+- Total height needed (active row + gap + element bar)
+- Screen Y position (where active row appears on screen)
+- Bottom Y position (where content ends)
+- Visible bottom boundary
+- Overflow amount (negative = fits, positive = needs scroll)
+- Scroll container Y position
+
+**Testing Instructions:**
+1. Play game on iPhone 17 to guesses 8, 9, 10
+2. Take screenshots of debug overlay at each guess
+3. Test both: with browser bar visible AND in fullscreen mode
+4. Share screenshots to identify viewport/scroll calculation issues
+
+### Files with Debug Code (TO BE REMOVED AFTER FIX):
+- `GameScene.js` lines 320-353: Debug logging and overlay trigger
+- `GameScene.js` lines 666-703: `showScrollDebugOverlay()` method
+
+---
+
+## Status: ⚠️ DEBUGGING IN PROGRESS
+
+Step 2 (Scrollable Content) works on desktop but has auto-scroll issues on iPhone 17 real device. Debug overlay deployed to gather diagnostic data.

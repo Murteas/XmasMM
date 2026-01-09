@@ -360,9 +360,9 @@ scoringConfig = {
 
 ---
 
-### Step 2: Scrollable Content Area ✅ COMPLETE (January 9, 2026)
+### Step 2: Scrollable Content Area ⚠️ IN PROGRESS (January 9, 2026)
 
-**Status:** Fully functional - All issues resolved
+**Status:** Works on desktop, debugging iPhone 17 auto-scroll issue
 
 **What was completed:**
 1. ✅ Removed sliding window limit in `HistoryRenderer.js`
@@ -403,10 +403,19 @@ The deprecated `HISTORY_SLIDING_WINDOW_SIZE` constant was commented out in `Layo
 - ✅ Mouse wheel scrolling - Functional
 - ✅ Modals - Appear in front correctly
 - ✅ Header overlap - Resolved
+- ⚠️ iPhone 17 - Element bar overlaps on 9th/10th guess (debugging)
+
+**Current Issue (Evening Jan 9):**
+- **Symptom:** Element bar overlaps active row on guesses 9-10
+- **Pattern:** With browser bar = 9th & 10th affected; Fullscreen = only 10th affected
+- **Desktop:** No issue (suggests viewport/safe area calculation problem)
+- **Action:** Debug overlay deployed to gather diagnostic data
 
 **Next Steps:**
-- Test on actual mobile devices (iPhone/Android)
-- Consider touch momentum/inertia scrolling for better UX (future enhancement)
+1. Test on iPhone 17 with debug overlay (guesses 8, 9, 10)
+2. Analyze debug data to fix viewport calculation
+3. Test on other devices (iPhone/Android)
+4. Consider touch momentum/inertia scrolling for better UX (future enhancement)
 
 ---
 
