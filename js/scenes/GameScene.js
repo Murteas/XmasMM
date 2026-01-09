@@ -308,14 +308,18 @@ class GameScene extends Phaser.Scene {
     // Calculate total height needed: active row + gap + element bar + bottom padding
     const totalNeededHeight = activeRowHeight + elementBarOffset + elementBarHeight + 20;
 
+    // IMPORTANT: Recalculate visible bounds dynamically to handle browser bar changes
+    const { height } = this.cameras.main;
+    const safeAreaInsets = this.safeAreaManager.getInsets();
+    const headerHeight = LayoutConfig.THREE_ZONE_HEADER;
+    const footerHeight = safeAreaInsets.bottom;
+    const visibleBottom = height - footerHeight;
+
     // Calculate where the active row would appear on screen with current scroll
-    const headerY = this.contentBounds.top;
+    const headerY = headerHeight;
     const currentScrollOffset = this.scrollableContainer.y - headerY;
     const activeRowScreenY = activeRowY + currentScrollOffset;
     const activeRowBottomScreenY = activeRowScreenY + totalNeededHeight;
-
-    // Check if the entire active row + element bar + padding fits in visible area
-    const visibleBottom = this.contentBounds.bottom;
 
     // DEBUG: Log all calculations to console
     console.log(`🔍 SCROLL DEBUG [Guess ${guessCount}]:`, {
@@ -338,6 +342,7 @@ class GameScene extends Phaser.Scene {
 
     // DEBUG: Show on-screen for iPhone testing
     if (guessCount >= 8) {
+      const contentHeight = height - headerHeight - footerHeight;
       this.showScrollDebugOverlay({
         guess: guessCount,
         activeRowY: Math.round(activeRowY),
@@ -347,8 +352,8 @@ class GameScene extends Phaser.Scene {
         visibleBottom: Math.round(visibleBottom),
         overflow: Math.round(activeRowBottomScreenY - visibleBottom),
         scrollY: Math.round(this.scrollableContainer.y),
-        viewportH: Math.round(this.cameras.main.height),
-        contentH: Math.round(this.contentBounds.height)
+        viewportH: Math.round(height),
+        contentH: Math.round(contentHeight)
       });
     }
 
