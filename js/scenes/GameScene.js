@@ -303,7 +303,8 @@ class GameScene extends Phaser.Scene {
     const elementBarOffset = LayoutConfig.SPACING.ELEMENT_BAR_OFFSET;
     const elementBarHeight = LayoutConfig.SPACING.ELEMENT_BAR_HEIGHT;
     const elementBarY = activeRowY + elementBarOffset;
-    const elementBarBottom = elementBarY + (elementBarHeight / 2);
+    // Calculate the actual bottom of the element bar (full height, not half)
+    const elementBarBottom = elementBarY + elementBarHeight;
 
     // Calculate if element bar is off-screen at bottom
     const visibleBottom = this.contentBounds.bottom;
@@ -311,8 +312,8 @@ class GameScene extends Phaser.Scene {
     const elementBarScreenY = elementBarBottom + currentScroll;
 
     if (elementBarScreenY > visibleBottom) {
-      // Need to scroll to show element bar
-      const scrollAmount = elementBarScreenY - visibleBottom + 20; // 20px padding
+      // Need to scroll to show element bar - add extra padding for 10th guess edge case
+      const scrollAmount = elementBarScreenY - visibleBottom + 30; // Increased from 20px to 30px
       const desiredY = this.scrollableContainer.y - scrollAmount;
 
       // Animate scroll for smooth UX
