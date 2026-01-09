@@ -23,7 +23,8 @@ class HistoryRenderer {
 
     // Simple fixed positioning (scroll handled by GameScene)
     const isSmallScreen = width < 500;
-    const containerRelativeY = isSmallScreen ? 20 : 15;
+    // Increased top padding to prevent header overlap (matches ActiveRowManager)
+    const containerRelativeY = isSmallScreen ? 30 : 25;
     const startY = Math.max(containerRelativeY, height * 0.02);
     const rowHeight = LayoutConfig.HISTORY_ROW_HEIGHT_STANDARD;
 

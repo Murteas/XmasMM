@@ -159,7 +159,8 @@ class GameScene extends Phaser.Scene {
     
     // === THREE-ZONE LAYOUT ===
     const headerHeight = LayoutConfig.THREE_ZONE_HEADER;
-    const footerHeight = LayoutConfig.FOOTER.HEIGHT + safeAreaInsets.bottom;
+    // Footer now only reserves space for safe area (ElementBar is inline after revert)
+    const footerHeight = safeAreaInsets.bottom;
     const contentHeight = height - headerHeight - footerHeight;
     
     // Header container (fixed at top)
@@ -177,20 +178,12 @@ class GameScene extends Phaser.Scene {
       bottom: height - footerHeight
     };
     
-    // Footer container (fixed at bottom) - for ElementBar
+    // Footer container (fixed at bottom) - minimal, just for safe area spacing
     this.footerContainer = this.add.container(0, height - footerHeight);
     this.footerContainer.setDepth(1000);
-    
-    // Add footer background
-    const footerBg = this.add.rectangle(
-      width / 2, 
-      footerHeight / 2, 
-      width, 
-      footerHeight, 
-      0x0a3d2a, // Dark Christmas green
-      0.95
-    ).setStrokeStyle(2, 0xffd700, 0.6); // Subtle gold border at top
-    this.footerContainer.add(footerBg);
+
+    // No visual background needed - footer is now minimal (just safe area insets)
+    // ElementBar is inline within scrollable content after Step 1 revert
 
     // Add masking for clean scroll boundaries
     const mask = this.make.graphics();
@@ -215,7 +208,7 @@ class GameScene extends Phaser.Scene {
     this.calculateTotalContentHeight();
     this.enableScrollableInteraction(this.contentBounds.height);
   }
-  
+
   setupInlineGuessing() {
     // Create the first active row for inline editing
     this.createNewActiveRow();

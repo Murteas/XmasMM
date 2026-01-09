@@ -360,9 +360,9 @@ scoringConfig = {
 
 ---
 
-### Step 2: Scrollable Content Area ⚠️ IN PROGRESS (PARTIAL - NEEDS DEBUGGING)
+### Step 2: Scrollable Content Area ✅ COMPLETE (January 9, 2026)
 
-**Status:** Core scrolling implemented but has issues with initialization timing
+**Status:** Fully functional - All issues resolved
 
 **What was completed:**
 1. ✅ Removed sliding window limit in `HistoryRenderer.js`
@@ -370,38 +370,43 @@ scoringConfig = {
 3. ✅ Implemented touch-drag scrolling with pointer events
 4. ✅ Added scroll bounds clamping
 5. ✅ Added content height calculation
-6. ⚠️ Auto-scroll feature implemented but temporarily disabled (needs debugging)
+6. ✅ Auto-scroll feature enabled and working
+7. ✅ Fixed NaN positioning bug (deprecated constant reference)
+8. ✅ Fixed header overlap (increased top padding)
+9. ✅ Fixed modal z-index (popups now appear in front)
+10. ✅ Minimized empty footer (reclaimed 70px of screen space)
 
-**Known Issues (Jan 8, 2026):**
-- Game takes long time to load after pressing start
-- Active row and element bar not visible on first load
-- Likely timing issue with initialization order
-- Auto-scroll calling methods before managers are ready
+**Root Cause of Initial Issues:**
+The deprecated `HISTORY_SLIDING_WINDOW_SIZE` constant was commented out in `LayoutConfig.js` but `ActiveRowManager.js` still referenced it, causing all position calculations to become `NaN`. This made UI elements invisible.
 
 **Files Modified:**
-- ✅ `HistoryRenderer.js` - Renders all guesses (no sliding window)
-- ✅ `GameScene.js` - Added scroll system (masking, touch handlers, bounds)
-- ✅ `HistoryManager.js` - Auto-scroll hooks added (temporarily disabled)
-- ✅ `LayoutConfig.js` - Deprecated `HISTORY_SLIDING_WINDOW_SIZE`
+- ✅ `ActiveRowManager.js` - Fixed NaN calculation, increased top padding
+- ✅ `HistoryRenderer.js` - Increased top padding to match ActiveRowManager
+- ✅ `HistoryManager.js` - Re-enabled auto-scroll with safety checks
+- ✅ `UILayoutManager.js` - Fixed modal depth (2000)
+- ✅ `GameScene.js` - Minimized footer to safe area only (34px)
 
-**What Works:**
-- All guesses are rendered (no 6-guess limit)
-- Content is masked with clean boundaries
-- Manual touch-drag scrolling works (when content is visible)
+**Features Working:**
+- All guesses rendered (no 6-guess limit, max 10 guesses)
+- Content masked with clean boundaries
+- Touch-drag scrolling works smoothly
+- Mouse wheel scrolling works
+- Auto-scroll on new guess submission
 - Scroll bounds prevent over-scrolling
+- Proper spacing (no header overlap)
+- Modals appear in front of content
+- Optimal screen space usage
 
-**What Needs Fixing:**
-1. Initialization timing - ensure managers load before scroll setup
-2. Debug why active row/element bar don't appear initially
-3. Re-enable and test auto-scroll after timing fixed
-4. Test with 10+ guesses on actual phone
+**Testing Results (Jan 9, 2026):**
+- ✅ Desktop browser (414x896) - All features working
+- ✅ 10 guess test - All guesses visible with scrolling
+- ✅ Mouse wheel scrolling - Functional
+- ✅ Modals - Appear in front correctly
+- ✅ Header overlap - Resolved
 
 **Next Steps:**
-1. Add safety checks in `setupGameComponents()`
-2. Move scroll initialization to after all managers ready
-3. Add console logging to debug initialization order
-4. Re-enable auto-scroll with proper guards
-5. Test thoroughly on desktop before mobile
+- Test on actual mobile devices (iPhone/Android)
+- Consider touch momentum/inertia scrolling for better UX (future enhancement)
 
 ---
 
@@ -412,12 +417,4 @@ scoringConfig = {
 
 **Why it failed:** Without scroll handling, content simply extends beyond viewport with no way to see or interact with it.
 
-**Solution:** Step 1 (fixed footer) addresses this. Step 2 will add scroll.
-
----
-
-**Testing checklist for Step 2:**
-- [ ] iPhone X (375x812) with browser chrome visible
-- [ ] iPhone SE (375x667) - smallest supported viewport
-- [ ] Test with 10+ guesses to ensure scroll works
-- [ ] Ensure active row and submit button always accessible
+**Solution:** Step 2 (completed Jan 9, 2026) added full scroll support.

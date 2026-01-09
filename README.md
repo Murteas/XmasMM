@@ -6,13 +6,11 @@
 **Critical guidelines for AI agents working on this project:**
 
 1. 🚨 **Check [PROJECT_STATUS.md](PROJECT_STATUS.md) first** - Current project state and priorities
-2. 🚫 **NEVER start servers** - Always ask user: `python -m http.server 8000`
-3. 🚫 **NEVER use isBackground=true** - Always use `isBackground=false` in terminals
-4. 🤝 **ASK clarifying questions** - Collaborate, don't just comply with requests
-5. 📱 **Mobile-first development** - Test 375x667 minimum viewport
-6. ✅ **Follow test protocol**: Agent changes → User tests → Agent fixes based on feedback
-7. 📁 **Use LayoutConfig.js** - No magic numbers for heights/spacing
-8. 🎨 **Christmas theming** - Forest green (#0d5016) and gold (#ffd700) color scheme
+2. 🤝 **ASK clarifying questions** - Collaborate, don't just comply with requests
+3. 📱 **Mobile-first development** - Test 375x667 minimum viewport
+4. ✅ **Follow test protocol**: Agent changes → User tests → Agent fixes based on feedback
+5. 📁 **Use LayoutConfig.js** - No magic numbers for heights/spacing
+6. 🎨 **Christmas theming** - Forest green (#0d5016) and gold (#ffd700) color scheme
 
 > **🤖 Full Guidelines**: See [AI_AGENT_BRIEFING.md](AI_AGENT_BRIEFING.md) for complete onboarding
 

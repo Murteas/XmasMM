@@ -1,16 +1,24 @@
 # Debugging Notes - Step 2 Scrolling Implementation
 
-**Date:** January 8, 2026
-**Status:** Work in Progress - Needs Debugging
+**Date:** January 8-9, 2026
+**Status:** ✅ RESOLVED - All Issues Fixed
 
 ---
 
-## Current Issue
+## Resolution Summary
 
-After implementing Step 2 (scrollable content), the game exhibits these problems:
-1. **Long load time** - Game takes significantly longer to load after pressing "Start Game"
-2. **Missing UI elements** - Active row and element bar do not appear on initial load
-3. **Root cause** - Likely initialization timing/order issue
+**Root Cause Found:** The deprecated `HISTORY_SLIDING_WINDOW_SIZE` constant was removed but code still referenced it, causing `NaN` position calculations.
+
+**All Issues Fixed:**
+1. ✅ Active row positioning (NaN → proper coordinates)
+2. ✅ Header overlap (increased top padding)
+3. ✅ Modal z-index (depth 3 → 2000)
+4. ✅ Auto-scroll re-enabled
+5. ✅ Footer minimized (104px → 34px safe area only)
+
+---
+
+## Original Issues (RESOLVED)
 
 ---
 
@@ -189,24 +197,82 @@ The Step 1 (partial revert) commit `ec1f873` is the last known good state.
 
 ---
 
-## Next Session Checklist
+## Final Resolution (January 9, 2026)
 
-- [ ] Add console logging to track initialization order
-- [ ] Test without masking
-- [ ] Move scroll setup to after active row creation
-- [ ] Re-enable auto-scroll with proper guards
-- [ ] Test with 0 guesses, 1 guess, 6 guesses, 10 guesses
-- [ ] Test on actual mobile device
-- [ ] Performance test with 20+ guesses
+### The Fix Process
+
+**Step 1: Added Debug Logging**
+Added comprehensive console logging to track initialization order through:
+- `GameScene.setupGameComponents()`
+- `HistoryManager.createActiveRow()`
+- `ActiveRowManager.createActiveRow()`
+
+**Step 2: Identified Root Cause**
+Console output revealed: `🔍 ACTIVE ROW: Positioned at Y=NaN after NaN visible history rows`
+
+The problem: `LayoutConfig.HISTORY_SLIDING_WINDOW_SIZE` was deprecated (commented out) but `ActiveRowManager.js` line 80 still referenced it:
+```javascript
+const maxVisibleGuesses = LayoutConfig.HISTORY_SLIDING_WINDOW_SIZE; // undefined!
+```
+
+This caused all position calculations to become `NaN`, making UI elements invisible.
+
+**Step 3: Applied Fixes**
+
+1. **Fixed NaN positioning** ([ActiveRowManager.js:50-67](js/managers/ActiveRowManager.js))
+   - Removed reference to deprecated `HISTORY_SLIDING_WINDOW_SIZE`
+   - Now uses `guessHistory.length` directly for scrollable content
+
+2. **Fixed header overlap** ([ActiveRowManager.js:55](js/managers/ActiveRowManager.js), [HistoryRenderer.js:27](js/managers/HistoryRenderer.js))
+   - Increased top padding from 20px → 30px (small screens)
+   - Increased top padding from 15px → 25px (large screens)
+
+3. **Fixed modal z-index** ([UILayoutManager.js:303](js/managers/UILayoutManager.js))
+   - Changed modal depth from `UI + 2` (3) → 2000
+   - Now appears above all containers (header/footer at depth 1000)
+
+4. **Re-enabled auto-scroll** ([HistoryManager.js:60-68](js/managers/HistoryManager.js))
+   - Uncommented `calculateTotalContentHeight()` call
+   - Uncommented `scrollToActiveRow()` call
+   - Added safety checks to prevent errors
+
+5. **Minimized empty footer** ([GameScene.js:163](js/scenes/GameScene.js))
+   - Reduced from 104px (70px + 34px safe area) → 34px (safe area only)
+   - Removed footer background visual
+   - Reclaimed 70px of usable gameplay space
+
+**Step 4: Cleaned Up Debug Code**
+Removed all temporary debug console.log statements from production code.
+
+### Testing Results
+
+✅ All tests passed:
+- Active row and element bar appear correctly
+- No header overlap
+- Modals appear in front of all content
+- Mouse wheel scrolling works
+- All 10 guesses visible with scrolling
+- Footer minimized appropriately
+
+### Key Learnings
+
+1. **Deprecated constants must be fully removed** - Check all references before commenting out config values
+2. **NaN propagates silently** - Position calculations with `NaN` don't throw errors, elements just don't render
+3. **Z-index in Phaser** - Container depths must be higher than all child content depths
+4. **Safe area handling** - Empty footers waste valuable mobile screen space
 
 ---
 
-## Contact / Questions
+## Files Modified (Final)
 
-When continuing work:
-1. Check browser console first (F12 → Console)
-2. Look for any red errors
-3. Check the initialization order logs
-4. Test one component at a time
+1. **js/managers/ActiveRowManager.js** - Fixed NaN calculation, increased top padding
+2. **js/managers/HistoryRenderer.js** - Increased top padding to match ActiveRowManager
+3. **js/managers/HistoryManager.js** - Re-enabled auto-scroll with safety checks
+4. **js/managers/UILayoutManager.js** - Fixed modal depth
+5. **js/scenes/GameScene.js** - Minimized footer to safe area only
 
-Good luck debugging! The core scrolling logic is sound - it's just a timing issue with when things initialize.
+---
+
+## Status: COMPLETE ✅
+
+Step 2 (Scrollable Content) is now fully functional and tested. The game displays all guesses with smooth scrolling, proper auto-scroll on new guesses, and optimal screen space usage.

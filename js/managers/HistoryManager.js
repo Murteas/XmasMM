@@ -54,12 +54,15 @@ class HistoryManager {
     // Refresh display to show new guess
     this.refreshDisplay();
 
-    // TODO: Auto-scroll temporarily disabled - needs debugging
-    // Recalculate content height for scroll bounds
-    // this.scene.calculateTotalContentHeight();
+    // Recalculate content height for scroll bounds after new guess added
+    if (this.scene.calculateTotalContentHeight) {
+      this.scene.calculateTotalContentHeight();
+    }
 
     // Auto-scroll to ensure active row is visible
-    // this.scene.scrollToActiveRow();
+    if (this.scene.scrollToActiveRow) {
+      this.scene.scrollToActiveRow();
+    }
   }
 
   refreshDisplay() {
