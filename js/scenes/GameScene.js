@@ -299,7 +299,6 @@ class GameScene extends Phaser.Scene {
     // Get active row position
     if (!this.historyManager || !this.historyManager.activeRowManager) return;
 
-    const guessCount = this.historyManager.getGuessCount();
     const activeRowY = this.historyManager.activeRowManager.calculateInlineActiveRowPosition();
     const activeRowHeight = LayoutConfig.SPACING.ACTIVE_ROW_HEIGHT || 50;
     const elementBarOffset = LayoutConfig.SPACING.ELEMENT_BAR_OFFSET;
@@ -320,42 +319,6 @@ class GameScene extends Phaser.Scene {
     const currentScrollOffset = this.scrollableContainer.y - headerY;
     const activeRowScreenY = activeRowY + currentScrollOffset;
     const activeRowBottomScreenY = activeRowScreenY + totalNeededHeight;
-
-    // DEBUG: Log all calculations to console
-    console.log(`🔍 SCROLL DEBUG [Guess ${guessCount}]:`, {
-      activeRowY,
-      activeRowHeight,
-      elementBarOffset,
-      elementBarHeight,
-      totalNeededHeight,
-      headerY,
-      currentScrollOffset,
-      activeRowScreenY,
-      activeRowBottomScreenY,
-      visibleBottom,
-      overflow: activeRowBottomScreenY - visibleBottom,
-      needsScroll: activeRowBottomScreenY > visibleBottom,
-      contentBounds: this.contentBounds,
-      viewportHeight: this.cameras.main.height,
-      scrollContainerY: this.scrollableContainer.y
-    });
-
-    // DEBUG: Show on-screen for iPhone testing
-    if (guessCount >= 8) {
-      const contentHeight = height - headerHeight - footerHeight;
-      this.showScrollDebugOverlay({
-        guess: guessCount,
-        activeRowY: Math.round(activeRowY),
-        totalNeeded: Math.round(totalNeededHeight),
-        activeRowScreenY: Math.round(activeRowScreenY),
-        activeRowBottomY: Math.round(activeRowBottomScreenY),
-        visibleBottom: Math.round(visibleBottom),
-        overflow: Math.round(activeRowBottomScreenY - visibleBottom),
-        scrollY: Math.round(this.scrollableContainer.y),
-        viewportH: Math.round(height),
-        contentH: Math.round(contentHeight)
-      });
-    }
 
     if (activeRowBottomScreenY > visibleBottom) {
       // Need to scroll - calculate how much to move up
@@ -668,42 +631,4 @@ class GameScene extends Phaser.Scene {
     }
   }
 
-  showScrollDebugOverlay(data) {
-    // Remove previous overlay if exists
-    if (this._debugOverlay) {
-      this._debugOverlay.destroy();
-    }
-
-    const { width, height } = this.cameras.main;
-
-    // Create semi-transparent background
-    const bg = this.add.rectangle(10, 10, 200, 180, 0x000000, 0.8);
-    bg.setOrigin(0, 0);
-    bg.setDepth(9999);
-
-    // Create debug text
-    const debugText = [
-      `Guess: ${data.guess}`,
-      `Viewport H: ${data.viewportH}`,
-      `Content H: ${data.contentH}`,
-      `Active Row Y: ${data.activeRowY}`,
-      `Total Needed: ${data.totalNeeded}`,
-      `Screen Y: ${data.activeRowScreenY}`,
-      `Bottom Y: ${data.activeRowBottomY}`,
-      `Visible Bottom: ${data.visibleBottom}`,
-      `Overflow: ${data.overflow}`,
-      `Scroll Y: ${data.scrollY}`
-    ].join('\n');
-
-    const text = this.add.text(15, 15, debugText, {
-      font: '12px monospace',
-      fill: '#ffff00',
-      backgroundColor: 'transparent'
-    });
-    text.setDepth(10000);
-
-    // Create container to track both elements
-    this._debugOverlay = this.add.container(0, 0, [bg, text]);
-    this._debugOverlay.setDepth(9999);
-  }
 }
