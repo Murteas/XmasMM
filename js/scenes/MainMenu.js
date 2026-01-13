@@ -8,23 +8,27 @@ class MainMenu extends Phaser.Scene {
   preload() {
     // Determine if we're running from tests directory
     const isTestEnvironment = window.location.pathname.includes('/tests/');
-    const assetPath = isTestEnvironment ? '../assets/' : 'assets/';
-    
-    this.load.image('bg', `${assetPath}bg_mobile2.png`);
-    
-    // Preload game element images for help overlay
-    this.load.image('santa_1x', `${assetPath}santa_1x.png`);
-    this.load.image('present_1x', `${assetPath}present_1x.png`);
-    this.load.image('star_1x', `${assetPath}star_1x.png`);
-    this.load.image('tree_1x', `${assetPath}tree_1x.png`);
-    this.load.image('snowflake_1x', `${assetPath}snowflake_1x.png`);
-    this.load.image('candycane_1x', `${assetPath}candycane_1x.png`);
-    
-    // Preload feedback images for help overlay
-    this.load.image('feedback_perfect_star_1x', `${assetPath}feedback_perfect_star_1x.png`);
-    this.load.image('feedback_close_bell_1x', `${assetPath}feedback_close_bell_1x.png`);
-    
-    // Preload Christmas audio effects
+    const baseAssetPath = isTestEnvironment ? '../assets/' : 'assets/';
+
+    // Get current theme configuration
+    const theme = ThemeConfig.getCurrentTheme();
+    const themeAssetPath = baseAssetPath + (theme.assetPath.startsWith('assets/') ? theme.assetPath.substring(7) : theme.assetPath);
+
+    this.load.image('bg', `${baseAssetPath}bg_mobile2.png`);
+
+    // Dynamically preload game element images for help overlay
+    theme.elements.forEach(element => {
+      const assetBase = element.assetBase;
+      this.load.image(`${assetBase}_1x`, `${themeAssetPath}${assetBase}_1x.png`);
+    });
+
+    // Dynamically preload feedback images for help overlay
+    Object.values(theme.feedback).forEach(feedback => {
+      const assetBase = feedback.assetBase;
+      this.load.image(`${assetBase}_1x`, `${themeAssetPath}${assetBase}_1x.png`);
+    });
+
+    // Preload audio effects
     this.audioManager = new AudioManager(this);
     this.audioManager.preloadSounds();
   }
@@ -44,9 +48,10 @@ class MainMenu extends Phaser.Scene {
     const currentTheme = this.registry.get('backgroundTheme') || 'traditional';
     this.updateBackground(currentTheme);
 
-    // Playful Christmas title with clean styling
+    // Theme-based title with clean styling
+    const theme = ThemeConfig.getCurrentTheme();
     this.add
-      .text(width / 2, height * 0.18, "🎄 Christmas 🎄\n🎁 MasterMind 🎁", {
+      .text(width / 2, height * 0.18, theme.displayName, {
         fontFamily: "Comic Sans MS, Trebuchet MS, sans-serif",
         fontSize: "46px",
         fontWeight: "bold",
@@ -88,19 +93,16 @@ class MainMenu extends Phaser.Scene {
     });
     this.helpBtn.setDepth(GameUtils.getDepthLayers().UI);
 
-    // Theme Switcher button (new family-friendly feature!)
-    const currentTheme = this.registry.get('backgroundTheme') || 'traditional';
-    const themeNames = {
-      traditional: 'Traditional 🌲',
-      festive: 'Festive 🎁', 
-      winter: 'Winter ❄️',
-      red: 'Red 🎅'
-    };
-    this.themeBtn = ButtonFactory.createButton(this, width / 2, height * 0.58, themeNames[currentTheme], 'accent', {
+    // Theme Switcher button (enhanced for full theme switching!)
+    const currentThemeId = ThemeConfig.currentTheme;
+    const currentThemeInfo = ThemeConfig.getThemeInfo(currentThemeId);
+    const themeLabel = `Theme: ${currentThemeInfo.name}`;
+
+    this.themeBtn = ButtonFactory.createButton(this, width / 2, height * 0.58, themeLabel, 'accent', {
       icon: '🎨',
       gradient: true,
       border: true,
-      onClick: () => this.switchBackgroundTheme()
+      onClick: () => this.switchTheme()
     });
     this.themeBtn.setDepth(GameUtils.getDepthLayers().UI);
 
@@ -132,25 +134,40 @@ class MainMenu extends Phaser.Scene {
     }
   }
 
+  switchTheme() {
+    // Cycle to next theme using ThemeManager
+    const nextThemeId = ThemeManager.getNextTheme();
+
+    // Switch theme and save preference
+    ThemeManager.switchTheme(nextThemeId, true);
+
+    // Restart scene to reload assets with new theme
+    console.log(`🎨 Switching to ${nextThemeId} theme - restarting scene`);
+    this.scene.restart();
+  }
+
+  // Legacy method for background-only theme switching (kept for backward compatibility)
   switchBackgroundTheme() {
     const themes = BackgroundManager.getAvailableThemes();
     const currentTheme = this.registry.get('backgroundTheme') || 'traditional';
     const currentIndex = themes.indexOf(currentTheme);
     const nextIndex = (currentIndex + 1) % themes.length;
     const nextTheme = themes[nextIndex];
-    
+
     // Update registry
     this.registry.set('backgroundTheme', nextTheme);
-    
+
     // Update button label with nice names and icons
     const themeNames = {
       traditional: 'Traditional 🌲',
-      festive: 'Festive 🎁', 
+      festive: 'Festive 🎁',
       winter: 'Winter ❄️',
       red: 'Red 🎅'
     };
-    this.themeBtn.setLabel(themeNames[nextTheme]);
-    
+    if (this.themeBtn && this.themeBtn.setLabel) {
+      this.themeBtn.setLabel(themeNames[nextTheme]);
+    }
+
     // Regenerate background with new theme
     this.updateBackground(nextTheme);
   }

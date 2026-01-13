@@ -97,6 +97,14 @@ function initializeGame() {
     }
   });
   
+  // Initialize theme system before creating game
+  console.log('🎨 Initializing theme system...');
+  if (typeof ThemeManager !== 'undefined') {
+    ThemeManager.initialize();
+  } else {
+    console.warn('⚠️ ThemeManager not loaded - using default theme');
+  }
+
   console.log('🎮 Creating Phaser game with all scenes loaded...');
   game = new Phaser.Game(config);
   

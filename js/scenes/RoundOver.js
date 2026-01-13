@@ -581,7 +581,7 @@ class RoundOver extends Phaser.Scene {
     // Use same logic as GameScene for consistency
     const pixelRatio = window.devicePixelRatio || 1;
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
+
     let suffix;
     if (isMobile) {
       suffix = '_1x';
@@ -594,24 +594,23 @@ class RoundOver extends Phaser.Scene {
         suffix = '_1x';
       }
     }
-    
-    const elementMap = {
-      'Santa': 'santa',
-      'Present': 'present', 
-      'Candy Cane': 'candycane',
-      'Star': 'star',
-      'Tree': 'tree',
-      'Snowflake': 'snowflake'
-    };
-    
-    return elementMap[element] + suffix;
+
+    // Get asset base from theme configuration
+    const assetBase = ThemeConfig.getElementAssetBase(element);
+
+    if (!assetBase) {
+      console.error(`Element '${element}' not found in current theme`);
+      return '__MISSING';
+    }
+
+    return assetBase + suffix;
   }
 
   getFeedbackImageKey(symbolType) {
     // Use same logic as GameScene for consistency
     const pixelRatio = window.devicePixelRatio || 1;
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
+
     let suffix;
     if (isMobile) {
       suffix = '_1x';
@@ -624,15 +623,16 @@ class RoundOver extends Phaser.Scene {
         suffix = '_1x';
       }
     }
-    
-    const feedbackMap = {
-      'perfect': 'feedback_perfect_star',
-      'close': 'feedback_close_bell'
-      // No 'wrong' symbol needed in Mastermind - empty space indicates no match
-    };
-    
-    const mappedSymbol = feedbackMap[symbolType];
-    return mappedSymbol ? mappedSymbol + suffix : null;
+
+    // Get feedback asset base from theme configuration
+    const assetBase = ThemeConfig.getFeedbackAssetBase(symbolType);
+
+    if (!assetBase) {
+      console.warn(`Unknown feedback symbol type: ${symbolType}. Mastermind only uses 'perfect' and 'close'.`);
+      return null;
+    }
+
+    return assetBase + suffix;
   }
 
   // Quality assessment methods for family-friendly feedback

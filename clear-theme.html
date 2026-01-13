@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear Theme Preference</title>
+</head>
+<body>
+    <h1>Clear Theme Preference</h1>
+    <button onclick="clearTheme()">Clear Saved Theme</button>
+    <p id="result"></p>
+    
+    <script>
+    function clearTheme() {
+        try {
+            localStorage.removeItem('xmasmm_theme');
+            document.getElementById('result').textContent = '✅ Theme preference cleared! Reload the game.';
+            document.getElementById('result').style.color = 'green';
+        } catch (error) {
+            document.getElementById('result').textContent = '❌ Error: ' + error.message;
+            document.getElementById('result').style.color = 'red';
+        }
+    }
+    </script>
+</body>
+</html>

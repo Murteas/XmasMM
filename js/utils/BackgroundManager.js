@@ -20,28 +20,11 @@ class BackgroundManager {
 
     // Create graphics object for gradient using Phaser best practices
     const gradientGraphics = scene.make.graphics({});
-    
-    // Family-friendly Christmas theme color palettes
-    const christmasThemes = {
-      traditional: {
-        top: '#0d3820',      // Deep forest green (original)
-        bottom: '#051610'    // Very dark green (original)
-      },
-      festive: {
-        top: '#1e4d3f',      // Rich emerald green
-        bottom: '#0a2817'    // Deep emerald
-      },
-      winter: {
-        top: '#2C4F6B',      // Icy blue-green
-        bottom: '#1A3445'    // Deep winter blue
-      },
-      red: {
-        top: '#8B1538',      // Deep Christmas red
-        bottom: '#4A0E1F'    // Very dark burgundy
-      }
-    };
-    
-    const selectedTheme = christmasThemes[theme] || christmasThemes.traditional;
+
+    // Get background themes from theme configuration
+    const backgroundThemes = ThemeConfig.getBackgrounds();
+
+    const selectedTheme = backgroundThemes[theme] || backgroundThemes.traditional;
     
     // Professional Christmas color palette with theme support
     const topColor = Phaser.Display.Color.HexStringToColor(selectedTheme.top);

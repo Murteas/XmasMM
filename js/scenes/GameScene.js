@@ -10,62 +10,52 @@ class GameScene extends Phaser.Scene {
     // Determine if we're running from tests directory
     // Dynamic asset path selection based on environment
     const isTestEnvironment = TestConfig.isTestEnvironment();
-    const assetPath = TestConfig.getAssetPath();
-    
+    const baseAssetPath = TestConfig.getAssetPath();
+
+    // Get current theme configuration
+    const theme = ThemeConfig.getCurrentTheme();
+    const themeAssetPath = baseAssetPath + (theme.assetPath.startsWith('assets/') ? theme.assetPath.substring(7) : theme.assetPath);
+
     // Background already loaded by MainMenu, but ensure it's available
     if (!this.textures.exists('bg')) {
-      this.load.image('bg', `${assetPath}bg_mobile2.png`);
+      this.load.image('bg', `${baseAssetPath}bg_mobile2.png`);
     }
-    
-    // Load Christmas element images (responsive sizing for different screen densities)
-    // Base resolution (1x) images
-    this.load.image('santa_1x', `${assetPath}santa_1x.png`);
-    this.load.image('present_1x', `${assetPath}present_1x.png`);
-    this.load.image('candycane_1x', `${assetPath}candycane_1x.png`);
-    this.load.image('star_1x', `${assetPath}star_1x.png`);
-    this.load.image('tree_1x', `${assetPath}tree_1x.png`);
-    this.load.image('snowflake_1x', `${assetPath}snowflake_1x.png`);
-    
-    // Load base images as fallbacks (present.png, star.png, tree.png, etc.)
-    this.load.image('santa', `${assetPath}santa.png`);
-    this.load.image('present', `${assetPath}present.png`);
-    this.load.image('candycane', `${assetPath}candycane.png`);
-    this.load.image('star', `${assetPath}star.png`);
-    this.load.image('tree', `${assetPath}tree.png`);
-    this.load.image('snowflake', `${assetPath}snowflake.png`);
-    
-    // Christmas feedback symbols (1x resolution)
-    this.load.image('feedback_perfect_star_1x', `${assetPath}feedback_perfect_star_1x.png`);
-    this.load.image('feedback_close_bell_1x', `${assetPath}feedback_close_bell_1x.png`);
-    
-    // Retina (2x) images
-    this.load.image('santa_2x', `${assetPath}santa_2x.png`);
-    this.load.image('present_2x', `${assetPath}present_2x.png`);
-    this.load.image('candycane_2x', `${assetPath}candycane_2x.png`);
-    this.load.image('star_2x', `${assetPath}star_2x.png`);
-    this.load.image('tree_2x', `${assetPath}tree_2x.png`);
-    this.load.image('snowflake_2x', `${assetPath}snowflake_2x.png`);
-    
-    // Christmas feedback symbols (2x resolution)
-    this.load.image('feedback_perfect_star_2x', `${assetPath}feedback_perfect_star_2x.png`);
-    this.load.image('feedback_close_bell_2x', `${assetPath}feedback_close_bell_2x.png`);
-    
-    // Super Retina (3x) images  
-    this.load.image('santa_3x', `${assetPath}santa_3x.png`);
-    this.load.image('present_3x', `${assetPath}present_3x.png`);
-    this.load.image('candycane_3x', `${assetPath}candycane_3x.png`);
-    this.load.image('star_3x', `${assetPath}star_3x.png`);
-    this.load.image('tree_3x', `${assetPath}tree_3x.png`);
-    this.load.image('snowflake_3x', `${assetPath}snowflake_3x.png`);
-    
-    // Christmas feedback symbols (3x resolution)
-    this.load.image('feedback_perfect_star_3x', `${assetPath}feedback_perfect_star_3x.png`);
-    this.load.image('feedback_close_bell_3x', `${assetPath}feedback_close_bell_3x.png`);
-    
-    // Load audio files for Christmas sound effects
-    this.load.audio('jingleBells', `${assetPath}audio/jingle_bells.mp3`);
-    this.load.audio('successChime', `${assetPath}audio/ho_ho_ho.mp3`);
-    this.load.audio('tada', `${assetPath}audio/tada.mp3`);
+
+    // Dynamically load game element images based on current theme
+    theme.elements.forEach(element => {
+      const assetBase = element.assetBase;
+
+      // Load all resolution variants (1x, 2x, 3x)
+      this.load.image(`${assetBase}_1x`, `${themeAssetPath}${assetBase}_1x.png`);
+      this.load.image(`${assetBase}_2x`, `${themeAssetPath}${assetBase}_2x.png`);
+      this.load.image(`${assetBase}_3x`, `${themeAssetPath}${assetBase}_3x.png`);
+
+      // Load base image as fallback
+      this.load.image(assetBase, `${themeAssetPath}${assetBase}.png`);
+    });
+
+    // Dynamically load feedback symbols based on current theme
+    Object.values(theme.feedback).forEach(feedback => {
+      const assetBase = feedback.assetBase;
+
+      // Load all resolution variants
+      this.load.image(`${assetBase}_1x`, `${themeAssetPath}${assetBase}_1x.png`);
+      this.load.image(`${assetBase}_2x`, `${themeAssetPath}${assetBase}_2x.png`);
+      this.load.image(`${assetBase}_3x`, `${themeAssetPath}${assetBase}_3x.png`);
+    });
+
+    // Dynamically load audio files based on current theme
+    Object.entries(theme.audio).forEach(([key, filename]) => {
+      // Map audio keys to standardized names
+      const audioKeyMap = {
+        'background': 'jingleBells',
+        'success': 'successChime',
+        'win': 'tada'
+      };
+
+      const audioKey = audioKeyMap[key] || key;
+      this.load.audio(audioKey, `${themeAssetPath}audio/${filename}`);
+    });
     
     // Show loading progress
     this.load.on('progress', (value) => {
@@ -420,20 +410,25 @@ class GameScene extends Phaser.Scene {
   // Helper method to get appropriate image key based on device pixel ratio
   getElementImageKey(elementName) {
     const pixelRatio = window.devicePixelRatio || 1;
-    
-    // Map element names to the exact asset keys loaded in preload()
-    const normalizedName = elementName.toLowerCase().replace(/\s+/g, ''); // Remove spaces
-    
+
+    // Get asset base name from theme configuration
+    const assetBase = ThemeConfig.getElementAssetBase(elementName);
+
+    if (!assetBase) {
+      console.error(`Asset Debug: Element '${elementName}' not found in current theme`);
+      return '__MISSING';
+    }
+
     // For now, use only 1x images to ensure compatibility across all platforms
     // This avoids 404 errors on GitHub Pages where some asset files might be missing
     const suffix = '_1x';
-    const imageKey = `${normalizedName}${suffix}`;
-    
+    const imageKey = `${assetBase}${suffix}`;
+
     // Enhanced debugging for asset loading
     if (TestConfig.shouldShowDebugLogs()) {
-      console.log(`Asset Debug: Looking for element '${elementName}' -> normalized '${normalizedName}' -> key '${imageKey}'`);
+      console.log(`Asset Debug: Looking for element '${elementName}' -> assetBase '${assetBase}' -> key '${imageKey}'`);
     }
-    
+
     // Verify the texture exists before returning the key
     if (this.textures.exists(imageKey)) {
       const texture = this.textures.get(imageKey);
@@ -444,10 +439,10 @@ class GameScene extends Phaser.Scene {
         if (TestConfig.shouldShowDebugLogs()) console.warn(`Asset Debug: Texture ${imageKey} exists but is invalid`);
       }
     }
-    
-    // Try fallback to base image without suffix (e.g., Present.png, Star.png, Tree.png)
+
+    // Try fallback to base image without suffix (e.g., santa.png, present.png)
     if (TestConfig.shouldShowDebugLogs()) console.warn(`Asset Debug: Texture not found: ${imageKey}, trying base image fallback`);
-    const baseKey = normalizedName;
+    const baseKey = assetBase;
     if (this.textures.exists(baseKey)) {
       const baseTexture = this.textures.get(baseKey);
       if (baseTexture && baseTexture.source && baseTexture.source[0]) {
@@ -455,7 +450,7 @@ class GameScene extends Phaser.Scene {
         return baseKey;
       }
     }
-    
+
     if (TestConfig.shouldShowDebugLogs()) {
       console.error(`Asset Debug: No valid texture found for ${elementName}`);
       console.log(`Asset Debug: Available texture keys:`, Object.keys(this.textures.list));
@@ -471,7 +466,7 @@ class GameScene extends Phaser.Scene {
   getFeedbackImageKey(symbolType) {
     const pixelRatio = window.devicePixelRatio || 1;
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
+
     let suffix;
     if (isMobile) {
       // Force 1x for mobile devices to ensure compatibility
@@ -486,20 +481,16 @@ class GameScene extends Phaser.Scene {
         suffix = '_1x';
       }
     }
-    
-    // Map feedback types to Christmas symbols (Mastermind only uses perfect and close)
-    const symbolMap = {
-      'perfect': 'feedback_perfect_star',
-      'close': 'feedback_close_bell'
-    };
-    
-    const baseKey = symbolMap[symbolType];
-    if (!baseKey) {
+
+    // Get feedback asset base from theme configuration
+    const assetBase = ThemeConfig.getFeedbackAssetBase(symbolType);
+
+    if (!assetBase) {
       console.warn(`Unknown feedback symbol type: ${symbolType}. Mastermind only uses 'perfect' and 'close'.`);
       return null; // No symbol for invalid types
     }
-    
-    return `${baseKey}${suffix}`;
+
+    return `${assetBase}${suffix}`;
   }
   
   showLoadingState() {

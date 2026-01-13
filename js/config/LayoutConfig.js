@@ -44,25 +44,25 @@ const LayoutConfig = {
   // Button sizing
   SUBMIT_BUTTON_WIDTH: 60,
 
-  // Button style tokens (Harmonized Christmas Color Palette)
+  // Button style tokens (Dynamic colors from theme configuration)
   BUTTON_STYLE: {
-    PRIMARY_BG: '#0F4C36',        // Emerald green (matches title stroke)
-    PRIMARY_BG_HOVER: '#1a6b4a',  // Emerald hover state
-    PRIMARY_BG_ACTIVE: '#0a3d2a', // Emerald pressed state
-    PRIMARY_FG: '#ffffff',
-    ACCENT_BG: '#DAA520',         // Sophisticated gold (less bright)
-    ACCENT_BG_HOVER: '#F4D03F',   // Warmer gold hover
-    ACCENT_BG_ACTIVE: '#B8860B',  // Rich gold pressed
-    ACCENT_FG: '#0F4C36',         // Emerald text on gold
-    DANGER_BG: '#A0342B',         // Deeper Christmas red
-    DANGER_BG_HOVER: '#C0392B',   // Classic Christmas red hover
-    DANGER_BG_ACTIVE: '#7A2920',  // Dark red pressed
-    DANGER_FG: '#ffffff',
-    DISABLED_BG: '#444444',
-    DISABLED_FG: '#bbbbbb',
-  BORDER_GOLD: '#DAA520',         // Harmonized gold
-  BORDER_WHITE: '#ffffff',
-  BORDER_GREEN_DARK: '#0a3d2a',   // Harmonized dark emerald
+    get PRIMARY_BG() { return ThemeConfig.getColors().primary.bg; },
+    get PRIMARY_BG_HOVER() { return ThemeConfig.getColors().primary.hover; },
+    get PRIMARY_BG_ACTIVE() { return ThemeConfig.getColors().primary.active; },
+    get PRIMARY_FG() { return ThemeConfig.getColors().primary.fg; },
+    get ACCENT_BG() { return ThemeConfig.getColors().accent.bg; },
+    get ACCENT_BG_HOVER() { return ThemeConfig.getColors().accent.hover; },
+    get ACCENT_BG_ACTIVE() { return ThemeConfig.getColors().accent.active; },
+    get ACCENT_FG() { return ThemeConfig.getColors().accent.fg; },
+    get DANGER_BG() { return ThemeConfig.getColors().danger.bg; },
+    get DANGER_BG_HOVER() { return ThemeConfig.getColors().danger.hover; },
+    get DANGER_BG_ACTIVE() { return ThemeConfig.getColors().danger.active; },
+    get DANGER_FG() { return ThemeConfig.getColors().danger.fg; },
+    get DISABLED_BG() { return ThemeConfig.getColors().disabled.bg; },
+    get DISABLED_FG() { return ThemeConfig.getColors().disabled.fg; },
+    get BORDER_GOLD() { return ThemeConfig.getColors().border.gold; },
+    get BORDER_WHITE() { return ThemeConfig.getColors().border.white; },
+    get BORDER_GREEN_DARK() { return ThemeConfig.getColors().border.darkGreen; },
     RADIUS: 10,
     PADDING_X: 22,
     PADDING_Y: 12,

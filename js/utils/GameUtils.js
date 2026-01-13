@@ -39,7 +39,8 @@ class GameUtils {
   }
 
   static getGameElements() {
-    return ['Santa', 'Present', 'Candy Cane', 'Star', 'Tree', 'Snowflake'];
+    // Get elements from current theme configuration
+    return ThemeConfig.getElements();
   }
 
   static getDepthLayers() {

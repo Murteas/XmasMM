@@ -35,6 +35,8 @@ class ModuleLoader {
     // Group 1: Core utilities (load in parallel - no dependencies)
     const coreModules = [
       'js/utils/TestConfig.js',
+      'js/config/ThemeConfig.js',       // Theme system - must load before GameUtils
+      'js/utils/ThemeManager.js',       // Theme management utilities
       'js/utils/GameUtils.js',
       'js/utils/SafeAreaManager.js',
       'js/utils/BackgroundManager.js',
