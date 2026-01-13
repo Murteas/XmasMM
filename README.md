@@ -1,131 +1,249 @@
 # 🎄 Christmas MasterMind
 
-**A mobile-optimized Christmas puzzle game for family fun!**
+**A mobile-optimized, themeable puzzle game for family fun!**
 
-## 🤖 AI Agent Quick Rules
-**Critical guidelines for AI agents working on this project:**
+Play the classic code-breaking game with festive Christmas elements, or switch to other seasonal themes!
 
-1. 🚨 **Check [PROJECT_STATUS.md](PROJECT_STATUS.md) first** - Current project state and priorities
-2. 🤝 **ASK clarifying questions** - Collaborate, don't just comply with requests
-3. 📱 **Mobile-first development** - Test 375x667 minimum viewport
-4. ✅ **Follow test protocol**: Agent changes → User tests → Agent fixes based on feedback
-5. 📁 **Use LayoutConfig.js** - No magic numbers for heights/spacing
-6. 🎨 **Christmas theming** - Forest green (#0d5016) and gold (#ffd700) color scheme
+---
 
-> **🤖 Full Guidelines**: See [AI_AGENT_BRIEFING.md](AI_AGENT_BRIEFING.md) for complete onboarding
+## ✨ Features
 
-## ✨ Current Status
-🎉 **STABLE & READY FOR TESTING!** All critical functionality completed and tested.
+- **🎮 Classic Mastermind Gameplay** - Guess the hidden code using logic and deduction
+- **🎨 Multiple Themes** - Christmas (active), Halloween (template ready)
+- **📱 Mobile-First Design** - Optimized for iPhone SE to Pro Max (375px - 428px)
+- **🎯 Adjustable Difficulty** - 4-6 code length, 8-15 guesses
+- **👨‍👩‍👧‍👦 Family-Friendly** - Intuitive touch controls, Santa's hint system
+- **🌐 Zero Cost Hosting** - GitHub Pages compatible
+- **🎪 Smooth Performance** - 60 FPS target, optimized asset loading
 
-**📊 Live Status**: See [PROJECT_STATUS.md](PROJECT_STATUS.md) for complete current state and testing focus.
+---
 
-### **Key Achievements**
-- ✅ **Mobile Excellence**: Complete viewport utilization (100vw x 100vh) 
-- ✅ **Graphics Ready**: All Christmas assets prepared (6 elements + 3 feedback symbols)
-- ✅ **Code Architecture**: Modular structure with 9 manager classes
-- ✅ **Testing Suite**: Comprehensive validation including integration tests
-- ✅ **Family UX**: Intuitive touch controls with Santa's hint system
+## 🎮 Quick Start
 
-## 📋 Quick Navigation
-
-### **Project Management**
-- **📊 Current Status**: [PROJECT_STATUS.md](PROJECT_STATUS.md) - Real-time project state (auto-updated)
-- **🤖 Task Management**: [TASK_MANAGEMENT.md](TASK_MANAGEMENT.md) - AI agent workflow guide
-- **� Task Registry**: [tasks.json](tasks.json) - Machine-readable task definitions
-- **� Task Details**: [tasks/](tasks/) folder - Individual task documentation
-
-### **Development Resources**  
-- **� Testing Suite**: [TESTING.md](TESTING.md) - Test validation and integration
-- **🎨 Graphics Assets**: [Graphics_Asset_Requirements.md](Graphics_Asset_Requirements.md) - Asset specifications
-- **📋 Original Requirements**: [XmasMM_PRD.md](XmasMM_PRD.md) - Historical project definition
-
-## 🎮 Game Features
-- **Christmas Mastermind:** Guess hidden codes using 6 festive elements (Santa, Present, Star, etc.)
-- **Mobile Excellence:** Optimized for iPhone SE to Pro Max (375px - 428px)
-- **Adjustable Difficulty:** 4-6 elements, 8-15 guesses
-- **Family-Friendly:** Intuitive touch controls, Santa's hint system
-- **Zero Cost:** Hosted on GitHub Pages
-
-## 📱 Technical Highlights  
-- **Full Viewport Canvas:** Complete screen utilization (100vw x 100vh) with Phaser Scale.RESIZE
-- **Touch-Optimized:** Modal interactions, proper button sizing
-- **Performance:** 60 FPS target, optimized asset loading
-- **Testing Suite:** Comprehensive validation across iPhone models
-
-## 🎨 Graphics Asset Status
-**Status**: ✅ **All assets ready for implementation**
-
-See [Graphics_Asset_Requirements.md](Graphics_Asset_Requirements.md) for detailed asset specifications and status.
-
-## 🧪 Quick Start
-
-### **🎮 Play the Game**
+### Play the Game
 ```bash
-# Start any HTTP server on port 8000
+# Start HTTP server (required for Phaser.js)
 python -m http.server 8000
 
-# Then visit: http://localhost:8000
+# Open in browser
+http://localhost:8000
 ```
 
-### **🤖 For Developers & AI Agents**
-See [AI_AGENT_BRIEFING.md](AI_AGENT_BRIEFING.md) for complete development setup, testing procedures, and technical guidelines.
+⚠️ **Important**: Phaser.js requires an HTTP server. Opening `index.html` directly (file://) will show a white screen.
 
-**Key Points:**
-- ⚠️ **Phaser.js games require HTTP server** (file:// URLs show white screen)
-- 🧪 **Testing suite**: See AI briefing for detailed testing procedures
-- 📋 **Issue tracking**: [PROJECT_STATUS.md](PROJECT_STATUS.md) single source of truth for all project management
+### Controls
+1. **Select Difficulty** - Choose code length (4-6 elements) and number of guesses (8-15)
+2. **Make Guesses** - Tap empty slots, select elements from the bar at bottom
+3. **Get Feedback**:
+   - ⭐ **Perfect** - Right element in correct position
+   - 🔔 **Close** - Right element in wrong position
+   - _(blank)_ - Element not in code
+4. **Use Hint** - Tap Santa's hint button (-220 points)
+5. **Share Score** - Verbal score sharing for family competition
 
-### **🔧 Debug Mode (Development)**
-For rapid testing and development, the game includes a debug mode:
+---
 
-**Activation:** Press `D` key in the game screen to toggle debug mode
+## 🎨 Theme System
 
-**Debug Commands:**
-- **`R`** - Fill current row with random guess
-- **`W`** - Auto-win (fill with secret solution)
-- **`F`** - Fast-forward (auto-play 5 random guesses)
-- **`L`** - Jump to last round (leaves 2 guesses remaining)
-- **`D`** - Toggle debug mode on/off
+The game features an **extensible theme system** that makes it easy to add new seasonal themes.
 
-**Benefits:**
-- ✅ No more manual 10-round testing
-- ✅ Test end-game scenarios in seconds  
-- ✅ Rapid performance and bug testing
-- ✅ Zero impact on normal gameplay
+### Current Themes
+- ✅ **Christmas** (Active) - Santa, Present, Candy Cane, Star, Tree, Snowflake
+- 🎃 **Halloween** (Template) - Pumpkin, Ghost, Bat, Witch Hat, Spider, Skull
 
-## 🎮 How to Play
-1. Access the game via the provided GitHub Pages URL.
-2. Select difficulty settings (code length and number of guesses).
-3. Guess the code by selecting elements and submitting guesses.
-4. Receive feedback: ⭐ Perfect (right element & position), 🔔 Close (right element, wrong spot), ✖ Wrong.
-5. Share your score verbally with other players.
-6. Play again to compete for the highest score!
+### How to Add New Themes
+See [`CLAUDE.md`](CLAUDE.md) for complete documentation on:
+- Theme configuration structure
+- Asset requirements
+- Step-by-step theme creation guide
+- Architecture details
+
+**Quick Summary**: Add ~60 lines to `ThemeConfig.js` + create assets → new theme ready!
+
+---
+
+## 🔧 Debug Mode (Development)
+
+Press **`D`** in the game screen to enable debug mode:
+
+| Key | Action |
+|-----|--------|
+| `R` | Fill row with random guess |
+| `W` | Auto-win (use secret code) |
+| `F` | Fast-forward 5 random guesses |
+| `L` | Jump to last round (2 guesses left) |
+| `D` | Toggle debug mode on/off |
+
+**Benefits**: No more manual testing of 10+ rounds! Test end-game scenarios instantly.
+
+---
 
 ## 📁 Project Structure
-- **🎮 Game Code**: `js/` - Phaser.js game implementation
-	- `js/config/LayoutConfig.js` centralized layout constants
-- **🎨 Assets**: `assets/` - Christmas-themed graphics and audio
-- **🧪 Testing**: `tests/` - Comprehensive test suite
-- **📋 Issues**: [PROJECT_STATUS.md](PROJECT_STATUS.md) - Complete project tracking
-- **🤖 AI System**: [AI_AGENT_BRIEFING.md](AI_AGENT_BRIEFING.md) - Developer onboarding
+
+```
+C:\djs.projects\XmasMM/
+├── index.html              # Game entry point
+├── styles.css              # Mobile-optimized styling
+├── js/
+│   ├── main.js             # Phaser game initialization
+│   ├── config/
+│   │   ├── LayoutConfig.js      # Layout constants (single source of truth)
+│   │   └── ThemeConfig.js       # Theme definitions (NEW!)
+│   ├── managers/           # Game logic managers (9 classes)
+│   │   ├── GameStateManager.js  # Core game state
+│   │   ├── ScoreManager.js      # Scoring system
+│   │   ├── HistoryManager.js    # Guess history
+│   │   └── ...
+│   ├── scenes/             # Phaser scenes
+│   │   ├── MainMenu.js
+│   │   ├── DifficultySelection.js
+│   │   ├── GameScene.js
+│   │   └── RoundOver.js
+│   ├── utils/
+│   │   ├── ThemeManager.js      # Theme switching (NEW!)
+│   │   ├── BackgroundManager.js
+│   │   ├── ButtonFactory.js
+│   │   └── ...
+│   └── services/
+│       └── AudioManager.js
+├── assets/                 # Christmas theme assets (root level)
+│   ├── santa_*.png
+│   ├── present_*.png
+│   ├── ...
+│   ├── audio/
+│   └── themes/            # Future theme assets
+│       └── halloween/     # (assets not created yet)
+└── tests/                 # Test suite
+
+Key Files:
+- README.md         - This file
+- CLAUDE.md         - Theme system refactoring documentation
+```
+
+---
+
+## 🧮 Scoring System
+
+**Formula**: Element Points + Solved Bonus + Speed Bonus/Penalty + Hint Penalty
+
+### Components
+
+| Component | Points | Description |
+|-----------|--------|-------------|
+| **Perfect Match** | +180 each | Correct element in correct position (final guess) |
+| **Close Match** | +80 each | Correct element in wrong position (final guess) |
+| **Solved Bonus** | +250 | Awarded if code is solved |
+| **Speed Bonus** | Tiered | Unused guesses below 10: <br>• 1st-3rd: +80 each<br>• 4th-6th: +50 each<br>• 7th+: +30 each |
+| **Extra Guess Penalty** | -25 each | Guesses beyond 10 |
+| **Hint Penalty** | -220 | If Santa's hint used |
+
+### Example
+5-element code solved in 7 guesses:
+- Element points: 5 × 180 = **900**
+- Solved bonus: **+250**
+- Speed bonus: 3 unused × 80 = **+240**
+- **Total: 1,390 points**
+
+---
 
 ## 🔧 Technology Stack
-- **Frontend**: Phaser.js 3, HTML5 Canvas, ES6 JavaScript
-- **Mobile**: Responsive design, touch-optimized interactions
-- **Architecture**: Modular manager classes for maintainability
-- **Testing**: HTML + Node.js validation suite
-- **Hosting**: GitHub Pages compatible
-- **AI-Friendly**: Consolidated issue tracking system
 
-## 🧮 Scoring System (Current)
-Final score = Element Points + Solved Bonus + Speed Bonus/Penalty + Hint Penalty.
+- **Game Engine**: Phaser.js 3.80.1
+- **Language**: ES6 JavaScript (modular classes)
+- **Styling**: CSS3 with safe area insets
+- **Asset Management**: Multi-resolution (1x, 2x, 3x) for device scaling
+- **Audio**: MP3 sound effects
+- **Architecture**: Manager pattern with clear separation of concerns
+- **Module Loading**: Custom dependency-aware loader
+- **Hosting**: GitHub Pages compatible (static files only)
 
-Components:
-- Element Points: 180 pts per ⭐ (perfect), 80 pts per 🔔 (close) from the final winning guess (forced to all perfect if solved but feedback mismatch).
-- Solved Bonus: +250 (only if code solved).
-- Speed: Unused guesses below threshold (10) are tiered: first 3 @ +80 each, next 3 @ +50 each, remaining @ +30. Extra guesses beyond 10: -25 each.
-- Hint Penalty: -220 if Santa's hint used.
+---
 
-Example: 5-element solution solved in 7 guesses (final all perfect via solve): (5×180=900) +250 + speed bonus ((unused 3 → 3×80=240)) = 1390.
+## 🎯 Game Elements (Christmas Theme)
 
-Planned Review: Diversify mid-range outcomes (see forthcoming scoring balance proposal).*** End Patch
+| Element | Symbol | Asset |
+|---------|--------|-------|
+| Santa | 🎅 | `santa_*.png` |
+| Present | 🎁 | `present_*.png` |
+| Candy Cane | 🍬 | `candycane_*.png` |
+| Star | ⭐ | `star_*.png` |
+| Tree | 🎄 | `tree_*.png` |
+| Snowflake | ❄️ | `snowflake_*.png` |
+
+**Feedback Symbols**:
+- ⭐ Perfect (gold star) - `feedback_perfect_star_*.png`
+- 🔔 Close (silver bell) - `feedback_close_bell_*.png`
+
+---
+
+## 📱 Mobile Optimization
+
+### Supported Devices
+- iPhone SE (375×667) ✅
+- iPhone XR/11 (414×896) ✅
+- iPhone 12/13 Pro (390×844) ✅
+- iPhone Pro Max (428×926) ✅
+- Desktop browsers ✅
+
+### Features
+- **Full Viewport**: Complete screen utilization (100vw × 100vh)
+- **Safe Area Support**: Notch and home indicator awareness
+- **Touch Optimized**: 44px minimum touch targets
+- **Dynamic Viewport**: Handles iOS Safari's dynamic viewport height
+- **Portrait Lock**: Small screens locked to portrait for optimal UX
+- **Responsive Scaling**: Phaser.Scale.RESIZE for adaptive layouts
+
+---
+
+## 🎨 Color Palette (Christmas Theme)
+
+| Usage | Color | Hex |
+|-------|-------|-----|
+| Primary Button | Emerald Green | `#0F4C36` |
+| Accent Button | Sophisticated Gold | `#DAA520` |
+| Danger Button | Christmas Red | `#A0342B` |
+| Background Gradient | Deep Forest Green | `#0d3820` → `#051610` |
+
+*All colors dynamically loaded from theme configuration*
+
+---
+
+## 👥 Development
+
+### Recent Changes
+See [`CLAUDE.md`](CLAUDE.md) for complete theme system refactoring documentation (Jan 13, 2026).
+
+### Key Architectural Decisions
+- **Centralized Theme Config**: All theme data in `ThemeConfig.js`
+- **Dynamic Asset Loading**: Themes load assets at runtime
+- **Color Getters**: Button colors pulled dynamically from active theme
+- **Backward Compatible**: Original Christmas theme preserved exactly
+- **Validation & Fallback**: Invalid themes auto-clear with safe defaults
+
+### Contributing Guidelines
+1. **No Magic Numbers** - Use `LayoutConfig.js` for all dimensions/spacing
+2. **Theme-Agnostic Logic** - Keep game mechanics separate from themes
+3. **Mobile-First** - Test on 375×667 viewport minimum
+4. **Asset Conventions** - Provide 1x, 2x, 3x resolutions for all images
+5. **Commit Messages** - Use conventional commits format
+
+---
+
+## 🐛 Known Issues
+
+None at this time. Game is stable and ready for play!
+
+To report issues:
+- GitHub: [Create an issue](https://github.com/Murteas/XmasMM/issues)
+
+---
+
+## 📄 License
+
+MIT License - Feel free to use, modify, and distribute!
+
+---
+
+## 🎄 Happy Holidays!
+
+Enjoy playing Christmas MasterMind with family and friends! 🎅🎁⭐
