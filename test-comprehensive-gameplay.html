@@ -322,6 +322,30 @@
             }
         )) passCount++;
 
+        // TEST 6: Duplicate Elements - Critical edge case
+        totalTests++;
+        if (runGameplayTest(
+            'Duplicate Elements - Santa Appears Twice',
+            ['Snowflake', 'Santa', 'Candy Cane', 'Santa', 'Present'],
+            [
+                // Turn 1: Try all Santas to identify count
+                ['Santa', 'Santa', 'Santa', 'Santa', 'Santa'],
+                // Turn 2: Got 2 feedback → exactly 2 Santas in code
+                ['Snowflake', 'Santa', 'Candy Cane', 'Tree', 'Present'],
+                // Turn 3: 4 blacks! Very close, Tree is wrong
+                ['Snowflake', 'Santa', 'Candy Cane', 'Santa', 'Present'],
+                // Turn 4: Should be solved - 2 Santas at positions 1 & 3
+            ],
+            {
+                1: {}, // After all-same guess, know exact count
+                2: { eliminated: ['Tree'] }, // Tree got 0 feedback
+                3: {
+                    deducedPositions: [0, 1, 2, 3, 4], // All positions deduced!
+                    // CRITICAL: Santa must be possible at BOTH positions 1 and 3
+                }
+            }
+        )) passCount++;
+
         // Summary
         const summaryDiv = document.createElement('div');
         summaryDiv.className = 'test-case';
@@ -339,9 +363,11 @@
                 ✅ All Whites: Element confirmation before position finding<br>
                 ✅ Elimination Focus: Systematic ruling out of elements<br>
                 ✅ Single Movement: Position comparison via element movement<br>
+                ✅ Duplicate Elements: Handles elements appearing multiple times<br>
                 <br>
                 These tests simulate realistic family gameplay patterns<br>
-                with 6-8 turns of mixed blacks and whites.
+                with 4-8 turns of mixed blacks and whites.<br>
+                Includes critical edge case: duplicate elements!
             </div>
         `;
         results.appendChild(summaryDiv);
