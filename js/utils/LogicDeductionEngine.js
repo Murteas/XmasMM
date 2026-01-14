@@ -124,6 +124,26 @@ class LogicDeductionEngine {
       this.setElementCount(element, exactCount);
     }
 
+    // RULE 4: Handle whites - elements in code but wrong positions
+    if (black === 0 && white > 0) {
+      // All elements in guess are in WRONG positions (but ARE in code)
+      console.log(`  ⚪ ${white} whites with 0 blacks: elements in wrong positions`);
+
+      // Find unique elements in guess
+      const uniqueInGuess = [...new Set(guess)];
+
+      // If we have exactly as many unique elements as whites,
+      // all of them are in the code but in wrong positions
+      if (uniqueInGuess.length === white) {
+        uniqueInGuess.forEach(element => {
+          console.log(`  ✓ Confirmed: ${element} is in code (got white)`);
+          this.confirmedElements.add(element);
+        });
+      }
+      // If more unique elements than whites, some got 0 feedback
+      // We can't definitively say which without more info
+    }
+
     // Position-specific deductions (compare across guesses)
     this.performPositionSpecificDeduction();
 

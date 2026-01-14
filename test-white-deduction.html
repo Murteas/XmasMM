@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>White Peg Deduction Tests</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #00ff00;
+        }
+        .test-case {
+            margin: 20px 0;
+            padding: 15px;
+            border: 2px solid #00ff00;
+            background: #0a0a0a;
+        }
+        .test-case.pass {
+            border-color: #00ff00;
+        }
+        .test-case.fail {
+            border-color: #ff0000;
+            color: #ff0000;
+        }
+        .code {
+            color: #ffff00;
+            font-weight: bold;
+        }
+        .guess {
+            color: #00ffff;
+        }
+        h1, h2 {
+            color: #00ff00;
+        }
+        .note {
+            color: #ffaa00;
+            font-style: italic;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>⚪ White Peg Deduction Tests</h1>
+    <div class="note">
+        White peg = Right element, WRONG position<br>
+        These tests check if we properly use white peg feedback to eliminate elements from positions.
+    </div>
+    <div id="test-results"></div>
+
+    <script src="js/utils/LogicDeductionEngine.js"></script>
+    <script>
+        const results = document.getElementById('test-results');
+
+        function calculateFeedback(guess, code) {
+            let black = 0;
+            let white = 0;
+            const codeCopy = [...code];
+            const guessCopy = [...guess];
+
+            for (let i = 0; i < guess.length; i++) {
+                if (guessCopy[i] === codeCopy[i]) {
+                    black++;
+                    codeCopy[i] = null;
+                    guessCopy[i] = null;
+                }
+            }
+
+            for (let i = 0; i < guess.length; i++) {
+                if (guessCopy[i] !== null) {
+                    const idx = codeCopy.indexOf(guessCopy[i]);
+                    if (idx !== -1) {
+                        white++;
+                        codeCopy[idx] = null;
+                    }
+                }
+            }
+
+            return {black, white};
+        }
+
+        function runPositionTest(testName, code, guesses, expectedPossible) {
+            const testDiv = document.createElement('div');
+            testDiv.className = 'test-case';
+
+            let html = `<h2>Test: ${testName}</h2>`;
+            html += `<div class="code">Secret Code: [${code.join(', ')}]</div><br>`;
+
+            const allElements = ['Santa', 'Present', 'Candy Cane', 'Star', 'Tree', 'Snowflake'];
+            const engine = new LogicDeductionEngine(code.length, allElements);
+
+            guesses.forEach((guess, idx) => {
+                const feedback = calculateFeedback(guess, code);
+                html += `<div class="guess">Guess ${idx + 1}: [${guess.join(', ')}] → ${feedback.black} black, ${feedback.white} white</div>`;
+                engine.analyzeGuess(guess, feedback);
+            });
+
+            html += '<br><h3>Possible Elements by Position:</h3>';
+            let allPass = true;
+
+            for (let pos = 0; pos < code.length; pos++) {
+                const actual = engine.getPossibleElements(pos);
+                const expected = expectedPossible[pos];
+
+                const posPass = JSON.stringify(actual.sort()) === JSON.stringify(expected.sort());
+                if (!posPass) allPass = false;
+
+                html += `<div><strong>Position ${pos}:</strong> `;
+                html += `Expected: [${expected.join(', ')}] `;
+                html += `| Actual: [${actual.join(', ')}] `;
+                html += posPass ? '✅' : '❌';
+                html += '</div>';
+            }
+
+            html += `<div><strong>Overall Result:</strong> ${allPass ? '✅ PASS' : '❌ FAIL'}</div>`;
+
+            testDiv.className = allPass ? 'test-case pass' : 'test-case fail';
+            testDiv.innerHTML = html;
+            results.appendChild(testDiv);
+
+            return allPass;
+        }
+
+        console.log('🧪 Running White Peg Deduction Tests...\n');
+
+        let passCount = 0;
+        let totalTests = 0;
+
+        // TEST 1: All whites (0 blacks) - everything in wrong position
+        totalTests++;
+        if (runPositionTest(
+            'TEST 1: All Whites - Total Swap',
+            ['Santa', 'Present', 'Tree', 'Star'],
+            [
+                ['Present', 'Santa', 'Star', 'Tree'],  // 0 black, 4 white
+            ],
+            [
+                // Every element eliminated from its guessed position
+                ['Candy Cane', 'Santa', 'Snowflake', 'Star', 'Tree'],  // Not Present
+                ['Candy Cane', 'Present', 'Snowflake', 'Star', 'Tree'],  // Not Santa
+                ['Candy Cane', 'Present', 'Santa', 'Snowflake', 'Tree'],  // Not Star
+                ['Candy Cane', 'Present', 'Santa', 'Snowflake', 'Star'],  // Not Tree
+            ]
+        )) passCount++;
+
+        // TEST 2: Mixed blacks and whites (NEEDS MULTIPLE GUESSES)
+        totalTests++;
+        if (runPositionTest(
+            'TEST 2: Mixed Blacks and Whites - Sequential Narrowing',
+            ['Santa', 'Present', 'Tree', 'Star'],
+            [
+                ['Tree', 'Santa', 'Present', 'Star'],  // 1 black, 3 white (don't know which is black!)
+                ['Tree', 'Tree', 'Tree', 'Tree'],      // 1 black → exactly 1 Tree in code
+                ['Star', 'Star', 'Star', 'Star'],      // 1 black → exactly 1 Star in code
+                ['Tree', 'Santa', 'Present', 'Candy Cane'],  // 0 black, 3 white → position 3 was the black!
+                // Now we KNOW: position 3 had the black in guess 1, so Star is at position 3
+            ],
+            [
+                // After these 4 guesses, we can deduce:
+                // - Tree NOT at position 0 (got white in guess 1, black in guess 2 somewhere else)
+                // - Santa NOT at position 1 (got white in guess 1)
+                // - Present NOT at position 2 (got white in guess 1)
+                // - Star IS at position 3 (only element that was in guess 1 & 4, and guess 4 lost the black)
+                ['Candy Cane', 'Present', 'Santa', 'Snowflake', 'Tree'],  // No Star (locked elsewhere)
+                ['Candy Cane', 'Present', 'Snowflake', 'Star', 'Tree'],   // No Santa (got white at pos 1)
+                ['Candy Cane', 'Santa', 'Snowflake', 'Star', 'Tree'],     // No Present (got white at pos 2)
+                ['Star'],  // Star locked after comparison shows it was the black in guess 1
+            ]
+        )) passCount++;
+
+        // TEST 3: Single white - element in code but wrong position
+        totalTests++;
+        if (runPositionTest(
+            'TEST 3: Single White with Filler',
+            ['Santa', 'Present', 'Tree', 'Star'],
+            [
+                ['Present', 'Candy Cane', 'Candy Cane', 'Candy Cane'],  // 0 black, 1 white
+                // Deduction: Present got the white (in code but wrong position)
+                // Candy Cane appeared 3 times with 1 white total → Candy Cane NOT in code
+            ],
+            [
+                // Position 0: Present got the white, so NOT at position 0 (but IS in code)
+                ['Santa', 'Snowflake', 'Star', 'Tree'],  // No Present, No Candy Cane
+                // Positions 1-3: Candy Cane got 0 feedback (Present accounted for the white)
+                ['Present', 'Santa', 'Snowflake', 'Star', 'Tree'],  // No Candy Cane
+                ['Present', 'Santa', 'Snowflake', 'Star', 'Tree'],  // No Candy Cane
+                ['Present', 'Santa', 'Snowflake', 'Star', 'Tree'],  // No Candy Cane
+            ]
+        )) passCount++;
+
+        // TEST 4: Multiple guesses with whites to narrow down
+        totalTests++;
+        if (runPositionTest(
+            'TEST 4: Sequential White Elimination',
+            ['Santa', 'Present', 'Tree', 'Star'],
+            [
+                ['Present', 'Present', 'Present', 'Present'],  // 1 feedback (1 Present in code)
+                ['Candy Cane', 'Present', 'Candy Cane', 'Candy Cane'],  // 0 black, 1 white
+                // Present is in code, tried at pos 0 and pos 1, both got whites
+                // So Present NOT at pos 0 or pos 1 → must be at pos 2 or 3
+            ],
+            [
+                // Present eliminated from positions 0 and 1 (tried both, got whites)
+                ['Candy Cane', 'Santa', 'Snowflake', 'Star', 'Tree'],  // No Present
+                ['Candy Cane', 'Santa', 'Snowflake', 'Star', 'Tree'],  // No Present
+                ['Present', 'Santa', 'Snowflake', 'Star', 'Tree'],     // Present possible
+                ['Present', 'Santa', 'Snowflake', 'Star', 'Tree'],     // Present possible
+            ]
+        )) passCount++;
+
+        // Summary
+        const summaryDiv = document.createElement('div');
+        summaryDiv.className = 'test-case';
+        summaryDiv.innerHTML = `
+            <h2>📊 Test Summary</h2>
+            <div><strong>Total Tests:</strong> ${totalTests}</div>
+            <div><strong>Passed:</strong> ${passCount}</div>
+            <div><strong>Failed:</strong> ${totalTests - passCount}</div>
+            <div><strong>Success Rate:</strong> ${Math.round(passCount / totalTests * 100)}%</div>
+            <br>
+            <div class="note">
+                <strong>White Peg Logic Required:</strong><br>
+                - If guess gets 0 blacks but N whites → all N elements in wrong positions<br>
+                - Eliminate each element from its guessed position<br>
+                - Mark elements as confirmed (they're IN the code)<br>
+                - Cross-reference with known counts for stronger deductions
+            </div>
+        `;
+        results.appendChild(summaryDiv);
+
+        console.log(`\n📊 Test Results: ${passCount}/${totalTests} passed`);
+    </script>
+</body>
+</html>
