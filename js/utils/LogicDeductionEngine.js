@@ -415,79 +415,31 @@ class LogicDeductionEngine {
    * - If element confirmed but only fits in one position → it's there
    * - If position only has one possibility → deduce it
    * - If N confirmed elements and only N possible positions → distribute them
+   *
+   * NOTE: For hint system, we use CONSERVATIVE approach - don't lock positions,
+   * only eliminate what's proven impossible. Locking can be confusing for users.
    */
   performAdvancedDeductions() {
     // Deduction 1: If a position has only 1 possibility, mark element as confirmed
+    // BUT DON'T lock other positions to that element (too aggressive for hints)
     for (let i = 0; i < this.codeLength; i++) {
       if (this.possibleByPosition[i].size === 1) {
         const element = Array.from(this.possibleByPosition[i])[0];
         if (!this.confirmedElements.has(element)) {
-          console.log(`  🔍 Deduced: ${element} must be at position ${i} (only possibility)`);
+          console.log(`  🔍 Position ${i} narrowed to ${element}`);
           this.confirmedElements.add(element);
-
-          // Remove this element from all other positions
-          for (let j = 0; j < this.codeLength; j++) {
-            if (j !== i) {
-              this.possibleByPosition[j].delete(element);
-            }
-          }
+          // DON'T remove from other positions - let other deductions handle that
         }
       }
     }
 
-    // Deduction 2: If confirmed element only fits in one position, lock it there
-    this.confirmedElements.forEach(element => {
-      const possiblePositions = [];
-      for (let i = 0; i < this.codeLength; i++) {
-        if (this.possibleByPosition[i].has(element)) {
-          possiblePositions.push(i);
-        }
-      }
+    // Deduction 2: DISABLED - Too aggressive for hint system
+    // If confirmed element only fits in one position, we could lock it there,
+    // but this makes the hint too certain and less useful for learning
 
-      if (possiblePositions.length === 1) {
-        const position = possiblePositions[0];
-        console.log(`  🔍 Deduced: ${element} must be at position ${position} (only fits here)`);
-
-        // This position can only be this element
-        this.possibleByPosition[position].clear();
-        this.possibleByPosition[position].add(element);
-
-        // Remove other elements from this position
-        // (already cleared above)
-      }
-    });
-
-    // Deduction 3: If all but one position are deduced, last one is determined by elimination
-    const deducedPositions = [];
-    for (let i = 0; i < this.codeLength; i++) {
-      if (this.possibleByPosition[i].size === 1) {
-        deducedPositions.push(i);
-      }
-    }
-
-    if (deducedPositions.length === this.codeLength - 1) {
-      // Find the one undeduced position
-      const undeducedPosition = this.possibleByPosition.findIndex(set => set.size > 1);
-      if (undeducedPosition !== -1) {
-        // Find which element is missing
-        const deducedElements = new Set();
-        deducedPositions.forEach(pos => {
-          const element = Array.from(this.possibleByPosition[pos])[0];
-          deducedElements.add(element);
-        });
-
-        // The missing element from confirmed set is what goes in the last position
-        const missingElement = Array.from(this.possibleByPosition[undeducedPosition])
-          .find(el => !deducedElements.has(el));
-
-        if (missingElement) {
-          console.log(`  🔍 Deduced: ${missingElement} must be at position ${undeducedPosition} (by elimination)`);
-          this.possibleByPosition[undeducedPosition].clear();
-          this.possibleByPosition[undeducedPosition].add(missingElement);
-          this.confirmedElements.add(missingElement);
-        }
-      }
-    }
+    // Deduction 3: DISABLED - Too aggressive for hint system
+    // If all but one position are deduced, we could lock the last position,
+    // but this removes the final deduction challenge for the player
   }
 
   /**
