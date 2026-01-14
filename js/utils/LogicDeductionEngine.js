@@ -139,9 +139,55 @@ class LogicDeductionEngine {
           console.log(`  ✓ Confirmed: ${element} is in code (got white)`);
           this.confirmedElements.add(element);
         });
+
+        // CRITICAL: If we confirmed N elements and codeLength = N,
+        // then all OTHER elements are NOT in code!
+        if (white === this.codeLength) {
+          const confirmedSet = new Set(uniqueInGuess);
+          this.allElements.forEach(element => {
+            if (!confirmedSet.has(element)) {
+              console.log(`  ✗ Eliminated: ${element} (all ${this.codeLength} positions confirmed with whites)`);
+              this.eliminatedElements.add(element);
+
+              // Remove from ALL positions
+              for (let i = 0; i < this.codeLength; i++) {
+                this.possibleByPosition[i].delete(element);
+              }
+            }
+          });
+        }
+      } else if (uniqueInGuess.length > white) {
+        // More unique elements than whites - some got 0 feedback
+        // Special case: If one element appears many times and total white is low,
+        // the repeated element likely got 0 feedback
+        uniqueInGuess.forEach(element => {
+          const countInGuess = elementCounts[element];
+
+          // If element appears more times than total whites,
+          // it can't have contributed to ALL whites → must have gotten some 0s
+          if (countInGuess > white) {
+            // This element appeared N times but only M whites total (N > M)
+            // So at LEAST (N - M) of its appearances got 0 feedback
+            // If N >> M, very likely this element is NOT in code at all
+            if (countInGuess >= 3 && white === 1) {
+              console.log(`  ✗ Likely eliminated: ${element} (appeared ${countInGuess} times, only ${white} white total)`);
+              this.eliminatedElements.add(element);
+
+              // Remove from ALL positions
+              for (let i = 0; i < this.codeLength; i++) {
+                this.possibleByPosition[i].delete(element);
+              }
+            }
+          }
+
+          // Cross-reference with known counts
+          const knownCount = this.getConfirmedCount(element);
+          if (knownCount > 0) {
+            // This element is confirmed in code, so it contributed to whites
+            console.log(`  ✓ ${element} got white (confirmed from earlier guess)`);
+          }
+        });
       }
-      // If more unique elements than whites, some got 0 feedback
-      // We can't definitively say which without more info
     }
 
     // Position-specific deductions (compare across guesses)
