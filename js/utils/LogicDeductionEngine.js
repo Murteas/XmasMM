@@ -411,35 +411,98 @@ class LogicDeductionEngine {
 
   /**
    * Perform advanced cross-reference deductions
-   * Examples:
-   * - If element confirmed but only fits in one position → it's there
-   * - If position only has one possibility → deduce it
-   * - If N confirmed elements and only N possible positions → distribute them
+   * HYBRID APPROACH: Lock positions when highly certain, but preserve challenge
    *
-   * NOTE: For hint system, we use CONSERVATIVE approach - don't lock positions,
-   * only eliminate what's proven impossible. Locking can be confusing for users.
+   * Locking rules:
+   * 1. Position naturally narrowed to 1 element → Lock it
+   * 2. Confirmed element only fits in 1 position → Lock it there
+   * 3. When locking, remove element from other positions
+   *
+   * Goal: Help when truly stuck, but don't solve the puzzle automatically
    */
   performAdvancedDeductions() {
-    // Deduction 1: If a position has only 1 possibility, mark element as confirmed
-    // BUT DON'T lock other positions to that element (too aggressive for hints)
+    // Deduction 1: If a position has only 1 possibility remaining, lock it
+    // This happened through elimination, so it's highly certain
     for (let i = 0; i < this.codeLength; i++) {
       if (this.possibleByPosition[i].size === 1) {
         const element = Array.from(this.possibleByPosition[i])[0];
+
         if (!this.confirmedElements.has(element)) {
-          console.log(`  🔍 Position ${i} narrowed to ${element}`);
+          console.log(`  🔒 LOCKED: Position ${i} = ${element} (only possibility remaining)`);
           this.confirmedElements.add(element);
-          // DON'T remove from other positions - let other deductions handle that
+        }
+
+        // Remove this element from all other positions (it's used here!)
+        for (let j = 0; j < this.codeLength; j++) {
+          if (j !== i && this.possibleByPosition[j].has(element)) {
+            this.possibleByPosition[j].delete(element);
+            console.log(`    ✗ Removed ${element} from position ${j} (locked at position ${i})`);
+          }
         }
       }
     }
 
-    // Deduction 2: DISABLED - Too aggressive for hint system
-    // If confirmed element only fits in one position, we could lock it there,
-    // but this makes the hint too certain and less useful for learning
+    // Deduction 2: If confirmed element only fits in one position, lock it there
+    // Only applies to elements we're CERTAIN are in the code
+    this.confirmedElements.forEach(element => {
+      const possiblePositions = [];
+      for (let i = 0; i < this.codeLength; i++) {
+        if (this.possibleByPosition[i].has(element)) {
+          possiblePositions.push(i);
+        }
+      }
 
-    // Deduction 3: DISABLED - Too aggressive for hint system
-    // If all but one position are deduced, we could lock the last position,
-    // but this removes the final deduction challenge for the player
+      // If element only fits in one place, lock it there
+      if (possiblePositions.length === 1) {
+        const position = possiblePositions[0];
+        const currentSize = this.possibleByPosition[position].size;
+
+        // Only lock if position has multiple possibilities (avoid redundant locking)
+        if (currentSize > 1) {
+          console.log(`  🔒 LOCKED: ${element} must be at position ${position} (only position it fits)`);
+
+          // Lock this position to only this element
+          this.possibleByPosition[position].clear();
+          this.possibleByPosition[position].add(element);
+
+          console.log(`    ✗ Removed ${currentSize - 1} other elements from position ${position}`);
+        }
+      }
+    });
+
+    // Deduction 3: If N-1 positions are locked, deduce the last one
+    // This is strong enough certainty to help the player
+    const lockedPositions = [];
+    for (let i = 0; i < this.codeLength; i++) {
+      if (this.possibleByPosition[i].size === 1) {
+        lockedPositions.push(i);
+      }
+    }
+
+    if (lockedPositions.length === this.codeLength - 1) {
+      // Find the one unlocked position
+      const unlockedPosition = this.possibleByPosition.findIndex(set => set.size > 1);
+      if (unlockedPosition !== -1) {
+        // Find which elements are already locked
+        const lockedElements = new Set();
+        lockedPositions.forEach(pos => {
+          const element = Array.from(this.possibleByPosition[pos])[0];
+          lockedElements.add(element);
+        });
+
+        // The remaining element must go in the last position
+        const remainingElements = Array.from(this.possibleByPosition[unlockedPosition])
+          .filter(el => !lockedElements.has(el));
+
+        if (remainingElements.length === 1) {
+          const lastElement = remainingElements[0];
+          console.log(`  🔒 LOCKED: Position ${unlockedPosition} = ${lastElement} (by elimination, N-1 known)`);
+          this.possibleByPosition[unlockedPosition].clear();
+          this.possibleByPosition[unlockedPosition].add(lastElement);
+          this.confirmedElements.add(lastElement);
+        }
+      }
+    }
   }
 
   /**
