@@ -291,41 +291,43 @@ class LogicDeductionEngine {
       if (blacks1 > blacks2) {
         // Element WAS contributing a black at position1, but NOT at position2
         // Therefore: element IS at position1, NOT at position2
-        console.log(`  🎯 DEDUCED: ${element} IS at position ${position1}, NOT at position ${position2}`);
+        console.log(`  🎯 DEDUCED: ${element} IS likely at position ${position1}, NOT at position ${position2}`);
 
-        // Lock position1 to this element
-        this.possibleByPosition[position1].clear();
-        this.possibleByPosition[position1].add(element);
-
-        // Eliminate from position2 and all others
+        // Eliminate element from position2 and other positions (but keep at position1)
+        // We DON'T lock position1 yet - just eliminate from others
         for (let pos = 0; pos < this.codeLength; pos++) {
           if (pos !== position1) {
+            const hadElement = this.possibleByPosition[pos].has(element);
             this.possibleByPosition[pos].delete(element);
-            if (pos === position2) {
+            if (hadElement && pos === position2) {
               console.log(`    ✗ Eliminated ${element} from position ${pos}`);
             }
           }
         }
+
+        // Mark element as confirmed (it's in the code somewhere)
+        this.confirmedElements.add(element);
       }
       // If blacks increased when element moved from pos1 to pos2
       else if (blacks2 > blacks1) {
         // Element WAS NOT contributing a black at position1, but IS at position2
         // Therefore: element is NOT at position1, IS at position2
-        console.log(`  🎯 DEDUCED: ${element} IS at position ${position2}, NOT at position ${position1}`);
+        console.log(`  🎯 DEDUCED: ${element} IS likely at position ${position2}, NOT at position ${position1}`);
 
-        // Lock position2 to this element
-        this.possibleByPosition[position2].clear();
-        this.possibleByPosition[position2].add(element);
-
-        // Eliminate from position1 and all others
+        // Eliminate element from position1 and other positions (but keep at position2)
+        // We DON'T lock position2 yet - just eliminate from others
         for (let pos = 0; pos < this.codeLength; pos++) {
           if (pos !== position2) {
+            const hadElement = this.possibleByPosition[pos].has(element);
             this.possibleByPosition[pos].delete(element);
-            if (pos === position1) {
+            if (hadElement && pos === position1) {
               console.log(`    ✗ Eliminated ${element} from position ${pos}`);
             }
           }
         }
+
+        // Mark element as confirmed (it's in the code somewhere)
+        this.confirmedElements.add(element);
       }
       // If blacks stayed the same
       else if (blacks1 === blacks2) {
