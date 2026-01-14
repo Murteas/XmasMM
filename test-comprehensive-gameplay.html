@@ -201,20 +201,19 @@
             [
                 // Turn 1: Try common elements
                 ['Santa', 'Present', 'Candy Cane', 'Snowflake'],
-                // Turn 2: Got 2 feedback, try to identify which
+                // Turn 2: Got 2 blacks, 2 whites - some correct!
                 ['Santa', 'Present', 'Star', 'Tree'],
-                // Turn 3: Got 4 whites! All elements identified, wrong positions
+                // Turn 3: Got 0 blacks, 4 whites! All elements confirmed, all wrong positions
+                // Hybrid logic should FULLY DEDUCE from comparison of turns 2 & 3
                 ['Present', 'Santa', 'Star', 'Tree'],
-                // Turn 4: Swap to find blacks
+                // Turns 4-5: Already solved, just verifying
                 ['Santa', 'Tree', 'Present', 'Star'],
-                // Turn 5: Close...
                 ['Santa', 'Star', 'Tree', 'Present'],
-                // Turn 6: Should be solvable by now
             ],
             {
-                1: { eliminated: ['Candy Cane', 'Snowflake'] },
+                // After turn 3, Candy Cane & Snowflake eliminated, all positions deduced!
                 2: { eliminated: ['Candy Cane', 'Snowflake'] },
-                5: { positionPossibilities: [{position: 0, maxPossible: 2}] }
+                3: { deducedPositions: [0, 1, 2, 3] } // All positions solved!
             }
         )) passCount++;
 
