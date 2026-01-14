@@ -13,6 +13,7 @@ class LogicDeductionEngine {
     this.possibleByPosition = [];    // Array of Sets: possibleByPosition[i] = Set of possible elements
     this.eliminatedElements = new Set();  // Elements proven NOT in code
     this.confirmedElements = new Set();   // Elements proven IN code (but position may be unknown)
+    this.guessHistory = [];          // Store all guesses and feedback for comparison-based deduction
 
     this.reset();
 
@@ -32,6 +33,7 @@ class LogicDeductionEngine {
     this.eliminatedElements.clear();
     this.confirmedElements.clear();
     this.elementExactCounts = {};  // Track exact counts of elements in code
+    this.guessHistory = [];        // Clear guess history
 
     console.log('🧠 LogicDeductionEngine reset');
   }
@@ -45,7 +47,13 @@ class LogicDeductionEngine {
     const {black, white} = feedback;
     const totalFeedback = black + white;
 
-    console.log(`🧠 Analyzing guess:`, guess, `Feedback: ${black} black, ${white} white`);
+    console.log(`🧠 Analyzing guess #${this.guessHistory.length + 1}:`, guess, `Feedback: ${black} black, ${white} white`);
+
+    // Store this guess in history for comparison-based deduction
+    this.guessHistory.push({
+      guess: [...guess],  // Copy array
+      feedback: {black, white}
+    });
 
     // Count occurrences of each element in the guess
     const elementCounts = {};
@@ -116,7 +124,10 @@ class LogicDeductionEngine {
       this.setElementCount(element, exactCount);
     }
 
-    // Advanced deductions
+    // Position-specific deductions (compare across guesses)
+    this.performPositionSpecificDeduction();
+
+    // Advanced deductions (constraint propagation)
     this.performAdvancedDeductions();
 
     // Log current state
@@ -142,6 +153,227 @@ class LogicDeductionEngine {
       this.elementExactCounts = {};
     }
     this.elementExactCounts[element] = count;
+  }
+
+  /**
+   * Perform position-specific deduction by comparing guesses
+   * This is the sophisticated MasterMind logic that eliminates elements from specific positions
+   */
+  performPositionSpecificDeduction() {
+    // Need at least 2 guesses to compare
+    if (this.guessHistory.length < 2) {
+      return;
+    }
+
+    console.log('🔍 Performing position-specific deduction...');
+
+    // RULE 1: Compare guesses where the same element appears at different positions
+    // Example: [Santa, X, X, X] → 1 black, [X, Santa, X, X] → 0 black
+    // Deduction: Santa is at position 0, NOT at position 1
+    this.compareElementPositions();
+
+    // RULE 2: If we know an element's exact count and have tried it at certain positions
+    // we can eliminate it from positions where it couldn't contribute to feedback
+    this.eliminateByCountConstraints();
+  }
+
+  /**
+   * Compare guesses to eliminate elements from specific positions
+   */
+  compareElementPositions() {
+    // For each pair of guesses, look for elements that moved positions
+    for (let i = 0; i < this.guessHistory.length - 1; i++) {
+      for (let j = i + 1; j < this.guessHistory.length; j++) {
+        const guess1 = this.guessHistory[i];
+        const guess2 = this.guessHistory[j];
+
+        // Compare each element in the code length
+        for (const element of this.allElements) {
+          this.compareElementInTwoGuesses(element, guess1, guess2);
+        }
+      }
+    }
+  }
+
+  /**
+   * Compare how a specific element performed in two different guesses
+   * @param {string} element - The element to analyze
+   * @param {Object} guess1 - First guess {guess: Array, feedback: {black, white}}
+   * @param {Object} guess2 - Second guess
+   */
+  compareElementInTwoGuesses(element, guess1, guess2) {
+    // Find positions where this element appears in each guess
+    const pos1 = [];
+    const pos2 = [];
+
+    guess1.guess.forEach((el, idx) => {
+      if (el === element) pos1.push(idx);
+    });
+
+    guess2.guess.forEach((el, idx) => {
+      if (el === element) pos2.push(idx);
+    });
+
+    // Skip if element doesn't appear in both guesses
+    if (pos1.length === 0 || pos2.length === 0) {
+      return;
+    }
+
+    // CASE 1: Element appears at ONE position in each guess, different positions
+    // If black count changes, we can deduce something
+    if (pos1.length === 1 && pos2.length === 1 && pos1[0] !== pos2[0]) {
+      const position1 = pos1[0];
+      const position2 = pos2[0];
+
+      // If guess1 has MORE blacks than guess2, element is more likely at position1
+      // But we need to be careful - other elements might have changed too
+
+      // SIMPLE CASE: If both guesses have ONLY this element (all same)
+      const allSame1 = guess1.guess.every(el => el === element);
+      const allSame2 = guess2.guess.every(el => el === element);
+
+      if (allSame1 && allSame2) {
+        // This is the clearest case!
+        const blacks1 = guess1.feedback.black;
+        const blacks2 = guess2.feedback.black;
+
+        if (blacks1 > blacks2) {
+          // Element is at one or more positions from guess1
+          console.log(`  🎯 ${element} at position ${position1} got more blacks than position ${position2}`);
+          // We can't definitively eliminate yet without more info
+        } else if (blacks2 > blacks1) {
+          console.log(`  🎯 ${element} at position ${position2} got more blacks than position ${position1}`);
+        } else if (blacks1 === 0 && blacks2 === 0) {
+          // Element not in code at all - already handled by global elimination
+        }
+      }
+    }
+
+    // CASE 2: Single element moved between guesses (CRITICAL for Test 3!)
+    // If all other positions are the same, we can deduce from black count change
+    this.detectSingleElementMove(element, guess1, guess2, pos1, pos2);
+  }
+
+  /**
+   * Detect when a single element moved between two guesses
+   * This is a powerful deduction: if only one thing changed and blacks changed, we know something!
+   * @param {string} element - The element that moved
+   * @param {Object} guess1 - First guess
+   * @param {Object} guess2 - Second guess
+   * @param {Array<number>} pos1 - Positions of element in guess1
+   * @param {Array<number>} pos2 - Positions of element in guess2
+   */
+  detectSingleElementMove(element, guess1, guess2, pos1, pos2) {
+    // Only handle simple case: element at one position in each guess
+    if (pos1.length !== 1 || pos2.length !== 1) {
+      return;
+    }
+
+    const position1 = pos1[0];
+    const position2 = pos2[0];
+
+    // Count how many positions are different between the two guesses
+    let differentPositions = 0;
+    for (let i = 0; i < this.codeLength; i++) {
+      if (guess1.guess[i] !== guess2.guess[i]) {
+        differentPositions++;
+      }
+    }
+
+    // If only 2 positions differ (the element moved), we can make strong deductions!
+    if (differentPositions === 2) {
+      const blacks1 = guess1.feedback.black;
+      const blacks2 = guess2.feedback.black;
+
+      console.log(`  🔍 Comparing: ${element} at pos ${position1} (${blacks1} blacks) vs pos ${position2} (${blacks2} blacks)`);
+
+      // If blacks decreased when element moved from pos1 to pos2
+      if (blacks1 > blacks2) {
+        // Element WAS contributing a black at position1, but NOT at position2
+        // Therefore: element IS at position1, NOT at position2
+        console.log(`  🎯 DEDUCED: ${element} IS at position ${position1}, NOT at position ${position2}`);
+
+        // Lock position1 to this element
+        this.possibleByPosition[position1].clear();
+        this.possibleByPosition[position1].add(element);
+
+        // Eliminate from position2 and all others
+        for (let pos = 0; pos < this.codeLength; pos++) {
+          if (pos !== position1) {
+            this.possibleByPosition[pos].delete(element);
+            if (pos === position2) {
+              console.log(`    ✗ Eliminated ${element} from position ${pos}`);
+            }
+          }
+        }
+      }
+      // If blacks increased when element moved from pos1 to pos2
+      else if (blacks2 > blacks1) {
+        // Element WAS NOT contributing a black at position1, but IS at position2
+        // Therefore: element is NOT at position1, IS at position2
+        console.log(`  🎯 DEDUCED: ${element} IS at position ${position2}, NOT at position ${position1}`);
+
+        // Lock position2 to this element
+        this.possibleByPosition[position2].clear();
+        this.possibleByPosition[position2].add(element);
+
+        // Eliminate from position1 and all others
+        for (let pos = 0; pos < this.codeLength; pos++) {
+          if (pos !== position2) {
+            this.possibleByPosition[pos].delete(element);
+            if (pos === position1) {
+              console.log(`    ✗ Eliminated ${element} from position ${pos}`);
+            }
+          }
+        }
+      }
+      // If blacks stayed the same
+      else if (blacks1 === blacks2) {
+        // Either both positions have it (impossible if only 1 in code)
+        // Or neither position has it
+        if (blacks1 === 0 && blacks2 === 0) {
+          // Element not at either position - can eliminate from both
+          console.log(`  ✗ ${element} NOT at positions ${position1} or ${position2}`);
+          this.possibleByPosition[position1].delete(element);
+          this.possibleByPosition[position2].delete(element);
+        }
+      }
+    }
+  }
+
+  /**
+   * Use known element counts to eliminate from positions
+   * Example: If we know there are 2 Santas, and we've found them at positions 0 and 2,
+   * then eliminate Santa from all other positions
+   */
+  eliminateByCountConstraints() {
+    // For each element with a known exact count
+    for (const [element, count] of Object.entries(this.elementExactCounts || {})) {
+      // Find positions where this element is confirmed (only 1 possibility and it's this element)
+      const confirmedPositions = [];
+
+      for (let pos = 0; pos < this.codeLength; pos++) {
+        const possible = this.possibleByPosition[pos];
+        if (possible.size === 1 && possible.has(element)) {
+          confirmedPositions.push(pos);
+        }
+      }
+
+      // If we've confirmed all instances of this element
+      if (confirmedPositions.length === count) {
+        console.log(`  ✓ Found all ${count} instances of ${element} at positions [${confirmedPositions.join(', ')}]`);
+
+        // Eliminate this element from all other positions
+        for (let pos = 0; pos < this.codeLength; pos++) {
+          if (!confirmedPositions.includes(pos)) {
+            if (this.possibleByPosition[pos].has(element)) {
+              this.possibleByPosition[pos].delete(element);
+              console.log(`  ✗ Eliminated ${element} from position ${pos} (all ${count} instances found)`);
+            }
+          }
+        }
+      }
+    }
   }
 
   /**
