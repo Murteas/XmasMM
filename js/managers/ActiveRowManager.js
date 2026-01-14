@@ -289,21 +289,24 @@ class ActiveRowManager {
   }
 
   updateSlotDisplay(elementData, element) {
-    const oldElement = elementData.displayElement;
-    const x = oldElement.x;
-    const y = oldElement.y;
-    
-    // Clean up old display
+    // Get position from slot (not displayElement, which might be null for empty slots)
+    const x = elementData.slot.x;
+    const y = elementData.slot.y;
+
+    // Clean up old display if it exists
+    if (elementData.displayElement) {
+      elementData.displayElement.destroy();
+    }
+
     if (elementData.fallbackText) {
       elementData.fallbackText.destroy();
       elementData.fallbackText = null;
     }
-    oldElement.destroy();
-    
+
     // Create new display
     const newDisplay = this.createElementDisplay(element, x, y);
     elementData.displayElement = newDisplay;
-    
+
     // Add to scrollable container (unified layout)
     this.scene.scrollableContainer.add(newDisplay);
   }
