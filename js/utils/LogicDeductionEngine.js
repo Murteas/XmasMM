@@ -396,16 +396,12 @@ class LogicDeductionEngine {
         // Therefore: element IS at position1, NOT at position2
         console.log(`  🎯 DEDUCED: ${element} IS likely at position ${position1}, NOT at position ${position2}`);
 
-        // Eliminate element from position2 and other positions (but keep at position1)
-        // We DON'T lock position1 yet - just eliminate from others
-        for (let pos = 0; pos < this.codeLength; pos++) {
-          if (pos !== position1) {
-            const hadElement = this.possibleByPosition[pos].has(element);
-            this.possibleByPosition[pos].delete(element);
-            if (hadElement && pos === position2) {
-              console.log(`    ✗ Eliminated ${element} from position ${pos}`);
-            }
-          }
+        // CRITICAL: Only eliminate from position2 (where we tried it and failed)
+        // Don't eliminate from OTHER positions - element might appear multiple times!
+        // Example: If Santa at pos 0 works but pos 1 doesn't, Santa might ALSO be at pos 3
+        if (this.possibleByPosition[position2].has(element)) {
+          this.possibleByPosition[position2].delete(element);
+          console.log(`    ✗ Eliminated ${element} from position ${position2} (tried there, didn't work)`);
         }
 
         // Mark element as confirmed (it's in the code somewhere)
@@ -417,16 +413,11 @@ class LogicDeductionEngine {
         // Therefore: element is NOT at position1, IS at position2
         console.log(`  🎯 DEDUCED: ${element} IS likely at position ${position2}, NOT at position ${position1}`);
 
-        // Eliminate element from position1 and other positions (but keep at position2)
-        // We DON'T lock position2 yet - just eliminate from others
-        for (let pos = 0; pos < this.codeLength; pos++) {
-          if (pos !== position2) {
-            const hadElement = this.possibleByPosition[pos].has(element);
-            this.possibleByPosition[pos].delete(element);
-            if (hadElement && pos === position1) {
-              console.log(`    ✗ Eliminated ${element} from position ${pos}`);
-            }
-          }
+        // CRITICAL: Only eliminate from position1 (where we tried it and failed)
+        // Don't eliminate from OTHER positions - element might appear multiple times!
+        if (this.possibleByPosition[position1].has(element)) {
+          this.possibleByPosition[position1].delete(element);
+          console.log(`    ✗ Eliminated ${element} from position ${position1} (tried there, didn't work)`);
         }
 
         // Mark element as confirmed (it's in the code somewhere)
@@ -504,12 +495,35 @@ class LogicDeductionEngine {
           this.confirmedElements.add(element);
         }
 
-        // Remove this element from all other positions (it's used here!)
-        for (let j = 0; j < this.codeLength; j++) {
-          if (j !== i && this.possibleByPosition[j].has(element)) {
-            this.possibleByPosition[j].delete(element);
-            console.log(`    ✗ Removed ${element} from position ${j} (locked at position ${i})`);
+        // CRITICAL: Only remove from other positions if we know exact count
+        // and have locked all instances. Otherwise, element might appear multiple times!
+        const knownCount = this.getConfirmedCount(element);
+
+        if (knownCount > 0) {
+          // Count how many positions are already locked to this element
+          let lockedCount = 0;
+          for (let pos = 0; pos < this.codeLength; pos++) {
+            if (this.possibleByPosition[pos].size === 1 &&
+                this.possibleByPosition[pos].has(element)) {
+              lockedCount++;
+            }
           }
+
+          // Only remove from other positions if we've found all instances
+          if (lockedCount >= knownCount) {
+            console.log(`  ✓ Found all ${knownCount} instances of ${element}, removing from other positions`);
+            for (let j = 0; j < this.codeLength; j++) {
+              if (j !== i && this.possibleByPosition[j].has(element)) {
+                this.possibleByPosition[j].delete(element);
+                console.log(`    ✗ Removed ${element} from position ${j} (all ${knownCount} instances found)`);
+              }
+            }
+          } else {
+            console.log(`  ⚠️ ${element} locked at position ${i}, but might appear ${knownCount} times (${lockedCount} found so far)`);
+          }
+        } else {
+          // Don't know exact count - don't remove from other positions
+          console.log(`  ⚠️ ${element} locked at position ${i}, but exact count unknown - keeping in other positions`);
         }
       }
     }
