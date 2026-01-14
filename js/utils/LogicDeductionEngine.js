@@ -160,21 +160,52 @@ class LogicDeductionEngine {
    * This is the sophisticated MasterMind logic that eliminates elements from specific positions
    */
   performPositionSpecificDeduction() {
-    // Need at least 2 guesses to compare
-    if (this.guessHistory.length < 2) {
+    // Need at least 1 guess for some deductions
+    if (this.guessHistory.length < 1) {
       return;
     }
 
     console.log('🔍 Performing position-specific deduction...');
 
+    // RULE 0: If a guess gets 0 blacks, eliminate each element from its guessed position
+    // Example: [A, B, C, D] → 0 blacks means A not at pos 0, B not at pos 1, etc.
+    this.eliminateFromZeroBlackGuesses();
+
     // RULE 1: Compare guesses where the same element appears at different positions
     // Example: [Santa, X, X, X] → 1 black, [X, Santa, X, X] → 0 black
     // Deduction: Santa is at position 0, NOT at position 1
-    this.compareElementPositions();
+    if (this.guessHistory.length >= 2) {
+      this.compareElementPositions();
+    }
 
     // RULE 2: If we know an element's exact count and have tried it at certain positions
     // we can eliminate it from positions where it couldn't contribute to feedback
     this.eliminateByCountConstraints();
+  }
+
+  /**
+   * Eliminate elements from positions where they were tried and got 0 blacks
+   * If a guess gets 0 blacks, every element at every position is wrong
+   */
+  eliminateFromZeroBlackGuesses() {
+    this.guessHistory.forEach((guessData, idx) => {
+      const { guess, feedback } = guessData;
+
+      // If this guess got 0 blacks, every element is in the wrong position
+      if (feedback.black === 0) {
+        console.log(`  🔍 Guess #${idx + 1} got 0 blacks, eliminating elements from their positions`);
+
+        for (let pos = 0; pos < this.codeLength; pos++) {
+          const element = guess[pos];
+          const hadElement = this.possibleByPosition[pos].has(element);
+
+          if (hadElement) {
+            this.possibleByPosition[pos].delete(element);
+            console.log(`    ✗ Eliminated ${element} from position ${pos} (tried there, got 0 blacks)`);
+          }
+        }
+      }
+    });
   }
 
   /**
