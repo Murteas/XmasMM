@@ -369,6 +369,12 @@ class LogicDeductionEngine {
     const position1 = pos1[0];
     const position2 = pos2[0];
 
+    // Skip if element is at the same position in both guesses
+    // (can't deduce anything from comparing to itself)
+    if (position1 === position2) {
+      return;
+    }
+
     // Count how many positions are different between the two guesses
     let differentPositions = 0;
     for (let i = 0; i < this.codeLength; i++) {
