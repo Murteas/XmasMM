@@ -31,6 +31,7 @@ class LogicDeductionEngine {
 
     this.eliminatedElements.clear();
     this.confirmedElements.clear();
+    this.elementExactCounts = {};  // Track exact counts of elements in code
 
     console.log('🧠 LogicDeductionEngine reset');
   }
@@ -54,8 +55,7 @@ class LogicDeductionEngine {
 
     const uniqueElements = Object.keys(elementCounts);
 
-    // Simple but powerful deduction: If an element appears N times and gets 0 feedback total,
-    // it's not in the code at all
+    // RULE 1: If an element appears N times and gets 0 feedback total, it's not in code
     uniqueElements.forEach(element => {
       const count = elementCounts[element];
 
@@ -71,15 +71,77 @@ class LogicDeductionEngine {
       }
     });
 
-    // If we got some feedback, we know some elements are in the code
-    // For now, we'll use a conservative approach and only eliminate when certain
-    // More sophisticated logic can be added later
+    // RULE 2: If we have multiple unique elements and can deduce which got no feedback
+    // Example: If we know 2 Presents + 1 Candy are in code, and guess has those + Tree
+    // with same total feedback, then Tree got 0 feedback
+    if (uniqueElements.length > 1) {
+      // For each element in the guess, check if we can deduce it got no feedback
+      uniqueElements.forEach(element => {
+        const countInGuess = elementCounts[element];
+
+        // Calculate expected feedback from OTHER elements we know are in code
+        let expectedFeedbackFromOthers = 0;
+        uniqueElements.forEach(otherElement => {
+          if (otherElement !== element && this.confirmedElements.has(otherElement)) {
+            // This other element is confirmed - it should contribute to feedback
+            expectedFeedbackFromOthers += Math.min(
+              elementCounts[otherElement],
+              this.getConfirmedCount(otherElement)
+            );
+          }
+        });
+
+        // If total feedback equals expected feedback from confirmed elements,
+        // then this element got 0 feedback and should be eliminated
+        if (expectedFeedbackFromOthers >= totalFeedback && !this.confirmedElements.has(element)) {
+          console.log(`  ✗ Eliminated: ${element} (total feedback ${totalFeedback} accounted for by confirmed elements)`);
+          this.eliminatedElements.add(element);
+
+          // Remove from ALL positions
+          for (let i = 0; i < this.codeLength; i++) {
+            this.possibleByPosition[i].delete(element);
+          }
+        }
+      });
+    }
+
+    // RULE 3: If an element appears N times and total feedback is less than N,
+    // we know it appears fewer than N times in the code
+    // For all-same guesses, we can track exact count
+    if (uniqueElements.length === 1 && totalFeedback > 0) {
+      const element = uniqueElements[0];
+      const exactCount = totalFeedback;
+      console.log(`  ✓ Confirmed: ${element} appears exactly ${exactCount} times in code`);
+      this.confirmedElements.add(element);
+      this.setElementCount(element, exactCount);
+    }
 
     // Advanced deductions
     this.performAdvancedDeductions();
 
     // Log current state
     this.logState();
+  }
+
+  /**
+   * Get the confirmed count of an element in the code
+   * @param {string} element - Element name
+   * @returns {number} Count of element in code (0 if unknown)
+   */
+  getConfirmedCount(element) {
+    return this.elementExactCounts ? (this.elementExactCounts[element] || 0) : 0;
+  }
+
+  /**
+   * Set the exact count of an element in the code
+   * @param {string} element - Element name
+   * @param {number} count - Exact count
+   */
+  setElementCount(element, count) {
+    if (!this.elementExactCounts) {
+      this.elementExactCounts = {};
+    }
+    this.elementExactCounts[element] = count;
   }
 
   /**

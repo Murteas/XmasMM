@@ -263,10 +263,8 @@ class ActiveRowManager {
   }
 
   createTapHint(x, y) {
-    return this.scene.add.text(x, y, 'TAP', {
-      font: '9px Arial',
-      fill: '#aaa'
-    }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().TOUCH_AREA + 2);
+    // No TAP hint needed - ghost overlays show possibilities
+    return null;
   }
 
   setupSlotInteraction(slot, slotIndex) {

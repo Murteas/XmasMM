@@ -107,7 +107,7 @@ class GhostOverlayManager {
       const iconSize = 20;
       const imageWidth = ghostImage.width || 50; // Fallback if width not available
       ghostImage.setScale(iconSize / imageWidth);
-      ghostImage.setAlpha(0.5);  // More visible for deduced element
+      ghostImage.setAlpha(0.7);  // More visible for deduced element
 
       container.add(ghostImage);
     } catch (error) {
@@ -155,7 +155,7 @@ class GhostOverlayManager {
         // Scale to tiny size
         const imageWidth = ghostImage.width || 50; // Fallback if width not available
         ghostImage.setScale(iconSize / imageWidth);
-        ghostImage.setAlpha(0.3);  // Very subtle
+        ghostImage.setAlpha(0.6);  // More visible (was 0.3)
 
         container.add(ghostImage);
         renderedCount++;
