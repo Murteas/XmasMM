@@ -2,7 +2,7 @@
 // Uses global LayoutConfig (loaded via ModuleLoader)
 
 class ActiveRowManager {
-  constructor(scene, historyManager) {
+  constructor(scene, historyManager, deductionEngine = null) {
     this.scene = scene;
     this.historyManager = historyManager;
     this.activeRowElements = null;
@@ -13,6 +13,15 @@ class ActiveRowManager {
     this.hasActiveRow = false;
     this.selectedSlotIndex = null; // Track which slot is selected for replacement
     this.elementBar = new ElementBar(scene, this);
+
+    // Logic hint system integration
+    this.deductionEngine = deductionEngine;
+    this.ghostOverlayManager = null;
+
+    if (this.deductionEngine) {
+      this.ghostOverlayManager = new GhostOverlayManager(scene, this, deductionEngine);
+      console.log('👻 GhostOverlayManager integrated with ActiveRowManager');
+    }
   }
 
   createActiveRow(prefillGuess = null) {
@@ -156,26 +165,35 @@ class ActiveRowManager {
     const { width } = this.scene.cameras.main;
     const codeLength = this.scene.codeLength;
     const isSmallScreen = width < 500;
-    
+
     this.activeRowElements = [];
-    
+
     const positioning = this.calculateSlotPositioning(codeLength, width, isSmallScreen);
-    
+
+    // Store slot positions for ghost overlay creation
+    const slotPositions = [];
+
     for (let i = 0; i < codeLength; i++) {
       const x = positioning.startX + i * positioning.elementSpacing;
-      
+
       const slot = this.createSlot(x, activeRowY, positioning.elementWidth);
       const displayElement = this.createSlotDisplay(x, activeRowY, i);
-      
+
       this.setupSlotInteraction(slot, i);
-      
+
       // Add slot elements to scrollable container
       this.scene.scrollableContainer.add(slot);
       if (displayElement) {
         this.scene.scrollableContainer.add(displayElement);
       }
-      
+
       this.activeRowElements.push({ slot, displayElement });
+      slotPositions.push({ x, y: activeRowY });
+    }
+
+    // Create ghost overlays after all slots are created
+    if (this.ghostOverlayManager) {
+      this.ghostOverlayManager.createGhostOverlays(codeLength, slotPositions);
     }
   }
 
@@ -352,7 +370,12 @@ class ActiveRowManager {
 
   removeActiveRow() {
     if (!this.hasActiveRow) return;
-    
+
+    // Clean up ghost overlays first
+    if (this.ghostOverlayManager) {
+      this.ghostOverlayManager.destroy();
+    }
+
     // Clean up active row elements
     if (this.activeRowElements) {
       this.activeRowElements.forEach(elementData => {
@@ -362,33 +385,33 @@ class ActiveRowManager {
       });
       this.activeRowElements = null;
     }
-    
+
     // Clean up backgrounds
     if (this.activeRowBackground) {
       this.activeRowBackground.destroy();
       this.activeRowBackground = null;
     }
-    
+
     if (this.activeRowGlowEffect) {
       this.activeRowGlowEffect.destroy();
       this.activeRowGlowEffect = null;
     }
-    
+
     // Clean up submit button
     if (this.activeRowSubmitBtn) {
       this.activeRowSubmitBtn.destroy();
       this.activeRowSubmitBtn = null;
     }
-    
+
     // Clean up element bar
     if (this.elementBar) {
       this.elementBar.destroy();
     }
-    
+
     // Reset state
     this.hasActiveRow = false;
     this.activeRowGuess = [];
-    
+
     // Recreate element bar for next use
     this.elementBar = new ElementBar(this.scene, this);
   }
@@ -447,7 +470,7 @@ class ActiveRowManager {
   handleElementSelection(element) {
     // Smart selection logic - selected slot takes priority over auto-fill
     const emptySlotIndex = this.activeRowGuess.findIndex(guess => guess === null);
-    
+
     if (this.selectedSlotIndex !== null) {
       // Replace explicitly selected slot (user tapped a slot first)
       this.selectElement(this.selectedSlotIndex, element);
@@ -460,9 +483,14 @@ class ActiveRowManager {
       // All slots full, no slot selected - show feedback
       this.showSlotSelectionHint();
     }
-    
+
     // Update element bar visual state
     this.elementBar.updateUsedElements(this.activeRowGuess);
+
+    // Update ghost overlays after element selection
+    if (this.ghostOverlayManager) {
+      this.ghostOverlayManager.updateAllGhosts();
+    }
   }
 
   showSlotSelectionHint() {

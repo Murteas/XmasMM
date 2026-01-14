@@ -1,14 +1,14 @@
 // HistoryManager.js - Core coordination for history management (refactored)
 
 class HistoryManager {
-  constructor(scene) {
+  constructor(scene, deductionEngine = null) {
     this.scene = scene;
     this.guessHistory = [];
     this.feedbackHistory = [];
-    
+
     // Initialize specialized managers (SLIDING WINDOW: No scroller needed)
     this.renderer = new HistoryRenderer(scene, this);
-    this.activeRowManager = new ActiveRowManager(scene, this);
+    this.activeRowManager = new ActiveRowManager(scene, this, deductionEngine);
   }
 
   // REMOVED: Scroll-related methods no longer needed with sliding window approach

@@ -192,44 +192,56 @@ class ScoreManager {
     }
   }
 
-  useSantasHint(secretCode, currentGuess, hintBtn, hintText) {
+  useSantasHint(secretCode, currentGuess, hintBtn, hintText, deductionEngine = null) {
     if (this.hintUsed) return null;
-    
+
     this.hintUsed = true;
-    
+
+    // Get deduced positions from logic hint system (if available)
+    const deducedPositions = deductionEngine ? deductionEngine.getDeducedPositions() : [];
+
     // Strategic hint selection: prioritize positions that are wrong or empty
+    // BUT skip positions that have already been deduced by logic
     const wrongPositions = [];
     const emptyPositions = [];
-    
+
     for (let i = 0; i < secretCode.length; i++) {
+      // Skip positions that are already deduced (only 1 possibility left)
+      if (deducedPositions.includes(i)) {
+        continue;
+      }
+
       if (!currentGuess[i] || currentGuess[i] === null) {
         emptyPositions.push(i);
       } else if (currentGuess[i] !== secretCode[i]) {
         wrongPositions.push(i);
       }
     }
-    
-    // Hint strategy:
-    // 1. First priority: Fix wrong guesses
-    // 2. Second priority: Fill empty slots
-    // 3. Last resort: Random position (shouldn't happen in normal gameplay)
+
+    // Hint strategy (now smarter - skips deduced positions):
+    // 1. First priority: Fix wrong guesses (non-deduced)
+    // 2. Second priority: Fill empty slots (non-deduced)
+    // 3. Last resort: Random position (if all are deduced)
     let targetPosition;
     if (wrongPositions.length > 0) {
-      // Pick random wrong position to fix
+      // Pick random wrong position to fix (excluding deduced)
       targetPosition = wrongPositions[Math.floor(Math.random() * wrongPositions.length)];
+      console.log(`🎅 Smart Hint: Revealing non-deduced wrong position ${targetPosition}`);
     } else if (emptyPositions.length > 0) {
-      // Pick random empty position to fill
+      // Pick random empty position to fill (excluding deduced)
       targetPosition = emptyPositions[Math.floor(Math.random() * emptyPositions.length)];
+      console.log(`🎅 Smart Hint: Revealing non-deduced empty position ${targetPosition}`);
     } else {
-      // Fallback: random position (all correct already?)
+      // Fallback: all positions are either correct or deduced - pick random
       targetPosition = Math.floor(Math.random() * secretCode.length);
+      console.log(`🎅 Smart Hint: All positions deduced/correct - revealing position ${targetPosition}`);
     }
-    
+
     const revealedElement = secretCode[targetPosition];
-    
+
     // Update current guess with the hint
     currentGuess[targetPosition] = revealedElement;
-    
+
     // Update UI to show hint used
     if (hintBtn && hintBtn.disableButton) {
       hintBtn.disableButton();
@@ -238,7 +250,7 @@ class ScoreManager {
       hintBtn.setStyle({ fill: '#888', backgroundColor: '#444' });
     }
     if (hintText) hintText.setText('Hint: Used').setStyle({ fill: '#888' });
-    
+
     return {
       position: targetPosition,
       element: revealedElement

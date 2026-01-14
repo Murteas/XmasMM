@@ -121,25 +121,30 @@ class GameScene extends Phaser.Scene {
     this.gameStateManager = new GameStateManager(this);
     this.scoreManager = new ScoreManager(this);
     this.safeAreaManager = new SafeAreaManager(this);
-    
+
     // Initialize audio manager for Christmas sound effects
     this.audioManager = new AudioManager(this);
     this.audioManager.initializeSounds();
-    
+
     // SIMPLIFIED: Always use standard HistoryManager with Phaser containers
     // Create simple three-zone layout using pure Phaser containers
     this.createSimplePhaserLayout();
-    
-    this.historyManager = new HistoryManager(this);
-    this.gameInputHandler = new GameInputHandler(this);
-    
+
     // Initialize game state
     this.gameStateManager.initializeGameState();
-    
+
     // Set up elements reference for compatibility
     this.elements = this.gameStateManager.getGameElements();
     this.codeLength = this.gameStateManager.getGameStats().codeLength;
     this.secretCode = this.gameStateManager.getSecretCode();
+
+    // Initialize logic hint system with deduction engine
+    this.deductionEngine = new LogicDeductionEngine(this.codeLength, this.elements);
+    console.log('🧠 Logic hint system initialized');
+
+    // Create HistoryManager with deduction engine (passes to ActiveRowManager)
+    this.historyManager = new HistoryManager(this, this.deductionEngine);
+    this.gameInputHandler = new GameInputHandler(this);
   }
 
   createSimplePhaserLayout() {

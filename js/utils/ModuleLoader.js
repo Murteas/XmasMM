@@ -37,6 +37,7 @@ class ModuleLoader {
       'js/utils/TestConfig.js',
       'js/config/ThemeConfig.js',       // Theme system - must load before GameUtils
       'js/utils/ThemeManager.js',       // Theme management utilities
+      'js/utils/LogicDeductionEngine.js', // Logic hint system - deduction algorithm
       'js/utils/GameUtils.js',
       'js/utils/SafeAreaManager.js',
       'js/utils/BackgroundManager.js',
@@ -50,6 +51,7 @@ class ModuleLoader {
       'js/managers/ScoreManager.js',
       'js/managers/HistoryRenderer.js',
       // REMOVED: 'js/managers/HistoryScroller.js' - no longer needed with sliding window
+      'js/managers/GhostOverlayManager.js',  // Logic hint system - ghost visualization
       'js/managers/ElementBar.js'
     ];
     

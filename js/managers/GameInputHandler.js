@@ -22,10 +22,15 @@ class GameInputHandler {
     
     // Process the guess through game state manager
     const result = this.scene.gameStateManager.processGuess(currentGuess);
-    
+
     // Add to history
     this.scene.historyManager.addGuess(currentGuess, result.feedback);
-    
+
+    // Analyze guess for logic hints (after feedback is calculated)
+    if (this.scene.deductionEngine) {
+      this.scene.deductionEngine.analyzeGuess(currentGuess, result.feedback);
+    }
+
     // Update UI progress display
     this.scene.uiLayoutManager.updateProgressDisplay();
     
@@ -104,10 +109,11 @@ class GameInputHandler {
     }
     
     const hintResult = this.scene.scoreManager.useSantasHint(
-      secretCode, 
-      currentGuess, 
-      uiElements.hintBtn, 
-      uiElements.hintText
+      secretCode,
+      currentGuess,
+      uiElements.hintBtn,
+      uiElements.hintText,
+      this.scene.deductionEngine  // Pass deduction engine for smart hints
     );
     
     if (hintResult) {
