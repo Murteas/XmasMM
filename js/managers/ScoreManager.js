@@ -192,7 +192,7 @@ class ScoreManager {
     }
   }
 
-  useSantasHint(secretCode, currentGuess, hintBtn, hintText, deductionEngine = null) {
+  useHint(secretCode, currentGuess, hintBtn, hintText, deductionEngine = null) {
     if (this.hintUsed) return null;
 
     this.hintUsed = true;

@@ -69,7 +69,7 @@ class GameInputHandler {
     // Calculate and update score
     this.updateScore();
     
-    // Check if Santa's Hint should be enabled
+    // Check if Hint should be enabled
     const uiElements = this.scene.uiLayoutManager.getUIElements();
     this.scene.scoreManager.checkHintAvailability(uiElements.hintBtn, uiElements.hintText);
     
@@ -84,12 +84,12 @@ class GameInputHandler {
     // Update UI display
     this.scene.uiLayoutManager.updateProgressDisplay();
     
-    // Check if Santa's Hint should be enabled
+    // Check if Hint should be enabled
     const uiElements = this.scene.uiLayoutManager.getUIElements();
     this.scene.scoreManager.checkHintAvailability(uiElements.hintBtn, uiElements.hintText);
   }
 
-  processSantasHint() {
+  processHint() {
     // Get current guess from active row - allow empty/partial guesses for hints
     let currentGuess = this.scene.historyManager.getActiveRowGuess();
     
@@ -104,20 +104,20 @@ class GameInputHandler {
     
     // Check if hint is available first and show feedback if not
     if (this.scene.scoreManager.isHintUsed()) {
-      this.showHintUnavailableMessage("🎅 You've already used your hint this round!");
+      this.showHintUnavailableMessage("💡 You've already used your hint this round!");
       return false;
     }
     
-    const hintResult = this.scene.scoreManager.useSantasHint(
+    const hintResult = this.scene.scoreManager.useHint(
       secretCode,
       currentGuess,
       uiElements.hintBtn,
       uiElements.hintText,
       this.scene.deductionEngine  // Pass deduction engine for smart hints
     );
-    
+
     if (hintResult) {
-      // Play Santa chuckle sound for hint usage
+      // Play hint sound
       if (this.scene.audioManager) {
         this.scene.audioManager.playHintUsed();
       }

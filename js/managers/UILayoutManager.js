@@ -96,7 +96,7 @@ class UILayoutManager {
       }
     ).setDepth(GameUtils.getDepthLayers().UI);
     
-    // Santa's Hint button positioned below header (penalty inline; green primary variant)
+    // Hint button positioned below header (penalty inline; green primary variant)
     this.hintBtn = ButtonFactory.createButton(
       this.scene,
       width / 2,
@@ -104,10 +104,10 @@ class UILayoutManager {
       `Hint (-${this.scene.scoreManager ? this.scene.scoreManager.scoringConfig.hintPenalty : 220})`,
       'primary',
       {
-        icon: '🎅',
+        icon: '💡',
         gradient: true,
         border: true,
-        onClick: () => this.scene.useSantasHint()
+        onClick: () => this.scene.useHint()
       }
     );
     this.hintBtn.setDepth(GameUtils.getDepthLayers().UI);
@@ -142,7 +142,7 @@ class UILayoutManager {
       fill: '#fff'
     }).setOrigin(1, 0).setDepth(GameUtils.getDepthLayers().UI).setVisible(false);
     
-    // Santa's Hint button (using fixed ButtonFactory icon positioning)
+    // Hint button (using fixed ButtonFactory icon positioning)
     this.hintBtn = ButtonFactory.createButton(
       this.scene,
       width - 90,  // Positioned to fit properly
@@ -150,10 +150,10 @@ class UILayoutManager {
       `Hint (-${this.scene.scoreManager ? this.scene.scoreManager.scoringConfig.hintPenalty : 220})`,  // Text without emoji
       'primary',
       {
-        icon: '🎅',  // Santa as separate icon
+        icon: '💡',  // Light bulb icon (theme-neutral)
         paddingX: 12,
         paddingY: 8,
-        onClick: () => this.scene.useSantasHint()
+        onClick: () => this.scene.useHint()
       }
     );
     this.hintBtn.setDepth(GameUtils.getDepthLayers().UI);

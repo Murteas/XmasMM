@@ -408,8 +408,8 @@ class GameScene extends Phaser.Scene {
     this.uiLayoutManager.showIncompleteGuessError();
   }
   
-  useSantasHint() {
-    this.gameInputHandler.processSantasHint();
+  useHint() {
+    this.gameInputHandler.processHint();
   }
   
   // Helper method to get appropriate image key based on device pixel ratio
