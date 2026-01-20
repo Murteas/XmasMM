@@ -315,6 +315,7 @@ class RoundOver extends Phaser.Scene {
         }
       }
     );
+    playAgainBtn.setScale(0.75);
 
   const mainMenuBtn = ButtonFactory.createButton(
       this,
@@ -329,6 +330,7 @@ class RoundOver extends Phaser.Scene {
         onClick: () => this.scene.start('MainMenu')
       }
     );
+    mainMenuBtn.setScale(0.75);
 
   const shareBtn = ButtonFactory.createButton(
       this,
@@ -343,6 +345,7 @@ class RoundOver extends Phaser.Scene {
         onClick: () => this.shareScore()
       }
     );
+    shareBtn.setScale(0.75);
 
     this.footerContainer.add([playAgainBtn, mainMenuBtn, shareBtn]);
   }
