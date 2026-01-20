@@ -244,6 +244,13 @@ class LogicDeductionEngine {
       this.compareElementPositions();
     }
 
+    // RULE 1.5: Detect element swaps (2 elements exchange positions)
+    // Example: [Santa, Present, X, X] → 2 blacks, [Present, Santa, X, X] → 0 blacks
+    // Strong deduction: Both were correct in original positions!
+    if (this.guessHistory.length >= 2) {
+      this.detectElementSwap();
+    }
+
     // RULE 2: If we know an element's exact count and have tried it at certain positions
     // we can eliminate it from positions where it couldn't contribute to feedback
     this.eliminateByCountConstraints();
@@ -432,6 +439,79 @@ class LogicDeductionEngine {
           console.log(`  ✗ ${element} NOT at positions ${position1} or ${position2}`);
           this.possibleByPosition[position1].delete(element);
           this.possibleByPosition[position2].delete(element);
+        }
+      }
+    }
+  }
+
+  /**
+   * Detect element swaps: when 2 elements swap positions and feedback changes dramatically
+   * This is a strong signal that can lock positions immediately
+   *
+   * Example: Turn 2: [Santa, Present, Star, Tree] → 2 blacks
+   *          Turn 3: [Present, Santa, Star, Tree] → 0 blacks
+   * Conclusion: Santa IS at pos 0, Present IS at pos 1 (both were correct in turn 2)
+   */
+  detectElementSwap() {
+    const guesses = this.guessHistory;
+    if (guesses.length < 2) return;
+
+    // Compare each pair of consecutive guesses
+    for (let i = 0; i < guesses.length - 1; i++) {
+      const guess1 = guesses[i];
+      const guess2 = guesses[i + 1];
+
+      // Find positions where elements differ
+      const swappedPositions = [];
+      for (let pos = 0; pos < this.codeLength; pos++) {
+        if (guess1.guess[pos] !== guess2.guess[pos]) {
+          swappedPositions.push(pos);
+        }
+      }
+
+      // If exactly 2 positions swapped, check if it's a clean swap
+      if (swappedPositions.length === 2) {
+        const pos1 = swappedPositions[0];
+        const pos2 = swappedPositions[1];
+        const elem1_in_guess1 = guess1.guess[pos1];
+        const elem2_in_guess1 = guess1.guess[pos2];
+        const elem1_in_guess2 = guess2.guess[pos1];
+        const elem2_in_guess2 = guess2.guess[pos2];
+
+        // Check if elements swapped (elem1 and elem2 exchanged positions)
+        if (elem1_in_guess1 === elem2_in_guess2 && elem2_in_guess1 === elem1_in_guess2) {
+          const blacks1 = guess1.feedback.black;
+          const blacks2 = guess2.feedback.black;
+
+          console.log(`  🔄 SWAP DETECTED: ${elem1_in_guess1} ↔ ${elem2_in_guess1} at positions ${pos1} & ${pos2}`);
+          console.log(`    Guess ${i + 1}: ${blacks1} blacks | Guess ${i + 2}: ${blacks2} blacks`);
+
+          // If blacks dropped to 0 after swap, original positions were BOTH correct
+          if (blacks1 > 0 && blacks2 === 0) {
+            console.log(`  🎯 SWAP DEDUCTION: Blacks dropped to 0 → BOTH positions were correct in guess ${i + 1}!`);
+
+            // Lock both elements at their original positions (from guess1)
+            this.possibleByPosition[pos1] = new Set([elem1_in_guess1]);
+            this.possibleByPosition[pos2] = new Set([elem2_in_guess1]);
+            this.confirmedElements.add(elem1_in_guess1);
+            this.confirmedElements.add(elem2_in_guess1);
+
+            console.log(`  🔒 LOCKED: Position ${pos1} = ${elem1_in_guess1}`);
+            console.log(`  🔒 LOCKED: Position ${pos2} = ${elem2_in_guess1}`);
+          }
+          // If blacks increased after swap, swapped positions are BOTH correct
+          else if (blacks2 > blacks1) {
+            console.log(`  🎯 SWAP DEDUCTION: Blacks increased → BOTH positions are correct in guess ${i + 2}!`);
+
+            // Lock both elements at their swapped positions (from guess2)
+            this.possibleByPosition[pos1] = new Set([elem1_in_guess2]);
+            this.possibleByPosition[pos2] = new Set([elem2_in_guess2]);
+            this.confirmedElements.add(elem1_in_guess2);
+            this.confirmedElements.add(elem2_in_guess2);
+
+            console.log(`  🔒 LOCKED: Position ${pos1} = ${elem1_in_guess2}`);
+            console.log(`  🔒 LOCKED: Position ${pos2} = ${elem2_in_guess2}`);
+          }
         }
       }
     }
