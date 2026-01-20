@@ -607,7 +607,11 @@ class LogicDeductionEngine {
           if (lockedCount >= knownCount) {
             console.log(`  ✓ Found all ${knownCount} instances of ${element}, removing from other positions`);
             for (let j = 0; j < this.codeLength; j++) {
-              if (j !== i && this.possibleByPosition[j].has(element)) {
+              // Skip this position AND any position that's locked to this element
+              const isLocked = (this.possibleByPosition[j].size === 1 &&
+                               this.possibleByPosition[j].has(element));
+
+              if (j !== i && !isLocked && this.possibleByPosition[j].has(element)) {
                 this.possibleByPosition[j].delete(element);
                 console.log(`    ✗ Removed ${element} from position ${j} (all ${knownCount} instances found)`);
               }
