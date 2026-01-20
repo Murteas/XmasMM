@@ -96,6 +96,9 @@
             const testDiv = document.createElement('div');
             testDiv.className = 'test-case';
 
+            console.log(`\n🧪 RUNNING TEST: ${testName}`);
+            console.log(`   Secret Code: [${code.join(', ')}]`);
+
             let html = `<h2>🎯 ${testName}</h2>`;
             html += `<div class="code">Secret Code: [${code.join(', ')}]</div><br>`;
 
@@ -138,6 +141,9 @@
                         if (JSON.stringify(actualEliminated) !== JSON.stringify(expectedEliminated)) {
                             checkPass = false;
                             html += `<div class="deduction" style="color: #ff0000;">❌ Expected eliminated: ${expectedEliminated.join(', ')}</div>`;
+                            console.log(`  ❌ Turn ${idx + 1} checkpoint failed:`);
+                            console.log(`     Expected eliminated: [${expectedEliminated.join(', ')}]`);
+                            console.log(`     Actual eliminated:   [${actualEliminated.join(', ')}]`);
                         }
                     }
 
@@ -148,6 +154,9 @@
                         if (JSON.stringify(actualDeduced) !== JSON.stringify(expectedDeduced)) {
                             checkPass = false;
                             html += `<div class="deduction" style="color: #ff0000;">❌ Expected deduced positions: ${expectedDeduced.join(', ')}</div>`;
+                            console.log(`  ❌ Turn ${idx + 1} checkpoint failed:`);
+                            console.log(`     Expected deduced positions: [${expectedDeduced.join(', ')}]`);
+                            console.log(`     Actual deduced positions:   [${actualDeduced.join(', ')}]`);
                         }
                     }
 
@@ -180,6 +189,22 @@
             html += `</div>`;
 
             html += `<div><strong>Test Result:</strong> ${allPass ? '✅ PASS' : '❌ FAIL'}</div>`;
+
+            // Console logging for debugging
+            if (!allPass) {
+                console.log(`\n❌ TEST FAILED: ${testName}`);
+                console.log(`Secret Code: [${code.join(', ')}]`);
+                console.log(`Final State:`);
+                for (let i = 0; i < code.length; i++) {
+                    const possible = engine.getPossibleElements(i);
+                    const expected = code[i];
+                    const isCorrect = possible.length === 1 && possible[0] === expected;
+                    console.log(`  Pos ${i}: [${possible.join(', ')}] ${isCorrect ? '✓' : '✗ Expected: ' + expected}`);
+                }
+                console.log('');
+            } else {
+                console.log(`✅ TEST PASSED: ${testName}`);
+            }
 
             testDiv.className = allPass ? 'test-case pass' : 'test-case fail';
             testDiv.innerHTML = html;
@@ -347,6 +372,15 @@
         )) passCount++;
 
         // Summary
+        console.log(`\n========================================`);
+        console.log(`📊 TEST SUMMARY`);
+        console.log(`========================================`);
+        console.log(`Total Tests: ${totalTests}`);
+        console.log(`Passed: ${passCount}`);
+        console.log(`Failed: ${totalTests - passCount}`);
+        console.log(`Pass Rate: ${Math.round(passCount / totalTests * 100)}%`);
+        console.log(`========================================\n`);
+
         const summaryDiv = document.createElement('div');
         summaryDiv.className = 'test-case';
         summaryDiv.innerHTML = `
