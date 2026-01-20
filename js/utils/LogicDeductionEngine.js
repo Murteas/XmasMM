@@ -55,6 +55,20 @@ class LogicDeductionEngine {
       feedback: {black, white}
     });
 
+    // RULE 0: Winning guess! All positions correct
+    if (black === this.codeLength) {
+      console.log(`  🎉 WINNING GUESS! All ${this.codeLength} positions correct - locking solution`);
+      for (let i = 0; i < this.codeLength; i++) {
+        this.possibleByPosition[i] = new Set([guess[i]]);
+        this.confirmedElements.add(guess[i]);
+        console.log(`  🔒 LOCKED: Position ${i} = ${guess[i]}`);
+      }
+      // Perform advanced deductions to clean up state
+      this.performPositionSpecificDeduction();
+      this.performAdvancedDeductions();
+      return;  // Done! All positions known
+    }
+
     // Count occurrences of each element in the guess
     const elementCounts = {};
     guess.forEach(element => {
