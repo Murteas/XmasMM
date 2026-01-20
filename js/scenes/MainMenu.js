@@ -75,17 +75,38 @@ class MainMenu extends Phaser.Scene {
   }
 
   createButtons(width, height) {
-    // Start Game button (primary variant)
-    this.startBtn = ButtonFactory.createButton(this, width / 2, height * 0.35, 'Start Game', 'primary', {
+    // Easy Mode button (4 elements)
+    this.easyBtn = ButtonFactory.createButton(this, width / 2, height * 0.35, 'Easy 🎄', 'primary', {
       icon: '🎄',
       gradient: true,
       border: true,
-      onClick: () => this.scene.start('DifficultySelection')
+      onClick: () => this.startGame(4, 10)
     });
-    this.startBtn.setDepth(GameUtils.getDepthLayers().UI);
+    this.easyBtn.setDepth(GameUtils.getDepthLayers().UI);
 
-    // How to Play button (accent variant)
-    this.helpBtn = ButtonFactory.createButton(this, width / 2, height * 0.48, 'How to Play', 'primary', {
+    // Add description text for Easy
+    this.add.text(width / 2, height * 0.35 + 40, '4 Christmas Elements', {
+      font: '14px Arial',
+      fill: '#ccc'
+    }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
+
+    // Standard Mode button (5 elements)
+    this.standardBtn = ButtonFactory.createButton(this, width / 2, height * 0.48, 'Standard 🎅', 'primary', {
+      icon: '🎅',
+      gradient: true,
+      border: true,
+      onClick: () => this.startGame(5, 10)
+    });
+    this.standardBtn.setDepth(GameUtils.getDepthLayers().UI);
+
+    // Add description text for Standard
+    this.add.text(width / 2, height * 0.48 + 40, '5 Christmas Elements', {
+      font: '14px Arial',
+      fill: '#ccc'
+    }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
+
+    // How to Play button (moved down)
+    this.helpBtn = ButtonFactory.createButton(this, width / 2, height * 0.62, 'How to Play', 'primary', {
       icon: '📘',
       gradient: true,
       border: true,
@@ -93,12 +114,12 @@ class MainMenu extends Phaser.Scene {
     });
     this.helpBtn.setDepth(GameUtils.getDepthLayers().UI);
 
-    // Theme Switcher button (enhanced for full theme switching!)
+    // Theme Switcher button
     const currentThemeId = ThemeConfig.currentTheme;
     const currentThemeInfo = ThemeConfig.getThemeInfo(currentThemeId);
     const themeLabel = `Theme: ${currentThemeInfo.name}`;
 
-    this.themeBtn = ButtonFactory.createButton(this, width / 2, height * 0.58, themeLabel, 'accent', {
+    this.themeBtn = ButtonFactory.createButton(this, width / 2, height * 0.72, themeLabel, 'accent', {
       icon: '🎨',
       gradient: true,
       border: true,
@@ -106,16 +127,16 @@ class MainMenu extends Phaser.Scene {
     });
     this.themeBtn.setDepth(GameUtils.getDepthLayers().UI);
 
-    // SFX Toggle (danger variant for visual differentiation)
+    // SFX Toggle
     const sfxLabel = 'Audio: ' + (this.registry.get('sfxOn') ? 'ON' : 'OFF');
-    this.sfxBtn = ButtonFactory.createButton(this, width / 2, height * 0.68, sfxLabel, 'danger', {
+    this.sfxBtn = ButtonFactory.createButton(this, width / 2, height * 0.82, sfxLabel, 'danger', {
       icon: '🔊',
       onClick: () => {
         const current = this.registry.get('sfxOn');
         this.registry.set('sfxOn', !current);
         const newLabel = 'Audio: ' + (this.registry.get('sfxOn') ? 'ON' : 'OFF');
         this.sfxBtn.setLabel(newLabel);
-        
+
         // Update audio manager if available
         if (this.audioManager) {
           this.audioManager.updateEnabledState();
@@ -123,6 +144,13 @@ class MainMenu extends Phaser.Scene {
       }
     });
     this.sfxBtn.setDepth(GameUtils.getDepthLayers().UI);
+  }
+
+  startGame(codeLength, maxGuesses) {
+    // Store difficulty settings and start game
+    this.registry.set('codeLength', codeLength);
+    this.registry.set('maxGuesses', maxGuesses);
+    this.scene.start('Game');
   }
 
   initializeSettings() {
