@@ -37,7 +37,8 @@ class ModuleLoader {
       'js/utils/TestConfig.js',
       'js/config/ThemeConfig.js',       // Theme system - must load before GameUtils
       'js/utils/ThemeManager.js',       // Theme management utilities
-      'js/utils/LogicDeductionEngine.js', // Logic hint system - deduction algorithm
+      'js/utils/LogicDeductionEngine.js', // Logic hint system - heuristic deduction (deprecated)
+      'js/utils/ConstraintSolver.js',   // Logic hint system - exhaustive constraint solver (100% accurate)
       'js/utils/GameUtils.js',
       'js/utils/SafeAreaManager.js',
       'js/utils/BackgroundManager.js',

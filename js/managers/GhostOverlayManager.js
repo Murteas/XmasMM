@@ -6,16 +6,16 @@ class GhostOverlayManager {
    * Create a new ghost overlay manager
    * @param {Phaser.Scene} scene - The game scene
    * @param {ActiveRowManager} activeRowManager - Reference to active row manager
-   * @param {LogicDeductionEngine} deductionEngine - Reference to deduction engine
+   * @param {ConstraintSolver} constraintSolver - Reference to constraint solver (100% accurate)
    */
-  constructor(scene, activeRowManager, deductionEngine) {
+  constructor(scene, activeRowManager, constraintSolver) {
     this.scene = scene;
     this.activeRowManager = activeRowManager;
-    this.deductionEngine = deductionEngine;
+    this.constraintSolver = constraintSolver;
     this.ghostContainers = [];  // One container per slot
     this.isActive = false;
 
-    console.log('👻 GhostOverlayManager initialized');
+    console.log('👻 GhostOverlayManager initialized (using ConstraintSolver)');
   }
 
   /**
@@ -66,9 +66,16 @@ class GhostOverlayManager {
     // Clear existing ghosts from this slot
     container.removeAll(true);
 
-    // Get possible elements from deduction engine
-    const possibleElements = this.deductionEngine.getPossibleElements(slotIndex);
-    console.log(`👻 Slot ${slotIndex}: ${possibleElements.length} possible elements`);
+    // Get guess and feedback history from scene's history manager
+    const guessHistory = this.scene.historyManager.getGuessHistory();
+    const feedbackHistory = this.scene.historyManager.getFeedbackHistory();
+
+    // Get valid choices for all positions from ConstraintSolver
+    const validChoices = this.constraintSolver.getValidChoices(guessHistory, feedbackHistory);
+
+    // Extract valid elements for this specific slot
+    const possibleElements = validChoices[slotIndex] || [];
+    console.log(`👻 Slot ${slotIndex}: ${possibleElements.length} possible elements [${possibleElements.join(', ')}]`);
 
     // Check if slot is filled by user
     const currentGuess = this.activeRowManager.activeRowGuess || [];

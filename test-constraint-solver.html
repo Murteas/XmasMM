@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>ConstraintSolver Correctness Tests</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #00ff00;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-case {
+            border: 2px solid #00ff00;
+            padding: 15px;
+            margin: 15px 0;
+            background: #0f0f0f;
+        }
+        .test-case.pass {
+            border-color: #00ff00;
+        }
+        .test-case.fail {
+            border-color: #ff0000;
+            color: #ffaaaa;
+        }
+        h1 { color: #00ffff; }
+        h2 { color: #ffff00; margin-top: 0; }
+        .code { background: #1a1a1a; padding: 5px; margin: 5px 0; }
+        .deduction { margin-left: 20px; font-size: 14px; }
+        .summary { background: #1a1a1a; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>🧩 ConstraintSolver Correctness Tests</h1>
+    <p>Validates that ConstraintSolver produces 100% correct results</p>
+
+    <div id="results"></div>
+
+    <script src="js/utils/ConstraintSolver.js"></script>
+    <script>
+        const results = document.getElementById('results');
+
+        function calculateFeedback(guess, code) {
+            let black = 0;
+            let white = 0;
+
+            const guessCopy = [...guess];
+            const codeCopy = [...code];
+
+            for (let i = guessCopy.length - 1; i >= 0; i--) {
+                if (guessCopy[i] === codeCopy[i]) {
+                    black++;
+                    guessCopy.splice(i, 1);
+                    codeCopy.splice(i, 1);
+                }
+            }
+
+            for (let i = 0; i < guessCopy.length; i++) {
+                const index = codeCopy.indexOf(guessCopy[i]);
+                if (index !== -1) {
+                    white++;
+                    codeCopy.splice(index, 1);
+                }
+            }
+
+            return { black, white };
+        }
+
+        function runTest(testName, secretCode, guesses, expectedFinalState) {
+            console.log(`\n🧪 RUNNING TEST: ${testName}`);
+            console.log(`   Secret Code: [${secretCode.join(', ')}]`);
+
+            const testDiv = document.createElement('div');
+            let html = `<h2>🧩 ${testName}</h2>`;
+            html += `<div class="code">Secret Code: [${secretCode.join(', ')}]</div><br>`;
+
+            const allElements = ['Santa', 'Present', 'Candy Cane', 'Star', 'Tree', 'Snowflake'];
+            const solver = new ConstraintSolver(allElements, secretCode.length);
+
+            const guessHistory = [];
+            const feedbackHistory = [];
+            let allPass = true;
+
+            guesses.forEach((guess, idx) => {
+                const feedback = calculateFeedback(guess, secretCode);
+                guessHistory.push(guess);
+                feedbackHistory.push(feedback);
+
+                html += `<div>Turn ${idx + 1}: [${guess.join(', ')}] → ${feedback.black}⚫ ${feedback.white}⚪</div>`;
+
+                // Get valid choices after this guess
+                const validChoices = solver.getValidChoices(guessHistory, feedbackHistory);
+                const remainingCount = solver.getPossibleCodesCount(guessHistory, feedbackHistory);
+
+                html += `<div class="deduction">   ${remainingCount} possible codes remaining</div>`;
+            });
+
+            // Final validation: Check that secret code elements are in valid choices
+            const finalValidChoices = solver.getValidChoices(guessHistory, feedbackHistory);
+
+            html += '<div class="summary"><h3>Final Valid Choices:</h3>';
+            for (let i = 0; i < secretCode.length; i++) {
+                const validElements = finalValidChoices[i];
+                const expected = secretCode[i];
+                const isValid = validElements.includes(expected);
+
+                html += `<div><strong>Position ${i}:</strong> [${validElements.join(', ')}] `;
+                html += isValid ? '✓' : `✗ MISSING ${expected}`;
+                html += `</div>`;
+
+                if (!isValid) {
+                    allPass = false;
+                    console.log(`  ❌ Position ${i}: Expected ${expected} but not in valid choices [${validElements.join(', ')}]`);
+                }
+            }
+            html += `</div>`;
+
+            // Check expected final state if provided
+            if (expectedFinalState) {
+                if (expectedFinalState.uniqueCode) {
+                    const remainingCodes = solver.getRemainingCodes(guessHistory, feedbackHistory);
+                    if (remainingCodes.length !== 1) {
+                        allPass = false;
+                        html += `<div style="color: #ff0000;">❌ Expected unique solution, but ${remainingCodes.length} codes remain</div>`;
+                        console.log(`  ❌ Expected unique solution, but ${remainingCodes.length} codes remain`);
+                    } else if (JSON.stringify(remainingCodes[0]) !== JSON.stringify(secretCode)) {
+                        allPass = false;
+                        html += `<div style="color: #ff0000;">❌ Unique code is wrong: [${remainingCodes[0].join(', ')}]</div>`;
+                        console.log(`  ❌ Unique code is wrong: [${remainingCodes[0].join(', ')}]`);
+                    }
+                }
+
+                if (expectedFinalState.maxCodes !== undefined) {
+                    const remainingCount = solver.getPossibleCodesCount(guessHistory, feedbackHistory);
+                    if (remainingCount > expectedFinalState.maxCodes) {
+                        allPass = false;
+                        html += `<div style="color: #ff0000;">❌ Expected ≤${expectedFinalState.maxCodes} codes, got ${remainingCount}</div>`;
+                        console.log(`  ❌ Expected ≤${expectedFinalState.maxCodes} codes, got ${remainingCount}`);
+                    }
+                }
+            }
+
+            html += `<div><strong>Test Result:</strong> ${allPass ? '✅ PASS' : '❌ FAIL'}</div>`;
+
+            if (!allPass) {
+                console.log(`❌ TEST FAILED: ${testName}`);
+            } else {
+                console.log(`✅ TEST PASSED: ${testName}`);
+            }
+
+            testDiv.className = allPass ? 'test-case pass' : 'test-case fail';
+            testDiv.innerHTML = html;
+            results.appendChild(testDiv);
+
+            return allPass;
+        }
+
+        // Run tests
+        console.log('🧪 Running ConstraintSolver Correctness Tests...\n');
+
+        let totalTests = 0;
+        let passCount = 0;
+
+        // TEST 1: Simple case - should narrow down quickly
+        totalTests++;
+        if (runTest(
+            'Simple Narrowing',
+            ['Santa', 'Present', 'Tree', 'Star'],
+            [
+                ['Santa', 'Present', 'Tree', 'Star'],  // Winning guess
+            ],
+            { uniqueCode: true }
+        )) passCount++;
+
+        // TEST 2: Duplicate elements
+        totalTests++;
+        if (runTest(
+            'Duplicate Elements - 2 Santas',
+            ['Snowflake', 'Santa', 'Candy Cane', 'Santa', 'Present'],
+            [
+                ['Santa', 'Santa', 'Santa', 'Santa', 'Santa'],  // 2 blacks
+                ['Snowflake', 'Santa', 'Candy Cane', 'Tree', 'Present'],  // 4 blacks
+                ['Snowflake', 'Santa', 'Candy Cane', 'Santa', 'Present'],  // 5 blacks = solved!
+            ],
+            { uniqueCode: true }
+        )) passCount++;
+
+        // TEST 3: All whites - no blacks
+        totalTests++;
+        if (runTest(
+            'All Whites Pattern',
+            ['Santa', 'Present', 'Tree', 'Star'],
+            [
+                ['Present', 'Santa', 'Star', 'Tree'],  // 0 blacks, 4 whites
+                ['Santa', 'Present', 'Tree', 'Star'],  // Solved!
+            ],
+            { uniqueCode: true }
+        )) passCount++;
+
+        // TEST 4: Systematic elimination
+        totalTests++;
+        if (runTest(
+            'Systematic Elimination',
+            ['Santa', 'Present', 'Tree', 'Star'],
+            [
+                ['Candy Cane', 'Candy Cane', 'Candy Cane', 'Candy Cane'],  // 0 blacks
+                ['Snowflake', 'Snowflake', 'Snowflake', 'Snowflake'],  // 0 blacks
+                // After 2 guesses, eliminated 2 elements → 4^4 = 256 codes left
+            ],
+            { maxCodes: 256 }
+        )) passCount++;
+
+        // TEST 5: Single element movement
+        totalTests++;
+        if (runTest(
+            'Single Element Movement',
+            ['Santa', 'Present', 'Tree', 'Star'],
+            [
+                ['Santa', 'Candy Cane', 'Candy Cane', 'Candy Cane'],  // 1 black
+                ['Candy Cane', 'Santa', 'Candy Cane', 'Candy Cane'],  // 0 blacks, 1 white
+                // Santa is at position 0 (not position 1)
+            ],
+            {}
+        )) passCount++;
+
+        // TEST 6: Complex scenario
+        totalTests++;
+        if (runTest(
+            'Complex Mixed Feedback',
+            ['Santa', 'Present', 'Tree', 'Star'],
+            [
+                ['Santa', 'Present', 'Candy Cane', 'Snowflake'],  // 2 blacks
+                ['Santa', 'Present', 'Star', 'Tree'],  // 2 blacks, 2 whites
+                ['Present', 'Santa', 'Star', 'Tree'],  // 0 blacks, 4 whites
+                ['Santa', 'Present', 'Tree', 'Star'],  // Solved!
+            ],
+            { uniqueCode: true }
+        )) passCount++;
+
+        // Summary
+        console.log(`\n========================================`);
+        console.log(`📊 TEST SUMMARY`);
+        console.log(`========================================`);
+        console.log(`Total Tests: ${totalTests}`);
+        console.log(`Passed: ${passCount}`);
+        console.log(`Failed: ${totalTests - passCount}`);
+        console.log(`Pass Rate: ${Math.round(passCount / totalTests * 100)}%`);
+        console.log(`========================================\n`);
+
+        const summaryDiv = document.createElement('div');
+        summaryDiv.className = 'test-case';
+        summaryDiv.innerHTML = `
+            <h2>📊 Test Summary</h2>
+            <div><strong>Total Tests:</strong> ${totalTests}</div>
+            <div><strong>Passed:</strong> ${passCount}</div>
+            <div><strong>Failed:</strong> ${totalTests - passCount}</div>
+            <div><strong>Success Rate:</strong> ${Math.round(passCount / totalTests * 100)}%</div>
+        `;
+        results.appendChild(summaryDiv);
+
+        // Log to console for easy debugging
+        console.log(`\n📋 To debug: Check console.log file or browser console above`);
+    </script>
+</body>
+</html>

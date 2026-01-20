@@ -138,12 +138,17 @@ class GameScene extends Phaser.Scene {
     this.codeLength = this.gameStateManager.getGameStats().codeLength;
     this.secretCode = this.gameStateManager.getSecretCode();
 
-    // Initialize logic hint system with deduction engine
-    this.deductionEngine = new LogicDeductionEngine(this.codeLength, this.elements);
-    console.log('🧠 Logic hint system initialized');
+    // Initialize logic hint system with constraint solver (100% accurate)
+    this.constraintSolver = new ConstraintSolver(this.elements, this.codeLength);
 
-    // Create HistoryManager with deduction engine (passes to ActiveRowManager)
-    this.historyManager = new HistoryManager(this, this.deductionEngine);
+    // Keep deduction engine for comparison/fallback (deprecated)
+    this.deductionEngine = new LogicDeductionEngine(this.codeLength, this.elements);
+
+    console.log('🧠 Logic hint system initialized (using ConstraintSolver)');
+
+    // Create HistoryManager with both deduction engine and constraint solver
+    // ConstraintSolver is passed to ActiveRowManager → GhostOverlayManager for 100% accurate hints
+    this.historyManager = new HistoryManager(this, this.deductionEngine, this.constraintSolver);
     this.gameInputHandler = new GameInputHandler(this);
   }
 

@@ -2,7 +2,7 @@
 // Uses global LayoutConfig (loaded via ModuleLoader)
 
 class ActiveRowManager {
-  constructor(scene, historyManager, deductionEngine = null) {
+  constructor(scene, historyManager, deductionEngine = null, constraintSolver = null) {
     this.scene = scene;
     this.historyManager = historyManager;
     this.activeRowElements = null;
@@ -14,13 +14,14 @@ class ActiveRowManager {
     this.selectedSlotIndex = null; // Track which slot is selected for replacement
     this.elementBar = new ElementBar(scene, this);
 
-    // Logic hint system integration
-    this.deductionEngine = deductionEngine;
+    // Logic hint system integration (using ConstraintSolver for 100% accuracy)
+    this.constraintSolver = constraintSolver;
+    this.deductionEngine = deductionEngine; // Keep for fallback/testing
     this.ghostOverlayManager = null;
 
-    if (this.deductionEngine) {
-      this.ghostOverlayManager = new GhostOverlayManager(scene, this, deductionEngine);
-      console.log('👻 GhostOverlayManager integrated with ActiveRowManager');
+    if (this.constraintSolver) {
+      this.ghostOverlayManager = new GhostOverlayManager(scene, this, constraintSolver);
+      console.log('👻 GhostOverlayManager integrated with ActiveRowManager (using ConstraintSolver)');
     }
   }
 
