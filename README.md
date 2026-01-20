@@ -9,10 +9,11 @@ Play the classic code-breaking game with festive Christmas elements, or switch t
 ## ✨ Features
 
 - **🎮 Classic Mastermind Gameplay** - Guess the hidden code using logic and deduction
+- **👻 Ghost Hints** - See possible elements per position based on previous guesses
 - **🎨 Multiple Themes** - Christmas (active), Halloween (template ready)
 - **📱 Mobile-First Design** - Optimized for iPhone SE to Pro Max (375px - 428px)
-- **🎯 Adjustable Difficulty** - 4-6 code length, 8-15 guesses
-- **👨‍👩‍👧‍👦 Family-Friendly** - Intuitive touch controls, Santa's hint system
+- **🎯 Two Difficulty Modes** - Easy (4 elements) or Standard (5 elements), 10 guesses
+- **👨‍👩‍👧‍👦 Family-Friendly** - Intuitive touch controls, one-click game start
 - **🌐 Zero Cost Hosting** - GitHub Pages compatible
 - **🎪 Smooth Performance** - 60 FPS target, optimized asset loading
 
@@ -32,14 +33,15 @@ http://localhost:8000
 ⚠️ **Important**: Phaser.js requires an HTTP server. Opening `index.html` directly (file://) will show a white screen.
 
 ### Controls
-1. **Select Difficulty** - Choose code length (4-6 elements) and number of guesses (8-15)
+1. **Select Difficulty** - Choose Easy (4 elements) or Standard (5 elements) from main menu
 2. **Make Guesses** - Tap empty slots, select elements from the bar at bottom
-3. **Get Feedback**:
+3. **Ghost Hints** - See faded icons in empty slots showing possible elements
+4. **Get Feedback**:
    - ⭐ **Perfect** - Right element in correct position
    - 🔔 **Close** - Right element in wrong position
    - _(blank)_ - Element not in code
-4. **Use Hint** - Tap Santa's hint button (-220 points)
-5. **Share Score** - Verbal score sharing for family competition
+5. **Use Santa's Hint** - Tap hint button for a clue (-220 points)
+6. **Share Score** - Share your results via native share API
 
 ---
 
