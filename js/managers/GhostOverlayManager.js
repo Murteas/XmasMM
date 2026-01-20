@@ -107,14 +107,18 @@ class GhostOverlayManager {
    */
   renderSingleGhost(container, element) {
     try {
+      // Responsive sizing based on screen width
+      const { width } = this.scene.cameras.main;
+      const isSmallScreen = width < 500;
+
       const ghostImage = this.scene.add.image(0, 0,
         this.scene.getElementImageKey(element));
 
-      // Slightly larger for deduced element (20×20px instead of 12×12px)
-      const iconSize = 20;
+      // Larger for deduced element, responsive to screen size
+      const iconSize = isSmallScreen ? 28 : 30;
       const imageWidth = ghostImage.width || 50; // Fallback if width not available
       ghostImage.setScale(iconSize / imageWidth);
-      ghostImage.setAlpha(0.7);  // More visible for deduced element
+      ghostImage.setAlpha(0.9);  // Very visible for deduced element
 
       container.add(ghostImage);
     } catch (error) {
@@ -135,9 +139,13 @@ class GhostOverlayManager {
 
     console.log(`👻 Rendering ${possibleElements.length} ghost elements:`, possibleElements);
 
+    // Responsive sizing based on screen width
+    const { width } = this.scene.cameras.main;
+    const isSmallScreen = width < 500;
+
     const gridSize = 2; // 2 columns
-    const iconSize = 12; // Tiny icons (12×12px)
-    const spacing = 14;  // 14px apart (12px icon + 2px gap)
+    const iconSize = isSmallScreen ? 16 : 18; // Larger for mobile visibility
+    const spacing = isSmallScreen ? 18 : 20;  // Balanced spacing
 
     // Calculate grid starting position (centered in slot)
     const numRows = Math.ceil(possibleElements.length / gridSize);
@@ -159,10 +167,10 @@ class GhostOverlayManager {
         // Create tiny semi-transparent element image
         const ghostImage = this.scene.add.image(x, y, imageKey);
 
-        // Scale to tiny size
+        // Scale to appropriate size
         const imageWidth = ghostImage.width || 50; // Fallback if width not available
         ghostImage.setScale(iconSize / imageWidth);
-        ghostImage.setAlpha(0.6);  // More visible (was 0.3)
+        ghostImage.setAlpha(isSmallScreen ? 0.8 : 0.75);  // Higher alpha on mobile for better visibility
 
         container.add(ghostImage);
         renderedCount++;

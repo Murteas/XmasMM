@@ -62,17 +62,24 @@ class ActiveRowManager {
     const { width, height } = this.scene.cameras.main;
     const isSmallScreen = width < 500;
 
-    // Start with proper padding from top of scrollable container (increased to prevent header overlap)
+    // Calculate minimum Y to prevent top border clipping
+    // Active row background height = slotSize + 10px padding
+    const slotSize = isSmallScreen ? LayoutConfig.SPACING.ELEMENT_WIDTH_SMALL : LayoutConfig.SPACING.ELEMENT_WIDTH_DEFAULT;
+    const activeRowHeight = slotSize + 10;
+    const minYForFirstGuess = (activeRowHeight / 2) + 10; // Half height + 10px margin from top
+
+    // Start with proper padding from top of scrollable container
     const containerRelativeY = isSmallScreen ? 30 : 25;
-    const historyStartY = Math.max(containerRelativeY, height * 0.02);
+    const historyStartY = Math.max(containerRelativeY, height * 0.02, minYForFirstGuess);
 
     // Calculate position after ALL history rows (scrolling enabled)
     const rowHeight = LayoutConfig.HISTORY_ROW_HEIGHT_STANDARD;
     const guessHistory = this.historyManager.getGuessHistory();
 
-    // Position active row after all guesses (no window limit with scrolling)
+    // Position active row after all guesses with gap to prevent overlap
     const visibleRowCount = guessHistory.length;
-    const activeRowY = historyStartY + (visibleRowCount * rowHeight);
+    const gapAfterHistory = visibleRowCount > 0 ? 15 : 0; // 15px gap after history rows
+    const activeRowY = historyStartY + (visibleRowCount * rowHeight) + gapAfterHistory;
 
     console.log(`🔍 ACTIVE ROW: Positioned at Y=${activeRowY} after ${visibleRowCount} history rows`);
 
@@ -88,9 +95,18 @@ class ActiveRowManager {
     
     // Calculate position after the last element with proper spacing
     const lastElementRightEdge = positioning.startX + ((codeLength - 1) * positioning.elementSpacing) + (positioning.elementWidth / 2);
-    const submitButtonX = lastElementRightEdge + LayoutConfig.SPACING.SUBMIT_BUTTON_GAP + LayoutConfig.SPACING.SUBMIT_BUTTON_HALF_WIDTH;
+    let submitButtonX = lastElementRightEdge + LayoutConfig.SPACING.SUBMIT_BUTTON_GAP + LayoutConfig.SPACING.SUBMIT_BUTTON_HALF_WIDTH;
+
+    // Ensure button doesn't overflow right edge (leave 10px margin)
+    const maxButtonX = width - LayoutConfig.SPACING.SUBMIT_BUTTON_HALF_WIDTH - 10;
+    if (submitButtonX > maxButtonX) {
+      submitButtonX = maxButtonX;
+    }
     
     // Use ButtonFactory for consistent festive styling
+    // Custom padding to make button taller and skinnier
+    const slotSize = isSmallScreen ? LayoutConfig.SPACING.ELEMENT_WIDTH_SMALL : LayoutConfig.SPACING.ELEMENT_WIDTH_DEFAULT;
+
     this.activeRowSubmitBtn = ButtonFactory.createButton(
       this.scene,
       submitButtonX,
@@ -101,6 +117,8 @@ class ActiveRowManager {
         pattern: 'candycane',
         gradient: true,
         font: 'bold 12px Arial',
+        paddingX: 12,  // Narrower (less horizontal padding)
+        paddingY: (slotSize / 2) - 6,  // Taller (match slot height roughly)
         onClick: () => this.scene.submitGuess()
       }
     );
@@ -135,29 +153,35 @@ class ActiveRowManager {
 
   createActiveRowVisuals(activeRowY) {
     const { width } = this.scene.cameras.main;
-    
+    const isSmallScreen = width < 500;
+
+    // Calculate height based on actual slot size + padding
+    const slotSize = isSmallScreen ? LayoutConfig.SPACING.ELEMENT_WIDTH_SMALL : LayoutConfig.SPACING.ELEMENT_WIDTH_DEFAULT;
+    const activeRowHeight = slotSize + 10; // Slot size + 10px padding (5px top + 5px bottom)
+    const glowHeight = activeRowHeight + 6; // Slightly taller than background
+
     // Enhanced Christmas glow effect (GameScreenMobileLayoutFix: better prominence)
     this.activeRowGlowEffect = this.scene.add.rectangle(
-      width / 2, 
-      activeRowY, 
-      width - 15, // Wider glow for more prominence 
-      62, // Taller glow
+      width / 2,
+      activeRowY,
+      width - 15, // Wider glow for more prominence
+      glowHeight,
       0xffd700, // Gold Christmas glow
       0.5 // Increased opacity for stronger effect
     ).setDepth(GameUtils.getDepthLayers().HISTORY);
-    
+
     // Create active row with stronger Christmas styling
     this.activeRowBackground = this.scene.add.rectangle(
-      width / 2, 
-      activeRowY, 
+      width / 2,
+      activeRowY,
       width - 20,
-      50, 
+      activeRowHeight,
       0x0f4f1a, // Stronger Christmas green background
       0.95 // Higher opacity for more prominence
     )
       .setStrokeStyle(4, 0xffd700) // Thicker gold border
       .setDepth(GameUtils.getDepthLayers().HISTORY + 0.1);
-    
+
     // Add visual elements to scrollable container
     this.scene.scrollableContainer.add([this.activeRowGlowEffect, this.activeRowBackground]);
   }
@@ -203,17 +227,26 @@ class ActiveRowManager {
     // Submit button is INLINE (to the right of slots), so account for its width
     const elementWidth = isSmallScreen ? LayoutConfig.SPACING.ELEMENT_WIDTH_SMALL : LayoutConfig.SPACING.ELEMENT_WIDTH_DEFAULT;
     const elementSpacing = isSmallScreen ? LayoutConfig.SPACING.ELEMENT_SPACING_SMALL : LayoutConfig.SPACING.ELEMENT_SPACING_DEFAULT;
-    
+
     // Calculate total width of element slots
     const totalElementsWidth = (codeLength * elementSpacing) - (elementSpacing - elementWidth);
-    
+
     // Include submit button width + gap in centering calculation
     const submitButtonTotalWidth = LayoutConfig.SPACING.SUBMIT_BUTTON_GAP + LayoutConfig.SPACING.SUBMIT_BUTTON_WIDTH;
     const totalRowWidth = totalElementsWidth + submitButtonTotalWidth;
-    
+
     // Center the entire row (slots + submit button) on screen
-    const startX = (width - totalRowWidth) / 2 + elementWidth / 2;
-    
+    let startX = (width - totalRowWidth) / 2 + elementWidth / 2;
+
+    // Ensure first slot stays within yellow border (which starts at 10px from left)
+    const yellowBorderLeft = 10; // Yellow border left edge
+    const padding = 8; // Padding inside yellow border
+    const minStartX = yellowBorderLeft + padding + elementWidth / 2;
+
+    if (startX < minStartX) {
+      startX = minStartX;
+    }
+
     return { startX, elementWidth, elementSpacing };
   }
 
@@ -236,13 +269,18 @@ class ActiveRowManager {
 
   createElementDisplay(element, x, y) {
     const imageKey = this.scene.getElementImageKey(element);
-    
+
     try {
       if (this.scene.textures.exists(imageKey) && imageKey !== '__MISSING') {
         const displayElement = this.scene.add.image(x, y, imageKey);
-        
+
         if (displayElement && displayElement.texture && displayElement.texture.key !== '__MISSING') {
-          const imageScale = Math.min(28 / displayElement.width, 28 / displayElement.height);
+          // Responsive sizing: smaller on mobile
+          const { width } = this.scene.cameras.main;
+          const isSmallScreen = width < 500;
+          const targetSize = isSmallScreen ? 36 : 42;
+
+          const imageScale = Math.min(targetSize / displayElement.width, targetSize / displayElement.height);
           displayElement.setScale(imageScale);
           displayElement.setOrigin(0.5).setDepth(GameUtils.getDepthLayers().TOUCH_AREA + 2);
           return displayElement;

@@ -66,8 +66,8 @@ class HistoryRenderer {
     const isSmallScreen = width < 500;
     
     // IMPROVED: Much bigger elements for excellent visibility and family accessibility
-    const elementSize = 45; // Increased from 35 to 45 for much better visibility
-    const elementSpacing = 55; // Increased from 42 to 55 for better spacing
+    const elementSize = 52; // Increased to 52 for better visibility with larger ghost hints
+    const elementSpacing = 60; // Increased to 60 for better spacing
     
     // Add subtle row background for better visibility against Christmas background
     const rowWidth = width * 0.95;
