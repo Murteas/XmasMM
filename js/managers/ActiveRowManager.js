@@ -81,8 +81,6 @@ class ActiveRowManager {
     const gapAfterHistory = visibleRowCount > 0 ? 15 : 0; // 15px gap after history rows
     const activeRowY = historyStartY + (visibleRowCount * rowHeight) + gapAfterHistory;
 
-    console.log(`🔍 ACTIVE ROW: Positioned at Y=${activeRowY} after ${visibleRowCount} history rows`);
-
     return activeRowY;
   }
 
@@ -141,8 +139,6 @@ class ActiveRowManager {
     // Element bar is positioned INSIDE scrollableContainer, so use container-relative coordinates
     // Simply position it below the active row - scrolling will handle visibility
     const elementBarY = activeRowY + LayoutConfig.SPACING.ELEMENT_BAR_OFFSET;
-
-    console.log(`🔍 ELEMENT BAR: Positioned at container Y=${elementBarY} (below active row at ${activeRowY})`);
 
     // Create ElementBar in scrollable container (inline positioning)
     this.elementBar.create(this.scene.scrollableContainer, elementBarY);

@@ -29,8 +29,6 @@ class GhostOverlayManager {
 
     this.ghostContainers = [];
 
-    console.log(`👻 Creating ghost overlays for ${codeLength} slots`);
-
     for (let i = 0; i < codeLength; i++) {
       const slotX = slotPositions[i].x;
       const slotY = slotPositions[i].y;
@@ -57,7 +55,6 @@ class GhostOverlayManager {
    */
   updateSlotGhosts(slotIndex) {
     if (!this.isActive || slotIndex < 0 || slotIndex >= this.ghostContainers.length) {
-      console.log(`👻 Skipping slot ${slotIndex}: inactive or invalid`);
       return;
     }
 
@@ -75,23 +72,18 @@ class GhostOverlayManager {
 
     // Extract valid elements for this specific slot
     const possibleElements = validChoices[slotIndex] || [];
-    console.log(`👻 Slot ${slotIndex}: ${possibleElements.length} possible elements [${possibleElements.join(', ')}]`);
 
     // Check if slot is filled by user
     const currentGuess = this.activeRowManager.activeRowGuess || [];
     const slotValue = currentGuess[slotIndex];
 
-    console.log(`👻 Slot ${slotIndex} current value:`, slotValue);
-
     if (slotValue !== null && slotValue !== undefined) {
       // Slot is filled with an actual element, don't show ghosts
-      console.log(`👻 Slot ${slotIndex} is filled, hiding ghosts`);
       return;
     }
 
     // If position is fully deduced (only 1 possibility), show that ghost more prominently
     if (possibleElements.length === 1) {
-      console.log(`👻 Slot ${slotIndex} deduced to: ${possibleElements[0]}`);
       this.renderSingleGhost(container, possibleElements[0]);
       return;
     }
@@ -133,11 +125,8 @@ class GhostOverlayManager {
    */
   renderGhostGrid(container, possibleElements) {
     if (possibleElements.length === 0) {
-      console.log(`👻 No possible elements to render in ghost grid`);
       return; // No possibilities (shouldn't happen, but be safe)
     }
-
-    console.log(`👻 Rendering ${possibleElements.length} ghost elements:`, possibleElements);
 
     // Responsive sizing based on screen width
     const { width } = this.scene.cameras.main;
@@ -152,8 +141,6 @@ class GhostOverlayManager {
     const startX = -(gridSize * spacing) / 2 + spacing / 2;
     const startY = -(numRows * spacing) / 2 + spacing / 2;
 
-    let renderedCount = 0;
-
     possibleElements.forEach((element, idx) => {
       const col = idx % gridSize;
       const row = Math.floor(idx / gridSize);
@@ -162,7 +149,6 @@ class GhostOverlayManager {
 
       try {
         const imageKey = this.scene.getElementImageKey(element);
-        console.log(`👻 Creating ghost image for ${element} with key: ${imageKey}`);
 
         // Create tiny semi-transparent element image
         const ghostImage = this.scene.add.image(x, y, imageKey);
@@ -173,13 +159,10 @@ class GhostOverlayManager {
         ghostImage.setAlpha(isSmallScreen ? 0.8 : 0.75);  // Higher alpha on mobile for better visibility
 
         container.add(ghostImage);
-        renderedCount++;
       } catch (error) {
         console.warn(`👻 Could not render ghost for element: ${element}`, error);
       }
     });
-
-    console.log(`👻 Successfully rendered ${renderedCount}/${possibleElements.length} ghost images`);
   }
 
   /**
@@ -189,8 +172,6 @@ class GhostOverlayManager {
     if (!this.isActive) {
       return;
     }
-
-    console.log('👻 Updating all ghost overlays');
 
     for (let i = 0; i < this.ghostContainers.length; i++) {
       this.updateSlotGhosts(i);
@@ -222,8 +203,6 @@ class GhostOverlayManager {
     if (!this.isActive) {
       return;
     }
-
-    console.log('👻 Destroying ghost overlays');
 
     this.ghostContainers.forEach(container => {
       if (container && container.destroy) {

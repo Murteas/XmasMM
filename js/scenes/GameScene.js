@@ -252,8 +252,6 @@ class GameScene extends Phaser.Scene {
       const desiredY = this.scrollableContainer.y - dy * 0.5;
       this.scrollableContainer.y = this.clampScrollPosition(desiredY);
     });
-
-    console.log('🔍 SCROLL: Touch-drag scrolling enabled');
   }
 
   clampScrollPosition(desiredY) {
@@ -291,7 +289,6 @@ class GameScene extends Phaser.Scene {
       elementBarHeight +
       20;
 
-    console.log(`🔍 SCROLL: Content height = ${this.totalScrollableContentHeight}px (${guessCount} guesses)`);
     return this.totalScrollableContentHeight;
   }
 
@@ -326,8 +323,6 @@ class GameScene extends Phaser.Scene {
       const desiredY = this.scrollableContainer.y - overflow;
       const clampedY = this.clampScrollPosition(desiredY);
 
-      console.log(`🔍 SCROLL: Scrolling - overflow=${overflow}px, desiredY=${desiredY}, clampedY=${clampedY}`);
-
       // Animate scroll for smooth UX
       this.tweens.add({
         targets: this.scrollableContainer,
@@ -335,8 +330,6 @@ class GameScene extends Phaser.Scene {
         duration: 300,
         ease: 'Quad.easeOut'
       });
-    } else {
-      console.log('🔍 SCROLL: No scroll needed - content fits');
     }
   }
 
