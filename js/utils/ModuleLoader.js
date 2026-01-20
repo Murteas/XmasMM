@@ -22,7 +22,6 @@ class ModuleLoader {
       
       // Scenes (depend on managers)
       'js/scenes/MainMenu.js',
-      'js/scenes/DifficultySelection.js',
       'js/scenes/GameScene.js',
       'js/scenes/RoundOver.js',
       
@@ -68,7 +67,6 @@ class ModuleLoader {
     // Group 4: Scenes (load in parallel)
     const sceneModules = [
       'js/scenes/MainMenu.js',
-      'js/scenes/DifficultySelection.js',
       'js/scenes/GameScene.js',
       'js/scenes/RoundOver.js'
     ];

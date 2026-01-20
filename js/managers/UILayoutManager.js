@@ -196,7 +196,7 @@ class UILayoutManager {
         border: true,
         paddingX: 12,  // Match hint button padding
         paddingY: 8,   // Match hint button padding to make it thinner
-        onClick: () => this.scene.scene.start('DifficultySelection')
+        onClick: () => this.scene.scene.start('MainMenu')
       }
     );
     backBtn.setDepth(GameUtils.getDepthLayers().UI);
@@ -342,7 +342,7 @@ class UILayoutManager {
         'primary',
         {
           icon: '🔁',
-          onClick: () => this.scene.scene.start('DifficultySelection')
+          onClick: () => this.scene.scene.start('MainMenu')
         }
       );
       restartBtn.setDepth(GameUtils.getDepthLayers().GAME_OVER);

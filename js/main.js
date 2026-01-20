@@ -40,13 +40,11 @@ function initializeGame() {
   console.log('🔧 initializeGame() called - checking scene availability...');
   
   // Verify all scene classes are available
-  if (typeof MainMenu === 'undefined' || 
-      typeof DifficultySelection === 'undefined' || 
-      typeof GameScene === 'undefined' || 
+  if (typeof MainMenu === 'undefined' ||
+      typeof GameScene === 'undefined' ||
       typeof RoundOver === 'undefined') {
     console.error('🚨 Scene classes not loaded:', {
       MainMenu: typeof MainMenu,
-      DifficultySelection: typeof DifficultySelection, 
       GameScene: typeof GameScene,
       RoundOver: typeof RoundOver
     });
@@ -75,7 +73,7 @@ function initializeGame() {
       pixelArt: false,
       transparent: false
     },
-    scene: [MainMenu, DifficultySelection, GameScene, RoundOver]
+    scene: [MainMenu, GameScene, RoundOver]
   };
 
   // Suppress common browser extension async listener errors
