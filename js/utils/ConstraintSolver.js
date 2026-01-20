@@ -83,12 +83,6 @@ class ConstraintSolver {
       });
     }
 
-    // Log progress (concise for gameplay)
-    if (guessHistory.length !== this.lastGuessCount) {
-      console.log(`🧩 After ${guessHistory.length} guesses: ${remainingCodes.length} possible codes remaining`);
-      this.lastGuessCount = guessHistory.length;
-    }
-
     // Extract valid elements for each position from remaining codes
     const validChoices = [];
     for (let pos = 0; pos < this.codeLength; pos++) {
@@ -97,6 +91,17 @@ class ConstraintSolver {
         validElements.add(code[pos]);
       }
       validChoices.push(Array.from(validElements));
+    }
+
+    // Log progress (concise for gameplay)
+    if (guessHistory.length !== this.lastGuessCount) {
+      console.log(`🧩 After ${guessHistory.length} guesses: ${remainingCodes.length} possible codes remaining`);
+      console.log(`🧩 Possible elements per position:`);
+      validChoices.forEach((choices, pos) => {
+        console.log(`   Position ${pos}: [${choices.join(', ')}] (${choices.length} possibilities)`);
+      });
+      console.log(`───────────────────────────────────────\n`);
+      this.lastGuessCount = guessHistory.length;
     }
 
     return validChoices;

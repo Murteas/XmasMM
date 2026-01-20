@@ -19,6 +19,12 @@ class GameStateManager {
     
     // Generate random code
     this.secretCode = GameUtils.generateRandomCode(this.elements, this.codeLength);
+
+    // DEBUG: Log secret code for testing/verification
+    console.log(`\n🎄 NEW GAME STARTED 🎄`);
+    console.log(`Secret Code:`, this.secretCode);
+    console.log(`Code Length: ${this.codeLength}, Max Guesses: ${this.maxGuesses}`);
+    console.log(`───────────────────────────────────────\n`);
   }
 
   processGuess(guess) {

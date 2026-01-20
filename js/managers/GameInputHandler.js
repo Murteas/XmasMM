@@ -23,6 +23,11 @@ class GameInputHandler {
     // Process the guess through game state manager
     const result = this.scene.gameStateManager.processGuess(currentGuess);
 
+    // DEBUG: Log guess and feedback for verification
+    console.log(`\n🎯 GUESS SUBMITTED:`, currentGuess);
+    console.log(`📊 FEEDBACK: ${result.feedback.black}⚫ ${result.feedback.white}⚪ (${result.feedback.black} black, ${result.feedback.white} white)`);
+    console.log(`🎄 SECRET CODE (for testing):`, this.scene.gameStateManager.getSecretCode());
+
     // Add to history
     this.scene.historyManager.addGuess(currentGuess, result.feedback);
 
