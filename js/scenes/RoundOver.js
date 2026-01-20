@@ -292,11 +292,11 @@ class RoundOver extends Phaser.Scene {
 
   createFooterContent() {
     const { width } = this.cameras.main;
-    
-    // Two-button layout optimized for mobile
+
+    // Three-button layout for mobile
     const buttonY = 25; // Centered in footer
-    const buttonSpacing = width * 0.25;
-    
+    const buttonSpacing = width * 0.31; // Spacing for 3 buttons
+
   const playAgainBtn = ButtonFactory.createButton(
       this,
       width / 2 - buttonSpacing,
@@ -316,11 +316,25 @@ class RoundOver extends Phaser.Scene {
       }
     );
 
+  const mainMenuBtn = ButtonFactory.createButton(
+      this,
+      width / 2,
+      buttonY,
+      'Main Menu',
+      'danger',
+      {
+    icon: '🏠',
+    gradient: true,
+    border: true,
+        onClick: () => this.scene.start('MainMenu')
+      }
+    );
+
   const shareBtn = ButtonFactory.createButton(
       this,
       width / 2 + buttonSpacing,
       buttonY,
-      'Share Score',
+      'Share',
       'accent',
       {
     icon: '📤',
@@ -330,7 +344,7 @@ class RoundOver extends Phaser.Scene {
       }
     );
 
-    this.footerContainer.add([playAgainBtn, shareBtn]);
+    this.footerContainer.add([playAgainBtn, mainMenuBtn, shareBtn]);
   }
 
   shareScore() {
