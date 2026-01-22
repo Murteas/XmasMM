@@ -14,48 +14,6 @@ class UILayoutManager {
     const viewport = GameUtils.getMobileViewport();
     const { width, height } = viewport;
     
-    // COMPACT: Abbreviated title for game screen header (saves 60% space)
-    const titleY = this.scene.headerContainer ? 25 : 25; // Relative positioning in container
-    
-    // Smaller background for abbreviated title
-    const titleBg = this.scene.add.rectangle(width / 2, titleY, 80, 28, 0x000000, 0.3)
-      .setOrigin(0.5)
-      .setDepth(GameUtils.getDepthLayers().UI - 0.1);
-    
-    const title = this.scene.add.text(width / 2, titleY, '🎄 CM', {
-      fontFamily: 'Dancing Script, cursive',
-      fontSize: '18px',
-      fontWeight: '600',
-      fill: '#F5F5DC',           // Warm cream for elegance
-      stroke: '#0F4C36',         // Deep emerald green (matches buttons)
-      strokeThickness: 2,
-      shadow: {
-        offsetX: 1,
-        offsetY: 1,
-        color: '#1A1A1A',        // Deep shadow
-        blur: 2,
-        stroke: true,
-        fill: true
-      }
-    }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI);
-
-    // Subtle gold highlight for header title
-    const titleHighlight = this.scene.add.text(width / 2, titleY, '🎄 CM', {
-      fontFamily: 'Dancing Script, cursive',
-      fontSize: '18px',
-      fontWeight: '600',
-      fill: 'transparent',
-      stroke: '#DAA520',         // Sophisticated gold highlight
-      strokeThickness: 1,
-      alpha: 0.4
-    }).setOrigin(0.5).setDepth(GameUtils.getDepthLayers().UI + 0.1);
-    
-    // Add to header container if available
-    if (this.scene.headerContainer) {
-      this.scene.headerContainer.add([titleBg, title, titleHighlight]);
-      console.log('📱 Title added to header container');
-    }
-    
     // Create responsive header layout for game state info
     this.setupHeaderLayout();
   }
