@@ -117,12 +117,12 @@ class UILayoutManager {
     this.hintBtn.setDepth(GameUtils.getDepthLayers().UI);
 
     // Show Hints toggle button (visual ghost overlays)
-    const ghostHintsOn = this.scene.registry.get('ghostHintsOn') !== false; // Default to true
+    const ghostHintsOn = this.scene.registry.get('ghostHintsOn') !== true; // Default to false
     this.ghostHintsBtn = ButtonFactory.createButton(
       this.scene,
       width - 220,  // To the left of clue button
       50,
-      ghostHintsOn ? 'Show: ON' : 'Show: OFF',  // Clear on/off state
+      ghostHintsOn ? 'Hints: ON' : 'Hints: OFF',  // Clear on/off state
       'accent',
       {
         icon: '👁️',  // Eye icon for visibility
@@ -135,12 +135,12 @@ class UILayoutManager {
   }
 
   toggleGhostHints() {
-    const current = this.scene.registry.get('ghostHintsOn') !== false; // Default to true
+    const current = this.scene.registry.get('ghostHintsOn') !== true; // Default to false
     const newValue = !current;
     this.scene.registry.set('ghostHintsOn', newValue);
 
     // Update button label
-    this.ghostHintsBtn.setLabel(newValue ? 'Show: ON' : 'Show: OFF');
+    this.ghostHintsBtn.setLabel(newValue ? 'Hints: ON' : 'Hints: OFF');
 
     // Update ghost overlay visibility
     if (this.scene.historyManager && this.scene.historyManager.activeRowManager) {
