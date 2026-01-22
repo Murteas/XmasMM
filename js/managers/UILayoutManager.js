@@ -157,6 +157,44 @@ class UILayoutManager {
       }
     );
     this.hintBtn.setDepth(GameUtils.getDepthLayers().UI);
+
+    // Ghost Hints toggle button (small icon button)
+    const ghostHintsOn = this.scene.registry.get('ghostHintsOn') !== false; // Default to true
+    this.ghostHintsBtn = ButtonFactory.createButton(
+      this.scene,
+      width - 195,  // To the left of hint button
+      50,
+      ghostHintsOn ? '👻' : '🚫',  // Ghost or no symbol
+      'accent',
+      {
+        paddingX: 10,
+        paddingY: 8,
+        onClick: () => this.toggleGhostHints()
+      }
+    );
+    this.ghostHintsBtn.setDepth(GameUtils.getDepthLayers().UI);
+  }
+
+  toggleGhostHints() {
+    const current = this.scene.registry.get('ghostHintsOn') !== false; // Default to true
+    const newValue = !current;
+    this.scene.registry.set('ghostHintsOn', newValue);
+
+    // Update button icon
+    this.ghostHintsBtn.setLabel(newValue ? '👻' : '🚫');
+
+    // Update ghost overlay visibility
+    if (this.scene.historyManager && this.scene.historyManager.activeRowManager) {
+      const ghostManager = this.scene.historyManager.activeRowManager.ghostOverlayManager;
+      if (ghostManager) {
+        if (newValue) {
+          ghostManager.show();
+          ghostManager.updateAllGhosts();
+        } else {
+          ghostManager.hide();
+        }
+      }
+    }
   }
 
   setupButtons() {
