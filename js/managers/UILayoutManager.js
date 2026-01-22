@@ -54,12 +54,12 @@ class UILayoutManager {
       }
     ).setDepth(GameUtils.getDepthLayers().UI);
     
-    // Hint button positioned below header (penalty inline; green primary variant)
+    // Clue button positioned below header (paid Santa hint - renamed for clarity)
     this.hintBtn = ButtonFactory.createButton(
       this.scene,
       width / 2,
       layout.headerY + Math.round(38 * layout.fontScale),
-      `Hint (-${this.scene.scoreManager ? this.scene.scoreManager.scoringConfig.hintPenalty : 220})`,
+      `Clue (-${this.scene.scoreManager ? this.scene.scoreManager.scoringConfig.hintPenalty : 220})`,
       'primary',
       {
         icon: '💡',
@@ -100,15 +100,15 @@ class UILayoutManager {
       fill: '#fff'
     }).setOrigin(1, 0).setDepth(GameUtils.getDepthLayers().UI).setVisible(false);
     
-    // Hint button (using fixed ButtonFactory icon positioning)
+    // Clue button (paid Santa hint - renamed from "Hint" for clarity)
     this.hintBtn = ButtonFactory.createButton(
       this.scene,
       width - 90,  // Positioned to fit properly
       50,  // Same level as back button for visual balance
-      `Hint (-${this.scene.scoreManager ? this.scene.scoreManager.scoringConfig.hintPenalty : 220})`,  // Text without emoji
+      `Clue (-${this.scene.scoreManager ? this.scene.scoreManager.scoringConfig.hintPenalty : 220})`,  // Renamed to "Clue"
       'primary',
       {
-        icon: '💡',  // Light bulb icon (theme-neutral)
+        icon: '💡',  // Light bulb icon
         paddingX: 12,
         paddingY: 8,
         onClick: () => this.scene.useHint()
@@ -116,15 +116,16 @@ class UILayoutManager {
     );
     this.hintBtn.setDepth(GameUtils.getDepthLayers().UI);
 
-    // Ghost Hints toggle button (small icon button)
+    // Show Hints toggle button (visual ghost overlays)
     const ghostHintsOn = this.scene.registry.get('ghostHintsOn') !== false; // Default to true
     this.ghostHintsBtn = ButtonFactory.createButton(
       this.scene,
-      width - 195,  // To the left of hint button
+      width - 220,  // To the left of clue button
       50,
-      ghostHintsOn ? '👻' : '🚫',  // Ghost or no symbol
+      ghostHintsOn ? 'Show: ON' : 'Show: OFF',  // Clear on/off state
       'accent',
       {
+        icon: '👁️',  // Eye icon for visibility
         paddingX: 10,
         paddingY: 8,
         onClick: () => this.toggleGhostHints()
@@ -138,8 +139,8 @@ class UILayoutManager {
     const newValue = !current;
     this.scene.registry.set('ghostHintsOn', newValue);
 
-    // Update button icon
-    this.ghostHintsBtn.setLabel(newValue ? '👻' : '🚫');
+    // Update button label
+    this.ghostHintsBtn.setLabel(newValue ? 'Show: ON' : 'Show: OFF');
 
     // Update ghost overlay visibility
     if (this.scene.historyManager && this.scene.historyManager.activeRowManager) {
@@ -175,8 +176,8 @@ class UILayoutManager {
     this.submitBtn.setDepth(GameUtils.getDepthLayers().UI + 10);
     this.submitBtn.setVisible(false); // Hidden with inline submission approach
     
-    // Configure hint button interactivity
-  // Hint button already configured in creation; ScoreManager will manage enabled/disabled state
+    // Configure clue button interactivity
+  // Clue button already configured in creation; ScoreManager will manage enabled/disabled state
     
     // Back button in top-left header (proper UX pattern) - GameScreenFooterLayoutFix
     const layout = GameUtils.getResponsiveLayout(width, height);
