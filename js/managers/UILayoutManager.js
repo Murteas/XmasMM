@@ -117,7 +117,7 @@ class UILayoutManager {
     this.hintBtn.setDepth(GameUtils.getDepthLayers().UI);
 
     // Show Hints toggle button (visual ghost overlays)
-    const ghostHintsOn = this.scene.registry.get('ghostHintsOn') !== true; // Default to false
+    const ghostHintsOn = this.scene.registry.get('ghostHintsOn') !== false; // Default to true
     this.ghostHintsBtn = ButtonFactory.createButton(
       this.scene,
       width - 220,  // To the left of clue button
@@ -135,7 +135,7 @@ class UILayoutManager {
   }
 
   toggleGhostHints() {
-    const current = this.scene.registry.get('ghostHintsOn') !== true; // Default to false
+    const current = this.scene.registry.get('ghostHintsOn') !== false; // Default to true
     const newValue = !current;
     this.scene.registry.set('ghostHintsOn', newValue);
 
