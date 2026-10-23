@@ -48,8 +48,8 @@ class GhostOverlayManager {
     // Initial render of all ghosts
     this.updateAllGhosts();
 
-    // Check if ghost hints are enabled (default to true)
-    const ghostHintsOn = this.scene.registry.get('ghostHintsOn') !== false;
+    // Check if ghost hints are enabled (default to false)
+    const ghostHintsOn = this.scene.registry.get('ghostHintsOn') === true;
     if (!ghostHintsOn) {
       this.hide();
     }
